@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class DebugMenu : MonoBehaviour
@@ -8,6 +9,7 @@ public class DebugMenu : MonoBehaviour
     [SerializeField] private Button[] _tabButtons;
     [SerializeField] private Color _tabBaseColor;
     [SerializeField] private Color _tabSelectedColor;
+
     private int _activeTabIndex = -1;
 
     public void OnTabClicked(int tabIndex)
@@ -26,5 +28,4 @@ public class DebugMenu : MonoBehaviour
             _activeTabIndex = tabIndex;
         }
     }
-
 }
