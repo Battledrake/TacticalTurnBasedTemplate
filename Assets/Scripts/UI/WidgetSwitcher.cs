@@ -7,7 +7,7 @@ public class WidgetSwitcher : MonoBehaviour
     [SerializeField] private int _activeIndex = -1;
     private List<GameObject> _managedWidgets = new List<GameObject>();
 
-    private void Awake()
+    private void OnValidate()
     {
         for (int i = 0; i < this.transform.childCount; i++)
         {
@@ -15,6 +15,9 @@ public class WidgetSwitcher : MonoBehaviour
             _managedWidgets.Add(childObject);
             childObject.SetActive(false);
         }
+        
+        if(_activeIndex > -1)
+            _managedWidgets[_activeIndex].SetActive(true);
     }
 
     public void SetActiveWidget(int widgetIndex)
