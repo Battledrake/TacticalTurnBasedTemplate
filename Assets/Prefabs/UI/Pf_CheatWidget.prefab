@@ -38,7 +38,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 75}
+  m_SizeDelta: {x: 0, y: 55}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1929187950234853329
 CanvasRenderer:
@@ -150,6 +150,8 @@ MonoBehaviour:
   _baseColor: {r: 0.31764707, g: 0.31764707, b: 0.31764707, a: 1}
   _selectedColor: {r: 0.7264151, g: 0.69099325, b: 0.044544343, a: 1}
   _cheatText: {fileID: 5444320555635831583}
+  _baseCursor: {fileID: 2800000, guid: a9ae0267b06e7b24d90f188a4370cce3, type: 3}
+  _hoverCursor: {fileID: 2800000, guid: e43eb6dc9e9ce1f47bac91c53a5246fc, type: 3}
 --- !u!1 &8440540648275743321
 GameObject:
   m_ObjectHideFlags: 0
