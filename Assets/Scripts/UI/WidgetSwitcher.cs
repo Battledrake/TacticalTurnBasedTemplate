@@ -5,10 +5,12 @@ using UnityEngine;
 public class WidgetSwitcher : MonoBehaviour
 {
     [SerializeField] private int _activeIndex = -1;
-    private List<GameObject> _managedWidgets = new List<GameObject>();
+    private List<GameObject> _managedWidgets;
 
     private void OnValidate()
     {
+        _managedWidgets = new List<GameObject>();
+
         for (int i = 0; i < this.transform.childCount; i++)
         {
             GameObject childObject = this.transform.GetChild(i).gameObject;
@@ -16,7 +18,7 @@ public class WidgetSwitcher : MonoBehaviour
             childObject.SetActive(false);
         }
         
-        if(_activeIndex > -1)
+        if(_activeIndex > -1 && _activeIndex < _managedWidgets.Count)
             _managedWidgets[_activeIndex].SetActive(true);
     }
 
