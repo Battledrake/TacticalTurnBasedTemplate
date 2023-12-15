@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-5956156670935238277
+--- !u!114 &-5222738967831944069
 MonoBehaviour:
   m_ObjectHideFlags: 11
   m_CorrespondingSourceObject: {fileID: 0}
@@ -20,10 +20,10 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: MV_Square_Line
-  m_Shader: {fileID: -6465566751694194690, guid: bbbe214d48d42a240abcc7c215b5911f,
+  m_Name: MV_Grid_Square
+  m_Shader: {fileID: -6465566751694194690, guid: 89dd987c667731a4997ad85329556b0a,
     type: 3}
-  m_Parent: {fileID: 2100000, guid: af672c0cb2e8b774990b160ea362783a, type: 2}
+  m_Parent: {fileID: 2100000, guid: cde208acc85ddbc4c962945726676e80, type: 2}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
   m_InvalidKeywords: []
@@ -38,15 +38,7 @@ Material:
     serializedVersion: 3
     m_TexEnvs: []
     m_Ints: []
-    m_Floats:
-    - _Blending: 100
+    m_Floats: []
     m_Colors:
-    - _BaseColor: {r: 0.41509432, g: 0.41509432, b: 0.41509432, a: 1}
-    - _Color: {r: 0.5411765, g: 0.5568628, b: 0.60784316, a: 1}
-    - _Color1: {r: 0.46226418, g: 0.46226418, b: 0.46226418, a: 1}
-    - _Color2: {r: 0, g: 0, b: 0, a: 0}
-    - _GridSize: {r: 0.25, g: 0.25, b: 0, a: 0}
-    - _LineColor: {r: 0, g: 0, b: 0, a: 1}
-    - _Offset: {r: 0.25, g: 0.25, b: 0, a: 0}
-    - _Tiling: {r: 1, g: 1, b: 0, a: 0}
+    - _Color: {r: 0, g: 0.9150943, b: 0.17634405, a: 1}
   m_BuildTextureStacks: []

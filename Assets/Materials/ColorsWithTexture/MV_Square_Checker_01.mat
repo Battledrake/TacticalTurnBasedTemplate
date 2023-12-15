@@ -20,7 +20,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: MV_Square_Line
+  m_Name: MV_Square_Checker_01
   m_Shader: {fileID: -6465566751694194690, guid: bbbe214d48d42a240abcc7c215b5911f,
     type: 3}
   m_Parent: {fileID: 2100000, guid: af672c0cb2e8b774990b160ea362783a, type: 2}
@@ -36,17 +36,21 @@ Material:
   m_LockedProperties: 
   m_SavedProperties:
     serializedVersion: 3
-    m_TexEnvs: []
+    m_TexEnvs:
+    - _Texture:
+        m_Texture: {fileID: 2800000, guid: d10ae0444a1f6614ca7d61ae4c898a9c, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
     - _Blending: 100
     m_Colors:
-    - _BaseColor: {r: 0.41509432, g: 0.41509432, b: 0.41509432, a: 1}
-    - _Color: {r: 0.5411765, g: 0.5568628, b: 0.60784316, a: 1}
-    - _Color1: {r: 0.46226418, g: 0.46226418, b: 0.46226418, a: 1}
-    - _Color2: {r: 0, g: 0, b: 0, a: 0}
+    - _BaseColor: {r: 0.126157, g: 0.4187541, b: 0.990566, a: 1}
+    - _Color: {r: 0, g: 0.5277234, b: 0.6981132, a: 1}
+    - _Color1: {r: 0.43173724, g: 0.71647525, b: 0.9245283, a: 1}
+    - _Color2: {r: 0.10070309, g: 0.44473168, b: 0.6886792, a: 0}
     - _GridSize: {r: 0.25, g: 0.25, b: 0, a: 0}
-    - _LineColor: {r: 0, g: 0, b: 0, a: 1}
+    - _LineColor: {r: 0.3039783, g: 0.5841254, b: 0.9339623, a: 1}
     - _Offset: {r: 0.25, g: 0.25, b: 0, a: 0}
     - _Tiling: {r: 1, g: 1, b: 0, a: 0}
   m_BuildTextureStacks: []
