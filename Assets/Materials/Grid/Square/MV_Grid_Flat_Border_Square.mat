@@ -24,13 +24,13 @@ Material:
   m_Shader: {fileID: -6465566751694194690, guid: 39f406ace776bcf41bcee06f28593f84,
     type: 3}
   m_Parent: {fileID: 2100000, guid: fc4d45935642bbc41a5c813d5f4e222f, type: 2}
-  m_ModifiedSerializedProperties: 0
+  m_ModifiedSerializedProperties: 28
   m_ValidKeywords: []
   m_InvalidKeywords: []
   m_LightmapFlags: 4
-  m_EnableInstancingVariants: 0
+  m_EnableInstancingVariants: 1
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: -1
+  m_CustomRenderQueue: 3000
   stringTagMap: {}
   disabledShaderPasses: []
   m_LockedProperties: 
@@ -38,7 +38,8 @@ Material:
     serializedVersion: 3
     m_TexEnvs: []
     m_Ints: []
-    m_Floats: []
+    m_Floats:
+    - _QueueOffset: 0
     m_Colors:
     - _Color: {r: 0.027450982, g: 0.3019608, b: 0.054901965, a: 1}
   m_BuildTextureStacks: []

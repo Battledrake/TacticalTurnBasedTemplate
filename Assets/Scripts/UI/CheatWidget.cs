@@ -5,45 +5,48 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-[ExecuteInEditMode]
-public class CheatWidget : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+namespace BattleDrakeCreations.TTBTk
 {
-    [SerializeField] private string _cheatKey;
-    [SerializeField] private Color _baseColor;
-    [SerializeField] private Color _selectedColor;
-    [SerializeField] private TextMeshProUGUI _cheatText;
-
-    [SerializeField] private Texture2D _baseCursor;
-    [SerializeField] private Texture2D _hoverCursor;
-
-    private bool _isSelected = false;
-
-    private void OnValidate()
+    [ExecuteInEditMode]
+    public class CheatWidget : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
-        _cheatText.text = _cheatKey;
-    }
+        [SerializeField] private string _cheatKey;
+        [SerializeField] private Color _baseColor;
+        [SerializeField] private Color _selectedColor;
+        [SerializeField] private TextMeshProUGUI _cheatText;
 
-    public void OnButtonPressed()
-    {
-        _isSelected = !_isSelected;
+        [SerializeField] private Texture2D _baseCursor;
+        [SerializeField] private Texture2D _hoverCursor;
 
-        if (_isSelected)
+        private bool _isSelected = false;
+
+        private void OnValidate()
         {
-            this.GetComponent<Image>().color = _selectedColor;
+            _cheatText.text = _cheatKey;
         }
-        else
+
+        public void OnButtonPressed()
         {
-            this.GetComponent<Image>().color = _baseColor;
+            _isSelected = !_isSelected;
+
+            if (_isSelected)
+            {
+                this.GetComponent<Image>().color = _selectedColor;
+            }
+            else
+            {
+                this.GetComponent<Image>().color = _baseColor;
+            }
         }
-    }
 
-    public void OnPointerExit(PointerEventData eventData)
-    {
-        Cursor.SetCursor(_baseCursor, new Vector2(0, 0), CursorMode.Auto);
-    }
+        public void OnPointerExit(PointerEventData eventData)
+        {
+            Cursor.SetCursor(_baseCursor, new Vector2(0, 0), CursorMode.Auto);
+        }
 
-    public void OnPointerEnter(PointerEventData eventData)
-    {
-        Cursor.SetCursor(_hoverCursor, new Vector2(0, 0), CursorMode.Auto);
+        public void OnPointerEnter(PointerEventData eventData)
+        {
+            Cursor.SetCursor(_hoverCursor, new Vector2(0, 0), CursorMode.Auto);
+        }
     }
 }

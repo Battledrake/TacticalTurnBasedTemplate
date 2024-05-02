@@ -5,31 +5,34 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class SliderWidget : MonoBehaviour
+namespace BattleDrakeCreations.TTBTk
 {
-    public event Action<float> OnSliderValueChanged;
-
-    [SerializeField] private Slider _slider;
-    [SerializeField] private string _name;
-    [SerializeField] private TextMeshProUGUI _sliderNameText;
-    [SerializeField] private TextMeshProUGUI _sliderValueText;
-
-    public void SetSliderValue(float value) { _slider.value = value; }
-
-    private void OnValidate()
+    public class SliderWidget : MonoBehaviour
     {
-        _sliderNameText.text = _name;
-        _sliderValueText.text = _slider.value.ToString("F1");
-    }
+        public event Action<float> OnSliderValueChanged;
 
-    private void Awake()
-    {
-        _slider.onValueChanged.AddListener(Slider_OnValueChanged);
-    }
+        [SerializeField] private Slider _slider;
+        [SerializeField] private string _name;
+        [SerializeField] private TextMeshProUGUI _sliderNameText;
+        [SerializeField] private TextMeshProUGUI _sliderValueText;
 
-    public void Slider_OnValueChanged(float value)
-    {
-        _sliderValueText.text = _slider.value.ToString("F1");
-        OnSliderValueChanged?.Invoke(_slider.value);
+        public void SetSliderValue(float value) { _slider.value = value; }
+
+        private void OnValidate()
+        {
+            _sliderNameText.text = _name;
+            _sliderValueText.text = _slider.value.ToString("F1");
+        }
+
+        private void Awake()
+        {
+            _slider.onValueChanged.AddListener(Slider_OnValueChanged);
+        }
+
+        public void Slider_OnValueChanged(float value)
+        {
+            _sliderValueText.text = _slider.value.ToString("F1");
+            OnSliderValueChanged?.Invoke(_slider.value);
+        }
     }
 }

@@ -5,75 +5,78 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class DebugMenu : MonoBehaviour
+namespace BattleDrakeCreations.TTBTk
 {
-    [SerializeField] private Button[] _tabButtons;
-    [SerializeField] private Color _tabBaseColor;
-    [SerializeField] private Color _tabSelectedColor;
-
-    [SerializeField] private CameraController _cameraController;
-
-    [SerializeField] private SliderWidget _moveSpeedSlider;
-    [SerializeField] private SliderWidget _rotationSpeedSlider;
-    [SerializeField] private SliderWidget _zoomSpeedSlider;
-    [SerializeField] private SliderWidget _zoomMinSlider;
-    [SerializeField] private SliderWidget _zoomMaxSlider;
-
-    private void Awake()
+    public class DebugMenu : MonoBehaviour
     {
-        _moveSpeedSlider.SetSliderValue(_cameraController.GetMoveSpeed());
-        _rotationSpeedSlider.SetSliderValue(_cameraController.GetRotationSpeed());
-        _zoomSpeedSlider.SetSliderValue(_cameraController.GetZoomSpeed());
-        _zoomMinSlider.SetSliderValue(_cameraController.GetZoomMin());
-        _zoomMaxSlider.SetSliderValue(_cameraController.GetZoomMax());
-        _moveSpeedSlider.OnSliderValueChanged += MoveSpeedSlider_OnSliderValueChanged;
-        _rotationSpeedSlider.OnSliderValueChanged += RotationSpeedSlider_OnSliderValueChanged;
-        _zoomSpeedSlider.OnSliderValueChanged += ZoomSpeedSlider_OnSliderValueChanged;
-        _zoomMinSlider.OnSliderValueChanged += ZoomMinSlider_OnSliderValueChanged;
-        _zoomMaxSlider.OnSliderValueChanged += ZoomMaxSlider_OnSliderValueChanged;
-    }
+        [SerializeField] private Button[] _tabButtons;
+        [SerializeField] private Color _tabBaseColor;
+        [SerializeField] private Color _tabSelectedColor;
 
-    private void ZoomMaxSlider_OnSliderValueChanged(float value)
-    {
-        _cameraController.SetZoomMax(value);
-    }
+        [SerializeField] private CameraController _cameraController;
 
-    private void ZoomMinSlider_OnSliderValueChanged(float value)
-    {
-        _cameraController.SetZoomMin(value);
-    }
+        [SerializeField] private SliderWidget _moveSpeedSlider;
+        [SerializeField] private SliderWidget _rotationSpeedSlider;
+        [SerializeField] private SliderWidget _zoomSpeedSlider;
+        [SerializeField] private SliderWidget _zoomMinSlider;
+        [SerializeField] private SliderWidget _zoomMaxSlider;
 
-    private void ZoomSpeedSlider_OnSliderValueChanged(float value)
-    {
-        _cameraController.SetZoomSpeed(value);
-    }
-
-    private void RotationSpeedSlider_OnSliderValueChanged(float value)
-    {
-        _cameraController.SetRotationSpeed(value);
-    }
-
-    private void MoveSpeedSlider_OnSliderValueChanged(float value)
-    {
-        _cameraController.SetMoveSpeed(value);
-    }
-
-    private int _activeTabIndex = -1;
-
-    public void OnTabClicked(int tabIndex)
-    {
-        if (tabIndex == _activeTabIndex)
+        private void Awake()
         {
-            _tabButtons[_activeTabIndex].GetComponent<Image>().color = _tabBaseColor;
-            _activeTabIndex = -1;
+            _moveSpeedSlider.SetSliderValue(_cameraController.MoveSpeed);
+            _rotationSpeedSlider.SetSliderValue(_cameraController.RotationSpeed);
+            _zoomSpeedSlider.SetSliderValue(_cameraController.ZoomSpeed);
+            _zoomMinSlider.SetSliderValue(_cameraController.ZoomMinimum);
+            _zoomMaxSlider.SetSliderValue(_cameraController.ZoomMaximum);
+            _moveSpeedSlider.OnSliderValueChanged += MoveSpeedSlider_OnSliderValueChanged;
+            _rotationSpeedSlider.OnSliderValueChanged += RotationSpeedSlider_OnSliderValueChanged;
+            _zoomSpeedSlider.OnSliderValueChanged += ZoomSpeedSlider_OnSliderValueChanged;
+            _zoomMinSlider.OnSliderValueChanged += ZoomMinSlider_OnSliderValueChanged;
+            _zoomMaxSlider.OnSliderValueChanged += ZoomMaxSlider_OnSliderValueChanged;
         }
-        else
-        {
-            if (_activeTabIndex > -1)
-                _tabButtons[_activeTabIndex].GetComponent<Image>().color = _tabBaseColor;
 
-            _tabButtons[tabIndex].GetComponent<Image>().color = _tabSelectedColor;
-            _activeTabIndex = tabIndex;
+        private void ZoomMaxSlider_OnSliderValueChanged(float value)
+        {
+            _cameraController.ZoomMaximum = value;
+        }
+
+        private void ZoomMinSlider_OnSliderValueChanged(float value)
+        {
+            _cameraController.ZoomMinimum = value;
+        }
+
+        private void ZoomSpeedSlider_OnSliderValueChanged(float value)
+        {
+            _cameraController.ZoomSpeed = value;
+        }
+
+        private void RotationSpeedSlider_OnSliderValueChanged(float value)
+        {
+            _cameraController.RotationSpeed = value;
+        }
+
+        private void MoveSpeedSlider_OnSliderValueChanged(float value)
+        {
+            _cameraController.MoveSpeed = value;
+        }
+
+        private int _activeTabIndex = -1;
+
+        public void OnTabClicked(int tabIndex)
+        {
+            if (tabIndex == _activeTabIndex)
+            {
+                _tabButtons[_activeTabIndex].GetComponent<Image>().color = _tabBaseColor;
+                _activeTabIndex = -1;
+            }
+            else
+            {
+                if (_activeTabIndex > -1)
+                    _tabButtons[_activeTabIndex].GetComponent<Image>().color = _tabBaseColor;
+
+                _tabButtons[tabIndex].GetComponent<Image>().color = _tabSelectedColor;
+                _activeTabIndex = tabIndex;
+            }
         }
     }
 }

@@ -2,23 +2,25 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-
-public enum EGridShape
+namespace BattleDrakeCreations.TTBTk
 {
-    None,
-    Square,
-    Hexagon,
-    Triangle
-}
+    public enum GridShape
+    {
+        None,
+        Square,
+        Hexagon,
+        Triangle
+    }
 
-[CreateAssetMenu(fileName = "Data", menuName = "TTBTk/Grid/GridShapeData")]
-public class GridShapeData : ScriptableObject
-{
-    public EGridShape _gridShape;
-    public Vector3 _meshSize;
-    public Mesh _mesh;
-    public Material _material;
-    public Mesh _flatMesh;
-    public Material _flatBorderMaterial;
-    public Material _flatFilledMaterial;
+    [CreateAssetMenu(fileName = "Data", menuName = "TTBTk/Grid/GridShapeData")]
+    public class GridShapeData : ScriptableObject
+    {
+        public GridShape gridShape;
+        public Vector3 meshSize;
+        public Mesh mesh;
+        public Material material;
+        public Mesh flatMesh;
+        public Material flatBorderMaterial;
+        public Material flatFilledMaterial;
+    }
 }

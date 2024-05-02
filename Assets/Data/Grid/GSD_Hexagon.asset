@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d77df0bbae860b44caed5f3fda5e8edc, type: 3}
+  m_Name: GSD_Hexagon
+  m_EditorClassIdentifier: 
+  gridShape: 2
+  meshSize: {x: 2, y: 1, z: 2}
+  mesh: {fileID: -1267357837800823997, guid: bf7e858063e209d448049a94ab428aa5, type: 3}
+  material: {fileID: 2100000, guid: 80fd1d8ce3f91ff49a893f80c3649d36, type: 2}
+  flatMesh: {fileID: -2709456703805476332, guid: 8cf426ad9c4cb96499d7b9a16066d0b9,
+    type: 3}
+  flatBorderMaterial: {fileID: 2100000, guid: fc8c5e764a5526b48a136ad4e9a3290a, type: 2}
+  flatFilledMaterial: {fileID: 2100000, guid: 881da6eb76569f04699d9fc32cb3afbb, type: 2}

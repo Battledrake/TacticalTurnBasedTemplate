@@ -2,10 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerController : MonoBehaviour
+namespace BattleDrakeCreations.TTBTk
 {
-    private void Awake()
+    public class PlayerController : MonoBehaviour
     {
-        Cursor.visible = true;
+        private void Awake()
+        {
+            Cursor.visible = true;
+        }
     }
 }
