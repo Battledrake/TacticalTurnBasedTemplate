@@ -28,19 +28,28 @@ namespace BattleDrakeCreations.TTBTk
         [SerializeField] private string _name;
         [SerializeField] private TextMeshProUGUI _sliderNameText;
 
-        public void SetSliderValue(float value, int sliderIndex = 0) { _sliderLinkers[sliderIndex].slider.SetValueWithoutNotify(value); }
+        public void SetSliderValue(float value, int sliderIndex = 0)
+        {
+            _sliderLinkers[sliderIndex].slider.SetValueWithoutNotify(value);
+            _sliderLinkers[sliderIndex].sliderValueText.text = value.ToString("F1");
+        }
 
         public void SetSliderValue(Vector2 value)
         {
             _sliderLinkers[0].slider.SetValueWithoutNotify(value.x);
+            _sliderLinkers[0].sliderValueText.text = value.x.ToString("F1");
             _sliderLinkers[1].slider.SetValueWithoutNotify(value.y);
+            _sliderLinkers[1].sliderValueText.text = value.y.ToString("F1");
         }
 
         public void SetSliderValue(Vector3 value)
         {
             _sliderLinkers[0].slider.SetValueWithoutNotify(value.x);
+            _sliderLinkers[0].sliderValueText.text = value.x.ToString("F1");
             _sliderLinkers[1].slider.SetValueWithoutNotify(value.y);
+            _sliderLinkers[1].sliderValueText.text = value.y.ToString("F1");
             _sliderLinkers[2].slider.SetValueWithoutNotify(value.z);
+            _sliderLinkers[2].sliderValueText.text = value.z.ToString("F1");
         }
 
         private void OnValidate()

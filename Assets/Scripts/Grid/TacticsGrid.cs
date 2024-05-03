@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -10,82 +11,60 @@ namespace BattleDrakeCreations.TTBTk
     {
         [SerializeField] private GridShape _gridShapeToggle = GridShape.Square;
         [SerializeField] private List<GridShapeData> _gridShapeData;
-        [SerializeField] private int _gridWidth = 5;
-        [SerializeField] private int _gridHeight = 5;
+        [SerializeField] private Vector2Int _gridTileCount;
         [SerializeField] private Vector3 _gridTileSize;
+        [SerializeField] private float _groundOffset;
+        [SerializeField] private bool _useEnvironment = false;
 
-        public int InstanceCount => _gridWidth * _gridHeight;
+        public int InstanceCount => _gridTileCount.x * _gridTileCount.y;
 
-        public int GridWidth { get => _gridWidth; set => _gridWidth = value; }
-        public int GridHeight { get => _gridHeight; set => _gridHeight = value; }
+        public Vector2Int GridTileCount { get => _gridTileCount; set => _gridTileCount = value; }
         public Vector3 TileSize { get => _gridTileSize; set => _gridTileSize = value; }
-        public GridShape GridShape
-        {
-            get => _gridShape; set
-            {
-                _gridShape = value;
-                if (_gridShape == GridShape.None) _isRendering = false; else _isRendering = true;
-                SpawnGrid(this.transform.position, _gridTileSize, new Vector2Int(_gridWidth, _gridHeight), _gridShape);
-            }
-        }
+        public float GroundOffset { get => _groundOffset; set => _groundOffset = value; }
+        public GridShape GridShape { get => _gridShape; set { _gridShape = value; } }
+        public bool UseEnvironment { get => _useEnvironment; set => _useEnvironment = value; }
 
         public bool ShowDebugLines { get => _showDebugLines; set => _showDebugLines = value; }
         public bool ShowDebugCenter { get => _showDebugCenter; set => _showDebugCenter = value; }
         public bool ShowDebugStart { get => _showDebugStart; set => _showDebugStart = value; }
 
+        private RenderParams _renderParams;
+        private List<Matrix4x4> _instanceData = new List<Matrix4x4>();
+
         private Mesh _instancedMesh;
         private Material _instancedMaterial;
         private Vector3 _gridPosition = Vector3.zero;
-        private Vector2Int _tileCount;
         private GridShape _gridShape;
 
-        private bool _isRendering = true;
         private bool _showDebugLines = false;
         private bool _showDebugCenter = false;
         private bool _showDebugStart = false;
 
         private void Awake()
         {
-            SpawnGrid(Vector3.zero, Vector3.one, new Vector2Int(_gridWidth, _gridHeight), _gridShapeToggle);
+            SpawnGrid(this.transform.position, _gridTileSize, _gridTileCount, _gridShapeToggle);
         }
 
         private void OnValidate()
         {
-            if (_gridShapeToggle != _gridShape)
-            {
-                SpawnGrid(this.transform.position, _gridTileSize, new Vector2Int(_gridWidth, _gridHeight), _gridShapeToggle);
-            }
+            SpawnGrid(this.transform.position, _gridTileSize, _gridTileCount, _gridShapeToggle);
         }
 
         private void Update()
         {
-            if (!_isRendering)
+            if (_gridShape == GridShape.None)
                 return;
 
-            RenderParams renderParams = new RenderParams(_instancedMaterial);
-            Matrix4x4[] instanceData = new Matrix4x4[_gridWidth * _gridHeight];
-            int instanceIndex = 0;
-
-            _gridPosition = GridUtilities.SnapVectorToVector(this.transform.position, _gridTileSize);
-            _gridPosition.y = this.transform.position.y;
-            this.transform.position = _gridPosition;
-
-            for (int z = 0; z < _gridHeight; ++z)
+            if (this.transform.position != _gridPosition)
             {
-                for (int x = 0; x < _gridWidth; ++x)
-                {
-                    Vector3 instancePosition = GetTilePositionFromGridIndex(new Vector2Int(x, z));
-
-                    Quaternion instanceRotation = GetTileRotationFromGridIndex(new Vector2Int(x, z));
-
-                    Vector3 instanceScale = _gridTileSize;
-
-                    instanceData[instanceIndex] = Matrix4x4.TRS(instancePosition, instanceRotation, instanceScale);
-                    instanceIndex++;
-                }
+                _gridPosition = GridUtilities.SnapVectorToVector(this.transform.position, _gridTileSize);
+                _gridPosition.y = this.transform.position.y;
+                this.transform.position = _gridPosition;
+                RespawnGrid();
             }
-            if (instanceIndex > 0)
-                Graphics.RenderMeshInstanced(renderParams, _instancedMesh, 0, instanceData);
+
+            if (_instanceData.Count > 0)
+                Graphics.RenderMeshInstanced(_renderParams, _instancedMesh, 0, _instanceData);
         }
 
         private void FixedUpdate()
@@ -94,13 +73,13 @@ namespace BattleDrakeCreations.TTBTk
             if (_showDebugLines)
             {
                 Vector3 startPos = this.transform.position - _gridTileSize / 2;
-                startPos.y = this.transform.position.y + 1.0f;
-                Vector3 widthPos = new Vector3(startPos.x + _gridTileSize.x * _gridWidth, startPos.y, startPos.z);
+                startPos.y = this.transform.position.y + 0.1f;
+                Vector3 widthPos = new Vector3(startPos.x + _gridTileSize.x * _gridTileCount.x, startPos.y, startPos.z);
                 if (_gridShape == GridShape.Hexagon)
                     widthPos.x += _gridTileSize.x / 2;
                 if (_gridShape == GridShape.Triangle)
                     widthPos.x /= 2;
-                Vector3 widthHeightPos = new Vector3(widthPos.x, startPos.y, widthPos.z + _gridTileSize.z * _gridHeight);
+                Vector3 widthHeightPos = new Vector3(widthPos.x, startPos.y, widthPos.z + _gridTileSize.z * _gridTileCount.y);
                 if (_gridShape == GridShape.Hexagon)
                     widthHeightPos.z *= 0.75f;
                 Vector3 heightPos = new Vector3(startPos.x, startPos.y, widthHeightPos.z);
@@ -113,16 +92,16 @@ namespace BattleDrakeCreations.TTBTk
             if (_showDebugCenter)
             {
                 Vector3 startPos = this.transform.position - _gridTileSize / 2;
-                startPos.y = this.transform.position.y + 1.0f;
-                Vector3 widthPos = new Vector3(startPos.x + _gridTileSize.x * _gridWidth / 2, startPos.y, startPos.z);
-                Vector3 widthHeightPos = new Vector3(widthPos.x, startPos.y, widthPos.z + _gridTileSize.z * _gridHeight / 2);
+                startPos.y = this.transform.position.y + 0.1f;
+                Vector3 widthPos = new Vector3(startPos.x + _gridTileSize.x * _gridTileCount.x / 2, startPos.y, startPos.z);
+                Vector3 widthHeightPos = new Vector3(widthPos.x, startPos.y, widthPos.z + _gridTileSize.z * _gridTileCount.y / 2);
                 DebugExtension.DebugWireSphere(widthHeightPos, Color.yellow, 0.25f);
             }
 
             if (_showDebugStart)
             {
                 Vector3 startPos = this.transform.position;
-                startPos.y += 1.0f;
+                startPos.y += 0.1f;
                 DebugExtension.DebugWireSphere(startPos, Color.yellow, 0.25f);
             }
         }
@@ -175,8 +154,9 @@ namespace BattleDrakeCreations.TTBTk
 
         public void SpawnGrid(Vector3 gridPosition, Vector3 tileSize, Vector2Int tileCount, GridShape gridShape)
         {
+            _instanceData.Clear();
+
             _gridPosition = gridPosition;
-            _tileCount = tileCount;
             _gridShape = gridShape;
 
             GridShapeData activeData = _gridShapeData.Find(data => data.gridShape == gridShape);
@@ -184,12 +164,58 @@ namespace BattleDrakeCreations.TTBTk
             {
                 _instancedMesh = activeData.flatMesh;
                 _instancedMaterial = activeData.flatFilledMaterial;
+
+                _renderParams = new RenderParams(_instancedMaterial);
+
+                for (int z = 0; z < _gridTileCount.y; ++z)
+                {
+                    for (int x = 0; x < _gridTileCount.x; ++x)
+                    {
+                        Vector3 instancePosition = GetTilePositionFromGridIndex(new Vector2Int(x, z));
+                        Quaternion instanceRotation = GetTileRotationFromGridIndex(new Vector2Int(x, z));
+                        Vector3 instanceScale = _gridTileSize;
+
+                        if (!_useEnvironment)
+                        {
+                            _instanceData.Add(Matrix4x4.TRS(instancePosition, instanceRotation, instanceScale));
+                        }
+                        else if (TraceForGround(instancePosition, out Vector3 hitLocation))
+                        {
+                            //Vector3 tilePosition = hitLocation;
+
+                            _instanceData.Add(Matrix4x4.TRS(hitLocation, instanceRotation, instanceScale));
+                        }
+                    }
+                }
             }
+        }
+
+        public void RespawnGrid()
+        {
+            SpawnGrid(this.transform.position, _gridTileSize, _gridTileCount, _gridShape);
         }
 
         public GridShapeData GetCurrentShapeData()
         {
             return _gridShapeData[(int)_gridShapeToggle];
+        }
+
+        public bool TraceForGround(Vector3 position, out Vector3 hitLocation)
+        {
+            hitLocation = position;
+
+            Vector3 origin = position + Vector3.up * 10.0f;
+            LayerMask groundLayer = (1 << LayerMask.NameToLayer("Ground"));
+            float radius = _gridTileSize.x / 3; //TODO: divide by 5 if triangle?
+            RaycastHit[] sphereHits = Physics.SphereCastAll(origin, radius, Vector3.down, 1000.0f, groundLayer);
+            if (sphereHits.Length > 0)
+            {
+                hitLocation.y = sphereHits[0].point.y + _groundOffset; // Small offset to avoid overlap
+                return true;
+                //TODO: Add snap to grid?
+            }
+
+            return false;
         }
     }
 }

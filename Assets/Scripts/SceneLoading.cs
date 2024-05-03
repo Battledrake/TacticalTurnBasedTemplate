@@ -6,7 +6,7 @@ using UnityEngine.SceneManagement;
 public class SceneLoading : MonoBehaviour
 {
     [SerializeField] private string[] _loadableScenes = { "SquareScene", "HexagonScene", "TriangleScene" };
-    private string _loadedScene;
+    private string _loadedScene = "";
 
     private void Start()
     {
