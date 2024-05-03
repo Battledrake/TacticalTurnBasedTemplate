@@ -1,12 +1,15 @@
 using BattleDrakeCreations.TTBTk;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class GridTabController : MonoBehaviour
 {
+    [SerializeField] private TMP_Dropdown _sceneCombo;
     [SerializeField] private TMP_Dropdown _gridShapeCombo;
     [SerializeField] private SliderWidget _locationSlider;
     [SerializeField] private SliderWidget _tileCountSlider;
@@ -15,6 +18,7 @@ public class GridTabController : MonoBehaviour
     [SerializeField] private Toggle _centerToggle;
     [SerializeField] private Toggle _bottomLeftToggle;
 
+    [SerializeField] private SceneLoading _sceneLoader;
     [SerializeField] private TacticsGrid _tacticsGrid;
 
     private void Awake()
@@ -27,6 +31,7 @@ public class GridTabController : MonoBehaviour
         _centerToggle.SetIsOnWithoutNotify(_tacticsGrid.ShowDebugCenter);
         _bottomLeftToggle.SetIsOnWithoutNotify(_tacticsGrid.ShowDebugStart);
 
+        _sceneCombo.onValueChanged.AddListener(OnSceneChanged);
         _gridShapeCombo.onValueChanged.AddListener(OnGridShapeChanged);
         _locationSlider.OnSliderValueChanged += OnLocationChanged;
         _tileCountSlider.OnSliderValueChanged += OnTileCountChanged;
@@ -34,6 +39,18 @@ public class GridTabController : MonoBehaviour
         _boundsToggle.onValueChanged.AddListener(OnBoundsToggle);
         _centerToggle.onValueChanged.AddListener(OnCenterToggle);
         _bottomLeftToggle.onValueChanged.AddListener(OnBottomLeftToggle);
+    }
+
+    private void OnSceneChanged(int index)
+    {
+        if (index > 0)
+        {
+            _sceneLoader.LoadScene(_sceneCombo.options[index].text);
+        }
+        else
+        {
+            _sceneLoader.UnloadScene();
+        }
     }
 
     private void OnGridShapeChanged(int gridShape)
