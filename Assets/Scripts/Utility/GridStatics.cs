@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace BattleDrakeCreations.TTBTk
 {
-    public static class GridUtilities
+    public static class GridStatics
     {
         public static Vector3 SnapVectorToVector(Vector3 vectorToSnap, Vector3 snapLocation)
         {

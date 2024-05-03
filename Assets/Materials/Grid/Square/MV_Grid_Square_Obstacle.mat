@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-5222738967831944069
+--- !u!114 &-5828870057575730124
 MonoBehaviour:
   m_ObjectHideFlags: 11
   m_CorrespondingSourceObject: {fileID: 0}
@@ -20,10 +20,10 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: MV_Grid_Square
-  m_Shader: {fileID: -6465566751694194690, guid: 89dd987c667731a4997ad85329556b0a,
+  m_Name: MV_Grid_Square_Obstacle
+  m_Shader: {fileID: -6465566751694194690, guid: bfd6675c68237c14fa9dff0add1b9030,
     type: 3}
-  m_Parent: {fileID: 2100000, guid: cde208acc85ddbc4c962945726676e80, type: 2}
+  m_Parent: {fileID: 2100000, guid: 1824af3869dea5c41bf65ff51efe2e60, type: 2}
   m_ModifiedSerializedProperties: 4
   m_ValidKeywords: []
   m_InvalidKeywords: []
@@ -40,5 +40,5 @@ Material:
     m_Ints: []
     m_Floats: []
     m_Colors:
-    - _Color: {r: 0, g: 0.9150943, b: 0.176344, a: 1}
+    - _Color: {r: 0.47058824, g: 0.00784313, b: 0.041583564, a: 1}
   m_BuildTextureStacks: []

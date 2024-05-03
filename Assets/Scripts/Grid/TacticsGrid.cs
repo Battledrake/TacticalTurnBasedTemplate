@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
 
 namespace BattleDrakeCreations.TTBTk
@@ -57,7 +56,7 @@ namespace BattleDrakeCreations.TTBTk
 
             if (this.transform.position != _gridPosition)
             {
-                _gridPosition = GridUtilities.SnapVectorToVector(this.transform.position, _gridTileSize);
+                _gridPosition = GridStatics.SnapVectorToVector(this.transform.position, _gridTileSize);
                 _gridPosition.y = this.transform.position.y;
                 this.transform.position = _gridPosition;
                 RespawnGrid();

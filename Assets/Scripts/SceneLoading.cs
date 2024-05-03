@@ -1,11 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class SceneLoading : MonoBehaviour
 {
-    [SerializeField] private string[] _loadableScenes = { "SquareScene", "HexagonScene", "TriangleScene" };
     private string _loadedScene = "";
 
     private void Start()
