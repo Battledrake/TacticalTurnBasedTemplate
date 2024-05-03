@@ -16,7 +16,7 @@ namespace BattleDrakeCreations.TTBTk
                 for (int x = 0; x < 10; x++)
                 {
                     GameObject spawnedObject = Instantiate(_spawnPrefab);
-                    spawnedObject.transform.position = _grid.GetCellCenterWorld(new Vector3Int(x, y, 0));
+                    spawnedObject.transform.position = _grid.CellToWorld(new Vector3Int(x, y, 0));
                 }
             }
         }

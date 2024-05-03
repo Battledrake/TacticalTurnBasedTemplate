@@ -35,27 +35,27 @@ namespace BattleDrakeCreations.TTBTk
             _zoomMaxSlider.OnSliderValueChanged += ZoomMaxSlider_OnSliderValueChanged;
         }
 
-        private void ZoomMaxSlider_OnSliderValueChanged(float value)
+        private void ZoomMaxSlider_OnSliderValueChanged(int sliderIndex, float value)
         {
             _cameraController.ZoomMaximum = value;
         }
 
-        private void ZoomMinSlider_OnSliderValueChanged(float value)
+        private void ZoomMinSlider_OnSliderValueChanged(int sliderIndex, float value)
         {
             _cameraController.ZoomMinimum = value;
         }
 
-        private void ZoomSpeedSlider_OnSliderValueChanged(float value)
+        private void ZoomSpeedSlider_OnSliderValueChanged(int sliderIndex, float value)
         {
             _cameraController.ZoomSpeed = value;
         }
 
-        private void RotationSpeedSlider_OnSliderValueChanged(float value)
+        private void RotationSpeedSlider_OnSliderValueChanged(int sliderIndex, float value)
         {
             _cameraController.RotationSpeed = value;
         }
 
-        private void MoveSpeedSlider_OnSliderValueChanged(float value)
+        private void MoveSpeedSlider_OnSliderValueChanged(int sliderIndex, float value)
         {
             _cameraController.MoveSpeed = value;
         }

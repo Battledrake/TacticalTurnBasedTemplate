@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d77df0bbae860b44caed5f3fda5e8edc, type: 3}
-  m_Name: GSD_Hexagon
+  m_Name: HexagonData
   m_EditorClassIdentifier: 
   gridShape: 2
-  meshSize: {x: 2, y: 1, z: 2}
+  meshSize: {x: 1, y: 1, z: 1}
   mesh: {fileID: -1267357837800823997, guid: bf7e858063e209d448049a94ab428aa5, type: 3}
   material: {fileID: 2100000, guid: 80fd1d8ce3f91ff49a893f80c3649d36, type: 2}
   flatMesh: {fileID: -2709456703805476332, guid: 8cf426ad9c4cb96499d7b9a16066d0b9,

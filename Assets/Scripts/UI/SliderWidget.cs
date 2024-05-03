@@ -7,32 +7,64 @@ using UnityEngine.UI;
 
 namespace BattleDrakeCreations.TTBTk
 {
+    /// <summary>
+    /// Combines a slider with a value text that displays inside the slider
+    /// </summary>
+    [System.Serializable]
+    public struct SliderLinkers
+    {
+        public Slider slider;
+        public TextMeshProUGUI sliderValueText;
+    }
+
     public class SliderWidget : MonoBehaviour
     {
-        public event Action<float> OnSliderValueChanged;
+        /// <summary>
+        /// Int represents which slider is sending the event. 0 = first or x, 1 = second or y, 2 = third or z
+        /// </summary>
+        public event Action<int, float> OnSliderValueChanged;
 
-        [SerializeField] private Slider _slider;
+        [SerializeField] private SliderLinkers[] _sliderLinkers;
         [SerializeField] private string _name;
         [SerializeField] private TextMeshProUGUI _sliderNameText;
-        [SerializeField] private TextMeshProUGUI _sliderValueText;
 
-        public void SetSliderValue(float value) { _slider.value = value; }
+        public void SetSliderValue(float value, int sliderIndex = 0) { _sliderLinkers[sliderIndex].slider.value = value; }
+
+        public void SetSliderValue(Vector2 value)
+        {
+            _sliderLinkers[0].slider.value = value.x;
+            _sliderLinkers[1].slider.value = value.y;
+        }
+
+        public void SetSliderValue(Vector3 value)
+        {
+            _sliderLinkers[0].slider.value = value.x;
+            _sliderLinkers[1].slider.value = value.y;
+            _sliderLinkers[2].slider.value = value.z;
+        }
 
         private void OnValidate()
         {
             _sliderNameText.text = _name;
-            _sliderValueText.text = _slider.value.ToString("F1");
+            for (int i = 0; i < _sliderLinkers.Length; i++)
+            {
+                _sliderLinkers[i].sliderValueText.text = _sliderLinkers[i].slider.value.ToString("F1");
+            }
         }
 
         private void Awake()
         {
-            _slider.onValueChanged.AddListener(Slider_OnValueChanged);
+            for (int i = 0; i < _sliderLinkers.Length; ++i)
+            {
+                int localCopy = i; //Fixes a unique issue where the index increments by the time the delegate gets called due to reference capture?
+                _sliderLinkers[localCopy].slider.onValueChanged.AddListener(delegate { Slider_OnValueChanged(localCopy); });
+            }
         }
 
-        public void Slider_OnValueChanged(float value)
+        public void Slider_OnValueChanged(int index)
         {
-            _sliderValueText.text = _slider.value.ToString("F1");
-            OnSliderValueChanged?.Invoke(_slider.value);
+            _sliderLinkers[index].sliderValueText.text = _sliderLinkers[index].slider.value.ToString("F1");
+            OnSliderValueChanged?.Invoke(index, _sliderLinkers[index].slider.value);
         }
     }
 }
