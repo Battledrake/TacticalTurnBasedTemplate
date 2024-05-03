@@ -29,6 +29,10 @@ namespace BattleDrakeCreations.TTBTk
             }
         }
 
+        public bool ShowDebugLines { get => _showDebugLines; set => _showDebugLines = value; }
+        public bool ShowDebugCenter { get => _showDebugCenter; set => _showDebugCenter = value; }
+        public bool ShowDebugStart { get => _showDebugStart; set => _showDebugStart = value; }
+
         private Mesh _instancedMesh;
         private Material _instancedMaterial;
         private Vector3 _gridPosition = Vector3.zero;
@@ -36,9 +40,9 @@ namespace BattleDrakeCreations.TTBTk
         private GridShape _gridShape;
 
         private bool _isRendering = true;
-        [SerializeField] private bool _showDebugLines = false;
-        [SerializeField] private bool _showDebugCenter = false;
-        [SerializeField] private bool _showDebugStart = false;
+        private bool _showDebugLines = false;
+        private bool _showDebugCenter = false;
+        private bool _showDebugStart = false;
 
         private void Awake()
         {
@@ -186,11 +190,6 @@ namespace BattleDrakeCreations.TTBTk
         public GridShapeData GetCurrentShapeData()
         {
             return _gridShapeData[(int)_gridShapeToggle];
-        }
-
-        public void DrawDebugLines()
-        {
-            Gizmos.DrawLine(transform.position, transform.position + _gridTileSize * _gridWidth);
         }
     }
 }

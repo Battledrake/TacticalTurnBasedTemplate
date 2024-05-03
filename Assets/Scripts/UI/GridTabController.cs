@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GridTabController : MonoBehaviour
 {
@@ -10,6 +11,9 @@ public class GridTabController : MonoBehaviour
     [SerializeField] private SliderWidget _locationSlider;
     [SerializeField] private SliderWidget _tileCountSlider;
     [SerializeField] private SliderWidget _tileSizeSlider;
+    [SerializeField] private Toggle _boundsToggle;
+    [SerializeField] private Toggle _centerToggle;
+    [SerializeField] private Toggle _bottomLeftToggle;
 
     [SerializeField] private TacticsGrid _tacticsGrid;
 
@@ -19,11 +23,17 @@ public class GridTabController : MonoBehaviour
         _locationSlider.SetSliderValue(_tacticsGrid.transform.position);
         _tileCountSlider.SetSliderValue(new Vector2(_tacticsGrid.GridWidth, _tacticsGrid.GridHeight));
         _tileSizeSlider.SetSliderValue(_tacticsGrid.TileSize);
+        _boundsToggle.SetIsOnWithoutNotify(_tacticsGrid.ShowDebugLines);
+        _centerToggle.SetIsOnWithoutNotify(_tacticsGrid.ShowDebugCenter);
+        _bottomLeftToggle.SetIsOnWithoutNotify(_tacticsGrid.ShowDebugStart);
 
         _gridShapeCombo.onValueChanged.AddListener(OnGridShapeChanged);
         _locationSlider.OnSliderValueChanged += OnLocationChanged;
         _tileCountSlider.OnSliderValueChanged += OnTileCountChanged;
         _tileSizeSlider.OnSliderValueChanged += OnTileSizeChanged;
+        _boundsToggle.onValueChanged.AddListener(OnBoundsToggle);
+        _centerToggle.onValueChanged.AddListener(OnCenterToggle);
+        _bottomLeftToggle.onValueChanged.AddListener(OnBottomLeftToggle);
     }
 
     private void OnGridShapeChanged(int gridShape)
@@ -77,5 +87,20 @@ public class GridTabController : MonoBehaviour
                 break;
         }
         _tacticsGrid.TileSize = tileSize;
+    }
+
+    private void OnBoundsToggle(bool showBounds)
+    {
+        _tacticsGrid.ShowDebugLines = showBounds;
+    }
+
+    private void OnCenterToggle(bool showCenter)
+    {
+        _tacticsGrid.ShowDebugCenter = showCenter;
+    }
+
+    private void OnBottomLeftToggle(bool showBottomLeft)
+    {
+        _tacticsGrid.ShowDebugStart = showBottomLeft;
     }
 }

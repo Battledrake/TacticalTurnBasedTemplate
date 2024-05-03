@@ -28,19 +28,19 @@ namespace BattleDrakeCreations.TTBTk
         [SerializeField] private string _name;
         [SerializeField] private TextMeshProUGUI _sliderNameText;
 
-        public void SetSliderValue(float value, int sliderIndex = 0) { _sliderLinkers[sliderIndex].slider.value = value; }
+        public void SetSliderValue(float value, int sliderIndex = 0) { _sliderLinkers[sliderIndex].slider.SetValueWithoutNotify(value); }
 
         public void SetSliderValue(Vector2 value)
         {
-            _sliderLinkers[0].slider.value = value.x;
-            _sliderLinkers[1].slider.value = value.y;
+            _sliderLinkers[0].slider.SetValueWithoutNotify(value.x);
+            _sliderLinkers[1].slider.SetValueWithoutNotify(value.y);
         }
 
         public void SetSliderValue(Vector3 value)
         {
-            _sliderLinkers[0].slider.value = value.x;
-            _sliderLinkers[1].slider.value = value.y;
-            _sliderLinkers[2].slider.value = value.z;
+            _sliderLinkers[0].slider.SetValueWithoutNotify(value.x);
+            _sliderLinkers[1].slider.SetValueWithoutNotify(value.y);
+            _sliderLinkers[2].slider.SetValueWithoutNotify(value.z);
         }
 
         private void OnValidate()
