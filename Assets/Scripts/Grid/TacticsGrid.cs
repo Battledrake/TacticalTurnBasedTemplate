@@ -36,6 +36,9 @@ namespace BattleDrakeCreations.TTBTk
         private GridShape _gridShape;
 
         private bool _isRendering = true;
+        [SerializeField] private bool _showDebugLines = false;
+        [SerializeField] private bool _showDebugCenter = false;
+        [SerializeField] private bool _showDebugStart = false;
 
         private void Awake()
         {
@@ -79,6 +82,45 @@ namespace BattleDrakeCreations.TTBTk
             }
             if (instanceIndex > 0)
                 Graphics.RenderMeshInstanced(renderParams, _instancedMesh, 0, instanceData);
+        }
+
+        private void FixedUpdate()
+        {
+            //TODO: Debug Center and Lines don't work accurately for hexagon and Triangles. Fix later
+            if (_showDebugLines)
+            {
+                Vector3 startPos = this.transform.position - _gridTileSize / 2;
+                startPos.y = this.transform.position.y + 1.0f;
+                Vector3 widthPos = new Vector3(startPos.x + _gridTileSize.x * _gridWidth, startPos.y, startPos.z);
+                if (_gridShape == GridShape.Hexagon)
+                    widthPos.x += _gridTileSize.x / 2;
+                if (_gridShape == GridShape.Triangle)
+                    widthPos.x /= 2;
+                Vector3 widthHeightPos = new Vector3(widthPos.x, startPos.y, widthPos.z + _gridTileSize.z * _gridHeight);
+                if (_gridShape == GridShape.Hexagon)
+                    widthHeightPos.z *= 0.75f;
+                Vector3 heightPos = new Vector3(startPos.x, startPos.y, widthHeightPos.z);
+                Debug.DrawLine(startPos, widthPos, Color.yellow);
+                Debug.DrawLine(widthPos, widthHeightPos, Color.yellow);
+                Debug.DrawLine(startPos, heightPos, Color.yellow);
+                Debug.DrawLine(heightPos, widthHeightPos, Color.yellow);
+            }
+
+            if (_showDebugCenter)
+            {
+                Vector3 startPos = this.transform.position - _gridTileSize / 2;
+                startPos.y = this.transform.position.y + 1.0f;
+                Vector3 widthPos = new Vector3(startPos.x + _gridTileSize.x * _gridWidth / 2, startPos.y, startPos.z);
+                Vector3 widthHeightPos = new Vector3(widthPos.x, startPos.y, widthPos.z + _gridTileSize.z * _gridHeight / 2);
+                DebugExtension.DebugWireSphere(widthHeightPos, Color.yellow, 0.25f);
+            }
+
+            if (_showDebugStart)
+            {
+                Vector3 startPos = this.transform.position;
+                startPos.y += 1.0f;
+                DebugExtension.DebugWireSphere(startPos, Color.yellow, 0.25f);
+            }
         }
 
         private Vector3 GetTilePositionFromGridIndex(Vector2Int gridIndex)
@@ -144,6 +186,11 @@ namespace BattleDrakeCreations.TTBTk
         public GridShapeData GetCurrentShapeData()
         {
             return _gridShapeData[(int)_gridShapeToggle];
+        }
+
+        public void DrawDebugLines()
+        {
+            Gizmos.DrawLine(transform.position, transform.position + _gridTileSize * _gridWidth);
         }
     }
 }
