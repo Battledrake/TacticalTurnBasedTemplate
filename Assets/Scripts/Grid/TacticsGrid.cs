@@ -5,6 +5,13 @@ using UnityEngine;
 
 namespace BattleDrakeCreations.TTBTk
 {
+    public enum TileType
+    {
+        None,
+        Normal,
+        Obstacle
+    }
+
     [ExecuteInEditMode]
     public class TacticsGrid : MonoBehaviour
     {
@@ -178,10 +185,8 @@ namespace BattleDrakeCreations.TTBTk
                         {
                             _instanceData.Add(Matrix4x4.TRS(instancePosition, instanceRotation, instanceScale));
                         }
-                        else if (TraceForGround(instancePosition, out Vector3 hitLocation))
+                        else if (GridStatics.IsTileTypeWalkable(TraceForGround(instancePosition, out Vector3 hitLocation)))
                         {
-                            //Vector3 tilePosition = hitLocation;
-
                             _instanceData.Add(Matrix4x4.TRS(hitLocation, instanceRotation, instanceScale));
                         }
                     }
@@ -196,25 +201,36 @@ namespace BattleDrakeCreations.TTBTk
 
         public GridShapeData GetCurrentShapeData()
         {
-            return _gridShapeData[(int)_gridShapeToggle];
+            return DataManager.GetShapeData(_gridShape);
         }
 
-        public bool TraceForGround(Vector3 position, out Vector3 hitLocation)
+        public TileType TraceForGround(Vector3 position, out Vector3 hitLocation)
         {
+            TileType returnType = TileType.None;
             hitLocation = position;
 
             Vector3 origin = position + Vector3.up * 10.0f;
             LayerMask groundLayer = (1 << LayerMask.NameToLayer("Ground"));
             float radius = _gridTileSize.x / 3; //TODO: divide by 5 if triangle?
-            RaycastHit[] sphereHits = Physics.SphereCastAll(origin, radius, Vector3.down, 1000.0f, groundLayer);
+            RaycastHit[] sphereHits = Physics.SphereCastAll(origin, radius, Vector3.down, 20.0f, groundLayer);
             if (sphereHits.Length > 0)
             {
+                returnType = TileType.Normal;
+                for (int i = 0; i < sphereHits.Length; i++)
+                {
+                    Debug.Log(sphereHits[i].collider.name);
+                    GridModifier gridModifier = sphereHits[i].collider.GetComponent<GridModifier>();
+                    if (gridModifier)
+                    {
+                        Debug.Log("We have a modifier");
+                        returnType = gridModifier.TileType;
+                    }
+                }
                 hitLocation.y = sphereHits[0].point.y + _groundOffset; // Small offset to avoid overlap
-                return true;
                 //TODO: Add snap to grid?
             }
 
-            return false;
+            return returnType;
         }
     }
 }

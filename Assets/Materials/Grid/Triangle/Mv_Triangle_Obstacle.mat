@@ -20,7 +20,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: MV_Grid_Square_Obstacle
+  m_Name: Mv_Triangle_Obstacle
   m_Shader: {fileID: -6465566751694194690, guid: bfd6675c68237c14fa9dff0add1b9030,
     type: 3}
   m_Parent: {fileID: 2100000, guid: 1824af3869dea5c41bf65ff51efe2e60, type: 2}
@@ -36,9 +36,13 @@ Material:
   m_LockedProperties: 
   m_SavedProperties:
     serializedVersion: 3
-    m_TexEnvs: []
+    m_TexEnvs:
+    - _Texture:
+        m_Texture: {fileID: 2800000, guid: 6f535cf135e11654f8158e0c9ce7cb77, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats: []
     m_Colors:
-    - _Color: {r: 0.47058824, g: 0.00784313, b: 0.041583564, a: 1}
+    - _Color: {r: 0.47058815, g: 0.00784313, b: 0.041583538, a: 1}
   m_BuildTextureStacks: []

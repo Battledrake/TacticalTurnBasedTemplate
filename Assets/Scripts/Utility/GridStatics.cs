@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace BattleDrakeCreations.TTBTk
@@ -18,6 +19,17 @@ namespace BattleDrakeCreations.TTBTk
         public static bool IsFloatEven(float value)
         {
             return value % 2 == 0;
+        }
+
+        public static GridShapeData GetGridShapeData(GridShape gridShape)
+        {
+            GridShapeData[] _gridshapeData = Resources.LoadAll<GridShapeData>("Data/Grid");
+            return _gridshapeData.FirstOrDefault<GridShapeData>(data => data.gridShape == gridShape);
+        }
+
+        public static bool IsTileTypeWalkable(TileType tileType)
+        {
+            return tileType == TileType.Normal;
         }
     }
 }

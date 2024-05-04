@@ -20,7 +20,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: MV_Grid_Flat_Border_Hexagon
+  m_Name: Mv_Grid_Flat_Border_Hexagon
   m_Shader: {fileID: -6465566751694194690, guid: 39f406ace776bcf41bcee06f28593f84,
     type: 3}
   m_Parent: {fileID: 2100000, guid: fc4d45935642bbc41a5c813d5f4e222f, type: 2}

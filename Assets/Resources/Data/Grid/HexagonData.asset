@@ -20,3 +20,4 @@ MonoBehaviour:
     type: 3}
   flatBorderMaterial: {fileID: 2100000, guid: fc8c5e764a5526b48a136ad4e9a3290a, type: 2}
   flatFilledMaterial: {fileID: 2100000, guid: 881da6eb76569f04699d9fc32cb3afbb, type: 2}
+  obstacleMaterial: {fileID: 2100000, guid: 464045944f750ae4b8a1ba6f5bd3a487, type: 2}
