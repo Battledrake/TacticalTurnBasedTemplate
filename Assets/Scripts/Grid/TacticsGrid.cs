@@ -16,17 +16,15 @@ namespace BattleDrakeCreations.TTBTk
     public class TacticsGrid : MonoBehaviour
     {
         [SerializeField] private GridShape _gridShapeToggle = GridShape.Square;
-        [SerializeField] private List<GridShapeData> _gridShapeData;
         [SerializeField] private Vector2Int _gridTileCount;
         [SerializeField] private Vector3 _gridTileSize;
-        [SerializeField] private float _groundOffset;
         [SerializeField] private bool _useEnvironment = false;
 
-        public int InstanceCount => _gridTileCount.x * _gridTileCount.y;
+        [SerializeField] private GridVisual _gridVisual;
 
+        public GridVisual GridVisual { get => _gridVisual; }
         public Vector2Int GridTileCount { get => _gridTileCount; set => _gridTileCount = value; }
         public Vector3 TileSize { get => _gridTileSize; set => _gridTileSize = value; }
-        public float GroundOffset { get => _groundOffset; set => _groundOffset = value; }
         public GridShape GridShape { get => _gridShape; set { _gridShape = value; } }
         public bool UseEnvironment { get => _useEnvironment; set => _useEnvironment = value; }
 
@@ -37,14 +35,24 @@ namespace BattleDrakeCreations.TTBTk
         private RenderParams _renderParams;
         private List<Matrix4x4> _instanceData = new List<Matrix4x4>();
 
-        private Mesh _instancedMesh;
-        private Material _instancedMaterial;
         private Vector3 _gridPosition = Vector3.zero;
-        private GridShape _gridShape;
+        private GridShape _gridShape = GridShape.None;
 
         private bool _showDebugLines = false;
         private bool _showDebugCenter = false;
         private bool _showDebugStart = false;
+
+        private Dictionary<Vector2Int, TileData> _gridTiles = new Dictionary<Vector2Int, TileData>();
+
+        private void AddGridTile(TileData tileData)
+        {
+            if (_gridTiles.ContainsKey(tileData.index))
+                _gridTiles[tileData.index] = tileData;
+            else
+                _gridTiles.Add(tileData.index, tileData);
+
+            _gridVisual.UpdateTileVisual(tileData);
+        }
 
         private void Awake()
         {
@@ -69,8 +77,8 @@ namespace BattleDrakeCreations.TTBTk
                 RespawnGrid();
             }
 
-            if (_instanceData.Count > 0)
-                Graphics.RenderMeshInstanced(_renderParams, _instancedMesh, 0, _instanceData);
+            //if (_instanceData.Count > 0)
+            //    Graphics.RenderMeshInstanced(_renderParams, _instancedMesh, 0, _instanceData);
         }
 
         private void FixedUpdate()
@@ -160,43 +168,59 @@ namespace BattleDrakeCreations.TTBTk
 
         public void SpawnGrid(Vector3 gridPosition, Vector3 tileSize, Vector2Int tileCount, GridShape gridShape)
         {
-            _instanceData.Clear();
-
             _gridPosition = gridPosition;
             _gridShape = gridShape;
 
-            GridShapeData activeData = _gridShapeData.Find(data => data.gridShape == gridShape);
-            if (activeData != null)
+            _instanceData.Clear();
+
+            if (_gridShape != GridShape.None)
             {
-                _instancedMesh = activeData.flatMesh;
-                _instancedMaterial = activeData.flatFilledMaterial;
-
-                _renderParams = new RenderParams(_instancedMaterial);
-
+                List<Matrix4x4> tilesToRender = new List<Matrix4x4>();
                 for (int z = 0; z < _gridTileCount.y; ++z)
                 {
                     for (int x = 0; x < _gridTileCount.x; ++x)
                     {
+                        TileData tileData = new TileData(); //Do we need TileData? With the fact we're using RenderMeshInstanced, there's never a need to find an instance. Just update the list of rendering stuff.
+                        tileData.index = new Vector2Int(x, z);
+
                         Vector3 instancePosition = GetTilePositionFromGridIndex(new Vector2Int(x, z));
                         Quaternion instanceRotation = GetTileRotationFromGridIndex(new Vector2Int(x, z));
                         Vector3 instanceScale = _gridTileSize;
 
                         if (!_useEnvironment)
                         {
-                            _instanceData.Add(Matrix4x4.TRS(instancePosition, instanceRotation, instanceScale));
+                            tileData.tileType = TileType.Normal;
+                            tileData.tileMatrix = Matrix4x4.TRS(instancePosition, instanceRotation, instanceScale);
+                            AddGridTile(tileData);
+                            tilesToRender.Add(tileData.tileMatrix);
                         }
-                        else if (GridStatics.IsTileTypeWalkable(TraceForGround(instancePosition, out Vector3 hitLocation)))
+                        else
                         {
-                            _instanceData.Add(Matrix4x4.TRS(hitLocation, instanceRotation, instanceScale));
+                            TileType tileType = TraceForGround(instancePosition, out Vector3 hitLocation);
+                            if (GridStatics.IsTileTypeWalkable(tileType))
+                            {
+                                tileData.tileType = tileType;
+                                tileData.tileMatrix = Matrix4x4.TRS(hitLocation, instanceRotation, instanceScale);
+                                AddGridTile(tileData);
+                                tilesToRender.Add(tileData.tileMatrix);
+                            }
                         }
                     }
                 }
+                if (tilesToRender.Count > 0)
+                    _gridVisual.UpdateGridVisual(GetCurrentShapeData(), tilesToRender);
             }
         }
 
         public void RespawnGrid()
         {
             SpawnGrid(this.transform.position, _gridTileSize, _gridTileCount, _gridShape);
+        }
+
+        public void DestroyGrid()
+        {
+            _gridTiles.Clear();
+            _gridVisual.ClearGridVisual();
         }
 
         public GridShapeData GetCurrentShapeData()
@@ -218,15 +242,13 @@ namespace BattleDrakeCreations.TTBTk
                 returnType = TileType.Normal;
                 for (int i = 0; i < sphereHits.Length; i++)
                 {
-                    Debug.Log(sphereHits[i].collider.name);
                     GridModifier gridModifier = sphereHits[i].collider.GetComponent<GridModifier>();
                     if (gridModifier)
                     {
-                        Debug.Log("We have a modifier");
                         returnType = gridModifier.TileType;
                     }
                 }
-                hitLocation.y = sphereHits[0].point.y + _groundOffset; // Small offset to avoid overlap
+                hitLocation.y = sphereHits[0].point.y;
                 //TODO: Add snap to grid?
             }
 

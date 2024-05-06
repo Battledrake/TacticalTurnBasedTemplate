@@ -35,7 +35,7 @@ namespace BattleDrakeCreations.TTBTk
             _boundsToggle.SetIsOnWithoutNotify(_tacticsGrid.ShowDebugLines);
             _centerToggle.SetIsOnWithoutNotify(_tacticsGrid.ShowDebugCenter);
             _bottomLeftToggle.SetIsOnWithoutNotify(_tacticsGrid.ShowDebugStart);
-            _groundOffsetSlider.SetSliderValue(_tacticsGrid.GroundOffset);
+            _groundOffsetSlider.SetSliderValue(_tacticsGrid.GridVisual.GroundOffset);
             _useEnvToggle.SetIsOnWithoutNotify(_tacticsGrid.UseEnvironment);
 
             _sceneCombo.onValueChanged.AddListener(OnSceneChanged);
@@ -135,7 +135,7 @@ namespace BattleDrakeCreations.TTBTk
 
         private void OnGroundOffsetChanged(int index, float value)
         {
-            _tacticsGrid.GroundOffset = value;
+            _tacticsGrid.GridVisual.GroundOffset = value;
 
             _tacticsGrid.RespawnGrid();
         }
