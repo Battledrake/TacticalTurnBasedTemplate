@@ -76,9 +76,6 @@ namespace BattleDrakeCreations.TTBTk
                 this.transform.position = _gridPosition;
                 RespawnGrid();
             }
-
-            //if (_instanceData.Count > 0)
-            //    Graphics.RenderMeshInstanced(_renderParams, _instancedMesh, 0, _instanceData);
         }
 
         private void FixedUpdate()
@@ -209,6 +206,8 @@ namespace BattleDrakeCreations.TTBTk
                 }
                 if (tilesToRender.Count > 0)
                     _gridVisual.UpdateGridVisual(GetCurrentShapeData(), tilesToRender);
+                else
+                    _gridVisual.ClearGridVisual();
             }
         }
 
