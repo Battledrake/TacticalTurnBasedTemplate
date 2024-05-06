@@ -22,25 +22,15 @@ namespace BattleDrakeCreations.TTBTk
 
         [SerializeField] private GridVisual _gridVisual;
 
+        public Dictionary<Vector2Int, TileData> GridTiles { get => _gridTiles; }
         public GridVisual GridVisual { get => _gridVisual; }
         public Vector2Int GridTileCount { get => _gridTileCount; set => _gridTileCount = value; }
         public Vector3 TileSize { get => _gridTileSize; set => _gridTileSize = value; }
         public GridShape GridShape { get => _gridShape; set { _gridShape = value; } }
         public bool UseEnvironment { get => _useEnvironment; set => _useEnvironment = value; }
 
-        public bool ShowDebugLines { get => _showDebugLines; set => _showDebugLines = value; }
-        public bool ShowDebugCenter { get => _showDebugCenter; set => _showDebugCenter = value; }
-        public bool ShowDebugStart { get => _showDebugStart; set => _showDebugStart = value; }
-
-        private RenderParams _renderParams;
-        private List<Matrix4x4> _instanceData = new List<Matrix4x4>();
-
         private Vector3 _gridPosition = Vector3.zero;
         private GridShape _gridShape = GridShape.None;
-
-        private bool _showDebugLines = false;
-        private bool _showDebugCenter = false;
-        private bool _showDebugStart = false;
 
         private Dictionary<Vector2Int, TileData> _gridTiles = new Dictionary<Vector2Int, TileData>();
 
@@ -54,10 +44,10 @@ namespace BattleDrakeCreations.TTBTk
             _gridVisual.UpdateTileVisual(tileData);
         }
 
-        private void Awake()
-        {
-            SpawnGrid(this.transform.position, _gridTileSize, _gridTileCount, _gridShapeToggle);
-        }
+        //private void Awake()
+        //{
+        //    SpawnGrid(this.transform.position, _gridTileSize, _gridTileCount, _gridShapeToggle);
+        //}
 
         private void OnValidate()
         {
@@ -78,43 +68,119 @@ namespace BattleDrakeCreations.TTBTk
             }
         }
 
-        private void FixedUpdate()
+        public Vector3 GetCursorPositionOnGrid()
         {
-            //TODO: Debug Center and Lines don't work accurately for hexagon and Triangles. Fix later
-            if (_showDebugLines)
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+            Plane gridPlane = new Plane(Vector3.up, new Vector3(0, this.transform.position.y, 0));
+            if (gridPlane.Raycast(ray, out float distance))
             {
-                Vector3 startPos = this.transform.position - _gridTileSize / 2;
-                startPos.y = this.transform.position.y + 0.1f;
-                Vector3 widthPos = new Vector3(startPos.x + _gridTileSize.x * _gridTileCount.x, startPos.y, startPos.z);
-                if (_gridShape == GridShape.Hexagon)
-                    widthPos.x += _gridTileSize.x / 2;
-                if (_gridShape == GridShape.Triangle)
-                    widthPos.x /= 2;
-                Vector3 widthHeightPos = new Vector3(widthPos.x, startPos.y, widthPos.z + _gridTileSize.z * _gridTileCount.y);
-                if (_gridShape == GridShape.Hexagon)
-                    widthHeightPos.z *= 0.75f;
-                Vector3 heightPos = new Vector3(startPos.x, startPos.y, widthHeightPos.z);
-                Debug.DrawLine(startPos, widthPos, Color.yellow);
-                Debug.DrawLine(widthPos, widthHeightPos, Color.yellow);
-                Debug.DrawLine(startPos, heightPos, Color.yellow);
-                Debug.DrawLine(heightPos, widthHeightPos, Color.yellow);
+                Vector3 hitPoint = ray.GetPoint(distance);
+                //hitPoint = GridStatics.SnapVectorToVector(hitPoint, _gridTileSize);
+                //hitPoint.y = 3.0f;
+                return hitPoint;
+            }
+            return new Vector3(999, 999, 999);
+        }
+
+        public Bounds GetGridBounds()
+        {
+            //TODO: This still doesn't work properly for hex/triangle grids
+            Vector3 gridCenter = GetGridCenterPosition();
+            //gridCenter.y += _gridTileSize.y / 2; //Do we want this here? Will this cause confusion later? *Prevents bounds being underneathe grid plane.
+            float gridWidth = _gridTileCount.x * _gridTileSize.x;
+            float gridHeight = _gridTileCount.y * _gridTileSize.y;
+
+            return new Bounds(gridCenter, new Vector3(gridWidth, _gridTileSize.y, gridHeight));
+        }
+
+        public Vector3 GetGridCenterPosition()
+        {
+            Vector3 startPos = this.transform.position - _gridTileSize / 2;
+            startPos.y = this.transform.position.y + 0.1f;
+            Vector3 widthPos = new Vector3(startPos.x + _gridTileSize.x * _gridTileCount.x / 2, startPos.y, startPos.z);
+            Vector3 widthHeightPos = new Vector3(widthPos.x, startPos.y, widthPos.z + _gridTileSize.z * _gridTileCount.y / 2);
+
+            return widthHeightPos;
+        }
+
+        public Vector2Int GetTileIndexUnderCursor()
+        {
+            return GetTileIndexFromWorldPosition(GetCursorPositionOnGrid());
+        }
+
+        public Vector2Int GetTileIndexFromWorldPosition(Vector3 worldPosition)
+        {
+            Vector2Int tileIndex = new Vector2Int(-999, -999);
+            Vector3 gridPosition = worldPosition - this.transform.position;
+
+            switch (_gridShape)
+            {
+                case GridShape.Square:
+                    tileIndex = CalculateIndexForSquare(gridPosition);
+                    break;
+                case GridShape.Hexagon:
+                    tileIndex = CalculateIndexForHexagon(worldPosition);
+                    break;
+                case GridShape.Triangle:
+                    tileIndex = CalculateIndexForTriangle(gridPosition);
+                    break;
+                default:
+                    break;
             }
 
-            if (_showDebugCenter)
-            {
-                Vector3 startPos = this.transform.position - _gridTileSize / 2;
-                startPos.y = this.transform.position.y + 0.1f;
-                Vector3 widthPos = new Vector3(startPos.x + _gridTileSize.x * _gridTileCount.x / 2, startPos.y, startPos.z);
-                Vector3 widthHeightPos = new Vector3(widthPos.x, startPos.y, widthPos.z + _gridTileSize.z * _gridTileCount.y / 2);
-                DebugExtension.DebugWireSphere(widthHeightPos, Color.yellow, 0.25f);
-            }
+            return tileIndex;
+        }
 
-            if (_showDebugStart)
+        private Vector2Int CalculateIndexForSquare(Vector3 gridPosition)
+        {
+            Vector3 snappedPosition = GridStatics.SnapVectorToVector(gridPosition, _gridTileSize);
+            Vector2 gridPositionSnapped = new Vector2(snappedPosition.x, snappedPosition.z);
+            return Vector2Int.RoundToInt(gridPositionSnapped / _gridTileSize);
+        }
+
+        private Vector2Int CalculateIndexForHexagon(Vector3 worldPosition)
+        {
+            int roughX = Mathf.RoundToInt((worldPosition.x - this.transform.position.x) / _gridTileSize.x);
+            int roughZ = Mathf.RoundToInt((worldPosition.z - this.transform.position.z) / _gridTileSize.z / 0.75f);
+
+            Vector2Int roughIndex = Vector2Int.RoundToInt(new Vector2(roughX, roughZ));
+
+            bool isOddRow = roughZ % 2 == 1;
+
+            List<Vector2Int> neighborList = new List<Vector2Int>
             {
-                Vector3 startPos = this.transform.position;
-                startPos.y += 0.1f;
-                DebugExtension.DebugWireSphere(startPos, Color.yellow, 0.25f);
-            }
+                roughIndex + new Vector2Int(-1, 0),
+                roughIndex + new Vector2Int(1, 0),
+
+                roughIndex + new Vector2Int(isOddRow ? 1 : -1, 1),
+                roughIndex + new Vector2Int(0, 1),
+
+                roughIndex + new Vector2Int(isOddRow ? 1 : -1, -1),
+                roughIndex + new Vector2Int(0, -1)
+            };
+
+            Vector2Int closestPoint = roughIndex;
+
+            neighborList.ForEach(n =>
+            {
+                if(Vector3.Distance(worldPosition, GetTilePositionFromGridIndex(n)) < Vector3.Distance(worldPosition, GetTilePositionFromGridIndex(closestPoint)))
+                {
+                    closestPoint = n;
+                }
+            });
+
+            return closestPoint;
+        }
+
+        private Vector2Int CalculateIndexForTriangle(Vector3 gridPosition)
+        {
+            Vector3 snapToVector = new Vector3(_gridTileSize.x / 2f, _gridTileSize.y / 1f, _gridTileSize.z / 1f);
+            Vector3 snappedPosition = GridStatics.SnapVectorToVector(gridPosition, snapToVector);
+
+            Vector2 vectorTwoPosition = new Vector2(snappedPosition.x, snappedPosition.z);
+
+            return Vector2Int.RoundToInt((vectorTwoPosition / _gridTileSize) * new Vector2(2f, 1f));
         }
 
         private Vector3 GetTilePositionFromGridIndex(Vector2Int gridIndex)
@@ -168,8 +234,6 @@ namespace BattleDrakeCreations.TTBTk
             _gridPosition = gridPosition;
             _gridShape = gridShape;
 
-            _instanceData.Clear();
-
             if (_gridShape != GridShape.None)
             {
                 List<Matrix4x4> tilesToRender = new List<Matrix4x4>();
@@ -193,11 +257,11 @@ namespace BattleDrakeCreations.TTBTk
                         }
                         else
                         {
-                            TileType tileType = TraceForGround(instancePosition, out Vector3 hitLocation);
+                            TileType tileType = TraceForGround(instancePosition, out Vector3 hitPosition);
                             if (GridStatics.IsTileTypeWalkable(tileType))
                             {
                                 tileData.tileType = tileType;
-                                tileData.tileMatrix = Matrix4x4.TRS(hitLocation, instanceRotation, instanceScale);
+                                tileData.tileMatrix = Matrix4x4.TRS(hitPosition, instanceRotation, instanceScale);
                                 AddGridTile(tileData);
                                 tilesToRender.Add(tileData.tileMatrix);
                             }
@@ -227,10 +291,10 @@ namespace BattleDrakeCreations.TTBTk
             return DataManager.GetShapeData(_gridShape);
         }
 
-        public TileType TraceForGround(Vector3 position, out Vector3 hitLocation)
+        public TileType TraceForGround(Vector3 position, out Vector3 hitPosition)
         {
             TileType returnType = TileType.None;
-            hitLocation = position;
+            hitPosition = position;
 
             Vector3 origin = position + Vector3.up * 10.0f;
             LayerMask groundLayer = (1 << LayerMask.NameToLayer("Ground"));
@@ -247,7 +311,7 @@ namespace BattleDrakeCreations.TTBTk
                         returnType = gridModifier.TileType;
                     }
                 }
-                hitLocation.y = sphereHits[0].point.y;
+                hitPosition.y = sphereHits[0].point.y;
                 //TODO: Add snap to grid?
             }
 

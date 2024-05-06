@@ -32,7 +32,7 @@ namespace BattleDrakeCreations.TTBTk
 
         private void Awake()
         {
-            _tacticsGrid = this.transform.GetComponent<TacticsGrid>();
+            _tacticsGrid = this.GetComponent<TacticsGrid>();
             _gridMeshInstance = this.GetComponent<GridMeshInstance>();
         }
 

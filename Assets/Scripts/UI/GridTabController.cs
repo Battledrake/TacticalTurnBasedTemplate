@@ -1,3 +1,4 @@
+using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -11,7 +12,7 @@ namespace BattleDrakeCreations.TTBTk
 
         [Header("Grid Generation")]
         [SerializeField] private TMP_Dropdown _gridShapeCombo;
-        [SerializeField] private SliderWidget _locationSlider;
+        [SerializeField] private SliderWidget _positionSlider;
         [SerializeField] private SliderWidget _tileCountSlider;
         [SerializeField] private SliderWidget _tileSizeSlider;
         [SerializeField] private SliderWidget _groundOffsetSlider;
@@ -20,43 +21,83 @@ namespace BattleDrakeCreations.TTBTk
         [Header("Debug")]
         [SerializeField] private Toggle _boundsToggle;
         [SerializeField] private Toggle _centerToggle;
+        [SerializeField] private TextMeshProUGUI _centerPositionText;
         [SerializeField] private Toggle _bottomLeftToggle;
+        [SerializeField] private TextMeshProUGUI _bottomLeftText;
+        [SerializeField] private Toggle _mousePositionToggle;
+        [SerializeField] private TextMeshProUGUI _mousePositionText;
+        [SerializeField] private Toggle _hoveredTileToggle;
+        [SerializeField] private TextMeshProUGUI _hoveredTileText;
 
         [Header("Dependencies")]
         [SerializeField] private SceneLoading _sceneLoader;
         [SerializeField] private TacticsGrid _tacticsGrid;
 
+        private bool _showGridBounds = false;
+        private bool _showGridCenter = false;
+        private bool _showGridBottomLeft = false;
+        private bool _showMousePosition = false;
+        private bool _showHoveredTile = false;
+
         private void Awake()
         {
             _gridShapeCombo.value = (int)_tacticsGrid.GridShape;
-            _locationSlider.SetSliderValue(_tacticsGrid.transform.position);
+            _positionSlider.SetSliderValue(_tacticsGrid.transform.position);
             _tileCountSlider.SetSliderValue(_tacticsGrid.GridTileCount);
             _tileSizeSlider.SetSliderValue(_tacticsGrid.TileSize);
-            _boundsToggle.SetIsOnWithoutNotify(_tacticsGrid.ShowDebugLines);
-            _centerToggle.SetIsOnWithoutNotify(_tacticsGrid.ShowDebugCenter);
-            _bottomLeftToggle.SetIsOnWithoutNotify(_tacticsGrid.ShowDebugStart);
             _groundOffsetSlider.SetSliderValue(_tacticsGrid.GridVisual.GroundOffset);
             _useEnvToggle.SetIsOnWithoutNotify(_tacticsGrid.UseEnvironment);
 
             _sceneCombo.onValueChanged.AddListener(OnSceneChanged);
             _gridShapeCombo.onValueChanged.AddListener(OnGridShapeChanged);
-            _locationSlider.OnSliderValueChanged += OnLocationChanged;
+            _positionSlider.OnSliderValueChanged += OnGridPositionChanged;
             _tileCountSlider.OnSliderValueChanged += OnTileCountChanged;
             _tileSizeSlider.OnSliderValueChanged += OnTileSizeChanged;
             _groundOffsetSlider.OnSliderValueChanged += OnGroundOffsetChanged;
             _useEnvToggle.onValueChanged.AddListener(OnUseEnvironmentChanged);
 
-
-            _boundsToggle.onValueChanged.AddListener(OnBoundsToggle);
-            _centerToggle.onValueChanged.AddListener(OnCenterToggle);
-            _bottomLeftToggle.onValueChanged.AddListener(OnBottomLeftToggle);
+            _boundsToggle.onValueChanged.AddListener(OnBoundsToggled);
+            _centerToggle.onValueChanged.AddListener(OnCenterToggled);
+            _bottomLeftToggle.onValueChanged.AddListener(OnBottomLeftToggled);
+            _mousePositionToggle.onValueChanged.AddListener(OnMousePositionToggled);
+            _hoveredTileToggle.onValueChanged.AddListener(OnHoveredTileToggled);
         }
 
-        private void OnUseEnvironmentChanged(bool useEnvironment)
+        private void Update()
         {
-            _tacticsGrid.UseEnvironment = useEnvironment;
+            if (_showGridBounds)
+            {
+                Bounds gridBounds = _tacticsGrid.GetGridBounds();
+                DebugExtension.DebugBounds(gridBounds, Color.yellow);
+            }
+            if (_showGridCenter)
+            {
+                Vector3 gridCenter = _tacticsGrid.GetGridCenterPosition();
+                DebugExtension.DebugWireSphere(gridCenter, Color.yellow, 0.1f);
+            }
+            if (_showGridBottomLeft)
+            {
+                Vector3 bottomLeftPosition = _tacticsGrid.transform.position;
+                _bottomLeftText.text = bottomLeftPosition.ToString("F1");
+                bottomLeftPosition.y += 0.1f;
+                DebugExtension.DebugWireSphere(bottomLeftPosition, Color.yellow, 0.1f);
+            }
+            if (_showMousePosition)
+            {
+                Vector3 mousePosition = _tacticsGrid.GetCursorPositionOnGrid();
+                _mousePositionText.text = mousePosition.ToString("F1");
+                DebugExtension.DebugWireSphere(mousePosition, Color.yellow, 0.1f);
+            }
+            if (_showHoveredTile)
+            {
+                Vector2Int hoveredTileIndex = _tacticsGrid.GetTileIndexUnderCursor();
+                _hoveredTileText.text = hoveredTileIndex.ToString();
 
-            _tacticsGrid.RespawnGrid();
+                if (_tacticsGrid.GridTiles.TryGetValue(hoveredTileIndex, out TileData tileData))
+                {
+                    DebugExtension.DebugBounds(new Bounds(tileData.tileMatrix.GetPosition(), new Vector3(.5f, .5f, .5f)), Color.yellow);
+                }
+            }
         }
 
         private void OnSceneChanged(int index)
@@ -78,7 +119,7 @@ namespace BattleDrakeCreations.TTBTk
             _tacticsGrid.RespawnGrid();
         }
 
-        private void OnLocationChanged(int sliderIndex, float value)
+        private void OnGridPositionChanged(int sliderIndex, float value)
         {
             Vector3 newVector = _tacticsGrid.transform.position;
             switch (sliderIndex)
@@ -140,19 +181,36 @@ namespace BattleDrakeCreations.TTBTk
             _tacticsGrid.RespawnGrid();
         }
 
-        private void OnBoundsToggle(bool showBounds)
+        private void OnUseEnvironmentChanged(bool useEnvironment)
         {
-            _tacticsGrid.ShowDebugLines = showBounds;
+            _tacticsGrid.UseEnvironment = useEnvironment;
+
+            _tacticsGrid.RespawnGrid();
         }
 
-        private void OnCenterToggle(bool showCenter)
+        private void OnBoundsToggled(bool showGridBounds)
         {
-            _tacticsGrid.ShowDebugCenter = showCenter;
+            _showGridBounds = showGridBounds;
         }
 
-        private void OnBottomLeftToggle(bool showBottomLeft)
+        private void OnCenterToggled(bool showGridCenter)
         {
-            _tacticsGrid.ShowDebugStart = showBottomLeft;
+            _showGridCenter = showGridCenter;
+        }
+
+        private void OnBottomLeftToggled(bool showBottomLeft)
+        {
+            _showGridBottomLeft = showBottomLeft;
+        }
+
+        private void OnMousePositionToggled(bool showMousePosition)
+        {
+            _showMousePosition = showMousePosition;
+        }
+
+        private void OnHoveredTileToggled(bool showHoveredTile)
+        {
+            _showHoveredTile = showHoveredTile;
         }
     }
 }
