@@ -18,6 +18,5 @@ MonoBehaviour:
   material: {fileID: 2100000, guid: 0148edc4c0943c649a573bd0838b580f, type: 2}
   flatMesh: {fileID: 6076840476584715981, guid: be7cb8b030dd44043bd1f99a8f14e864,
     type: 3}
-  flatBorderMaterial: {fileID: 2100000, guid: 1b863f9d46a16684191f1e8d6254e0a5, type: 2}
-  flatFilledMaterial: {fileID: 2100000, guid: 288ef7439bd119a4792a49f97f70ecce, type: 2}
+  flatMaterial: {fileID: 2100000, guid: 1b863f9d46a16684191f1e8d6254e0a5, type: 2}
   obstacleMaterial: {fileID: 2100000, guid: ee0f18b1f88318f408a7e8986c577ffb, type: 2}

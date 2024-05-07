@@ -20,7 +20,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: M_Grid_Flat_Border
+  m_Name: M_Grid_Flat
   m_Shader: {fileID: -6465566751694194690, guid: 39f406ace776bcf41bcee06f28593f84,
     type: 3}
   m_Parent: {fileID: 0}
@@ -120,9 +120,11 @@ Material:
     - _GlossMapScale: 0
     - _Glossiness: 0
     - _GlossyReflections: 0
+    - _IsFilled: 0
     - _MaskValue: 0.5
     - _Metallic: 0
     - _OcclusionStrength: 1
+    - _Opacity: 0.85
     - _Parallax: 0.005
     - _QueueControl: 0
     - _QueueOffset: 0

@@ -20,8 +20,7 @@ namespace BattleDrakeCreations.TTBTk
         public Mesh mesh;
         public Material material;
         public Mesh flatMesh;
-        public Material flatBorderMaterial;
-        public Material flatFilledMaterial;
+        public Material flatMaterial;
         public Material obstacleMaterial;
     }
 }

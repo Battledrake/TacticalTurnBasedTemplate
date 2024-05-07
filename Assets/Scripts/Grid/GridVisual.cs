@@ -5,18 +5,19 @@ using UnityEngine;
 
 namespace BattleDrakeCreations.TTBTk
 {
+    public enum TileState
+    {
+        None,
+        Hovered,
+        Selected
+    }
+
     public struct TileData
     {
         public Vector2Int index;
         public TileType tileType;
         public Matrix4x4 tileMatrix;
-    }
-
-    public struct TileTransform
-    {
-        public Vector3 position;
-        public Quaternion rotation;
-        public Vector3 scale;
+        public HashSet<TileState> tileStates;
     }
 
     [ExecuteInEditMode]
@@ -43,21 +44,16 @@ namespace BattleDrakeCreations.TTBTk
                 _gridMeshInstance.UpdateGroundOffset(_groundOffset);
         }
 
-        public void UpdateGridVisual(GridShapeData gridShapeData, List<Matrix4x4> tileTransforms)
+        public void UpdateGridVisual(GridShapeData gridShapeData, List<TileData> gridTiles)
         {
             ClearGridVisual();
-            _gridMeshInstance.UpdateGridMeshInstances(gridShapeData.flatMesh, gridShapeData.flatBorderMaterial, Color.black, tileTransforms);
+            _gridMeshInstance.UpdateGridMeshInstances(gridShapeData.flatMesh, gridShapeData.flatMaterial, Color.black, gridTiles);
             SetOffsetFromGround(_groundOffset);
         }
 
         public void UpdateTileVisual(TileData tileData)
         {
-            //_gridMeshInstance.RemoveInstance(tileData.index);
-            //if (GridStatics.IsTileTypeWalkable(tileData.tileType))
-            //{
-            //    tileData.position.y += _groundOffset;
-            //    _gridMeshInstance.AddInstance(tileData);
-            //}
+            _gridMeshInstance.AddInstance(tileData);
         }
 
         public void ClearGridVisual()

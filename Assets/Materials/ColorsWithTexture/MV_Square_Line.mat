@@ -20,7 +20,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: MV_Square_Line
+  m_Name: Mv_Square_Line
   m_Shader: {fileID: -6465566751694194690, guid: bbbe214d48d42a240abcc7c215b5911f,
     type: 3}
   m_Parent: {fileID: 2100000, guid: af672c0cb2e8b774990b160ea362783a, type: 2}

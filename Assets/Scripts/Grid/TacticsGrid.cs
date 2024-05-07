@@ -34,16 +34,6 @@ namespace BattleDrakeCreations.TTBTk
 
         private Dictionary<Vector2Int, TileData> _gridTiles = new Dictionary<Vector2Int, TileData>();
 
-        private void AddGridTile(TileData tileData)
-        {
-            if (_gridTiles.ContainsKey(tileData.index))
-                _gridTiles[tileData.index] = tileData;
-            else
-                _gridTiles.Add(tileData.index, tileData);
-
-            _gridVisual.UpdateTileVisual(tileData);
-        }
-
         //private void Awake()
         //{
         //    SpawnGrid(this.transform.position, _gridTileSize, _gridTileCount, _gridShapeToggle);
@@ -66,6 +56,11 @@ namespace BattleDrakeCreations.TTBTk
                 this.transform.position = _gridPosition;
                 RespawnGrid();
             }
+        }
+
+        public GridShapeData GetCurrentShapeData()
+        {
+            return DataManager.GetShapeData(_gridShape);
         }
 
         public Vector3 GetCursorPositionOnGrid()
@@ -233,10 +228,11 @@ namespace BattleDrakeCreations.TTBTk
         {
             _gridPosition = gridPosition;
             _gridShape = gridShape;
+            _gridTiles.Clear();
 
             if (_gridShape != GridShape.None)
             {
-                List<Matrix4x4> tilesToRender = new List<Matrix4x4>();
+                List<TileData> tilesToRender = new List<TileData>();
                 for (int z = 0; z < _gridTileCount.y; ++z)
                 {
                     for (int x = 0; x < _gridTileCount.x; ++x)
@@ -253,7 +249,7 @@ namespace BattleDrakeCreations.TTBTk
                             tileData.tileType = TileType.Normal;
                             tileData.tileMatrix = Matrix4x4.TRS(instancePosition, instanceRotation, instanceScale);
                             AddGridTile(tileData);
-                            tilesToRender.Add(tileData.tileMatrix);
+                            tilesToRender.Add(tileData);
                         }
                         else
                         {
@@ -263,7 +259,7 @@ namespace BattleDrakeCreations.TTBTk
                                 tileData.tileType = tileType;
                                 tileData.tileMatrix = Matrix4x4.TRS(hitPosition, instanceRotation, instanceScale);
                                 AddGridTile(tileData);
-                                tilesToRender.Add(tileData.tileMatrix);
+                                tilesToRender.Add(tileData);
                             }
                         }
                     }
@@ -278,17 +274,6 @@ namespace BattleDrakeCreations.TTBTk
         public void RespawnGrid()
         {
             SpawnGrid(this.transform.position, _gridTileSize, _gridTileCount, _gridShape);
-        }
-
-        public void DestroyGrid()
-        {
-            _gridTiles.Clear();
-            _gridVisual.ClearGridVisual();
-        }
-
-        public GridShapeData GetCurrentShapeData()
-        {
-            return DataManager.GetShapeData(_gridShape);
         }
 
         public TileType TraceForGround(Vector3 position, out Vector3 hitPosition)
@@ -316,6 +301,59 @@ namespace BattleDrakeCreations.TTBTk
             }
 
             return returnType;
+        }
+
+        private void AddGridTile(TileData tileData)
+        {
+            if (_gridTiles.ContainsKey(tileData.index))
+                _gridTiles[tileData.index] = tileData;
+            else
+                _gridTiles.Add(tileData.index, tileData);
+
+            _gridVisual.UpdateTileVisual(tileData);
+        }
+
+        public void AddStateToTile(Vector2Int index, TileState tileState)
+        {
+            if (_gridTiles.ContainsKey(index))
+            {
+                TileData tileData = _gridTiles[index];
+
+                if (tileData.tileStates == null)
+                    tileData.tileStates = new HashSet<TileState>();
+
+                if (tileData.tileStates.Add(tileState))
+                {
+                    _gridTiles[index] = tileData;
+                    _gridVisual.UpdateTileVisual(tileData);
+                }
+            }
+        }
+
+        public void RemoveStateFromTile(Vector2Int index, TileState tileState)
+        {
+            if (_gridTiles.ContainsKey(index))
+            {
+                TileData tileData = _gridTiles[index];
+
+                if (tileData.tileStates == null)
+                    return;
+
+                if (tileData.tileStates.Contains(tileState))
+                    tileData.tileStates.Remove(tileState);
+                else
+                    return;
+
+                _gridVisual.UpdateTileVisual(tileData);
+
+                _gridTiles[index] = tileData;
+            }
+        }
+
+        public void DestroyGrid()
+        {
+            _gridTiles.Clear();
+            _gridVisual.ClearGridVisual();
         }
     }
 }

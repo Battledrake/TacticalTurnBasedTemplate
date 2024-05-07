@@ -21,9 +21,9 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Mv_Triangle_Obstacle
-  m_Shader: {fileID: -6465566751694194690, guid: bfd6675c68237c14fa9dff0add1b9030,
+  m_Shader: {fileID: -6465566751694194690, guid: 39f406ace776bcf41bcee06f28593f84,
     type: 3}
-  m_Parent: {fileID: 2100000, guid: 1824af3869dea5c41bf65ff51efe2e60, type: 2}
+  m_Parent: {fileID: 2100000, guid: fc4d45935642bbc41a5c813d5f4e222f, type: 2}
   m_ModifiedSerializedProperties: 4
   m_ValidKeywords: []
   m_InvalidKeywords: []
