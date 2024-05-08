@@ -323,7 +323,7 @@ namespace BattleDrakeCreations.TTBTk
             hitPosition = position;
 
             Vector3 origin = position + Vector3.up * 10.0f;
-            LayerMask groundLayer = (1 << LayerMask.NameToLayer("Ground"));
+            LayerMask groundLayer = LayerMask.GetMask("Ground");
             float radius = _gridTileSize.x / 3; //TODO: divide by 5 if triangle?
             RaycastHit[] sphereHits = Physics.SphereCastAll(origin, radius, Vector3.down, 20.0f, groundLayer);
             if (sphereHits.Length > 0)
