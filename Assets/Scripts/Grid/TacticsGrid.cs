@@ -1,6 +1,4 @@
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace BattleDrakeCreations.TTBTk
@@ -34,6 +32,7 @@ namespace BattleDrakeCreations.TTBTk
 
         private Dictionary<Vector2Int, TileData> _gridTiles = new Dictionary<Vector2Int, TileData>();
 
+        /* Bro, I don't know what' sgoing on with this method, but it keeps disabling the script */
         //private void Awake()
         //{
         //    SpawnGrid(this.transform.position, _gridTileSize, _gridTileCount, _gridShapeToggle);
@@ -61,6 +60,11 @@ namespace BattleDrakeCreations.TTBTk
         public GridShapeData GetCurrentShapeData()
         {
             return DataManager.GetShapeData(_gridShape);
+        }
+
+        public bool IsIndexValid(Vector2Int index)
+        {
+            return _gridTiles.ContainsKey(index);
         }
 
         public Vector3 GetCursorPositionOnGrid()
@@ -138,7 +142,6 @@ namespace BattleDrakeCreations.TTBTk
         {
             int roughX = Mathf.RoundToInt((worldPosition.x - this.transform.position.x) / _gridTileSize.x);
             int roughZ = Mathf.RoundToInt((worldPosition.z - this.transform.position.z) / _gridTileSize.z / 0.75f);
-
             Vector2Int roughIndex = Vector2Int.RoundToInt(new Vector2(roughX, roughZ));
 
             bool isOddRow = roughZ % 2 == 1;
@@ -159,7 +162,7 @@ namespace BattleDrakeCreations.TTBTk
 
             neighborList.ForEach(n =>
             {
-                if(Vector3.Distance(worldPosition, GetTilePositionFromGridIndex(n)) < Vector3.Distance(worldPosition, GetTilePositionFromGridIndex(closestPoint)))
+                if (Vector3.Distance(worldPosition, GetTilePositionFromGridIndex(n)) < Vector3.Distance(worldPosition, GetTilePositionFromGridIndex(closestPoint)))
                 {
                     closestPoint = n;
                 }
@@ -178,7 +181,7 @@ namespace BattleDrakeCreations.TTBTk
             return Vector2Int.RoundToInt((vectorTwoPosition / _gridTileSize) * new Vector2(2f, 1f));
         }
 
-        private Vector3 GetTilePositionFromGridIndex(Vector2Int gridIndex)
+        public Vector3 GetTilePositionFromGridIndex(Vector2Int gridIndex)
         {
             Vector2 offset = gridIndex * Vector2.one;
 
@@ -187,7 +190,7 @@ namespace BattleDrakeCreations.TTBTk
                 case GridShape.Square:
                     break;
                 case GridShape.Hexagon:
-                    offset.x += gridIndex.y % 2 == 1 ? 0.5f : 0.0f;
+                    offset.x += Mathf.Abs(gridIndex.y) % 2 == 1 ? 0.5f : 0.0f;
                     offset.y *= 0.75f;
                     break;
                 case GridShape.Triangle:
@@ -206,7 +209,7 @@ namespace BattleDrakeCreations.TTBTk
             return tilePosition;
         }
 
-        private Quaternion GetTileRotationFromGridIndex(Vector2Int gridIndex)
+        public Quaternion GetTileRotationFromGridIndex(Vector2Int gridIndex)
         {
             Vector3 rotationVector = new Vector3(-90.0f, 0.0f, 90.0f); //Imported meshes are using Unreal Coordinate System. Adjusting for Unity.
 
@@ -303,7 +306,7 @@ namespace BattleDrakeCreations.TTBTk
             return returnType;
         }
 
-        private void AddGridTile(TileData tileData)
+        public void AddGridTile(TileData tileData)
         {
             if (_gridTiles.ContainsKey(tileData.index))
                 _gridTiles[tileData.index] = tileData;
@@ -325,7 +328,8 @@ namespace BattleDrakeCreations.TTBTk
                 if (tileData.tileStates.Add(tileState))
                 {
                     _gridTiles[index] = tileData;
-                    _gridVisual.UpdateTileVisual(tileData);
+                    //_gridVisual.UpdateTileVisual(tileData);
+                    _gridVisual.AddTileState(index, tileState);
                 }
             }
         }
@@ -344,9 +348,9 @@ namespace BattleDrakeCreations.TTBTk
                 else
                     return;
 
-                _gridVisual.UpdateTileVisual(tileData);
-
                 _gridTiles[index] = tileData;
+                //_gridVisual.UpdateTileVisual(tileData);
+                _gridVisual.RemoveTileState(index, tileState);
             }
         }
 

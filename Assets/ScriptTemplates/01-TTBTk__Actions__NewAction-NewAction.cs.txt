@@ -1,0 +1,12 @@
+using UnityEngine;
+
+namespace BattleDrakeCreations.TTBTk
+{
+    public class #SCRIPTNAME# : ActionBase
+	{
+        public override bool ExecuteAction(Vector2Int index)
+        {
+            return false;
+        }
+    }
+}

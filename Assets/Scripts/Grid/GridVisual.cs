@@ -1,5 +1,3 @@
-using BattleDrakeCreations.TTBTk;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -54,6 +52,16 @@ namespace BattleDrakeCreations.TTBTk
         public void UpdateTileVisual(TileData tileData)
         {
             _gridMeshInstance.AddInstance(tileData);
+        }
+
+        public void AddTileState(Vector2Int index, TileState tileState)
+        {
+            _gridMeshInstance.AddState(index, tileState);
+        }
+
+        public void RemoveTileState(Vector2Int index, TileState tileState)
+        {
+            _gridMeshInstance.RemoveState(index, tileState);
         }
 
         public void ClearGridVisual()
