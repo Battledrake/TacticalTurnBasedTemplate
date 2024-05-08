@@ -13,9 +13,10 @@ namespace BattleDrakeCreations.TTBTk
 
         public List<Vector2Int> GetValidTileNeighbors(Vector2Int index, bool includeDiagonals = false)
         {
-            _tacticsGrid.GridTiles.TryGetValue(index, out TileData selectedTile);
-            List<Vector2Int> neighborIndexes = GetNeighborIndexes(index);
+            List<Vector2Int> neighborIndexes = GetNeighborIndexes(index, includeDiagonals);
             List<Vector2Int> validNeighbors = new List<Vector2Int>();
+            _tacticsGrid.GridTiles.TryGetValue(index, out TileData selectedTile);
+
             for(int i = 0; i < neighborIndexes.Count; i++)
             {
                 if(_tacticsGrid.GridTiles.TryGetValue(neighborIndexes[i], out TileData tileData))
