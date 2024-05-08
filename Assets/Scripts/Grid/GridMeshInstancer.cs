@@ -11,20 +11,25 @@ namespace BattleDrakeCreations.TTBTk
     }
 
     [ExecuteInEditMode]
-    public class GridMeshInstance : MonoBehaviour
+    public class GridMeshInstancer : MonoBehaviour
     {
         private Dictionary<Vector2Int, TileData> _instancedTiles = new Dictionary<Vector2Int, TileData>();
         private Dictionary<Vector2Int, TileData> _selectedTiles = new Dictionary<Vector2Int, TileData>();
+        private Dictionary<Vector2Int, TileData> _neighborTiles = new Dictionary<Vector2Int, TileData>();
+
         private TileData _hoveredTile;
+
         private RenderParams _renderParams;
         private RenderParams _selectedParams;
         private RenderParams _hoveredParams;
+        private RenderParams _neighborParams;
+
         private Mesh _instancedMesh;
+
         private Material _instancedMaterial;
         private Material _selectedMaterial;
         private Material _hoveredMaterial;
-        private Color _materialColor;
-
+        private Material _neighborMaterial;
 
         private List<InstanceData> _defaultRenders = new List<InstanceData>();
         private List<InstanceData> _selectedRenders = new List<InstanceData>();
@@ -46,10 +51,10 @@ namespace BattleDrakeCreations.TTBTk
             if (_selectedTiles.ContainsKey(tileData.index))
                 _selectedTiles.Remove(tileData.index);
 
-            if (tileData.tileStates.Contains(TileState.Hovered))
-            {
-                _hoveredTile = default(TileData);
-            }
+            //if (tileData.tileStates.Contains(TileState.Hovered))
+            //{
+            //    _hoveredTile = default(TileData);
+            //}
         }
 
         public void AddState(Vector2Int index, TileState state)
@@ -72,6 +77,10 @@ namespace BattleDrakeCreations.TTBTk
             {
                 _selectedTiles.TryAdd(index, _hoveredTile);
             }
+            if(state == TileState.IsNeighbor)
+            {
+                _neighborTiles.TryAdd(index, _hoveredTile);
+            }
         }
 
         public void RemoveState(Vector2Int index, TileState state)
@@ -83,6 +92,10 @@ namespace BattleDrakeCreations.TTBTk
             if (state == TileState.Selected)
             {
                 _selectedTiles.Remove(index, out TileData tileData);
+            }
+            if(state == TileState.IsNeighbor)
+            {
+                _neighborTiles.Remove(index);
             }
         }
 
@@ -138,6 +151,10 @@ namespace BattleDrakeCreations.TTBTk
             {
                 Graphics.RenderMeshInstanced(_hoveredParams, _instancedMesh, 0, new[] { _hoveredTile.tileMatrix });
             }
+            if(_neighborTiles.Count > 0)
+            {
+                Graphics.RenderMeshInstanced(_neighborParams, _instancedMesh, 0, _neighborTiles.Values.Select(t => t.tileMatrix).ToList());
+            }
         }
 
         public void ClearInstances()
@@ -154,33 +171,25 @@ namespace BattleDrakeCreations.TTBTk
             _instancedMaterial = new Material(material);
             _selectedMaterial = new Material(material);
             _hoveredMaterial = new Material(material);
+            _neighborMaterial = new Material(material);
 
-            _materialColor = color;
-
-            _instancedMaterial.color = _materialColor;
+            _instancedMaterial.color = color;
             _selectedMaterial.color = Color.green;
             _selectedMaterial.SetFloat("_IsFilled", 1f);
             _hoveredMaterial.color = Color.yellow;
             _hoveredMaterial.SetFloat("_IsFilled", 0.5f);
+            _neighborMaterial.color = Color.magenta;
+            _neighborMaterial.SetFloat("_IsFilled", 0.5f);
 
             _renderParams = new RenderParams(_instancedMaterial);
-            _renderParams.rendererPriority = 0;
-            _renderParams.worldBounds = this.GetComponent<TacticsGrid>().GetGridBounds();
             _selectedParams = new RenderParams(_selectedMaterial);
-            _selectedParams.rendererPriority = 1;
             _hoveredParams = new RenderParams(_hoveredMaterial);
-            _hoveredParams.rendererPriority = 2;
-
-            _defaultRenders.Clear();
-            _selectedRenders.Clear();
+            _neighborParams = new RenderParams(_neighborMaterial);
 
             gridTiles.ForEach(tile =>
             {
                 _instancedTiles.Add(tile.index, tile);
             });
-
-            _currentDefaultCount = 0;
-            _currentSelectedCount = 0;
         }
     }
 }

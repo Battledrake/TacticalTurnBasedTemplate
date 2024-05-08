@@ -95,6 +95,7 @@ namespace BattleDrakeCreations.TTBTk
                 if (_tacticsGrid.GridTiles.TryGetValue(hoveredTileIndex, out TileData tileData))
                 {
                     DebugExtension.DebugBounds(new Bounds(tileData.tileMatrix.GetPosition(), new Vector3(.5f, .5f, .5f)), Color.yellow);
+                    Debug.Log(tileData.tileMatrix.GetPosition());
                 }
             }
         }

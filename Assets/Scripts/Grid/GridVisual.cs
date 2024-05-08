@@ -7,7 +7,8 @@ namespace BattleDrakeCreations.TTBTk
     {
         None,
         Hovered,
-        Selected
+        Selected,
+        IsNeighbor
     }
 
     public struct TileData
@@ -19,20 +20,20 @@ namespace BattleDrakeCreations.TTBTk
     }
 
     [ExecuteInEditMode]
-    [RequireComponent(typeof(GridMeshInstance))]
+    [RequireComponent(typeof(GridMeshInstancer))]
     public class GridVisual : MonoBehaviour
     {
         public TacticsGrid TacticsGrid { get => _tacticsGrid; }
         public float GroundOffset { get => _groundOffset; set => SetOffsetFromGround(value); }
 
-        private GridMeshInstance _gridMeshInstance;
+        private GridMeshInstancer _gridMeshInstance;
         private TacticsGrid _tacticsGrid; //No use currently but might be nice to have for future debugging
         private float _groundOffset = 0.1f;
 
         private void Awake()
         {
             _tacticsGrid = this.GetComponent<TacticsGrid>();
-            _gridMeshInstance = this.GetComponent<GridMeshInstance>();
+            _gridMeshInstance = this.GetComponent<GridMeshInstancer>();
         }
 
         private void SetOffsetFromGround(float value)

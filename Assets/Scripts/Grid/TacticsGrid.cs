@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -13,6 +14,9 @@ namespace BattleDrakeCreations.TTBTk
     [ExecuteInEditMode]
     public class TacticsGrid : MonoBehaviour
     {
+        public event Action<Vector2Int> TileDataUpdated;
+        public event Action GridDestroyed;
+
         [SerializeField] private GridShape _gridShapeToggle = GridShape.Square;
         [SerializeField] private Vector2Int _gridTileCount;
         [SerializeField] private Vector3 _gridTileSize;
@@ -32,7 +36,7 @@ namespace BattleDrakeCreations.TTBTk
 
         private Dictionary<Vector2Int, TileData> _gridTiles = new Dictionary<Vector2Int, TileData>();
 
-        /* Bro, I don't know what' sgoing on with this method, but it keeps disabling the script */
+        /* Bro, I don't know what's going on with this method, but it keeps disabling the script */
         //private void Awake()
         //{
         //    SpawnGrid(this.transform.position, _gridTileSize, _gridTileCount, _gridShapeToggle);
@@ -74,6 +78,7 @@ namespace BattleDrakeCreations.TTBTk
             if(Physics.Raycast(ray, out RaycastHit hitInfo, 1000f, groundLayer))
             {
                 Vector3 hitPoint = hitInfo.point;
+                Debug.Log(hitInfo.point);
                 return hitPoint;
             }
             else
@@ -237,7 +242,7 @@ namespace BattleDrakeCreations.TTBTk
         {
             _gridPosition = gridPosition;
             _gridShape = gridShape;
-            _gridTiles.Clear();
+            DestroyGrid();
 
             if (_gridShape != GridShape.None)
             {
@@ -320,6 +325,8 @@ namespace BattleDrakeCreations.TTBTk
                 _gridTiles.Add(tileData.index, tileData);
 
             _gridVisual.UpdateTileVisual(tileData);
+
+            TileDataUpdated?.Invoke(tileData.index);
         }
 
         public void RemoveGridTile(Vector2Int index)
@@ -328,6 +335,8 @@ namespace BattleDrakeCreations.TTBTk
             {
                 tileData.tileType = TileType.None;
                 _gridVisual.UpdateTileVisual(tileData);
+
+                TileDataUpdated?.Invoke(index);
             }
         }
 
@@ -346,6 +355,8 @@ namespace BattleDrakeCreations.TTBTk
                     //_gridVisual.UpdateTileVisual(tileData);
                     _gridVisual.AddTileState(index, tileState);
                 }
+
+                TileDataUpdated?.Invoke(index);
             }
         }
 
@@ -366,6 +377,8 @@ namespace BattleDrakeCreations.TTBTk
                 _gridTiles[index] = tileData;
                 //_gridVisual.UpdateTileVisual(tileData);
                 _gridVisual.RemoveTileState(index, tileState);
+
+                TileDataUpdated?.Invoke(index);
             }
         }
 
@@ -373,6 +386,8 @@ namespace BattleDrakeCreations.TTBTk
         {
             _gridTiles.Clear();
             _gridVisual.ClearGridVisual();
+
+            GridDestroyed?.Invoke();
         }
     }
 }
