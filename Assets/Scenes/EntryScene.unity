@@ -4410,6 +4410,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f8b4bf4b9023a8f41946867da652e178, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _textObjectToSpam: {fileID: 5874146756663141541, guid: 16535d23764c2c440908415c0bf4554b,
+    type: 3}
 --- !u!4 &759534482
 Transform:
   m_ObjectHideFlags: 0
