@@ -1,14 +1,23 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace BattleDrakeCreations.TTBTk
 {
     public class ShowTileNeighborsAction : ActionBase
-	{
+    {
         public override bool ExecuteAction(Vector2Int index)
         {
+            _playerActions.TacticsGrid.ClearStateFromTiles(TileState.IsNeighbor);
+
             if (_playerActions.TacticsGrid.IsIndexValid(index))
             {
-                _playerActions.TacticsGrid.AddStateToTile(index, TileState.IsNeighbor);
+                List<Vector2Int> neighbors = _playerActions.TacticsGrid.GridPathfinder.GetValidTileNeighbors(index);
+                neighbors.ForEach(n =>
+                {
+                    _playerActions.TacticsGrid.AddStateToTile(n, TileState.IsNeighbor);
+                    Debug.Log(n);
+                });
+                return true;
             }
             return false;
         }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace BattleDrakeCreations.TTBTk
@@ -24,12 +25,16 @@ namespace BattleDrakeCreations.TTBTk
 
         [SerializeField] private GridVisual _gridVisual;
 
+        [SerializeField] private GridPathfinding _gridPathfinder;
+
         public Dictionary<Vector2Int, TileData> GridTiles { get => _gridTiles; }
         public GridVisual GridVisual { get => _gridVisual; }
         public Vector2Int GridTileCount { get => _gridTileCount; set => _gridTileCount = value; }
         public Vector3 TileSize { get => _gridTileSize; set => _gridTileSize = value; }
         public GridShape GridShape { get => _gridShape; set { _gridShape = value; } }
         public bool UseEnvironment { get => _useEnvironment; set => _useEnvironment = value; }
+
+        public GridPathfinding GridPathfinder { get => _gridPathfinder; }
 
         private Vector3 _gridPosition = Vector3.zero;
         private GridShape _gridShape = GridShape.None;
@@ -78,7 +83,6 @@ namespace BattleDrakeCreations.TTBTk
             if(Physics.Raycast(ray, out RaycastHit hitInfo, 1000f, groundLayer))
             {
                 Vector3 hitPoint = hitInfo.point;
-                Debug.Log(hitInfo.point);
                 return hitPoint;
             }
             else
@@ -91,6 +95,29 @@ namespace BattleDrakeCreations.TTBTk
                 }
             }
             return new Vector3(-999, -999, -999);
+        }
+
+        public List<Vector2Int> GetAllTilesWithState(TileState tileState)
+        {
+            List<Vector2Int> tiles = new List<Vector2Int>();
+            for(int i = 0; i < _gridTiles.Count; i++)
+            {
+                HashSet<TileState> tileStates = _gridTiles.ElementAt(i).Value.tileStates;
+                if (tileStates != null && tileStates.Contains(tileState))
+                {
+                    tiles.Add(_gridTiles.ElementAt(i).Key);
+                }
+            }
+            return tiles;
+        }
+
+        public void ClearStateFromTiles(TileState stateToClear)
+        {
+            List<Vector2Int> tilesWithState = GetAllTilesWithState(stateToClear);
+            for(int i = 0; i < tilesWithState.Count; i++)
+            {
+                RemoveStateFromTile(tilesWithState[i], stateToClear);
+            }
         }
 
         public Bounds GetGridBounds()

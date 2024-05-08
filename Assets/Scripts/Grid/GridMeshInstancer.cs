@@ -79,7 +79,7 @@ namespace BattleDrakeCreations.TTBTk
             }
             if(state == TileState.IsNeighbor)
             {
-                _neighborTiles.TryAdd(index, _hoveredTile);
+                _neighborTiles.TryAdd(index, _instancedTiles[index]);
             }
         }
 
