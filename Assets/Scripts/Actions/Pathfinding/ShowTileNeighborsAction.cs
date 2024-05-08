@@ -11,7 +11,8 @@ namespace BattleDrakeCreations.TTBTk
 
             if (_playerActions.TacticsGrid.IsIndexValid(index))
             {
-                List<Vector2Int> neighbors = _playerActions.TacticsGrid.GridPathfinder.GetValidTileNeighbors(index);
+                bool includeDiagonals = actionValue == 1;
+                List<Vector2Int> neighbors = _playerActions.TacticsGrid.GridPathfinder.GetValidTileNeighbors(index, includeDiagonals);
                 neighbors.ForEach(n =>
                 {
                     _playerActions.TacticsGrid.AddStateToTile(n, TileState.IsNeighbor);

@@ -21,15 +21,15 @@ namespace BattleDrakeCreations.TTBTk
 
         private RenderParams _renderParams;
         private RenderParams _selectedParams;
-        private RenderParams _hoveredParams;
         private RenderParams _neighborParams;
+        private RenderParams _hoveredParams;
 
         private Mesh _instancedMesh;
 
         private Material _instancedMaterial;
         private Material _selectedMaterial;
-        private Material _hoveredMaterial;
         private Material _neighborMaterial;
+        private Material _hoveredMaterial;
 
         private List<InstanceData> _defaultRenders = new List<InstanceData>();
         private List<InstanceData> _selectedRenders = new List<InstanceData>();
@@ -147,13 +147,13 @@ namespace BattleDrakeCreations.TTBTk
                 //}
                 Graphics.RenderMeshInstanced(_selectedParams, _instancedMesh, 0, _selectedTiles.Values.Select(t => t.tileMatrix).ToList());
             }
+            if (_neighborTiles.Count > 0)
+            {
+                Graphics.RenderMeshInstanced(_neighborParams, _instancedMesh, 0, _neighborTiles.Values.Select(t => t.tileMatrix).ToList());
+            }
             if (!_hoveredTile.Equals(default(TileData)))
             {
                 Graphics.RenderMeshInstanced(_hoveredParams, _instancedMesh, 0, new[] { _hoveredTile.tileMatrix });
-            }
-            if(_neighborTiles.Count > 0)
-            {
-                Graphics.RenderMeshInstanced(_neighborParams, _instancedMesh, 0, _neighborTiles.Values.Select(t => t.tileMatrix).ToList());
             }
         }
 
@@ -161,6 +161,7 @@ namespace BattleDrakeCreations.TTBTk
         {
             _instancedTiles.Clear();
             _selectedTiles.Clear();
+            _neighborTiles.Clear();
             _hoveredTile = default(TileData);
         }
 
@@ -170,21 +171,21 @@ namespace BattleDrakeCreations.TTBTk
 
             _instancedMaterial = new Material(material);
             _selectedMaterial = new Material(material);
-            _hoveredMaterial = new Material(material);
             _neighborMaterial = new Material(material);
+            _hoveredMaterial = new Material(material);
 
             _instancedMaterial.color = color;
             _selectedMaterial.color = Color.green;
             _selectedMaterial.SetFloat("_IsFilled", 1f);
-            _hoveredMaterial.color = Color.yellow;
-            _hoveredMaterial.SetFloat("_IsFilled", 0.5f);
             _neighborMaterial.color = Color.magenta;
             _neighborMaterial.SetFloat("_IsFilled", 0.5f);
+            _hoveredMaterial.color = Color.yellow;
+            _hoveredMaterial.SetFloat("_IsFilled", 0.5f);
 
             _renderParams = new RenderParams(_instancedMaterial);
             _selectedParams = new RenderParams(_selectedMaterial);
-            _hoveredParams = new RenderParams(_hoveredMaterial);
             _neighborParams = new RenderParams(_neighborMaterial);
+            _hoveredParams = new RenderParams(_hoveredMaterial);
 
             gridTiles.ForEach(tile =>
             {
