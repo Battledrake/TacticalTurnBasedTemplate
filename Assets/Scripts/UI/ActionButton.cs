@@ -17,11 +17,13 @@ namespace BattleDrakeCreations.TTBTk
         private Toggle _buttonToggle;
         private int _actionValue = 0;
 
+        //HACK: SetTileType uses combobox but generic functionality is desired. Also two action buttons that Select Tile. This makes that work.
+        private bool _isActive;
+
         private void Awake()
         {
             _buttonToggle = this.GetComponent<Toggle>();
             _buttonToggle.onValueChanged.AddListener(OnButtonClicked);
-            _playerActions.SelectedActionsChanged += OnSelectedActionsChanged;
         }
 
         private void OnValidate()
@@ -31,13 +33,15 @@ namespace BattleDrakeCreations.TTBTk
 
         private void OnSelectedActionsChanged(ActionBase leftAction, ActionBase rightAction)
         {
-            if(leftAction.GetType() == _leftClickAction.GetType())
+            if (_isActive)
             {
-                OnSetActionValue(_actionValue);
+                _isActive = false;
+                _buttonToggle.isOn = false;
             }
             else
             {
-                _buttonToggle.isOn = false;
+                OnSetActionValue(_actionValue);
+                _isActive = true;
             }
         }
 
@@ -55,7 +59,17 @@ namespace BattleDrakeCreations.TTBTk
         {
             if (isDown)
             {
+                _playerActions.SelectedActionsChanged += OnSelectedActionsChanged;
                 _playerActions.SetSelectedActions(_leftClickAction, _rightClickAction);
+            }
+            else
+            {
+                if (_isActive)
+                {
+                    _isActive = false;
+                    _playerActions.ClearSelectedActions();
+                }
+                _playerActions.SelectedActionsChanged -= OnSelectedActionsChanged;
             }
         }
     }

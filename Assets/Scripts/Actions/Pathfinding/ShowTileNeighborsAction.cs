@@ -15,7 +15,6 @@ namespace BattleDrakeCreations.TTBTk
                 neighbors.ForEach(n =>
                 {
                     _playerActions.TacticsGrid.AddStateToTile(n, TileState.IsNeighbor);
-                    Debug.Log(n);
                 });
                 return true;
             }

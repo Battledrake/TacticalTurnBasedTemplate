@@ -100,7 +100,7 @@ namespace BattleDrakeCreations.TTBTk
 
         public void SetSelectedActions(ActionBase leftClickAction, ActionBase rightClickAction)
         {
-            if (_leftClickAction != null && leftClickAction.GetType() != _leftClickAction.GetType())
+            if (_leftClickAction != null)
                 ClearSelectedActions();
 
             _leftClickAction = GameObject.Instantiate(leftClickAction);
