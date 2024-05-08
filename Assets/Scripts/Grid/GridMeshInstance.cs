@@ -33,7 +33,10 @@ namespace BattleDrakeCreations.TTBTk
 
         public void AddInstance(TileData tileData)
         {
-            Debug.Log(_instancedTiles.TryAdd(tileData.index, tileData));
+            if (_instancedTiles.ContainsKey(tileData.index))
+                _instancedTiles[tileData.index] = tileData;
+            else
+                _instancedTiles.TryAdd(tileData.index, tileData);
         }
 
         public void RemoveInstance(TileData tileData)
@@ -42,6 +45,11 @@ namespace BattleDrakeCreations.TTBTk
                 _instancedTiles.Remove(tileData.index);
             if (_selectedTiles.ContainsKey(tileData.index))
                 _selectedTiles.Remove(tileData.index);
+
+            if (tileData.tileStates.Contains(TileState.Hovered))
+            {
+                _hoveredTile = default(TileData);
+            }
         }
 
         public void AddState(Vector2Int index, TileState state)

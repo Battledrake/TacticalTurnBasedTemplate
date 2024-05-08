@@ -51,7 +51,17 @@ namespace BattleDrakeCreations.TTBTk
 
         public void UpdateTileVisual(TileData tileData)
         {
-            _gridMeshInstance.AddInstance(tileData);
+            if (GridStatics.IsTileTypeWalkable(tileData.tileType))
+            {
+                Vector3 newPos = tileData.tileMatrix.GetPosition();
+                newPos.y += _groundOffset;
+                tileData.tileMatrix = Matrix4x4.TRS(newPos, tileData.tileMatrix.rotation, tileData.tileMatrix.lossyScale);
+                _gridMeshInstance.AddInstance(tileData);
+            }
+            else
+            {
+                _gridMeshInstance.RemoveInstance(tileData);
+            }
         }
 
         public void AddTileState(Vector2Int index, TileState tileState)

@@ -1,9 +1,12 @@
+using System;
 using UnityEngine;
 
 namespace BattleDrakeCreations.TTBTk
 {
     public class PlayerActions : MonoBehaviour
     {
+        public event Action<ActionBase, ActionBase> SelectedActionsChanged;
+
         [SerializeField] private TacticsGrid _tacticsGrid;
 
         public TacticsGrid TacticsGrid { get => _tacticsGrid; }
@@ -18,8 +21,27 @@ namespace BattleDrakeCreations.TTBTk
         private ActionBase _leftClickAction;
         private ActionBase _rightClickAction;
 
+        private Action HoverTileChanged;
+
+        private bool _isLeftClickDown = false;
+        private bool _isRightClickDown = false;
+
+
         private void Awake()
         {
+            HoverTileChanged += OnHoverTileChanged;
+        }
+
+        private void OnHoverTileChanged()
+        {
+            if (_isLeftClickDown)
+            {
+                TryLeftClickAction();
+            }
+            if (_isRightClickDown)
+            {
+                TryRightClickAction();
+            }
         }
 
         private void Update()
@@ -28,15 +50,35 @@ namespace BattleDrakeCreations.TTBTk
 
             if (Input.GetMouseButtonDown(0))
             {
-                if (_leftClickAction)
-                    Debug.Log(_leftClickAction.ExecuteAction(_hoveredTile));
+                _isLeftClickDown = true;
+                TryLeftClickAction();
+            }
+            if (Input.GetMouseButtonUp(0))
+            {
+                _isLeftClickDown = false;
             }
             if (Input.GetMouseButtonDown(1))
             {
-                if (_rightClickAction)
-                    Debug.Log(_leftClickAction.ExecuteAction(_hoveredTile));
+                _isRightClickDown = true;
+                TryRightClickAction();
+            }
+            if (Input.GetMouseButtonUp(1))
+            {
+                _isRightClickDown = false;
             }
         }
+
+        private void TryLeftClickAction()
+        {
+            if (_leftClickAction)
+                Debug.Log(_leftClickAction.ExecuteAction(_hoveredTile));
+        }
+        private void TryRightClickAction()
+        {
+            if (_rightClickAction)
+                Debug.Log(_rightClickAction.ExecuteAction(_hoveredTile));
+        }
+
         private void UpdateHoveredTile()
         {
             if (_tacticsGrid.GetTileIndexUnderCursor() != _hoveredTile)
@@ -44,6 +86,7 @@ namespace BattleDrakeCreations.TTBTk
                 _tacticsGrid.RemoveStateFromTile(_hoveredTile, TileState.Hovered);
                 _hoveredTile = _tacticsGrid.GetTileIndexUnderCursor();
                 _tacticsGrid.AddStateToTile(_hoveredTile, TileState.Hovered);
+                HoverTileChanged?.Invoke();
             }
         }
 
@@ -57,13 +100,15 @@ namespace BattleDrakeCreations.TTBTk
 
         public void SetSelectedActions(ActionBase leftClickAction, ActionBase rightClickAction)
         {
-            if (leftClickAction != null && rightClickAction != null)
-            {
-                _leftClickAction = GameObject.Instantiate(leftClickAction);
-                _leftClickAction.InitializeAction(this);
-                _rightClickAction = GameObject.Instantiate(rightClickAction);
-                _rightClickAction.InitializeAction(this);
-            }
+            if (_leftClickAction != null && leftClickAction.GetType() != _leftClickAction.GetType())
+                ClearSelectedActions();
+
+            _leftClickAction = GameObject.Instantiate(leftClickAction);
+            _leftClickAction.InitializeAction(this);
+            _rightClickAction = GameObject.Instantiate(rightClickAction);
+            _rightClickAction.InitializeAction(this);
+
+            SelectedActionsChanged?.Invoke(_leftClickAction, _rightClickAction);
         }
     }
 }

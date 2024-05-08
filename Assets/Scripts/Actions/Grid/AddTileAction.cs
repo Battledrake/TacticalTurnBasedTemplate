@@ -15,10 +15,11 @@ namespace BattleDrakeCreations.TTBTk
                 newTile.tileType = TileType.Normal;
 
                 Vector3 tilePosition = _playerActions.TacticsGrid.GetTilePositionFromGridIndex(index);
+                _playerActions.TacticsGrid.TraceForGround(tilePosition, out Vector3 hitPosition);
                 Quaternion tileRotation = _playerActions.TacticsGrid.GetTileRotationFromGridIndex(index);
                 Vector3 tileSize = _playerActions.TacticsGrid.TileSize;
 
-                newTile.tileMatrix = Matrix4x4.TRS(tilePosition, tileRotation, tileSize);
+                newTile.tileMatrix = Matrix4x4.TRS(hitPosition, tileRotation, tileSize);
 
                 _playerActions.TacticsGrid.AddGridTile(newTile);
 

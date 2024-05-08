@@ -70,16 +70,22 @@ namespace BattleDrakeCreations.TTBTk
         public Vector3 GetCursorPositionOnGrid()
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-
-            Plane gridPlane = new Plane(Vector3.up, new Vector3(0, this.transform.position.y, 0));
-            if (gridPlane.Raycast(ray, out float distance))
+            LayerMask groundLayer = LayerMask.GetMask("Ground");
+            if(Physics.Raycast(ray, out RaycastHit hitInfo, 1000f, groundLayer))
             {
-                Vector3 hitPoint = ray.GetPoint(distance);
-                //hitPoint = GridStatics.SnapVectorToVector(hitPoint, _gridTileSize);
-                //hitPoint.y = 3.0f;
+                Vector3 hitPoint = hitInfo.point;
                 return hitPoint;
             }
-            return new Vector3(999, 999, 999);
+            else
+            {
+                Plane gridPlane = new Plane(Vector3.up, new Vector3(0, this.transform.position.y, 0));
+                if (gridPlane.Raycast(ray, out float distance))
+                {
+                    Vector3 hitPoint = ray.GetPoint(distance);
+                    return hitPoint;
+                }
+            }
+            return new Vector3(-999, -999, -999);
         }
 
         public Bounds GetGridBounds()
@@ -314,6 +320,15 @@ namespace BattleDrakeCreations.TTBTk
                 _gridTiles.Add(tileData.index, tileData);
 
             _gridVisual.UpdateTileVisual(tileData);
+        }
+
+        public void RemoveGridTile(Vector2Int index)
+        {
+            if(_gridTiles.Remove(index, out TileData tileData))
+            {
+                tileData.tileType = TileType.None;
+                _gridVisual.UpdateTileVisual(tileData);
+            }
         }
 
         public void AddStateToTile(Vector2Int index, TileState tileState)
