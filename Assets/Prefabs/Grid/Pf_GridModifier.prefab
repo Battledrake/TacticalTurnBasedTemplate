@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 1627055720860618533}
   - component: {fileID: 5926348959299744426}
   - component: {fileID: 253330644107064978}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Pf_GridModifier
   m_TagString: Untagged
   m_Icon: {fileID: 0}
