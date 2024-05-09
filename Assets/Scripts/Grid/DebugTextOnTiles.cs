@@ -13,7 +13,7 @@ namespace BattleDrakeCreations.TTBTk
         [Header("Dependencies")]
         [SerializeField] private TacticsGrid _tacticsGrid;
 
-        private Dictionary<Vector2Int, GameObject> _spawnedTexts = new Dictionary<Vector2Int, GameObject>();
+        private Dictionary<GridIndex, GameObject> _spawnedTexts = new Dictionary<GridIndex, GameObject>();
 
         private bool _showTileText;
 
@@ -29,14 +29,14 @@ namespace BattleDrakeCreations.TTBTk
             _tacticsGrid.GridDestroyed -= ClearAllTextGameObjects;
         }
 
-        public bool UpdateTextOnTile(Vector2Int index)
+        public bool UpdateTextOnTile(GridIndex index)
         {
             if (_showTileText && _tacticsGrid.GridTiles.TryGetValue(index, out TileData tileData) && GridStatics.IsTileTypeWalkable(tileData.tileType))
             {
 
                 TextMeshPro textObject = GetTextGameObject(index).GetComponent<TextMeshPro>();
 
-                textObject.text = string.Format("{0},{1}", index.x, index.y);
+                textObject.text = string.Format("{0},{1}", index.x, index.z);
 
                 Vector3 tilePosition = tileData.tileMatrix.GetPosition();
                 tilePosition.y += 0.1f;
@@ -51,7 +51,7 @@ namespace BattleDrakeCreations.TTBTk
             return false;
         }
 
-        public GameObject GetTextGameObject(Vector2Int index)
+        public GameObject GetTextGameObject(GridIndex index)
         {
             if (_spawnedTexts.ContainsKey(index))
             {
@@ -81,7 +81,7 @@ namespace BattleDrakeCreations.TTBTk
             }
         }
 
-        public void DestroyTextGameObject(Vector2Int index)
+        public void DestroyTextGameObject(GridIndex index)
         {
             if (_spawnedTexts.TryGetValue(index, out GameObject textObject))
             {

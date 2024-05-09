@@ -10,13 +10,13 @@ namespace BattleDrakeCreations.TTBTk
         [SerializeField] private TacticsGrid _tacticsGrid;
 
         public TacticsGrid TacticsGrid { get => _tacticsGrid; }
-        public Vector2Int HoveredTile { get => _hoveredTile; set => _selectedTile = value; }
-        public Vector2Int SelectedTile { get => _selectedTile; set => _selectedTile = value; }
+        public GridIndex HoveredTile { get => _hoveredTile; set => _selectedTile = value; }
+        public GridIndex SelectedTile { get => _selectedTile; set => _selectedTile = value; }
         public ActionBase LeftClickAction { get => _leftClickAction; }
         public ActionBase RightClickAction { get => _rightClickAction; }
 
-        private Vector2Int _hoveredTile;
-        private Vector2Int _selectedTile;
+        private GridIndex _hoveredTile;
+        private GridIndex _selectedTile;
 
         private ActionBase _leftClickAction;
         private ActionBase _rightClickAction;
@@ -71,12 +71,12 @@ namespace BattleDrakeCreations.TTBTk
         private void TryLeftClickAction()
         {
             if (_leftClickAction)
-                Debug.Log(_leftClickAction.ExecuteAction(_hoveredTile));
+                _leftClickAction.ExecuteAction(_hoveredTile);
         }
         private void TryRightClickAction()
         {
             if (_rightClickAction)
-                Debug.Log(_rightClickAction.ExecuteAction(_hoveredTile));
+                _rightClickAction.ExecuteAction(_hoveredTile);
         }
 
         private void UpdateHoveredTile()

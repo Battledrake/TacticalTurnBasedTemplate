@@ -89,13 +89,12 @@ namespace BattleDrakeCreations.TTBTk
             }
             if (_showHoveredTile)
             {
-                Vector2Int hoveredTileIndex = _tacticsGrid.GetTileIndexUnderCursor();
+                GridIndex hoveredTileIndex = _tacticsGrid.GetTileIndexUnderCursor();
                 _hoveredTileText.text = hoveredTileIndex.ToString();
 
                 if (_tacticsGrid.GridTiles.TryGetValue(hoveredTileIndex, out TileData tileData))
                 {
                     DebugExtension.DebugBounds(new Bounds(tileData.tileMatrix.GetPosition(), new Vector3(.5f, .5f, .5f)), Color.yellow);
-                    Debug.Log(tileData.tileMatrix.GetPosition());
                 }
             }
         }
@@ -141,11 +140,11 @@ namespace BattleDrakeCreations.TTBTk
 
         private void OnTileCountChanged(int sliderIndex, float value)
         {
-            Vector2Int tileCount = _tacticsGrid.GridTileCount;
+            GridIndex tileCount = _tacticsGrid.GridTileCount;
             if (sliderIndex == 0)
                 tileCount.x = Mathf.RoundToInt(value);
             else if (sliderIndex == 1)
-                tileCount.y = Mathf.RoundToInt(value);
+                tileCount.z = Mathf.RoundToInt(value);
 
             _tacticsGrid.GridTileCount = tileCount;
 

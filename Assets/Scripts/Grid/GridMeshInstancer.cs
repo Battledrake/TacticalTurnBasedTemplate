@@ -1,27 +1,23 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
 namespace BattleDrakeCreations.TTBTk
 {
-    public struct InstanceData
-    {
-        public Matrix4x4 objectToWorld;
-        public uint renderingLayerMask;
-    }
-
     [ExecuteInEditMode]
     public class GridMeshInstancer : MonoBehaviour
     {
-        private Dictionary<Vector2Int, TileData> _instancedTiles = new Dictionary<Vector2Int, TileData>();
-        private Dictionary<Vector2Int, TileData> _selectedTiles = new Dictionary<Vector2Int, TileData>();
-        private Dictionary<Vector2Int, TileData> _neighborTiles = new Dictionary<Vector2Int, TileData>();
-
+        private Dictionary<GridIndex, TileData> _instancedTiles = new Dictionary<GridIndex, TileData>();
+        private List<Matrix4x4> _selectedTiles = new List<Matrix4x4>();
+        private List<Matrix4x4> _neighborTiles = new List<Matrix4x4>();
+        private List<Matrix4x4> _pathTiles = new List<Matrix4x4>();
         private TileData _hoveredTile;
 
         private RenderParams _renderParams;
         private RenderParams _selectedParams;
         private RenderParams _neighborParams;
+        private RenderParams _pathParams;
         private RenderParams _hoveredParams;
 
         private Mesh _instancedMesh;
@@ -29,12 +25,11 @@ namespace BattleDrakeCreations.TTBTk
         private Material _instancedMaterial;
         private Material _selectedMaterial;
         private Material _neighborMaterial;
+        private Material _pathMaterial;
         private Material _hoveredMaterial;
 
-        private List<InstanceData> _defaultRenders = new List<InstanceData>();
-        private List<InstanceData> _selectedRenders = new List<InstanceData>();
+        private List<Matrix4x4> _defaultRenders = new List<Matrix4x4>();
         private int _currentDefaultCount;
-        private int _currentSelectedCount;
 
         public void AddInstance(TileData tileData)
         {
@@ -48,8 +43,8 @@ namespace BattleDrakeCreations.TTBTk
         {
             if (_instancedTiles.ContainsKey(tileData.index))
                 _instancedTiles.Remove(tileData.index);
-            if (_selectedTiles.ContainsKey(tileData.index))
-                _selectedTiles.Remove(tileData.index);
+            if (_selectedTiles.Contains(tileData.tileMatrix))
+                _selectedTiles.Remove(tileData.tileMatrix);
 
             //if (tileData.tileStates.Contains(TileState.Hovered))
             //{
@@ -57,33 +52,30 @@ namespace BattleDrakeCreations.TTBTk
             //}
         }
 
-        public void AddState(Vector2Int index, TileState state)
+        public void AddState(GridIndex index, TileState state)
         {
             if (state == TileState.Hovered)
             {
-                if (_selectedTiles.ContainsKey(index))
+                if (_instancedTiles.TryGetValue(index, out TileData tileData))
                 {
-                    _hoveredTile = _selectedTiles[index];
-                }
-                else
-                {
-                    if (_instancedTiles.TryGetValue(index, out TileData tileData))
-                    {
-                        _hoveredTile = tileData;
-                    }
+                    _hoveredTile = tileData;
                 }
             }
             if (state == TileState.Selected)
             {
-                _selectedTiles.TryAdd(index, _hoveredTile);
+                _selectedTiles.Add(_hoveredTile.tileMatrix);
             }
-            if(state == TileState.IsNeighbor)
+            if (state == TileState.IsNeighbor)
             {
-                _neighborTiles.TryAdd(index, _instancedTiles[index]);
+                _neighborTiles.Add(_instancedTiles[index].tileMatrix);
+            }
+            if(state == TileState.IsPath)
+            {
+                _pathTiles.Add(_instancedTiles[index].tileMatrix);
             }
         }
 
-        public void RemoveState(Vector2Int index, TileState state)
+        public void RemoveState(GridIndex index, TileState state)
         {
             if (state == TileState.Hovered)
             {
@@ -91,11 +83,15 @@ namespace BattleDrakeCreations.TTBTk
             }
             if (state == TileState.Selected)
             {
-                _selectedTiles.Remove(index, out TileData tileData);
+                _selectedTiles.Remove(_instancedTiles[index].tileMatrix);
             }
-            if(state == TileState.IsNeighbor)
+            if (state == TileState.IsNeighbor)
             {
-                _neighborTiles.Remove(index);
+                _neighborTiles.Remove(_instancedTiles[index].tileMatrix);
+            }
+            if(state == TileState.IsPath)
+            {
+                _pathTiles.Remove(_instancedTiles[index].tileMatrix);
             }
         }
 
@@ -115,41 +111,30 @@ namespace BattleDrakeCreations.TTBTk
         {
             if (_instancedTiles.Count > 0)
             {
-                //Performance Optimization: Linq created too many allocations which resulted in frequent framedrops when tile count was high.
-                //if (_currentDefaultCount != _instancedTiles.Count)
-                //{
-                //    _defaultRenders.Clear();
-                //    for (int i = 0; i < _instancedTiles.Count; i++)
-                //    {
-                //        InstanceData newData;
-                //        newData.objectToWorld = _instancedTiles.ElementAt(i).Value.tileMatrix;
-                //        newData.renderingLayerMask = 1 << 7;
-                //        _defaultRenders.Add(newData);
-                //    }
-                //    _currentDefaultCount = _instancedTiles.Count;
-                //}
-                Graphics.RenderMeshInstanced(_renderParams, _instancedMesh, 0, _instancedTiles.Values.Select(t => t.tileMatrix).ToList());
+                //Performance Optimization: Linq creates too many allocations which results in frequent heavy framedrops when tile count is high.
+                if (_currentDefaultCount != _instancedTiles.Count)
+                {
+                    _defaultRenders.Clear();
+                    for (int i = 0; i < _instancedTiles.Count; i++)
+                    {
+                        Matrix4x4 instanceMatrix = _instancedTiles.ElementAt(i).Value.tileMatrix;
+                        _defaultRenders.Add(instanceMatrix);
+                    }
+                    _currentDefaultCount = _instancedTiles.Count;
+                }
+                Graphics.RenderMeshInstanced(_renderParams, _instancedMesh, 0, _defaultRenders);
             }
             if (_selectedTiles.Count > 0)
             {
-                //Performance Optimization: Linq created too many allocations which resulted in frequent framedrops when tile count was high.
-                //if(_currentSelectedCount != _selectedTiles.Count)
-                //{
-                //    _selectedRenders.Clear();
-                //    for (int i = 0; i < _selectedTiles.Count; i++)
-                //    {
-                //        InstanceData newData;
-                //        newData.objectToWorld = _selectedTiles.ElementAt(i).Value.tileMatrix;
-                //        newData.renderingLayerMask = 1 << 6;
-                //        _selectedRenders.Add(newData);
-                //    }
-                //    _currentSelectedCount = _selectedTiles.Count;
-                //}
-                Graphics.RenderMeshInstanced(_selectedParams, _instancedMesh, 0, _selectedTiles.Values.Select(t => t.tileMatrix).ToList());
+                Graphics.RenderMeshInstanced(_selectedParams, _instancedMesh, 0, _selectedTiles);
             }
             if (_neighborTiles.Count > 0)
             {
-                Graphics.RenderMeshInstanced(_neighborParams, _instancedMesh, 0, _neighborTiles.Values.Select(t => t.tileMatrix).ToList());
+                Graphics.RenderMeshInstanced(_neighborParams, _instancedMesh, 0, _neighborTiles);
+            }
+            if(_pathTiles.Count > 0)
+            {
+                Graphics.RenderMeshInstanced(_pathParams, _instancedMesh, 0, _pathTiles);
             }
             if (!_hoveredTile.Equals(default(TileData)))
             {
@@ -162,6 +147,7 @@ namespace BattleDrakeCreations.TTBTk
             _instancedTiles.Clear();
             _selectedTiles.Clear();
             _neighborTiles.Clear();
+            _pathTiles.Clear();
             _hoveredTile = default(TileData);
         }
 
@@ -172,6 +158,7 @@ namespace BattleDrakeCreations.TTBTk
             _instancedMaterial = new Material(material);
             _selectedMaterial = new Material(material);
             _neighborMaterial = new Material(material);
+            _pathMaterial = new Material(material);
             _hoveredMaterial = new Material(material);
 
             _instancedMaterial.color = color;
@@ -179,18 +166,28 @@ namespace BattleDrakeCreations.TTBTk
             _selectedMaterial.SetFloat("_IsFilled", 1f);
             _neighborMaterial.color = Color.magenta;
             _neighborMaterial.SetFloat("_IsFilled", 0.5f);
+            _pathMaterial.color = Color.blue;
+            _pathMaterial.SetFloat("_IsFilled", 1f);
             _hoveredMaterial.color = Color.yellow;
             _hoveredMaterial.SetFloat("_IsFilled", 0.5f);
 
             _renderParams = new RenderParams(_instancedMaterial);
             _selectedParams = new RenderParams(_selectedMaterial);
             _neighborParams = new RenderParams(_neighborMaterial);
+            _pathParams = new RenderParams(_pathMaterial);
             _hoveredParams = new RenderParams(_hoveredMaterial);
 
             gridTiles.ForEach(tile =>
             {
                 _instancedTiles.Add(tile.index, tile);
             });
+
+            _currentDefaultCount = 0;
+        }
+
+        public void ClearPathVisual()
+        {
+            _pathTiles.Clear();
         }
     }
 }

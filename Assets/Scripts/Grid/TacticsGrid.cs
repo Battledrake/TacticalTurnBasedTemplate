@@ -15,11 +15,11 @@ namespace BattleDrakeCreations.TTBTk
     [ExecuteInEditMode]
     public class TacticsGrid : MonoBehaviour
     {
-        public event Action<Vector2Int> TileDataUpdated;
+        public event Action<GridIndex> TileDataUpdated;
         public event Action GridDestroyed;
 
         [SerializeField] private GridShape _gridShapeToggle = GridShape.Square;
-        [SerializeField] private Vector2Int _gridTileCount;
+        [SerializeField] private GridIndex _gridTileCount;
         [SerializeField] private Vector3 _gridTileSize;
         [SerializeField] private bool _useEnvironment = false;
 
@@ -27,9 +27,9 @@ namespace BattleDrakeCreations.TTBTk
 
         [SerializeField] private GridPathfinding _gridPathfinder;
 
-        public Dictionary<Vector2Int, TileData> GridTiles { get => _gridTiles; }
+        public Dictionary<GridIndex, TileData> GridTiles { get => _gridTiles; }
         public GridVisual GridVisual { get => _gridVisual; }
-        public Vector2Int GridTileCount { get => _gridTileCount; set => _gridTileCount = value; }
+        public GridIndex GridTileCount { get => _gridTileCount; set => _gridTileCount = value; }
         public Vector3 TileSize { get => _gridTileSize; set => _gridTileSize = value; }
         public GridShape GridShape { get => _gridShape; set { _gridShape = value; } }
         public bool UseEnvironment { get => _useEnvironment; set => _useEnvironment = value; }
@@ -39,7 +39,7 @@ namespace BattleDrakeCreations.TTBTk
         private Vector3 _gridPosition = Vector3.zero;
         private GridShape _gridShape = GridShape.None;
 
-        private Dictionary<Vector2Int, TileData> _gridTiles = new Dictionary<Vector2Int, TileData>();
+        private Dictionary<GridIndex, TileData> _gridTiles = new Dictionary<GridIndex, TileData>();
 
         /* Bro, I don't know what's going on with this method, but it keeps disabling the script */
         //private void Awake()
@@ -71,7 +71,7 @@ namespace BattleDrakeCreations.TTBTk
             return DataManager.GetShapeData(_gridShape);
         }
 
-        public bool IsIndexValid(Vector2Int index)
+        public bool IsIndexValid(GridIndex index)
         {
             return _gridTiles.ContainsKey(index);
         }
@@ -97,9 +97,9 @@ namespace BattleDrakeCreations.TTBTk
             return new Vector3(-999, -999, -999);
         }
 
-        public List<Vector2Int> GetAllTilesWithState(TileState tileState)
+        public List<GridIndex> GetAllTilesWithState(TileState tileState)
         {
-            List<Vector2Int> tiles = new List<Vector2Int>();
+            List<GridIndex> tiles = new List<GridIndex>();
             for(int i = 0; i < _gridTiles.Count; i++)
             {
                 HashSet<TileState> tileStates = _gridTiles.ElementAt(i).Value.tileStates;
@@ -113,7 +113,7 @@ namespace BattleDrakeCreations.TTBTk
 
         public void ClearStateFromTiles(TileState stateToClear)
         {
-            List<Vector2Int> tilesWithState = GetAllTilesWithState(stateToClear);
+            List<GridIndex> tilesWithState = GetAllTilesWithState(stateToClear);
             for(int i = 0; i < tilesWithState.Count; i++)
             {
                 RemoveStateFromTile(tilesWithState[i], stateToClear);
@@ -126,7 +126,7 @@ namespace BattleDrakeCreations.TTBTk
             Vector3 gridCenter = GetGridCenterPosition();
             //gridCenter.y += _gridTileSize.y / 2; //Do we want this here? Will this cause confusion later? *Prevents bounds being underneathe grid plane.
             float gridWidth = _gridTileCount.x * _gridTileSize.x;
-            float gridHeight = _gridTileCount.y * _gridTileSize.y;
+            float gridHeight = _gridTileCount.z * _gridTileSize.y;
 
             return new Bounds(gridCenter, new Vector3(gridWidth, _gridTileSize.y, gridHeight));
         }
@@ -136,19 +136,19 @@ namespace BattleDrakeCreations.TTBTk
             Vector3 startPos = this.transform.position - _gridTileSize / 2;
             startPos.y = this.transform.position.y + 0.1f;
             Vector3 widthPos = new Vector3(startPos.x + _gridTileSize.x * _gridTileCount.x / 2, startPos.y, startPos.z);
-            Vector3 widthHeightPos = new Vector3(widthPos.x, startPos.y, widthPos.z + _gridTileSize.z * _gridTileCount.y / 2);
+            Vector3 widthHeightPos = new Vector3(widthPos.x, startPos.y, widthPos.z + _gridTileSize.z * _gridTileCount.z / 2);
 
             return widthHeightPos;
         }
 
-        public Vector2Int GetTileIndexUnderCursor()
+        public GridIndex GetTileIndexUnderCursor()
         {
             return GetTileIndexFromWorldPosition(GetCursorPositionOnGrid());
         }
 
-        public Vector2Int GetTileIndexFromWorldPosition(Vector3 worldPosition)
+        public GridIndex GetTileIndexFromWorldPosition(Vector3 worldPosition)
         {
-            Vector2Int tileIndex = new Vector2Int(-999, -999);
+            GridIndex tileIndex = new GridIndex(-999, -999);
             Vector3 gridPosition = worldPosition - this.transform.position;
 
             switch (_gridShape)
@@ -169,34 +169,34 @@ namespace BattleDrakeCreations.TTBTk
             return tileIndex;
         }
 
-        private Vector2Int CalculateIndexForSquare(Vector3 gridPosition)
+        private GridIndex CalculateIndexForSquare(Vector3 gridPosition)
         {
             Vector3 snappedPosition = GridStatics.SnapVectorToVector(gridPosition, _gridTileSize);
             Vector2 gridPositionSnapped = new Vector2(snappedPosition.x, snappedPosition.z);
-            return Vector2Int.RoundToInt(gridPositionSnapped / _gridTileSize);
+            return GridIndex.RoundToInt(gridPositionSnapped / _gridTileSize);
         }
 
-        private Vector2Int CalculateIndexForHexagon(Vector3 worldPosition)
+        private GridIndex CalculateIndexForHexagon(Vector3 worldPosition)
         {
             int roughX = Mathf.RoundToInt((worldPosition.x - this.transform.position.x) / _gridTileSize.x);
             int roughZ = Mathf.RoundToInt((worldPosition.z - this.transform.position.z) / _gridTileSize.z / 0.75f);
-            Vector2Int roughIndex = Vector2Int.RoundToInt(new Vector2(roughX, roughZ));
+            GridIndex roughIndex = GridIndex.RoundToInt(new Vector2(roughX, roughZ));
 
             bool isOddRow = roughZ % 2 == 1;
 
-            List<Vector2Int> neighborList = new List<Vector2Int>
+            List<GridIndex> neighborList = new List<GridIndex>
             {
-                roughIndex + new Vector2Int(-1, 0),
-                roughIndex + new Vector2Int(1, 0),
+                roughIndex + new GridIndex(-1, 0),
+                roughIndex + new GridIndex(1, 0),
 
-                roughIndex + new Vector2Int(isOddRow ? 1 : -1, 1),
-                roughIndex + new Vector2Int(0, 1),
+                roughIndex + new GridIndex(isOddRow ? 1 : -1, 1),
+                roughIndex + new GridIndex(0, 1),
 
-                roughIndex + new Vector2Int(isOddRow ? 1 : -1, -1),
-                roughIndex + new Vector2Int(0, -1)
+                roughIndex + new GridIndex(isOddRow ? 1 : -1, -1),
+                roughIndex + new GridIndex(0, -1)
             };
 
-            Vector2Int closestPoint = roughIndex;
+            GridIndex closestPoint = roughIndex;
 
             neighborList.ForEach(n =>
             {
@@ -209,17 +209,17 @@ namespace BattleDrakeCreations.TTBTk
             return closestPoint;
         }
 
-        private Vector2Int CalculateIndexForTriangle(Vector3 gridPosition)
+        private GridIndex CalculateIndexForTriangle(Vector3 gridPosition)
         {
             Vector3 snapToVector = new Vector3(_gridTileSize.x / 2f, _gridTileSize.y / 1f, _gridTileSize.z / 1f);
             Vector3 snappedPosition = GridStatics.SnapVectorToVector(gridPosition, snapToVector);
 
             Vector2 vectorTwoPosition = new Vector2(snappedPosition.x, snappedPosition.z);
 
-            return Vector2Int.RoundToInt((vectorTwoPosition / _gridTileSize) * new Vector2(2f, 1f));
+            return GridIndex.RoundToInt((vectorTwoPosition / _gridTileSize) * new Vector2(2f, 1f));
         }
 
-        public Vector3 GetTilePositionFromGridIndex(Vector2Int gridIndex)
+        public Vector3 GetTilePositionFromGridIndex(GridIndex gridIndex)
         {
             Vector2 offset = gridIndex * Vector2.one;
 
@@ -228,7 +228,7 @@ namespace BattleDrakeCreations.TTBTk
                 case GridShape.Square:
                     break;
                 case GridShape.Hexagon:
-                    offset.x += Mathf.Abs(gridIndex.y) % 2 == 1 ? 0.5f : 0.0f;
+                    offset.x += Mathf.Abs(gridIndex.z) % 2 == 1 ? 0.5f : 0.0f;
                     offset.y *= 0.75f;
                     break;
                 case GridShape.Triangle:
@@ -247,7 +247,7 @@ namespace BattleDrakeCreations.TTBTk
             return tilePosition;
         }
 
-        public Quaternion GetTileRotationFromGridIndex(Vector2Int gridIndex)
+        public Quaternion GetTileRotationFromGridIndex(GridIndex gridIndex)
         {
             Vector3 rotationVector = new Vector3(-90.0f, 0.0f, 90.0f); //Imported meshes are using Unreal Coordinate System. Adjusting for Unity.
 
@@ -257,7 +257,7 @@ namespace BattleDrakeCreations.TTBTk
                 {
                     rotationVector.y = 180.0f;
                 }
-                if (gridIndex.y % 2 != 0)
+                if (gridIndex.z % 2 != 0)
                 {
                     rotationVector.y += 180.0f;
                 }
@@ -265,7 +265,7 @@ namespace BattleDrakeCreations.TTBTk
             return Quaternion.Euler(rotationVector);
         }
 
-        public void SpawnGrid(Vector3 gridPosition, Vector3 tileSize, Vector2Int tileCount, GridShape gridShape)
+        public void SpawnGrid(Vector3 gridPosition, Vector3 tileSize, GridIndex tileCount, GridShape gridShape)
         {
             _gridPosition = gridPosition;
             _gridShape = gridShape;
@@ -274,15 +274,15 @@ namespace BattleDrakeCreations.TTBTk
             if (_gridShape != GridShape.None)
             {
                 List<TileData> tilesToRender = new List<TileData>();
-                for (int z = 0; z < _gridTileCount.y; ++z)
+                for (int z = 0; z < _gridTileCount.z; ++z)
                 {
                     for (int x = 0; x < _gridTileCount.x; ++x)
                     {
                         TileData tileData = new TileData(); //Do we need TileData? With the fact we're using RenderMeshInstanced, there's never a need to find an instance. Just update the list of rendering stuff.
-                        tileData.index = new Vector2Int(x, z);
+                        tileData.index = new GridIndex(x, z);
 
-                        Vector3 instancePosition = GetTilePositionFromGridIndex(new Vector2Int(x, z));
-                        Quaternion instanceRotation = GetTileRotationFromGridIndex(new Vector2Int(x, z));
+                        Vector3 instancePosition = GetTilePositionFromGridIndex(new GridIndex(x, z));
+                        Quaternion instanceRotation = GetTileRotationFromGridIndex(new GridIndex(x, z));
                         Vector3 instanceScale = _gridTileSize;
 
                         if (!_useEnvironment)
@@ -356,7 +356,7 @@ namespace BattleDrakeCreations.TTBTk
             TileDataUpdated?.Invoke(tileData.index);
         }
 
-        public void RemoveGridTile(Vector2Int index)
+        public void RemoveGridTile(GridIndex index)
         {
             if(_gridTiles.Remove(index, out TileData tileData))
             {
@@ -367,7 +367,7 @@ namespace BattleDrakeCreations.TTBTk
             }
         }
 
-        public void AddStateToTile(Vector2Int index, TileState tileState)
+        public void AddStateToTile(GridIndex index, TileState tileState)
         {
             if (_gridTiles.ContainsKey(index))
             {
@@ -387,7 +387,7 @@ namespace BattleDrakeCreations.TTBTk
             }
         }
 
-        public void RemoveStateFromTile(Vector2Int index, TileState tileState)
+        public void RemoveStateFromTile(GridIndex index, TileState tileState)
         {
             if (_gridTiles.ContainsKey(index))
             {

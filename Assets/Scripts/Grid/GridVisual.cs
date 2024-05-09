@@ -8,12 +8,13 @@ namespace BattleDrakeCreations.TTBTk
         None,
         Hovered,
         Selected,
-        IsNeighbor
+        IsNeighbor,
+        IsPath
     }
 
     public struct TileData
     {
-        public Vector2Int index;
+        public GridIndex index;
         public TileType tileType;
         public Matrix4x4 tileMatrix;
         public HashSet<TileState> tileStates;
@@ -23,18 +24,14 @@ namespace BattleDrakeCreations.TTBTk
     [RequireComponent(typeof(GridMeshInstancer))]
     public class GridVisual : MonoBehaviour
     {
+        [Header("Dependencies")]
+        [SerializeField] private GridMeshInstancer _gridMeshInstance;
+        [SerializeField] private TacticsGrid _tacticsGrid;
+
         public TacticsGrid TacticsGrid { get => _tacticsGrid; }
         public float GroundOffset { get => _groundOffset; set => SetOffsetFromGround(value); }
 
-        private GridMeshInstancer _gridMeshInstance;
-        private TacticsGrid _tacticsGrid; //No use currently but might be nice to have for future debugging
         private float _groundOffset = 0.1f;
-
-        private void Awake()
-        {
-            _tacticsGrid = this.GetComponent<TacticsGrid>();
-            _gridMeshInstance = this.GetComponent<GridMeshInstancer>();
-        }
 
         private void SetOffsetFromGround(float value)
         {
@@ -65,12 +62,12 @@ namespace BattleDrakeCreations.TTBTk
             }
         }
 
-        public void AddTileState(Vector2Int index, TileState tileState)
+        public void AddTileState(GridIndex index, TileState tileState)
         {
             _gridMeshInstance.AddState(index, tileState);
         }
 
-        public void RemoveTileState(Vector2Int index, TileState tileState)
+        public void RemoveTileState(GridIndex index, TileState tileState)
         {
             _gridMeshInstance.RemoveState(index, tileState);
         }
@@ -78,6 +75,11 @@ namespace BattleDrakeCreations.TTBTk
         public void ClearGridVisual()
         {
             _gridMeshInstance.ClearInstances();
+        }
+
+        public void ClearPathVisual()
+        {
+            _gridMeshInstance.ClearPathVisual();
         }
     }
 }

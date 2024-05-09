@@ -4,7 +4,7 @@ namespace BattleDrakeCreations.TTBTk
 {
     public class DecreaseTileHeightAction : ActionBase
     {
-        public override bool ExecuteAction(Vector2Int index)
+        public override bool ExecuteAction(GridIndex index)
         {
             if (_playerActions.TacticsGrid.IsIndexValid(index))
             {

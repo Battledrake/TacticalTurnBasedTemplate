@@ -10,6 +10,6 @@ namespace BattleDrakeCreations.TTBTk
 
         public void InitializeAction(PlayerActions playerActions) { _playerActions = playerActions; }
 
-        public abstract bool ExecuteAction(Vector2Int index);
+        public abstract bool ExecuteAction(GridIndex index);
     }
 }
