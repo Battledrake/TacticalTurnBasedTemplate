@@ -55,10 +55,13 @@ namespace BattleDrakeCreations.TTBTk
             if (_selectedTiles.Contains(tileData.tileMatrix))
                 _selectedTiles.Remove(tileData.tileMatrix);
 
-            //if (tileData.tileStates.Contains(TileState.Hovered))
-            //{
-            //    _hoveredTile = default(TileData);
-            //}
+            if (tileData.tileStates != null)
+            {
+                if (tileData.tileStates.Contains(TileState.Hovered))
+                {
+                    _hoveredTile.tileMatrix = new Matrix4x4();
+                }
+            }
         }
 
         public void AddState(GridIndex index, TileState state)
@@ -78,7 +81,7 @@ namespace BattleDrakeCreations.TTBTk
             {
                 _neighborTiles.Add(_instancedTiles[index].tileMatrix);
             }
-            if(state == TileState.IsInPath)
+            if (state == TileState.IsInPath)
             {
                 _pathTiles.Add(_instancedTiles[index].tileMatrix);
             }
@@ -98,7 +101,7 @@ namespace BattleDrakeCreations.TTBTk
             {
                 _neighborTiles.Remove(_instancedTiles[index].tileMatrix);
             }
-            if(state == TileState.IsInPath)
+            if (state == TileState.IsInPath)
             {
                 _pathTiles.Remove(_instancedTiles[index].tileMatrix);
             }
@@ -141,7 +144,7 @@ namespace BattleDrakeCreations.TTBTk
             {
                 Graphics.RenderMeshInstanced(_neighborParams, _instancedMesh, 0, _neighborTiles);
             }
-            if(_pathTiles.Count > 0)
+            if (_pathTiles.Count > 0)
             {
                 Graphics.RenderMeshInstanced(_pathParams, _instancedMesh, 0, _pathTiles);
             }
