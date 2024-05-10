@@ -272,6 +272,10 @@ namespace BattleDrakeCreations.TTBTk
             {
                 return GetAxialDistance(ConvertOddrToAxial(source), ConvertOddrToAxial(target)) * terrainCost;
             }
+            if (_tacticsGrid.GridShape == GridShape.Triangle)
+            {
+                return GetTriangleDistance(source, target) * terrainCost;
+            }
 
             float traversalCost = 1f;
             switch (_traversalCost)
@@ -302,6 +306,10 @@ namespace BattleDrakeCreations.TTBTk
             {
                 return GetAxialDistance(ConvertOddrToAxial(source), ConvertOddrToAxial(target));
             }
+            if(_tacticsGrid.GridShape == GridShape.Triangle)
+            {
+                return GetTriangleDistance(source, target);
+            }    
 
             switch (_heuristicCost)
             {
@@ -495,6 +503,25 @@ namespace BattleDrakeCreations.TTBTk
             return new GridIndex(q, r);
         }
 
+        public float GetAxialDistance(GridIndex source, GridIndex target)
+        {
+            GridIndex distance = source - target;
+            return (Mathf.Abs(distance.x) + Mathf.Abs(distance.x + distance.z) + Mathf.Abs(distance.z)) / 2;
+        }
+
+        public float GetTriangleDistance(GridIndex source, GridIndex target)
+        {
+            float triangleHeight = Mathf.Sqrt(3) / 2;
+            float triangleWidth = _tacticsGrid.TileSize.x;
+
+            float x1 = source.x + (source.z & 1) * 0.5f;
+            float y1 = source.z * triangleHeight;
+            float x2 = target.x + (target.z & 1) * 0.5f;
+            float y2 = target.z * triangleHeight;
+
+            return Mathf.Sqrt(Mathf.Pow(x2 - x1, 2) + Mathf.Pow(y2 - y1, 2));
+        }
+
         //Chess style
         private float GetChebyshevDistance(GridIndex source, GridIndex target)
         {
@@ -548,12 +575,6 @@ namespace BattleDrakeCreations.TTBTk
             GridIndex distance = (source - target).Abs();
 
             return Mathf.Sqrt(distance.x * distance.x + distance.z * distance.z);
-        }
-
-        public float GetAxialDistance(GridIndex source, GridIndex target)
-        {
-            GridIndex distance = source - target;
-            return (Mathf.Abs(distance.x) + Mathf.Abs(distance.x + distance.z) + Mathf.Abs(distance.z)) / 2;
         }
     }
 }
