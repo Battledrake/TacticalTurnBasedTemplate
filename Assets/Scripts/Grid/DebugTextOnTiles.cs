@@ -13,30 +13,87 @@ namespace BattleDrakeCreations.TTBTk
         [Header("Dependencies")]
         [SerializeField] private TacticsGrid _tacticsGrid;
 
+        public bool ShowTileIndexes { get => _showTileIndexes; set => _showTileIndexes = value; }
+        public bool ShowTraversalCost { get => _showTraversalCost; set => _showTraversalCost = value; }
+        public bool ShowHeuristicCost { get => _showHeuristicCost; set => _showHeuristicCost = value; }
+        public bool ShowTotalCost { get => _showTotalCost; set => _showTotalCost = value; }
+
         private Dictionary<GridIndex, GameObject> _spawnedTexts = new Dictionary<GridIndex, GameObject>();
 
-        private bool _showTileText;
+        private bool _showDebugText = false;
+        private bool _showTileIndexes = false;
+        private bool _showTraversalCost = false;
+        private bool _showHeuristicCost = false;
+        private bool _showTotalCost = false;
 
         private void OnEnable()
         {
-            _tacticsGrid.TileDataUpdated += (i => UpdateTextOnTile(i));
-            _tacticsGrid.GridDestroyed += ClearAllTextGameObjects;
+            _tacticsGrid.OnTileDataUpdated += (i => UpdateTextOnTile(i));
+            _tacticsGrid.OnGridDestroyed += ClearAllTextGameObjects;
+            _tacticsGrid.GridPathfinder.OnPathfindingDataUpdated += UpdateTextOnTile;
+            _tacticsGrid.GridPathfinder.OnPathfindingDataCleared += UpdateTextOnAllTiles;
         }
 
         private void OnDisable()
         {
-            _tacticsGrid.TileDataUpdated -= (i => UpdateTextOnTile(i));
-            _tacticsGrid.GridDestroyed -= ClearAllTextGameObjects;
+            _tacticsGrid.OnTileDataUpdated -= (i => UpdateTextOnTile(i));
+            _tacticsGrid.OnGridDestroyed -= ClearAllTextGameObjects;
         }
 
-        public bool UpdateTextOnTile(GridIndex index)
+        private bool ShowAnyDebug()
         {
-            if (_showTileText && _tacticsGrid.GridTiles.TryGetValue(index, out TileData tileData) && GridStatics.IsTileTypeWalkable(tileData.tileType))
+            return _showTileIndexes || NeedPathfindingData();
+        }
+
+        private bool NeedPathfindingData()
+        {
+            return _showTraversalCost || _showHeuristicCost || _showTotalCost;
+        }
+
+        public void UpdateTextOnAllTiles()
+        {
+            for(int i = 0; i < _tacticsGrid.GridTiles.Count; i++)
             {
+                UpdateTextOnTile(_tacticsGrid.GridTiles.ElementAt(i).Key);
+            }
+        }
 
-                TextMeshPro textObject = GetTextGameObject(index).GetComponent<TextMeshPro>();
+        public void UpdateTextOnTile(GridIndex index)
+        {
+            if (_showDebugText && _tacticsGrid.GridTiles.TryGetValue(index, out TileData tileData) && GridStatics.IsTileTypeWalkable(tileData.tileType))
+            {
+                string debugText = "";
+                TextMeshPro textObject = GetTextGameObject(index)?.GetComponent<TextMeshPro>();
 
-                textObject.text = string.Format("{0},{1}", index.x, index.z);
+                if (_showTileIndexes)
+                    debugText += $"index: {index}\n";
+
+                if (NeedPathfindingData())
+                {
+                    if(_tacticsGrid.GridPathfinder.PathNodePool != null)
+                    {
+                        if (_tacticsGrid.GridPathfinder.PathNodePool.TryGetValue(index, out PathNode pathNode))
+                        {
+                            if (_showTraversalCost && pathNode.traversalCost != Mathf.Infinity)
+                                debugText += string.Format("traversal:{0:F1}\n", pathNode.traversalCost);
+
+                            if (_showHeuristicCost && pathNode.heuristicCost != Mathf.Infinity)
+                                debugText += string.Format("heuristic:{0:F1}\n", pathNode.heuristicCost);
+
+                            if (_showTotalCost && pathNode.totalCost != Mathf.Infinity)
+                                debugText += string.Format("total:{0:F1}\n", pathNode.totalCost);
+                        }
+                    }
+                }
+
+                if (string.IsNullOrEmpty(debugText))
+                {
+                    Debug.Log("Tell me yyyy");
+                    DestroyTextGameObject(index);
+                    return;
+                }
+
+                textObject.text = debugText;
 
                 Vector3 tilePosition = tileData.tileMatrix.GetPosition();
                 tilePosition.y += 0.1f;
@@ -48,7 +105,6 @@ namespace BattleDrakeCreations.TTBTk
             {
                 DestroyTextGameObject(index);
             }
-            return false;
         }
 
         public GameObject GetTextGameObject(GridIndex index)
@@ -65,16 +121,16 @@ namespace BattleDrakeCreations.TTBTk
             }
         }
 
-        public void ShowTileText(bool showText)
+        public void UpdateDebugText()
         {
-            _showTileText = showText;
-            if (!_showTileText)
+            _showDebugText = ShowAnyDebug();
+            if (!_showDebugText)
             {
                 ClearAllTextGameObjects();
             }
             else
             {
-                for(int i = 0; i < _tacticsGrid.GridTiles.Count; i++)
+                for (int i = 0; i < _tacticsGrid.GridTiles.Count; i++)
                 {
                     UpdateTextOnTile(_tacticsGrid.GridTiles.ElementAt(i).Key);
                 }

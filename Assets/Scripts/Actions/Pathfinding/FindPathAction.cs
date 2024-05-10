@@ -17,19 +17,12 @@ namespace BattleDrakeCreations.TTBTk
                 _lastPath.Clear();
             }
 
-            //if (index == _lastIndex)
-            //{
-            //    _lastIndex = new GridIndex(int.MinValue, int.MinValue);
-            //    return false;
-            //}
-            //_lastIndex = index;
-
             GridIndex previousTile = _playerActions.SelectedTile;
             if (previousTile != index)
             {
                 PathData pathData;
                 pathData.allowPartialSolution = true;
-                pathData.heightAllowance = 4f;
+                pathData.heightAllowance = 2f;
                 pathData.includeDiagonals = actionValue == 1;
                 pathData.includeStartNode = false;
 

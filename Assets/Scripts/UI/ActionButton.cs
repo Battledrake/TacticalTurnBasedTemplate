@@ -66,7 +66,7 @@ namespace BattleDrakeCreations.TTBTk
         {
             if (isDown)
             {
-                _playerActions.SelectedActionsChanged += OnSelectedActionsChanged;
+                _playerActions.OnSelectedActionsChanged += OnSelectedActionsChanged;
                 _playerActions.SetSelectedActions(_leftClickAction, _rightClickAction);
             }
             else
@@ -76,7 +76,7 @@ namespace BattleDrakeCreations.TTBTk
                     _isActive = false;
                     _playerActions.ClearSelectedActions();
                 }
-                _playerActions.SelectedActionsChanged -= OnSelectedActionsChanged;
+                _playerActions.OnSelectedActionsChanged -= OnSelectedActionsChanged;
             }
         }
     }

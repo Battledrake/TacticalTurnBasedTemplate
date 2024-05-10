@@ -9,9 +9,10 @@ namespace BattleDrakeCreations.TTBTk
     public class PathNode : IComparable<PathNode>
     {
         public GridIndex index = new GridIndex(int.MinValue, int.MinValue);
-        public int terrainCost = 1;
-        public float traversalCost = int.MaxValue;
-        public float totalCost = int.MaxValue;
+        public float terrainCost = 1f;
+        public float traversalCost = Mathf.Infinity;
+        public float heuristicCost = Mathf.Infinity;
+        public float totalCost = Mathf.Infinity;
         public GridIndex parent = new GridIndex(int.MinValue, int.MinValue);
 
         public bool isOpened;
@@ -67,6 +68,9 @@ namespace BattleDrakeCreations.TTBTk
             SharpDiagonals
         }
 
+        public event Action<GridIndex> OnPathfindingDataUpdated;
+        public event Action OnPathfindingDataCleared;
+
         [SerializeField] private TacticsGrid _tacticsGrid;
 
         public bool IncludeDiagonals { get => _includeDiagonals; set => _includeDiagonals = value; }
@@ -78,6 +82,8 @@ namespace BattleDrakeCreations.TTBTk
         public bool AllowPartialSolution { get => _allowPartialSolution; set => _allowPartialSolution = value; }
         public bool IgnoreClosed { get => _ignoreClosed; set => _ignoreClosed = value; }
         public bool IncludeStartNodeInPath { get => _includeStartNodeInPath; set => _includeStartNodeInPath = value; }
+
+        public Dictionary<GridIndex, PathNode> PathNodePool { get => _pathNodePool; }
 
         private bool _includeDiagonals = false;
         private float _heightAllowance = 2f;
@@ -97,7 +103,7 @@ namespace BattleDrakeCreations.TTBTk
         private bool _includeStartNodeInPath = true;
 
         private PriorityQueue<PathNode> _frontierNodes;
-        private Dictionary<GridIndex, PathNode> _nodePool;
+        private Dictionary<GridIndex, PathNode> _pathNodePool;
 
         public PathResult FindPath(GridIndex startIndex, GridIndex targetIndex, out List<GridIndex> outPath, PathData pathData)
         {
@@ -108,7 +114,8 @@ namespace BattleDrakeCreations.TTBTk
             if (startIndex == targetIndex)
                 return PathResult.SearchSuccess;
 
-            _nodePool = new Dictionary<GridIndex, PathNode>();
+            _pathNodePool = new Dictionary<GridIndex, PathNode>();
+            OnPathfindingDataCleared?.Invoke();
             _frontierNodes = new PriorityQueue<PathNode>();
 
             //float timeStart = Time.realtimeSinceStartup;
@@ -166,7 +173,7 @@ namespace BattleDrakeCreations.TTBTk
                     continue;
 
                 PathNode neighborNode = null;
-                if (_nodePool.TryGetValue(neighbor, out PathNode existingNeighbor))
+                if (_pathNodePool.TryGetValue(neighbor, out PathNode existingNeighbor))
                     neighborNode = existingNeighbor;
                 else
                     neighborNode = CreateAndAddNodeToPool(neighbor);
@@ -182,6 +189,7 @@ namespace BattleDrakeCreations.TTBTk
                     continue;
 
                 neighborNode.traversalCost = newTraversalCost;
+                neighborNode.heuristicCost = newHeuristic;
                 neighborNode.totalCost = newTotalCost;
                 neighborNode.parent = currentNode.index;
                 neighborNode.isClosed = false;
@@ -189,6 +197,7 @@ namespace BattleDrakeCreations.TTBTk
                 if (!neighborNode.isOpened)
                 {
                     _frontierNodes.Enqueue(neighborNode);
+                    OnPathfindingDataUpdated?.Invoke(neighborNode.index);
                     neighborNode.isOpened = true;
                 }
 
@@ -213,7 +222,7 @@ namespace BattleDrakeCreations.TTBTk
             while (currentNode.index != startNode.index)
             {
                 tileIndexes.Add(currentNode.parent);
-                currentNode = _nodePool[currentNode.parent];
+                currentNode = _pathNodePool[currentNode.parent];
                 pathLength++;
             }
 
@@ -229,11 +238,17 @@ namespace BattleDrakeCreations.TTBTk
         {
             PathNode node = new PathNode();
             node.index = index;
-            _nodePool.TryAdd(index, node);
+            _pathNodePool.TryAdd(index, node);
             return node;
         }
 
-        private float GetTraversalCost(GridIndex source, GridIndex target, int terrainCost)
+        public void ClearNodePool()
+        {
+            _pathNodePool.Clear();
+            OnPathfindingDataCleared?.Invoke();
+        }
+
+        private float GetTraversalCost(GridIndex source, GridIndex target, float terrainCost)
         {
             float traversalCost = 1f;
             switch (_traversalCost)
@@ -255,7 +270,7 @@ namespace BattleDrakeCreations.TTBTk
                     break;
                     
             }
-            return traversalCost + terrainCost;
+            return traversalCost * terrainCost;
         }
 
         private float GetHeuristicCost(GridIndex source, GridIndex target)

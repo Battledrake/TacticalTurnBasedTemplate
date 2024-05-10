@@ -15,8 +15,8 @@ namespace BattleDrakeCreations.TTBTk
     [ExecuteInEditMode]
     public class TacticsGrid : MonoBehaviour
     {
-        public event Action<GridIndex> TileDataUpdated;
-        public event Action GridDestroyed;
+        public event Action<GridIndex> OnTileDataUpdated;
+        public event Action OnGridDestroyed;
 
         [SerializeField] private GridShape _gridShapeToggle = GridShape.Square;
         [SerializeField] private GridIndex _gridTileCount;
@@ -353,7 +353,7 @@ namespace BattleDrakeCreations.TTBTk
 
             _gridVisual.UpdateTileVisual(tileData);
 
-            TileDataUpdated?.Invoke(tileData.index);
+            OnTileDataUpdated?.Invoke(tileData.index);
         }
 
         public void RemoveGridTile(GridIndex index)
@@ -363,7 +363,7 @@ namespace BattleDrakeCreations.TTBTk
                 tileData.tileType = TileType.None;
                 _gridVisual.UpdateTileVisual(tileData);
 
-                TileDataUpdated?.Invoke(index);
+                OnTileDataUpdated?.Invoke(index);
             }
         }
 
@@ -383,7 +383,7 @@ namespace BattleDrakeCreations.TTBTk
                     _gridVisual.AddTileState(index, tileState);
                 }
 
-                TileDataUpdated?.Invoke(index);
+                OnTileDataUpdated?.Invoke(index);
             }
         }
 
@@ -405,7 +405,7 @@ namespace BattleDrakeCreations.TTBTk
                 //_gridVisual.UpdateTileVisual(tileData);
                 _gridVisual.RemoveTileState(index, tileState);
 
-                TileDataUpdated?.Invoke(index);
+                OnTileDataUpdated?.Invoke(index);
             }
         }
 
@@ -414,7 +414,7 @@ namespace BattleDrakeCreations.TTBTk
             _gridTiles.Clear();
             _gridVisual.ClearGridVisual();
 
-            GridDestroyed?.Invoke();
+            OnGridDestroyed?.Invoke();
         }
     }
 }

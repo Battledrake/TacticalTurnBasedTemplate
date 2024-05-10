@@ -5,7 +5,7 @@ namespace BattleDrakeCreations.TTBTk
 {
     public class PlayerActions : MonoBehaviour
     {
-        public event Action<ActionBase, ActionBase> SelectedActionsChanged;
+        public event Action<ActionBase, ActionBase> OnSelectedActionsChanged;
 
         [SerializeField] private TacticsGrid _tacticsGrid;
 
@@ -108,7 +108,7 @@ namespace BattleDrakeCreations.TTBTk
             _rightClickAction = GameObject.Instantiate(rightClickAction);
             _rightClickAction.InitializeAction(this);
 
-            SelectedActionsChanged?.Invoke(_leftClickAction, _rightClickAction);
+            OnSelectedActionsChanged?.Invoke(_leftClickAction, _rightClickAction);
         }
     }
 }

@@ -84,7 +84,7 @@ namespace BattleDrakeCreations.TTBTk
 
         public override string ToString()
         {
-            return $"{x}, {z}";
+            return $"{x},{z}";
         }
     }
 }
