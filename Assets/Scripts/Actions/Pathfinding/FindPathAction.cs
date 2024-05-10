@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using UnityEngine;
 
-namespace BattleDrakeCreations.TTBTk
+namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 {
     public class FindPathAction : ActionBase
 	{

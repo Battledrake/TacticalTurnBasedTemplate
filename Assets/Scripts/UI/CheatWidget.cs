@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace BattleDrakeCreations.TTBTk
+namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 {
     [ExecuteInEditMode]
     public class CheatWidget : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler

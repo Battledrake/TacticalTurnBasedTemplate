@@ -7810,7 +7810,7 @@ MonoBehaviour:
     x: 15
     z: 15
   _gridTileSize: {x: 2, y: 2, z: 2}
-  _useEnvironment: 0
+  _useEnvironment: 1
   _gridVisual: {fileID: 825704805}
   _gridPathfinder: {fileID: 825704806}
 --- !u!114 &825704804

@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace BattleDrakeCreations.TTBTk
+namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 {
     public class PriorityQueue<T> where T : IComparable<T>
     {

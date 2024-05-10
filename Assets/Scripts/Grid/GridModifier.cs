@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace BattleDrakeCreations.TTBTk
+namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 {
     [ExecuteInEditMode]
     [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer), typeof(MeshCollider))]

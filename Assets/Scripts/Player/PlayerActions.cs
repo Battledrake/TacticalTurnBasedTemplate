@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace BattleDrakeCreations.TTBTk
+namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 {
     public class PlayerActions : MonoBehaviour
     {

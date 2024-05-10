@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace BattleDrakeCreations.TTBTk
+namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 {
     public abstract class ActionBase : MonoBehaviour
     {

@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace BattleDrakeCreations.TTBTk
+namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 {
     [System.Serializable]
     public struct GridIndex : IEquatable<GridIndex>

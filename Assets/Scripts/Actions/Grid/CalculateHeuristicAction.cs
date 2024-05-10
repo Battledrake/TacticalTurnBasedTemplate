@@ -1,7 +1,7 @@
 using System.Linq;
 using UnityEngine;
 
-namespace BattleDrakeCreations.TTBTk
+namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 {
     public class CalculateHeuristicAction : SelectTileAction
 	{
