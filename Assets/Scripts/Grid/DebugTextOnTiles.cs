@@ -14,6 +14,7 @@ namespace BattleDrakeCreations.TTBTk
         [SerializeField] private TacticsGrid _tacticsGrid;
 
         public bool ShowTileIndexes { get => _showTileIndexes; set => _showTileIndexes = value; }
+        public bool ShowTerrainCost { get => _showTerrainCost; set => _showTerrainCost = value; }
         public bool ShowTraversalCost { get => _showTraversalCost; set => _showTraversalCost = value; }
         public bool ShowHeuristicCost { get => _showHeuristicCost; set => _showHeuristicCost = value; }
         public bool ShowTotalCost { get => _showTotalCost; set => _showTotalCost = value; }
@@ -22,6 +23,7 @@ namespace BattleDrakeCreations.TTBTk
 
         private bool _showDebugText = false;
         private bool _showTileIndexes = false;
+        private bool _showTerrainCost = false;
         private bool _showTraversalCost = false;
         private bool _showHeuristicCost = false;
         private bool _showTotalCost = false;
@@ -38,6 +40,8 @@ namespace BattleDrakeCreations.TTBTk
         {
             _tacticsGrid.OnTileDataUpdated -= (i => UpdateTextOnTile(i));
             _tacticsGrid.OnGridDestroyed -= ClearAllTextGameObjects;
+            _tacticsGrid.GridPathfinder.OnPathfindingDataUpdated -= UpdateTextOnTile;
+            _tacticsGrid.GridPathfinder.OnPathfindingDataCleared -= UpdateTextOnAllTiles;
         }
 
         private bool ShowAnyDebug()
@@ -47,7 +51,7 @@ namespace BattleDrakeCreations.TTBTk
 
         private bool NeedPathfindingData()
         {
-            return _showTraversalCost || _showHeuristicCost || _showTotalCost;
+            return _showTerrainCost || _showTraversalCost || _showHeuristicCost || _showTotalCost;
         }
 
         public void UpdateTextOnAllTiles()
@@ -63,7 +67,13 @@ namespace BattleDrakeCreations.TTBTk
             if (_showDebugText && _tacticsGrid.GridTiles.TryGetValue(index, out TileData tileData) && GridStatics.IsTileTypeWalkable(tileData.tileType))
             {
                 string debugText = "";
+
                 TextMeshPro textObject = GetTextGameObject(index)?.GetComponent<TextMeshPro>();
+
+                if (_tacticsGrid.GridShape == GridShape.Triangle)
+                    textObject.fontSize = 0.75f;
+                if (_tacticsGrid.GridShape == GridShape.Hexagon)
+                    textObject.fontSize = 1f;
 
                 if (_showTileIndexes)
                     debugText += $"index: {index}\n";
@@ -74,6 +84,9 @@ namespace BattleDrakeCreations.TTBTk
                     {
                         if (_tacticsGrid.GridPathfinder.PathNodePool.TryGetValue(index, out PathNode pathNode))
                         {
+                            if (_showTerrainCost)
+                                debugText += string.Format("terrain:{0:F1}\n", pathNode.terrainCost);
+
                             if (_showTraversalCost && pathNode.traversalCost != Mathf.Infinity)
                                 debugText += string.Format("traversal:{0:F1}\n", pathNode.traversalCost);
 
@@ -88,7 +101,6 @@ namespace BattleDrakeCreations.TTBTk
 
                 if (string.IsNullOrEmpty(debugText))
                 {
-                    Debug.Log("Tell me yyyy");
                     DestroyTextGameObject(index);
                     return;
                 }

@@ -20,13 +20,7 @@ namespace BattleDrakeCreations.TTBTk
             GridIndex previousTile = _playerActions.SelectedTile;
             if (previousTile != index)
             {
-                PathData pathData;
-                pathData.allowPartialSolution = true;
-                pathData.heightAllowance = 2f;
-                pathData.includeDiagonals = actionValue == 1;
-                pathData.includeStartNode = false;
-
-                PathResult result = _playerActions.TacticsGrid.GridPathfinder.FindPath(_playerActions.SelectedTile, index, out List<GridIndex> path, pathData);
+                PathResult result = _playerActions.TacticsGrid.GridPathfinder.FindPath(_playerActions.SelectedTile, index, out List<GridIndex> path);
                 if (result == PathResult.SearchSuccess || result == PathResult.GoalUnreachable)
                 {
                     _lastPath = path;

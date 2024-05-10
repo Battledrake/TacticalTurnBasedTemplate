@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.Tracing;
 using Unity.VisualScripting;
+using UnityEditor.Rendering;
 using UnityEngine;
 
 namespace BattleDrakeCreations.TTBTk
@@ -49,24 +50,24 @@ namespace BattleDrakeCreations.TTBTk
         SearchSuccess,
         GoalUnreachable
     }
+    public enum CalculationType
+    {
+        Chebyshev,
+        Diagonal,
+        DiagonalShortcut,
+        Euclidean,
+        Manhattan
+    }
+
+    public enum TraversalType
+    {
+        AllNonBlocked,
+        NoSharpDiagonals,
+        SharpDiagonals
+    }
 
     public class GridPathfinding : MonoBehaviour
     {
-        public enum CalculationType
-        {
-            Chebyshev,
-            Diagonal,
-            DiagonalShortcut,
-            Euclidean,
-            Manhattan
-        }
-
-        public enum TraversalType
-        {
-            AllNonBlocked,
-            NoSharpDiagonals,
-            SharpDiagonals
-        }
 
         public event Action<GridIndex> OnPathfindingDataUpdated;
         public event Action OnPathfindingDataCleared;
@@ -104,6 +105,17 @@ namespace BattleDrakeCreations.TTBTk
 
         private PriorityQueue<PathNode> _frontierNodes;
         private Dictionary<GridIndex, PathNode> _pathNodePool;
+
+        public PathResult FindPath(GridIndex startIndex, GridIndex targetIndex, out List<GridIndex> outPath)
+        {
+            PathData pathData;
+            pathData.allowPartialSolution = _allowPartialSolution;
+            pathData.includeDiagonals = _includeDiagonals;
+            pathData.includeStartNode = _includeStartNodeInPath;
+            pathData.heightAllowance = _heightAllowance;
+
+            return FindPath(startIndex, targetIndex, out outPath, pathData);
+        }
 
         public PathResult FindPath(GridIndex startIndex, GridIndex targetIndex, out List<GridIndex> outPath, PathData pathData)
         {
@@ -234,8 +246,11 @@ namespace BattleDrakeCreations.TTBTk
             return tileIndexes;
         }
 
-        private PathNode CreateAndAddNodeToPool(GridIndex index)
+        public PathNode CreateAndAddNodeToPool(GridIndex index)
         {
+            if (_pathNodePool == null)
+                _pathNodePool = new Dictionary<GridIndex, PathNode>();
+
             PathNode node = new PathNode();
             node.index = index;
             _pathNodePool.TryAdd(index, node);
@@ -244,49 +259,62 @@ namespace BattleDrakeCreations.TTBTk
 
         public void ClearNodePool()
         {
+            if (_pathNodePool == null)
+                return;
+
             _pathNodePool.Clear();
             OnPathfindingDataCleared?.Invoke();
         }
 
         private float GetTraversalCost(GridIndex source, GridIndex target, float terrainCost)
         {
+            if (_tacticsGrid.GridShape == GridShape.Hexagon)
+            {
+                return GetAxialDistance(ConvertOddrToAxial(source), ConvertOddrToAxial(target)) * terrainCost;
+            }
+
             float traversalCost = 1f;
             switch (_traversalCost)
             {
                 case CalculationType.Chebyshev:
-                    traversalCost = Chebyshev(source, target);
+                    traversalCost = GetChebyshevDistance(source, target);
                     break;
                 case CalculationType.Diagonal:
-                    traversalCost = Diagonal(source, target);
+                    traversalCost = GetDiagonalDistance(source, target);
                     break;
                 case CalculationType.DiagonalShortcut:
-                    traversalCost = DiagonalShortcut(source, target);
+                    traversalCost = GetDiagonalShortcutDistance(source, target);
                     break;
                 case CalculationType.Manhattan:
-                    traversalCost = Manhattan(source, target);
+                    traversalCost = GetManhattanDistance(source, target);
                     break;
                 case CalculationType.Euclidean:
-                    traversalCost = Euclidean(source, target);
+                    traversalCost = GetEuclideanDistance(source, target);
                     break;
                     
             }
             return traversalCost * terrainCost;
         }
 
-        private float GetHeuristicCost(GridIndex source, GridIndex target)
+        public float GetHeuristicCost(GridIndex source, GridIndex target)
         {
+            if(_tacticsGrid.GridShape == GridShape.Hexagon)
+            {
+                return GetAxialDistance(ConvertOddrToAxial(source), ConvertOddrToAxial(target));
+            }
+
             switch (_heuristicCost)
             {
                 case CalculationType.Chebyshev:
-                    return Chebyshev(source, target);
+                    return GetChebyshevDistance(source, target);
                 case CalculationType.Diagonal:
-                    return Diagonal(source, target);
+                    return GetDiagonalDistance(source, target);
                 case CalculationType.DiagonalShortcut:
-                    return DiagonalShortcut(source, target);
+                    return GetDiagonalShortcutDistance(source, target);
                 case CalculationType.Manhattan:
-                    return Manhattan(source, target);
+                    return GetManhattanDistance(source, target);
                 case CalculationType.Euclidean:
-                    return Euclidean(source, target);
+                    return GetEuclideanDistance(source, target);
             }
             return 1f;
         }
@@ -460,15 +488,22 @@ namespace BattleDrakeCreations.TTBTk
             return neighbors;
         }
 
+        public GridIndex ConvertOddrToAxial(GridIndex hex)
+        {
+            var q = hex.x - (hex.z - (hex.z & 1)) / 2;
+            var r = hex.z;
+            return new GridIndex(q, r);
+        }
+
         //Chess style
-        private float Chebyshev(GridIndex source, GridIndex target)
+        private float GetChebyshevDistance(GridIndex source, GridIndex target)
         {
             GridIndex distance = (source - target).Abs();
             return Mathf.Max(distance.x, distance.z);
         }
 
         //Common diagonal allowing square grid heuristic
-        public float Diagonal(GridIndex source, GridIndex target)
+        public float GetDiagonalDistance(GridIndex source, GridIndex target)
         {
             GridIndex distance = (source - target).Abs();
             float diagonal = Mathf.Sqrt(2);
@@ -477,7 +512,7 @@ namespace BattleDrakeCreations.TTBTk
         }
 
         //Same as Diagonal but does 1.4 instead of sqrt(2). Less accurate, more performant.
-        public float DiagonalShortcut(GridIndex source, GridIndex target)
+        public float GetDiagonalShortcutDistance(GridIndex source, GridIndex target)
         {
             GridIndex distance = (source - target).Abs();
 
@@ -485,19 +520,40 @@ namespace BattleDrakeCreations.TTBTk
         }
 
         //Standard algorithm for 4 neighbor squares and Hexagons.
-        public float Manhattan(GridIndex source, GridIndex target)
+        public float GetManhattanDistance(GridIndex source, GridIndex target)
         {
+            if(_tacticsGrid.GridShape == GridShape.Hexagon)
+            {
+                GridIndex sourceAxial = ConvertOddrToAxial(source);
+                GridIndex targetAxial = ConvertOddrToAxial(target);
+
+                int x1 = sourceAxial.x;
+                int z1 = sourceAxial.z;
+                int y1 = -x1 - z1;
+
+                int x2 = targetAxial.x;
+                int z2 = targetAxial.z;
+                int y2 = -x2 - z2;
+
+                return (Mathf.Abs(x1 - x2) + Mathf.Abs(y1 - y2) + Mathf.Abs(z1 - z2)) / 2;
+            }
             GridIndex distance = (source - target).Abs();
 
             return distance.x + distance.z;
         }
 
         //Straight line from start to end calculation
-        public float Euclidean(GridIndex source, GridIndex target)
+        public float GetEuclideanDistance(GridIndex source, GridIndex target)
         {
             GridIndex distance = (source - target).Abs();
 
             return Mathf.Sqrt(distance.x * distance.x + distance.z * distance.z);
+        }
+
+        public float GetAxialDistance(GridIndex source, GridIndex target)
+        {
+            GridIndex distance = source - target;
+            return (Mathf.Abs(distance.x) + Mathf.Abs(distance.x + distance.z) + Mathf.Abs(distance.z)) / 2;
         }
     }
 }

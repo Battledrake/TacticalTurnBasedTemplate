@@ -19,14 +19,14 @@ namespace BattleDrakeCreations.TTBTk
             else //Clicked on a tile that was already selected
             {
                 _playerActions.TacticsGrid.RemoveStateFromTile(index, TileState.Selected);
-                _playerActions.SelectedTile = new GridIndex(-999, -999);
+                _playerActions.SelectedTile = new GridIndex(int.MinValue, int.MinValue);
             }
             return false;
         }
 
         private void OnDestroy()
         {
-            ExecuteAction(new GridIndex(-999, -999));
+            ExecuteAction(new GridIndex(int.MinValue, int.MinValue));
         }
     }
 }
