@@ -9,7 +9,7 @@ namespace BattleDrakeCreations.TTBTk
         Hovered,
         Selected,
         IsNeighbor,
-        IsPath
+        IsInPath
     }
 
     public struct TileData

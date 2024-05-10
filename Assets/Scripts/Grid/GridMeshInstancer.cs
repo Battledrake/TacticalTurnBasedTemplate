@@ -34,7 +34,16 @@ namespace BattleDrakeCreations.TTBTk
         public void AddInstance(TileData tileData)
         {
             if (_instancedTiles.ContainsKey(tileData.index))
+            {
+                if (_hoveredTile.index == tileData.index)
+                {
+                    _defaultRenders.Remove(_hoveredTile.tileMatrix);
+                    _currentDefaultCount--;
+                    _hoveredTile.tileMatrix = tileData.tileMatrix;
+                }
+
                 _instancedTiles[tileData.index] = tileData;
+            }
             else
                 _instancedTiles.TryAdd(tileData.index, tileData);
         }
@@ -69,7 +78,7 @@ namespace BattleDrakeCreations.TTBTk
             {
                 _neighborTiles.Add(_instancedTiles[index].tileMatrix);
             }
-            if(state == TileState.IsPath)
+            if(state == TileState.IsInPath)
             {
                 _pathTiles.Add(_instancedTiles[index].tileMatrix);
             }
@@ -89,7 +98,7 @@ namespace BattleDrakeCreations.TTBTk
             {
                 _neighborTiles.Remove(_instancedTiles[index].tileMatrix);
             }
-            if(state == TileState.IsPath)
+            if(state == TileState.IsInPath)
             {
                 _pathTiles.Remove(_instancedTiles[index].tileMatrix);
             }
