@@ -1,12 +1,38 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.Tracing;
-using Unity.VisualScripting;
-using UnityEditor.Rendering;
 using UnityEngine;
 
 namespace BattleDrakeCreations.TTBTk
 {
+    public enum PathResult
+    {
+        SearchFail,
+        SearchSuccess,
+        GoalUnreachable
+    }
+    public enum CalculationType
+    {
+        Chebyshev,
+        Diagonal,
+        DiagonalShortcut,
+        Euclidean,
+        Manhattan
+    }
+
+    public enum TraversalType
+    {
+        AllNonBlocked,
+        NoSharpDiagonals,
+        SharpDiagonals
+    }
+    public struct PathData
+    {
+        public bool allowPartialSolution;
+        public float heightAllowance;
+        public bool includeDiagonals;
+        public bool includeStartNode;
+    }
+
     public class PathNode : IComparable<PathNode>
     {
         public GridIndex index = new GridIndex(int.MinValue, int.MinValue);
@@ -36,39 +62,8 @@ namespace BattleDrakeCreations.TTBTk
         }
     }
 
-    public struct PathData
-    {
-        public bool allowPartialSolution;
-        public float heightAllowance;
-        public bool includeDiagonals;
-        public bool includeStartNode;
-    }
-
-    public enum PathResult
-    {
-        SearchFail,
-        SearchSuccess,
-        GoalUnreachable
-    }
-    public enum CalculationType
-    {
-        Chebyshev,
-        Diagonal,
-        DiagonalShortcut,
-        Euclidean,
-        Manhattan
-    }
-
-    public enum TraversalType
-    {
-        AllNonBlocked,
-        NoSharpDiagonals,
-        SharpDiagonals
-    }
-
     public class GridPathfinding : MonoBehaviour
     {
-
         public event Action<GridIndex> OnPathfindingDataUpdated;
         public event Action OnPathfindingDataCleared;
 
@@ -272,7 +267,7 @@ namespace BattleDrakeCreations.TTBTk
         {
             if (_tacticsGrid.GridShape == GridShape.Hexagon)
             {
-                return GetAxialDistance(ConvertOddrToAxial(source), ConvertOddrToAxial(target)) * terrainCost;
+                return GetDistanceFromAxialCoordinates(ConvertOddrToAxial(source), ConvertOddrToAxial(target)) * terrainCost;
             }
             if (_tacticsGrid.GridShape == GridShape.Triangle)
             {
@@ -306,7 +301,7 @@ namespace BattleDrakeCreations.TTBTk
         {
             if(_tacticsGrid.GridShape == GridShape.Hexagon)
             {
-                return GetAxialDistance(ConvertOddrToAxial(source), ConvertOddrToAxial(target));
+                return GetDistanceFromAxialCoordinates(ConvertOddrToAxial(source), ConvertOddrToAxial(target));
             }
             if(_tacticsGrid.GridShape == GridShape.Triangle)
             {
@@ -505,7 +500,7 @@ namespace BattleDrakeCreations.TTBTk
             return new GridIndex(q, r);
         }
 
-        public float GetAxialDistance(GridIndex source, GridIndex target)
+        public float GetDistanceFromAxialCoordinates(GridIndex source, GridIndex target)
         {
             GridIndex distance = source - target;
             return (Mathf.Abs(distance.x) + Mathf.Abs(distance.x + distance.z) + Mathf.Abs(distance.z)) / 2;
