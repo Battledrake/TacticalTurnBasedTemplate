@@ -41,10 +41,10 @@ namespace BattleDrakeCreations.TTBTk
         private void Awake()
         {
             _gridShapeCombo.value = (int)_tacticsGrid.GridShape;
-            _positionSlider.SetSliderValue(_tacticsGrid.transform.position);
-            _tileCountSlider.SetSliderValue(_tacticsGrid.GridTileCount);
-            _tileSizeSlider.SetSliderValue(_tacticsGrid.TileSize);
-            _groundOffsetSlider.SetSliderValue(_tacticsGrid.GridVisual.GroundOffset);
+            _positionSlider.SetSliderValueWithoutNotify(_tacticsGrid.transform.position);
+            _tileCountSlider.SetSliderValueWithoutNotify(_tacticsGrid.GridTileCount);
+            _tileSizeSlider.SetSliderValueWithoutNotify(_tacticsGrid.TileSize);
+            _groundOffsetSlider.SetSliderValueWithoutNotify(_tacticsGrid.GridVisual.GroundOffset);
             _useEnvToggle.SetIsOnWithoutNotify(_tacticsGrid.UseEnvironment);
 
             _sceneCombo.onValueChanged.AddListener(OnSceneChanged);

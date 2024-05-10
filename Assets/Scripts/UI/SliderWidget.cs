@@ -28,13 +28,13 @@ namespace BattleDrakeCreations.TTBTk
         [SerializeField] private string _name;
         [SerializeField] private TextMeshProUGUI _sliderNameText;
 
-        public void SetSliderValue(float value, int sliderIndex = 0)
+        public void SetSliderValueWithoutNotify(float value, int sliderIndex = 0)
         {
             _sliderLinkers[sliderIndex].slider.SetValueWithoutNotify(value);
             _sliderLinkers[sliderIndex].sliderValueText.text = value.ToString("F1");
         }
 
-        public void SetSliderValue(Vector2 value)
+        public void SetSliderValueWithoutNotify(Vector2 value)
         {
             _sliderLinkers[0].slider.SetValueWithoutNotify(value.x);
             _sliderLinkers[0].sliderValueText.text = value.x.ToString("F1");
@@ -42,7 +42,7 @@ namespace BattleDrakeCreations.TTBTk
             _sliderLinkers[1].sliderValueText.text = value.y.ToString("F1");
         }
 
-        public void SetSliderValue(Vector3 value)
+        public void SetSliderValueWithoutNotify(Vector3 value)
         {
             _sliderLinkers[0].slider.SetValueWithoutNotify(value.x);
             _sliderLinkers[0].sliderValueText.text = value.x.ToString("F1");

@@ -19,11 +19,11 @@ namespace BattleDrakeCreations.TTBTk
 
         private void Awake()
         {
-            _moveSpeedSlider.SetSliderValue(_cameraController.MoveSpeed);
-            _rotationSpeedSlider.SetSliderValue(_cameraController.RotationSpeed);
-            _zoomSpeedSlider.SetSliderValue(_cameraController.ZoomSpeed);
-            _zoomMinSlider.SetSliderValue(_cameraController.ZoomMinimum);
-            _zoomMaxSlider.SetSliderValue(_cameraController.ZoomMaximum);
+            _moveSpeedSlider.SetSliderValueWithoutNotify(_cameraController.MoveSpeed);
+            _rotationSpeedSlider.SetSliderValueWithoutNotify(_cameraController.RotationSpeed);
+            _zoomSpeedSlider.SetSliderValueWithoutNotify(_cameraController.ZoomSpeed);
+            _zoomMinSlider.SetSliderValueWithoutNotify(_cameraController.ZoomMinimum);
+            _zoomMaxSlider.SetSliderValueWithoutNotify(_cameraController.ZoomMaximum);
             _moveSpeedSlider.OnSliderValueChanged += MoveSpeedSlider_OnSliderValueChanged;
             _rotationSpeedSlider.OnSliderValueChanged += RotationSpeedSlider_OnSliderValueChanged;
             _zoomSpeedSlider.OnSliderValueChanged += ZoomSpeedSlider_OnSliderValueChanged;

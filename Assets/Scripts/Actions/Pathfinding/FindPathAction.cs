@@ -33,5 +33,13 @@ namespace BattleDrakeCreations.TTBTk
             }
             return false;
         }
+
+        private void OnDestroy()
+        {
+            if(_lastPath.Count > 0)
+            {
+                _lastPath.ForEach(i => _playerActions.TacticsGrid.RemoveStateFromTile(i, TileState.IsInPath));
+            }
+        }
     }
 }

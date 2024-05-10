@@ -106,13 +106,15 @@ namespace BattleDrakeCreations.TTBTk
         private PriorityQueue<PathNode> _frontierNodes;
         private Dictionary<GridIndex, PathNode> _pathNodePool;
 
+
+        //This exists so that there can be Units that find a path with custom data options. Otherwise, use default values.
         public PathResult FindPath(GridIndex startIndex, GridIndex targetIndex, out List<GridIndex> outPath)
         {
             PathData pathData;
-            pathData.allowPartialSolution = _allowPartialSolution;
-            pathData.includeDiagonals = _includeDiagonals;
-            pathData.includeStartNode = _includeStartNodeInPath;
             pathData.heightAllowance = _heightAllowance;
+            pathData.includeDiagonals = _includeDiagonals;
+            pathData.allowPartialSolution = _allowPartialSolution;
+            pathData.includeStartNode = _includeStartNodeInPath;
 
             return FindPath(startIndex, targetIndex, out outPath, pathData);
         }
@@ -410,7 +412,7 @@ namespace BattleDrakeCreations.TTBTk
                     if (GridStatics.IsTileTypeWalkable(tileData.tileType))
                     {
                         float heightDifference = Mathf.Abs(tileData.tileMatrix.GetPosition().y - selectedTile.tileMatrix.GetPosition().y);
-                        if (heightDifference <= _tacticsGrid.TileSize.y)
+                        if (heightDifference <= _heightAllowance)
                         {
                             validNeighbors.Add(tileData.index);
                         }

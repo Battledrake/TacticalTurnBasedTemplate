@@ -20,6 +20,7 @@ public class PathfindingTabController : MonoBehaviour
     [SerializeField] private TMP_Dropdown _traversalCostCombo;
     [SerializeField] private TMP_Dropdown _heuristicCostCombo;
     [SerializeField] private TMP_Dropdown _traversalTypeCombo;
+    [SerializeField] private SliderWidget _heuristicScaleSlider;
     [SerializeField] private Toggle _includeDiagonalsToggle;
     [SerializeField] private Toggle _allowPartialSolutionsToggle;
     [SerializeField] private Toggle _ignoreClosedToggle;
@@ -37,10 +38,11 @@ public class PathfindingTabController : MonoBehaviour
         _showHeuristicToggle.onValueChanged.AddListener(OnShowHeuristicToggled);
         _showTotalCostToggle.onValueChanged.AddListener(OnShowTotalCostToggled);
 
-        _heightAllowanceSlider.SetSliderValue(_gridPathfinder.HeightAllowance);
+        _heightAllowanceSlider.SetSliderValueWithoutNotify(_gridPathfinder.HeightAllowance);
         _traversalCostCombo.SetValueWithoutNotify((int)_gridPathfinder.TraversalCost);
         _heuristicCostCombo.SetValueWithoutNotify((int)_gridPathfinder.HeuristicCost);
         _traversalTypeCombo.SetValueWithoutNotify((int)_gridPathfinder.SquareTraversalType);
+        _heuristicScaleSlider.SetSliderValueWithoutNotify(_gridPathfinder.HeuristicScale);
         _includeDiagonalsToggle.SetIsOnWithoutNotify(_gridPathfinder.IncludeDiagonals);
         _allowPartialSolutionsToggle.SetIsOnWithoutNotify(_gridPathfinder.AllowPartialSolution);
         _ignoreClosedToggle.SetIsOnWithoutNotify(_gridPathfinder.IgnoreClosed);
@@ -50,6 +52,7 @@ public class PathfindingTabController : MonoBehaviour
         _traversalCostCombo.onValueChanged.AddListener(OnTraversalCostComboChanged);
         _heuristicCostCombo.onValueChanged.AddListener(OnHeuristicCostComboChanged);
         _traversalTypeCombo.onValueChanged.AddListener(OnTraversalTypeComboChanged);
+        _heuristicScaleSlider.OnSliderValueChanged += OnHeuristicScaleChanged;
         _includeDiagonalsToggle.onValueChanged.AddListener(OnIncludeDiagonalsTogged);
         _allowPartialSolutionsToggle.onValueChanged.AddListener(OnAllowPartialSolutionsToggled);
         _ignoreClosedToggle.onValueChanged.AddListener(OnIgnoreClosedToggled);
@@ -104,6 +107,12 @@ public class PathfindingTabController : MonoBehaviour
     private void OnTraversalTypeComboChanged(int newValue)
     {
         _gridPathfinder.SquareTraversalType = (TraversalType)newValue;
+    }
+
+    private void OnHeuristicScaleChanged(int sliderIndex, float value)
+    {
+        _gridPathfinder.HeuristicScale = value;
+
     }
 
     private void OnIncludeDiagonalsTogged(bool isOn)
