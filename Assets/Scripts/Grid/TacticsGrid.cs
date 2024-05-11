@@ -41,7 +41,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private Dictionary<GridIndex, TileData> _gridTiles = new Dictionary<GridIndex, TileData>();
 
-        /* Bro, I don't know what's going on with this method, but it keeps disabling the script */
         //private void Awake()
         //{
         //    SpawnGrid(this.transform.position, _gridTileSize, _gridTileCount, _gridShapeToggle);

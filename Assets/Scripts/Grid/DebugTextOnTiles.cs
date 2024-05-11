@@ -21,7 +21,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private Dictionary<GridIndex, GameObject> _spawnedTexts = new Dictionary<GridIndex, GameObject>();
 
-        private bool _showDebugText = false;
         private bool _showTileIndexes = false;
         private bool _showTerrainCost = false;
         private bool _showTraversalCost = false;
@@ -56,6 +55,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         public void UpdateTextOnAllTiles()
         {
+            if (!ShowAnyDebug())
+                return;
+
             for(int i = 0; i < _tacticsGrid.GridTiles.Count; i++)
             {
                 UpdateTextOnTile(_tacticsGrid.GridTiles.ElementAt(i).Key);
@@ -64,7 +66,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         public void UpdateTextOnTile(GridIndex index)
         {
-            if (_showDebugText && _tacticsGrid.GridTiles.TryGetValue(index, out TileData tileData) && GridStatics.IsTileTypeWalkable(tileData.tileType))
+            if (ShowAnyDebug() && _tacticsGrid.GridTiles.TryGetValue(index, out TileData tileData) && GridStatics.IsTileTypeWalkable(tileData.tileType))
             {
                 string debugText = "";
 
@@ -135,8 +137,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         public void UpdateDebugText()
         {
-            _showDebugText = ShowAnyDebug();
-            if (!_showDebugText)
+            if (!ShowAnyDebug())
             {
                 ClearAllTextGameObjects();
             }

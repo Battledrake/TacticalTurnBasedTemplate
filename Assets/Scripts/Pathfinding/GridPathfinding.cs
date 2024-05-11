@@ -1,5 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 namespace BattleDrakeCreations.TacticalTurnBasedTemplate
@@ -62,8 +65,15 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         }
     }
 
+    public class PathfindingResult
+    {
+        public PathResult Result { get; set; }
+        public List<GridIndex> Path { get; set; }
+    }
+
     public class GridPathfinding : MonoBehaviour
     {
+        public event Action<PathfindingResult> OnPathfindingCompleted;
         public event Action<GridIndex> OnPathfindingDataUpdated;
         public event Action OnPathfindingDataCleared;
 
@@ -101,9 +111,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private PriorityQueue<PathNode> _frontierNodes;
         private Dictionary<GridIndex, PathNode> _pathNodePool;
 
-
         //This exists so that there can be Units that find a path with custom data options. Otherwise, use default values.
-        public PathResult FindPath(GridIndex startIndex, GridIndex targetIndex, out List<GridIndex> outPath)
+        public PathfindingResult FindPath(GridIndex startIndex, GridIndex targetIndex)
         {
             PathData pathData;
             pathData.heightAllowance = _heightAllowance;
@@ -111,23 +120,29 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             pathData.allowPartialSolution = _allowPartialSolution;
             pathData.includeStartNode = _includeStartNodeInPath;
 
-            return FindPath(startIndex, targetIndex, out outPath, pathData);
+            return FindPath(startIndex, targetIndex, pathData);
         }
 
-        public PathResult FindPath(GridIndex startIndex, GridIndex targetIndex, out List<GridIndex> outPath, PathData pathData)
+        public PathfindingResult FindPath(GridIndex startIndex, GridIndex targetIndex, PathData pathData)
         {
-            outPath = new List<GridIndex>();
+            PathfindingResult pathResult = new PathfindingResult();
+            pathResult.Path = new List<GridIndex>();
+            pathResult.Result = PathResult.SearchSuccess;
 
             if (!_tacticsGrid.IsIndexValid(startIndex) || !_tacticsGrid.IsIndexValid(targetIndex))
-                return PathResult.SearchFail;
+            {
+                pathResult.Result = PathResult.SearchFail;
+                return pathResult;
+            }
             if (startIndex == targetIndex)
-                return PathResult.SearchSuccess;
+            {
+                pathResult.Result = PathResult.SearchSuccess;
+                return pathResult; ;
+            }
 
             _pathNodePool = new Dictionary<GridIndex, PathNode>();
             OnPathfindingDataCleared?.Invoke();
             _frontierNodes = new PriorityQueue<PathNode>();
-
-            //float timeStart = Time.realtimeSinceStartup;
 
             PathNode startNode = CreateAndAddNodeToPool(startIndex);
             startNode.traversalCost = 0;
@@ -138,7 +153,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
             PathNode bestNode = startNode;
             float bestNodeCost = startNode.totalCost;
-            PathResult pathResult = PathResult.SearchSuccess;
+            pathResult.Result = PathResult.SearchSuccess;
 
             bool processNodes = true;
             while (_frontierNodes.Count > 0 && processNodes)
@@ -147,15 +162,12 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             }
 
             if (bestNodeCost != 0f)
-                pathResult = PathResult.GoalUnreachable;
+                pathResult.Result = PathResult.GoalUnreachable;
 
-            if (pathResult == PathResult.SearchSuccess || pathData.allowPartialSolution)
+            if (pathResult.Result == PathResult.SearchSuccess || pathData.allowPartialSolution)
             {
-                outPath = ConvertPathNodesToIndexes(startNode, bestNode);
-                //Debug.Log($"PATHFINDER path length = {outPath.Count()}");
+                pathResult.Path = ConvertPathNodesToIndexes(startNode, bestNode);
             }
-
-            //Debug.Log($"PATHFINDER SearchRoutine: elapsed time = {(Time.realtimeSinceStartup - timeStart) * 1000f}ms");
             return pathResult;
         }
 

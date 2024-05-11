@@ -8,7 +8,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         protected PlayerActions _playerActions;
 
-        public void InitializeAction(PlayerActions playerActions) { _playerActions = playerActions; }
+        public virtual void InitializeAction(PlayerActions playerActions) { _playerActions = playerActions; }
 
         public abstract bool ExecuteAction(GridIndex index);
     }

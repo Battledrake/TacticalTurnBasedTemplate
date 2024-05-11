@@ -1,16 +1,15 @@
 using System;
 using System.Collections.Generic;
-using System.Linq.Expressions;
-using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 
 namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 {
-    public class FindPathAction : ActionBase
+    public class FindPathAsyncAction : ActionBase
     {
         private List<GridIndex> _lastPath = new List<GridIndex>();
         private GridIndex _lastIndex;
+        private bool _isSearching = false;
 
         public override bool ExecuteAction(GridIndex index)
         {
@@ -23,18 +22,27 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             GridIndex previousTile = _playerActions.SelectedTile;
             if (previousTile != index)
             {
-                PathfindingResult result = _playerActions.TacticsGrid.GridPathfinder.FindPath(_playerActions.SelectedTile, index);
-                if (result.Result == PathResult.SearchSuccess || result.Result == PathResult.GoalUnreachable)
+                if (!_isSearching)
                 {
-                    _lastPath = result.Path;
-                    for (int i = 0; i < result.Path.Count; i++)
-                    {
-                        _playerActions.TacticsGrid.AddStateToTile(result.Path[i], TileState.IsInPath);
-                    }
-                    return true;
+                    ExecuteActionAsync(index);
                 }
             }
             return false;
+        }
+        private async void ExecuteActionAsync(GridIndex index)
+        {
+            PathfindingResult pathResult = await Task.Run(() => { return _playerActions.TacticsGrid.GridPathfinder.FindPath(_playerActions.SelectedTile, index); });
+
+            _isSearching = false;
+
+            if (pathResult.Result == PathResult.SearchSuccess || pathResult.Result == PathResult.GoalUnreachable)
+            {
+                _lastPath = pathResult.Path;
+                for (int i = 0; i < pathResult.Path.Count; i++)
+                {
+                    _playerActions.TacticsGrid.AddStateToTile(pathResult.Path[i], TileState.IsInPath);
+                }
+            }
         }
 
         private void OnDestroy()
