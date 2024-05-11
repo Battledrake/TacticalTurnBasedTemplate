@@ -23,7 +23,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         [SerializeField] private SliderWidget _tileSizeSlider;
         [SerializeField] private SliderWidget _groundOffsetSlider;
         [SerializeField] private Toggle _useEnvToggle;
-        [SerializeField] private Toggle _tacticalGridToggle;
+        [SerializeField] private Toggle _tacticalMeshGridToggle;
 
         [Header("Debug")]
         [SerializeField] private Toggle _boundsToggle;
@@ -57,7 +57,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             buildScenes.Add("None");
             int sceneCount = _sceneLoader.ScenePool.Count;
             _sceneCombo.ClearOptions();
-            for(int i = 0; i < sceneCount; i++)
+            for (int i = 0; i < sceneCount; i++)
             {
                 buildScenes.Add(_sceneLoader.ScenePool[i].name);
             }
@@ -69,7 +69,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _tileSizeSlider.SetSliderValueWithoutNotify(_tacticsGrid.TileSize);
             _groundOffsetSlider.SetSliderValueWithoutNotify(_tacticsGrid.GridVisual.GroundOffset);
             _useEnvToggle.SetIsOnWithoutNotify(_tacticsGrid.UseEnvironment);
-            _tacticalGridToggle.SetIsOnWithoutNotify(false);
+            _tacticalMeshGridToggle.SetIsOnWithoutNotify(false);
 
             _sceneCombo.onValueChanged.AddListener(OnSceneChanged);
             _gridShapeCombo.onValueChanged.AddListener(OnGridShapeChanged);
@@ -78,7 +78,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _tileSizeSlider.OnSliderValueChanged += OnTileSizeChanged;
             _groundOffsetSlider.OnSliderValueChanged += OnGroundOffsetChanged;
             _useEnvToggle.onValueChanged.AddListener(OnUseEnvironmentToggled);
-            _tacticalGridToggle.onValueChanged.AddListener(OnTacticsGridToggled);
+            _tacticalMeshGridToggle.onValueChanged.AddListener(OnTacticalMeshGridToggled);
 
             _boundsToggle.onValueChanged.AddListener(OnBoundsToggled);
             _centerToggle.onValueChanged.AddListener(OnCenterToggled);
@@ -218,18 +218,20 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _tacticsGrid.RespawnGrid();
         }
 
-        private void OnTacticsGridToggled(bool isOn)
+        private void OnTacticalMeshGridToggled(bool isOn)
         {
             if (isOn)
             {
-                _sceneLoader.UnloadScene(_sceneCombo.options[_sceneSelected].text);
+                if (_sceneSelected > 0)
+                    _sceneLoader.UnloadScene(_sceneCombo.options[_sceneSelected].text);
                 _tacticsGrid.GridVisual.HideDefaultGrid();
                 _tacticsGrid.GridVisual.ShowTacticalGrid();
 
             }
             else
             {
-                _sceneLoader.LoadScene(_sceneCombo.options[_sceneSelected].text);
+                if (_sceneSelected > 0)
+                    _sceneLoader.LoadScene(_sceneCombo.options[_sceneSelected].text);
                 _tacticsGrid.GridVisual.HideTacticalGrid();
                 _tacticsGrid.GridVisual.ShowDefaultGrid();
             }

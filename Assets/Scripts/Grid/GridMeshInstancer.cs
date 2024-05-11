@@ -171,6 +171,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         public void UpdateGridMeshInstances(Mesh mesh, Material material, List<TileData> gridTiles)
         {
+            ClearInstances();
+
             _instancedMesh = mesh;
 
             _instancedMaterial = new Material(material);

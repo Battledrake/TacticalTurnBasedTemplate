@@ -21,22 +21,40 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         public void AddInstance(TileData tileData)
         {
-            if (_instancedTiles.ContainsKey(tileData.index))
+            if (_instancedTiles.TryGetValue(tileData.index, out TileData prevTileData))
             {
+                _tileTypeRenders[prevTileData.tileType].Remove(prevTileData.tileMatrix);
+                _tileTypeRenders[tileData.tileType].Add(tileData.tileMatrix);
                 _instancedTiles[tileData.index] = tileData;
             }
             else
-                _instancedTiles.TryAdd(tileData.index, tileData);
+            {
+                if (_instancedTiles.TryAdd(tileData.index, tileData))
+                {
+                    if (_tileTypeRenders.ContainsKey(tileData.tileType))
+                        _tileTypeRenders[tileData.tileType].Add(tileData.tileMatrix);
+                    else
+                        _tileTypeRenders.Add(tileData.tileType, new List<Matrix4x4> { tileData.tileMatrix });
+                }
+            }
         }
 
         public void RemoveInstance(TileData tileData)
         {
-            if (_instancedTiles.ContainsKey(tileData.index))
+            if (_instancedTiles.TryGetValue(tileData.index, out TileData instancedData))
+            {
+                _tileTypeRenders[instancedData.tileType].Remove(instancedData.tileMatrix);
                 _instancedTiles.Remove(tileData.index);
+            }
         }
 
         public void UpdateGroundOffset(float offset)
         {
+            for (int i = 0; i < _tileTypeRenders.Count; i++)
+            {
+                _tileTypeRenders.ElementAt(i).Value.Clear();
+            }
+
             for (int i = 0; i < _instancedTiles.Count; i++)
             {
                 TileData tileData = _instancedTiles.ElementAt(i).Value;
@@ -44,6 +62,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 newPos.y += offset;
                 tileData.tileMatrix = Matrix4x4.TRS(newPos, tileData.tileMatrix.rotation, tileData.tileMatrix.lossyScale);
                 _instancedTiles[tileData.index] = tileData;
+
+                _tileTypeRenders[tileData.tileType].Add(tileData.tileMatrix);
             }
         }
 
@@ -51,7 +71,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             if (_tileTypeRenders.Count > 0)
             {
-                for(int i = 0; i < _tileTypeRenders.Count; i++)
+                for (int i = 0; i < _tileTypeRenders.Count; i++)
                 {
                     if (_tileTypeRenders.ElementAt(i).Value.Count > 0)
                     {
@@ -64,7 +84,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public void ClearInstances()
         {
             _instancedTiles.Clear();
-            for(int i = 0; i < _tileTypeRenders.Count; i++)
+            for (int i = 0; i < _tileTypeRenders.Count; i++)
             {
                 _tileTypeRenders.ElementAt(i).Value.Clear();
             }
@@ -72,6 +92,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         public void UpdateGridMeshInstances(Mesh mesh, Material material, List<TileData> gridTiles)
         {
+            ClearInstances();
+
             _instancedMesh = mesh;
 
             List<TileType> tileTypeList = Enum.GetValues(typeof(TileType)).Cast<TileType>().ToList();

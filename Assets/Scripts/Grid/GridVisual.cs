@@ -75,22 +75,22 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         public void UpdateTileVisual(TileData tileData)
         {
-            if (!GridStatics.IsTileTypeWalkable(tileData.tileType))
+            if (tileData.tileType == TileType.None)
             {
-                if (tileData.tileType == TileType.None)
-                {
-                    _tacticalMeshInstancer.RemoveInstance(tileData);
-                }
                 _gridMeshInstancer.RemoveInstance(tileData);
+                _tacticalMeshInstancer.RemoveInstance(tileData);
+                return;
             }
+            Vector3 newPos = tileData.tileMatrix.GetPosition();
+            newPos.y += _groundOffset;
+            tileData.tileMatrix = Matrix4x4.TRS(newPos, tileData.tileMatrix.rotation, tileData.tileMatrix.lossyScale);
+
+            _tacticalMeshInstancer.AddInstance(tileData);
+
+            if (!GridStatics.IsTileTypeWalkable(tileData.tileType))
+                _gridMeshInstancer.RemoveInstance(tileData);
             else
-            {
-                Vector3 newPos = tileData.tileMatrix.GetPosition();
-                newPos.y += _groundOffset;
-                tileData.tileMatrix = Matrix4x4.TRS(newPos, tileData.tileMatrix.rotation, tileData.tileMatrix.lossyScale);
                 _gridMeshInstancer.AddInstance(tileData);
-                _tacticalMeshInstancer.AddInstance(tileData);
-            }
         }
 
         public void AddTileState(GridIndex index, TileState tileState)

@@ -15,7 +15,10 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                     {
                         tileData.tileType = (TileType)actionValue;
 
-                        _playerActions.TacticsGrid.AddGridTile(tileData);
+                        if (tileData.tileType == TileType.None)
+                            _playerActions.TacticsGrid.RemoveGridTile(tileData.index);
+                        else
+                            _playerActions.TacticsGrid.AddGridTile(tileData);
 
                         return true;
                     }
