@@ -14510,6 +14510,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 07a80358841cba04b94f8ca8e48856a8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _tileTypeCombo: {fileID: 278276354}
   _sceneCombo: {fileID: 102838119}
   _gridShapeCombo: {fileID: 6340854}
   _positionSlider: {fileID: 1482991446}

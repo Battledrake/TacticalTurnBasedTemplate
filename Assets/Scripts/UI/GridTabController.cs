@@ -1,3 +1,5 @@
+using System;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -6,6 +8,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 {
     public class GridTabController : MonoBehaviour
     {
+        [Header("Actions")]
+        [SerializeField] private TMP_Dropdown _tileTypeCombo;
+
         [Header("Environment")]
         [SerializeField] private TMP_Dropdown _sceneCombo;
 
@@ -40,6 +45,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void Awake()
         {
+            _tileTypeCombo.ClearOptions();
+            _tileTypeCombo.AddOptions(Enum.GetValues(typeof(TileType)).Cast<TileType>().Select(type => type.ToString()).ToList());
+
             _gridShapeCombo.value = (int)_tacticsGrid.GridShape;
             _positionSlider.SetSliderValueWithoutNotify(_tacticsGrid.transform.position);
             _tileCountSlider.SetSliderValueWithoutNotify(_tacticsGrid.GridTileCount);

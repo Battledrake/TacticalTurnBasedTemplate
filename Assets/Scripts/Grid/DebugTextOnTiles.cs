@@ -47,12 +47,12 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private bool ShowAnyDebug()
         {
-            return _showTileIndexes || NeedPathfindingData();
+            return _showTileIndexes || _showTerrainCost || NeedPathfindingData();
         }
 
         private bool NeedPathfindingData()
         {
-            return _showTerrainCost || _showTraversalCost || _showHeuristicCost || _showTotalCost;
+            return _showTraversalCost || _showHeuristicCost || _showTotalCost;
         }
 
         public void UpdateTextOnAllTiles()
@@ -82,14 +82,15 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 if (_showTileIndexes)
                     debugText += $"index: {index}\n";
 
+                if (_showTerrainCost)
+                    debugText += string.Format("terrain:{0:F1}\n", (int)tileData.tileType);
+
                 if (NeedPathfindingData())
                 {
                     if(_tacticsGrid.GridPathfinder.PathNodePool != null)
                     {
                         if (_tacticsGrid.GridPathfinder.PathNodePool.TryGetValue(index, out PathNode pathNode))
                         {
-                            if (_showTerrainCost)
-                                debugText += string.Format("terrain:{0:F1}\n", pathNode.terrainCost);
 
                             if (_showTraversalCost && pathNode.traversalCost != Mathf.Infinity)
                                 debugText += string.Format("traversal:{0:F1}\n", pathNode.traversalCost);

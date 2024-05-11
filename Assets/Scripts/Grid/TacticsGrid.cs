@@ -12,7 +12,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         DoubleCost,
         TripleCost,
         FlyingOnly,
-        Obstacle
+        Obstacle,
+        AbsoluteUnit
     }
 
     [ExecuteInEditMode]
