@@ -58,7 +58,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             if (_tacticsGrid.UseEnvironment)
             {
                 _gridMeshInstancer.UpdateGroundOffset(_groundOffset);
-                _tacticalMeshInstancer.UpdateGroundOffset(_groundOffset);
+                //_tacticalMeshInstancer.UpdateGroundOffset(_groundOffset);
             }
 
         }
@@ -81,16 +81,18 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 _tacticalMeshInstancer.RemoveInstance(tileData);
                 return;
             }
-            Vector3 newPos = tileData.tileMatrix.GetPosition();
-            newPos.y += _groundOffset;
-            tileData.tileMatrix = Matrix4x4.TRS(newPos, tileData.tileMatrix.rotation, tileData.tileMatrix.lossyScale);
-
             _tacticalMeshInstancer.AddInstance(tileData);
 
             if (!GridStatics.IsTileTypeWalkable(tileData.tileType))
                 _gridMeshInstancer.RemoveInstance(tileData);
             else
+            {
+                Vector3 newPos = tileData.tileMatrix.GetPosition();
+                newPos.y += _groundOffset;
+                tileData.tileMatrix = Matrix4x4.TRS(newPos, tileData.tileMatrix.rotation, tileData.tileMatrix.lossyScale);
                 _gridMeshInstancer.AddInstance(tileData);
+
+            }
         }
 
         public void AddTileState(GridIndex index, TileState tileState)
