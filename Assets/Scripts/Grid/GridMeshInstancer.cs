@@ -8,6 +8,12 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
     [ExecuteInEditMode]
     public class GridMeshInstancer : MonoBehaviour
     {
+        [SerializeField] private Color _instanceColor = Color.black;
+        [SerializeField] private Color _selectedColor = Color.green;
+        [SerializeField] private Color _neighborColor = Color.magenta;
+        [SerializeField] private Color _pathColor = Color.blue;
+        [SerializeField] private Color _hoveredColor = Color.yellow;
+
         private Dictionary<GridIndex, TileData> _instancedTiles = new Dictionary<GridIndex, TileData>();
         private List<Matrix4x4> _selectedTiles = new List<Matrix4x4>();
         private List<Matrix4x4> _neighborTiles = new List<Matrix4x4>();
@@ -163,7 +169,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _hoveredTile = default(TileData);
         }
 
-        public void UpdateGridMeshInstances(Mesh mesh, Material material, Color color, List<TileData> gridTiles)
+        public void UpdateGridMeshInstances(Mesh mesh, Material material, List<TileData> gridTiles)
         {
             _instancedMesh = mesh;
 
@@ -173,14 +179,14 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _pathMaterial = new Material(material);
             _hoveredMaterial = new Material(material);
 
-            _instancedMaterial.color = color;
-            _selectedMaterial.color = Color.green;
+            _instancedMaterial.color = _instanceColor;
+            _selectedMaterial.color = _selectedColor;
             _selectedMaterial.SetFloat("_IsFilled", 1f);
-            _neighborMaterial.color = Color.magenta;
+            _neighborMaterial.color = _neighborColor;
             _neighborMaterial.SetFloat("_IsFilled", 0.5f);
-            _pathMaterial.color = Color.blue;
+            _pathMaterial.color = _pathColor;
             _pathMaterial.SetFloat("_IsFilled", 1f);
-            _hoveredMaterial.color = Color.yellow;
+            _hoveredMaterial.color = _hoveredColor;
             _hoveredMaterial.SetFloat("_IsFilled", 0.5f);
 
             _renderParams = new RenderParams(_instancedMaterial);

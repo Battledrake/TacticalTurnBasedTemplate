@@ -25,7 +25,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
     public class GridVisual : MonoBehaviour
     {
         [Header("Dependencies")]
-        [SerializeField] private GridMeshInstancer _gridMeshInstance;
+        [SerializeField] private GridMeshInstancer _gridMeshInstancer;
+        [SerializeField] private TacticalMeshInstancer _tacticalMeshInstancer;
         [SerializeField] private TacticsGrid _tacticsGrid;
 
         public TacticsGrid TacticsGrid { get => _tacticsGrid; }
@@ -37,49 +38,60 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             _groundOffset = value;
             if (_tacticsGrid.UseEnvironment)
-                _gridMeshInstance.UpdateGroundOffset(_groundOffset);
+            {
+                _gridMeshInstancer.UpdateGroundOffset(_groundOffset);
+                _tacticalMeshInstancer.UpdateGroundOffset(_groundOffset);
+            }
+
         }
 
         public void UpdateGridVisual(GridShapeData gridShapeData, List<TileData> gridTiles)
         {
             ClearGridVisual();
-            _gridMeshInstance.UpdateGridMeshInstances(gridShapeData.flatMesh, gridShapeData.flatMaterial, Color.black, gridTiles);
+            _gridMeshInstancer.UpdateGridMeshInstances(gridShapeData.flatMesh, gridShapeData.flatMaterial, gridTiles);
+            _tacticalMeshInstancer.UpdateGridMeshInstances(gridShapeData.mesh, gridShapeData.material, gridTiles);
             SetOffsetFromGround(_groundOffset);
         }
 
         public void UpdateTileVisual(TileData tileData)
         {
-            if (GridStatics.IsTileTypeWalkable(tileData.tileType))
+            if (!GridStatics.IsTileTypeWalkable(tileData.tileType))
+            {
+                if (tileData.tileType == TileType.None)
+                {
+                    _tacticalMeshInstancer.RemoveInstance(tileData);
+                }
+                _gridMeshInstancer.RemoveInstance(tileData);
+            }
+            else
             {
                 Vector3 newPos = tileData.tileMatrix.GetPosition();
                 newPos.y += _groundOffset;
                 tileData.tileMatrix = Matrix4x4.TRS(newPos, tileData.tileMatrix.rotation, tileData.tileMatrix.lossyScale);
-                _gridMeshInstance.AddInstance(tileData);
-            }
-            else
-            {
-                _gridMeshInstance.RemoveInstance(tileData);
+                _gridMeshInstancer.AddInstance(tileData);
+                _tacticalMeshInstancer.AddInstance(tileData);
             }
         }
 
         public void AddTileState(GridIndex index, TileState tileState)
         {
-            _gridMeshInstance.AddState(index, tileState);
+            _gridMeshInstancer.AddState(index, tileState);
         }
 
         public void RemoveTileState(GridIndex index, TileState tileState)
         {
-            _gridMeshInstance.RemoveState(index, tileState);
+            _gridMeshInstancer.RemoveState(index, tileState);
         }
 
         public void ClearGridVisual()
         {
-            _gridMeshInstance.ClearInstances();
+            _gridMeshInstancer.ClearInstances();
+            _tacticalMeshInstancer.ClearInstances();
         }
 
         public void ClearPathVisual()
         {
-            _gridMeshInstance.ClearPathVisual();
+            _gridMeshInstancer.ClearPathVisual();
         }
     }
 }

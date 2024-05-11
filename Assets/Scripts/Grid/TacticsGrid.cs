@@ -298,7 +298,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                         else
                         {
                             TileType tileType = TraceForGround(instancePosition, out Vector3 hitPosition);
-                            if (GridStatics.IsTileTypeWalkable(tileType))
+                            if (tileType != TileType.None)
                             {
                                 tileData.tileType = tileType;
                                 tileData.tileMatrix = Matrix4x4.TRS(hitPosition, instanceRotation, instanceScale);

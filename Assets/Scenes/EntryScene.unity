@@ -7778,9 +7778,10 @@ GameObject:
   m_Component:
   - component: {fileID: 825704800}
   - component: {fileID: 825704801}
+  - component: {fileID: 825704806}
   - component: {fileID: 825704805}
   - component: {fileID: 825704804}
-  - component: {fileID: 825704806}
+  - component: {fileID: 825704807}
   m_Layer: 0
   m_Name: '[Grid]'
   m_TagString: Untagged
@@ -7835,6 +7836,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8fc39b059dad3b94aa5896d48e1a54d9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _instanceColor: {r: 0, g: 0, b: 0, a: 1}
+  _selectedColor: {r: 0, g: 1, b: 0, a: 1}
+  _neighborColor: {r: 1, g: 0, b: 1, a: 1}
+  _pathColor: {r: 0, g: 0, b: 1, a: 1}
+  _hoveredColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
 --- !u!114 &825704805
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7847,7 +7853,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e0caa97a97b05f649919839e354a821b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _gridMeshInstance: {fileID: 825704804}
+  _gridMeshInstancer: {fileID: 825704804}
+  _tacticalMeshInstancer: {fileID: 825704807}
   _tacticsGrid: {fileID: 825704801}
 --- !u!114 &825704806
 MonoBehaviour:
@@ -7865,6 +7872,23 @@ MonoBehaviour:
   _heuristicCost: 4
   _traversalCost: 4
   _traversalType: 1
+--- !u!114 &825704807
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 825704798}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0afefb3dacaef5749b92f3b9d16a7194, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _normalColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  _doubleColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  _tripleColor: {r: 0.47058824, g: 0.33333334, b: 0.007843138, a: 1}
+  _flyingColor: {r: 0.9176471, g: 0.52156866, b: 0.82745105, a: 1}
+  _obstacleColor: {r: 0.38431376, g: 0.09019608, b: 0.17254902, a: 1}
 --- !u!224 &844072294 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 1935885740837295380, guid: ae6b52217328ab44bbcc4b8ac8beb50e,
@@ -9063,7 +9087,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 961739749}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.3006394, y: 0.000000016410379, z: -0.0000000051729154, w: 0.9537379}
+  m_LocalRotation: {x: 0.3006394, y: -0.000000016410379, z: 0.0000000051729154, w: 0.9537379}
   m_LocalPosition: {x: 1.49, y: 10.59, z: -17.44}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -16978,7 +17002,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1626466355}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.3006394, y: 0.000000016410379, z: -0.0000000051729154, w: 0.9537379}
+  m_LocalRotation: {x: 0.3006394, y: -0.000000016410379, z: 0.0000000051729154, w: 0.9537379}
   m_LocalPosition: {x: 1.49, y: 10.59, z: -17.44}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
