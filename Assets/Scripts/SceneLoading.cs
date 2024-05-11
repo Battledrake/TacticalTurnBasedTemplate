@@ -1,8 +1,13 @@
+using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class SceneLoading : MonoBehaviour
 {
+    public List<SceneAsset> ScenePool { get => _scenePool; }
+
+    [SerializeField] private List<SceneAsset> _scenePool;
     private string _loadedScene = "";
 
     private void Start()
@@ -12,23 +17,24 @@ public class SceneLoading : MonoBehaviour
         //sceneUnload.completed += (async) => SceneManager.LoadScene(_loadableScenes[0], LoadSceneMode.Additive);
     }
 
-    public void UnloadScene()
+    public void UnloadScene(string sceneName)
     {
-        if (_loadedScene != null)
+        if (string.IsNullOrEmpty(_loadedScene))
+            return;
+
+        if (_loadedScene == sceneName)
         {
-            SceneManager.UnloadSceneAsync(_loadedScene);
-            _loadedScene = null;
+            SceneManager.UnloadSceneAsync(sceneName);
+            _loadedScene = "";
         }
     }
 
     public void LoadScene(string sceneName)
     {
-        if (sceneName == _loadedScene)
+        if (_loadedScene == sceneName)
             return;
 
-        UnloadScene();
-
-        SceneManager.LoadScene(sceneName, LoadSceneMode.Additive);
+        SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
         _loadedScene = sceneName;
     }
 }

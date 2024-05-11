@@ -1,7 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 namespace BattleDrakeCreations.TacticalTurnBasedTemplate
@@ -21,6 +23,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         [SerializeField] private SliderWidget _tileSizeSlider;
         [SerializeField] private SliderWidget _groundOffsetSlider;
         [SerializeField] private Toggle _useEnvToggle;
+        [SerializeField] private Toggle _tacticalGridToggle;
 
         [Header("Debug")]
         [SerializeField] private Toggle _boundsToggle;
@@ -37,6 +40,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         [SerializeField] private SceneLoading _sceneLoader;
         [SerializeField] private TacticsGrid _tacticsGrid;
 
+        private int _sceneSelected = 0;
+
         private bool _showGridBounds = false;
         private bool _showGridCenter = false;
         private bool _showGridBottomLeft = false;
@@ -48,12 +53,23 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _tileTypeCombo.ClearOptions();
             _tileTypeCombo.AddOptions(Enum.GetValues(typeof(TileType)).Cast<TileType>().Select(type => type.ToString()).ToList());
 
+            List<string> buildScenes = new List<string>();
+            buildScenes.Add("None");
+            int sceneCount = _sceneLoader.ScenePool.Count;
+            _sceneCombo.ClearOptions();
+            for(int i = 0; i < sceneCount; i++)
+            {
+                buildScenes.Add(_sceneLoader.ScenePool[i].name);
+            }
+            _sceneCombo.AddOptions(buildScenes);
+
             _gridShapeCombo.value = (int)_tacticsGrid.GridShape;
             _positionSlider.SetSliderValueWithoutNotify(_tacticsGrid.transform.position);
             _tileCountSlider.SetSliderValueWithoutNotify(_tacticsGrid.GridTileCount);
             _tileSizeSlider.SetSliderValueWithoutNotify(_tacticsGrid.TileSize);
             _groundOffsetSlider.SetSliderValueWithoutNotify(_tacticsGrid.GridVisual.GroundOffset);
             _useEnvToggle.SetIsOnWithoutNotify(_tacticsGrid.UseEnvironment);
+            _tacticalGridToggle.SetIsOnWithoutNotify(false);
 
             _sceneCombo.onValueChanged.AddListener(OnSceneChanged);
             _gridShapeCombo.onValueChanged.AddListener(OnGridShapeChanged);
@@ -61,7 +77,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _tileCountSlider.OnSliderValueChanged += OnTileCountChanged;
             _tileSizeSlider.OnSliderValueChanged += OnTileSizeChanged;
             _groundOffsetSlider.OnSliderValueChanged += OnGroundOffsetChanged;
-            _useEnvToggle.onValueChanged.AddListener(OnUseEnvironmentChanged);
+            _useEnvToggle.onValueChanged.AddListener(OnUseEnvironmentToggled);
+            _tacticalGridToggle.onValueChanged.AddListener(OnTacticsGridToggled);
 
             _boundsToggle.onValueChanged.AddListener(OnBoundsToggled);
             _centerToggle.onValueChanged.AddListener(OnCenterToggled);
@@ -111,11 +128,17 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             if (index > 0)
             {
+                _sceneLoader.UnloadScene(_sceneCombo.options[_sceneSelected].text);
                 _sceneLoader.LoadScene(_sceneCombo.options[index].text);
+                _sceneSelected = index;
             }
             else
             {
-                _sceneLoader.UnloadScene();
+                if (_sceneSelected == 0)
+                    return;
+
+                _sceneLoader.UnloadScene(_sceneCombo.options[_sceneSelected].text);
+                _sceneSelected = 0;
             }
         }
 
@@ -188,11 +211,28 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _tacticsGrid.RespawnGrid();
         }
 
-        private void OnUseEnvironmentChanged(bool useEnvironment)
+        private void OnUseEnvironmentToggled(bool useEnvironment)
         {
             _tacticsGrid.UseEnvironment = useEnvironment;
 
             _tacticsGrid.RespawnGrid();
+        }
+
+        private void OnTacticsGridToggled(bool isOn)
+        {
+            if (isOn)
+            {
+                _sceneLoader.UnloadScene(_sceneCombo.options[_sceneSelected].text);
+                _tacticsGrid.GridVisual.HideDefaultGrid();
+                _tacticsGrid.GridVisual.ShowTacticalGrid();
+
+            }
+            else
+            {
+                _sceneLoader.LoadScene(_sceneCombo.options[_sceneSelected].text);
+                _tacticsGrid.GridVisual.HideTacticalGrid();
+                _tacticsGrid.GridVisual.ShowDefaultGrid();
+            }
         }
 
         private void OnBoundsToggled(bool showGridBounds)

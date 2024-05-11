@@ -34,6 +34,24 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private float _groundOffset = 0.1f;
 
+        public void HideDefaultGrid()
+        {
+            _gridMeshInstancer.enabled = false;
+        }
+
+        public void ShowDefaultGrid()
+        {
+            _gridMeshInstancer.enabled = true;
+        }
+        public void HideTacticalGrid()
+        {
+            _tacticalMeshInstancer.enabled = false;
+        }
+        public void ShowTacticalGrid()
+        {
+            _tacticalMeshInstancer.enabled = true;
+        }
+
         private void SetOffsetFromGround(float value)
         {
             _groundOffset = value;
@@ -51,6 +69,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _gridMeshInstancer.UpdateGridMeshInstances(gridShapeData.flatMesh, gridShapeData.flatMaterial, gridTiles);
             _tacticalMeshInstancer.UpdateGridMeshInstances(gridShapeData.mesh, gridShapeData.material, gridTiles);
             SetOffsetFromGround(_groundOffset);
+
+            HideTacticalGrid();
         }
 
         public void UpdateTileVisual(TileData tileData)
