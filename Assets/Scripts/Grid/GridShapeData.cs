@@ -22,5 +22,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public Mesh flatMesh;
         public Material flatMaterial;
         public Material obstacleMaterial;
+        public Material doubleCostMaterial;
+        public Material tripleCostMaterial;
+        public Material flyingOnlyMaterial;
     }
 }

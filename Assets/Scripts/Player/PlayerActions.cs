@@ -15,8 +15,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public ActionBase LeftClickAction { get => _leftClickAction; }
         public ActionBase RightClickAction { get => _rightClickAction; }
 
-        private GridIndex _hoveredTile;
-        private GridIndex _selectedTile;
+        private GridIndex _hoveredTile = new GridIndex(int.MinValue, int.MinValue);
+        private GridIndex _selectedTile = new GridIndex(int.MinValue, int.MinValue);
 
         private ActionBase _leftClickAction;
         private ActionBase _rightClickAction;

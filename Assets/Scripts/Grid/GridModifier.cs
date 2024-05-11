@@ -31,10 +31,28 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 _currentShapeData = GridStatics.GetGridShapeData(_gridShape);
 
                 _meshFilter.mesh = _currentShapeData.mesh;
-                _meshRenderer.material = _currentShapeData.obstacleMaterial;
+                _meshRenderer.material = GetMaterialFromTileType();
                 _meshCollider.sharedMesh = _currentShapeData.mesh;
                 _meshCollider.convex = true;
             }
+        }
+
+        private Material GetMaterialFromTileType()
+        {
+            switch (_tileType)
+            {
+                case TileType.Obstacle:
+                    return _currentShapeData.obstacleMaterial;
+                case TileType.Normal:
+                    return _currentShapeData.material;
+                case TileType.DoubleCost:
+                    return _currentShapeData.doubleCostMaterial;
+                case TileType.TripleCost:
+                    return _currentShapeData.tripleCostMaterial;
+                case TileType.FlyingOnly:
+                    return _currentShapeData.flyingOnlyMaterial;
+            }
+            return _currentShapeData.material;
         }
     }
 }

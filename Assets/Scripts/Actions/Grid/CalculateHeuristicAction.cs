@@ -7,22 +7,28 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 	{
         public override bool ExecuteAction(GridIndex index)
         {
-            base.ExecuteAction(index);
+            if (!base.ExecuteAction(index))
+            {
+                _playerActions.TacticsGrid.GridPathfinder.ClearNodePool();
+                return false;
+            }
 
             if (!_playerActions.TacticsGrid.IsIndexValid(index))
                 return false;
-
-            _playerActions.TacticsGrid.GridPathfinder.ClearNodePool();
 
             for(int i = 0; i < _playerActions.TacticsGrid.GridTiles.Count; i++)
             {
                 GridIndex gridIndex = _playerActions.TacticsGrid.GridTiles.ElementAt(i).Key;
                 PathNode gridNode = _playerActions.TacticsGrid.GridPathfinder.CreateAndAddNodeToPool(gridIndex);
                 gridNode.heuristicCost = _playerActions.TacticsGrid.GridPathfinder.GetHeuristicCost(gridIndex, index);
+                _playerActions.TacticsGrid.GridPathfinder.OnPathfindingDataUpdated?.Invoke(gridIndex);
             }
-            GameObject.Find("[DebugMenu]").GetComponent<DebugTextOnTiles>().UpdateDebugText();
-
             return true;
+        }
+
+        private void OnDestroy()
+        {
+            _playerActions.TacticsGrid.GridPathfinder.ClearNodePool();
         }
     }
 }

@@ -9,6 +9,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
     {
         None,
         Normal,
+        DoubleCost,
+        TripleCost,
+        FlyingOnly,
         Obstacle
     }
 

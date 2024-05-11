@@ -73,8 +73,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
     public class GridPathfinding : MonoBehaviour
     {
-        public event Action<PathfindingResult> OnPathfindingCompleted;
-        public event Action<GridIndex> OnPathfindingDataUpdated;
+        public Action OnPathfindingCompleted;
+        public Action<GridIndex> OnPathfindingDataUpdated;
         public event Action OnPathfindingDataCleared;
 
         [SerializeField] private TacticsGrid _tacticsGrid;
@@ -109,7 +109,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private bool _includeStartNodeInPath = true;
 
         private PriorityQueue<PathNode> _frontierNodes;
-        private Dictionary<GridIndex, PathNode> _pathNodePool;
+        private Dictionary<GridIndex, PathNode> _pathNodePool = new Dictionary<GridIndex, PathNode>();
 
         //This exists so that there can be Units that find a path with custom data options. Otherwise, use default values.
         public PathfindingResult FindPath(GridIndex startIndex, GridIndex targetIndex)
@@ -140,8 +140,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 return pathResult; ;
             }
 
-            _pathNodePool = new Dictionary<GridIndex, PathNode>();
-            OnPathfindingDataCleared?.Invoke();
+            _pathNodePool.Clear();
             _frontierNodes = new PriorityQueue<PathNode>();
 
             PathNode startNode = CreateAndAddNodeToPool(startIndex);
@@ -202,6 +201,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 if (_ignoreClosed && neighborNode.isClosed)
                     continue;
 
+                neighborNode.terrainCost = (int)_tacticsGrid.GridTiles[neighborNode.index].tileType; //HACK: only valid tiles will be normal/double/triple at indexes 1,2, 3 of the enum. Implement custom method later.
+
                 float newTraversalCost = GetTraversalCost(currentNode.index, neighborNode.index, neighborNode.terrainCost) + currentNode.traversalCost;
                 float newHeuristic = GetHeuristicCost(neighborNode.index, goalNode) * _heuristicScale;
                 float newTotalCost = newTraversalCost + newHeuristic;
@@ -218,7 +219,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 if (!neighborNode.isOpened)
                 {
                     _frontierNodes.Enqueue(neighborNode);
-                    OnPathfindingDataUpdated?.Invoke(neighborNode.index);
                     neighborNode.isOpened = true;
                 }
 
@@ -304,21 +304,21 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 case CalculationType.Euclidean:
                     traversalCost = GetEuclideanDistance(source, target);
                     break;
-                    
+
             }
             return traversalCost * terrainCost;
         }
 
         public float GetHeuristicCost(GridIndex source, GridIndex target)
         {
-            if(_tacticsGrid.GridShape == GridShape.Hexagon)
+            if (_tacticsGrid.GridShape == GridShape.Hexagon)
             {
                 return GetDistanceFromAxialCoordinates(ConvertOddrToAxial(source), ConvertOddrToAxial(target));
             }
-            if(_tacticsGrid.GridShape == GridShape.Triangle)
+            if (_tacticsGrid.GridShape == GridShape.Triangle)
             {
                 return GetTriangleDistance(source, target);
-            }    
+            }
 
             switch (_heuristicCost)
             {
@@ -558,7 +558,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         //Standard algorithm for 4 neighbor squares and Hexagons.
         public float GetManhattanDistance(GridIndex source, GridIndex target)
         {
-            if(_tacticsGrid.GridShape == GridShape.Hexagon)
+            if (_tacticsGrid.GridShape == GridShape.Hexagon)
             {
                 GridIndex sourceAxial = ConvertOddrToAxial(source);
                 GridIndex targetAxial = ConvertOddrToAxial(target);

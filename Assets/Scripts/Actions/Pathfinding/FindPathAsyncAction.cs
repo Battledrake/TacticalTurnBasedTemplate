@@ -17,6 +17,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             {
                 _lastPath.ForEach(i => _playerActions.TacticsGrid.RemoveStateFromTile(i, TileState.IsInPath));
                 _lastPath.Clear();
+                _playerActions.TacticsGrid.GridPathfinder.ClearNodePool();
             }
 
             GridIndex previousTile = _playerActions.SelectedTile;
@@ -32,6 +33,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private async void ExecuteActionAsync(GridIndex index)
         {
             PathfindingResult pathResult = await Task.Run(() => { return _playerActions.TacticsGrid.GridPathfinder.FindPath(_playerActions.SelectedTile, index); });
+
+            _playerActions.TacticsGrid.GridPathfinder.OnPathfindingCompleted?.Invoke();
 
             _isSearching = false;
 
@@ -51,6 +54,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             {
                 _lastPath.ForEach(i => _playerActions.TacticsGrid.RemoveStateFromTile(i, TileState.IsInPath));
             }
+            _playerActions.TacticsGrid.GridPathfinder.ClearNodePool();
         }
     }
 }

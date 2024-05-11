@@ -20,3 +20,6 @@ MonoBehaviour:
     type: 3}
   flatMaterial: {fileID: 2100000, guid: b1525f064a6d4464b91dce15df7cd537, type: 2}
   obstacleMaterial: {fileID: 2100000, guid: 614f1d2f5758f3845ada5599820d5ecc, type: 2}
+  doubleCostMaterial: {fileID: 2100000, guid: 5345a573be903c842ba1bcfac3012971, type: 2}
+  tripleCostMaterial: {fileID: 2100000, guid: 89f1c350cb588f04ba55db7b3132bfde, type: 2}
+  flyingOnlyMaterial: {fileID: 2100000, guid: 9c88753ebc283464e93d482675299e6e, type: 2}

@@ -19,7 +19,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public bool ShowHeuristicCost { get => _showHeuristicCost; set => _showHeuristicCost = value; }
         public bool ShowTotalCost { get => _showTotalCost; set => _showTotalCost = value; }
 
-        private Dictionary<GridIndex, GameObject> _spawnedTexts = new Dictionary<GridIndex, GameObject>();
+        private Dictionary<GridIndex, TextMeshPro> _spawnedTexts = new Dictionary<GridIndex, TextMeshPro>();
 
         private bool _showTileIndexes = false;
         private bool _showTerrainCost = false;
@@ -31,16 +31,18 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             _tacticsGrid.OnTileDataUpdated += (i => UpdateTextOnTile(i));
             _tacticsGrid.OnGridDestroyed += ClearAllTextGameObjects;
-            _tacticsGrid.GridPathfinder.OnPathfindingDataUpdated += UpdateTextOnTile;
+            _tacticsGrid.GridPathfinder.OnPathfindingCompleted += UpdateTextOnAllTiles;
             _tacticsGrid.GridPathfinder.OnPathfindingDataCleared += UpdateTextOnAllTiles;
+            _tacticsGrid.GridPathfinder.OnPathfindingDataUpdated += UpdateTextOnTile;
         }
 
         private void OnDisable()
         {
             _tacticsGrid.OnTileDataUpdated -= (i => UpdateTextOnTile(i));
             _tacticsGrid.OnGridDestroyed -= ClearAllTextGameObjects;
-            _tacticsGrid.GridPathfinder.OnPathfindingDataUpdated -= UpdateTextOnTile;
+            _tacticsGrid.GridPathfinder.OnPathfindingCompleted -= UpdateTextOnAllTiles;
             _tacticsGrid.GridPathfinder.OnPathfindingDataCleared -= UpdateTextOnAllTiles;
+            _tacticsGrid.GridPathfinder.OnPathfindingDataUpdated -= UpdateTextOnTile;
         }
 
         private bool ShowAnyDebug()
@@ -70,12 +72,12 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             {
                 string debugText = "";
 
-                TextMeshPro textObject = GetTextGameObject(index)?.GetComponent<TextMeshPro>();
+                TextMeshPro textMeshComp = GetTextGameObject(index);
 
                 if (_tacticsGrid.GridShape == GridShape.Triangle)
-                    textObject.fontSize = 0.75f;
+                    textMeshComp.fontSize = 0.75f;
                 if (_tacticsGrid.GridShape == GridShape.Hexagon)
-                    textObject.fontSize = 1f;
+                    textMeshComp.fontSize = 1f;
 
                 if (_showTileIndexes)
                     debugText += $"index: {index}\n";
@@ -107,13 +109,13 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                     return;
                 }
 
-                textObject.text = debugText;
+                textMeshComp.text = debugText;
 
                 Vector3 tilePosition = tileData.tileMatrix.GetPosition();
                 tilePosition.y += 0.1f;
-                textObject.transform.position = tilePosition;
-                textObject.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
-                textObject.transform.localScale = tileData.tileMatrix.lossyScale;
+                textMeshComp.transform.position = tilePosition;
+                textMeshComp.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
+                textMeshComp.transform.localScale = tileData.tileMatrix.lossyScale;
             }
             else
             {
@@ -121,7 +123,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             }
         }
 
-        public GameObject GetTextGameObject(GridIndex index)
+        public TextMeshPro GetTextGameObject(GridIndex index)
         {
             if (_spawnedTexts.ContainsKey(index))
             {
@@ -129,7 +131,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             }
             else
             {
-                GameObject newTextObject = Instantiate(_textObjectPrefab, Vector3.zero, Quaternion.identity).gameObject;
+                TextMeshPro newTextObject = Instantiate(_textObjectPrefab, Vector3.zero, Quaternion.identity);
                 _spawnedTexts.Add(index, newTextObject);
                 return newTextObject;
             }
@@ -152,9 +154,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         public void DestroyTextGameObject(GridIndex index)
         {
-            if (_spawnedTexts.TryGetValue(index, out GameObject textObject))
+            if (_spawnedTexts.TryGetValue(index, out TextMeshPro textObject))
             {
-                Destroy(textObject);
+                Destroy(textObject.gameObject);
                 _spawnedTexts.Remove(index);
             }
         }
