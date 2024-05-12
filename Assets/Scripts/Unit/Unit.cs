@@ -16,10 +16,13 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
     public class Unit : MonoBehaviour
     {
         [SerializeField] private UnitType _unitType = UnitType.Ranger;
-        private GameObject _unitVisual;
 
+        public GridIndex UnitGridIndex { get => _gridIndex; set => _gridIndex = value; }
+
+        private GameObject _unitVisual;
         private Animator _unitAnimator;
         private UnitData _unitData;
+        private GridIndex _gridIndex = new GridIndex(int.MinValue, int.MinValue);
 
 
         public void InitializeUnit(UnitType unitType)

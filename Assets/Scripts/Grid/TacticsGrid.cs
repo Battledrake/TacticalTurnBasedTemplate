@@ -29,6 +29,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
     {
         public event Action<GridIndex> OnTileDataUpdated;
         public event Action OnGridDestroyed;
+        public event Action OnGridGenerated;
 
         [SerializeField] private GridShape _gridShapeToggle = GridShape.Square;
         [SerializeField] private GridIndex _gridTileCount;
@@ -105,7 +106,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             LayerMask groundLayer = LayerMask.GetMask("Ground");
-            if(Physics.Raycast(ray, out RaycastHit hitInfo, 1000f, groundLayer))
+            if (Physics.Raycast(ray, out RaycastHit hitInfo, 1000f, groundLayer))
             {
                 Vector3 hitPoint = hitInfo.point;
                 return hitPoint;
@@ -125,7 +126,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public List<GridIndex> GetAllTilesWithState(TileState tileState)
         {
             List<GridIndex> tiles = new List<GridIndex>();
-            for(int i = 0; i < _gridTiles.Count; i++)
+            for (int i = 0; i < _gridTiles.Count; i++)
             {
                 HashSet<TileState> tileStates = _gridTiles.ElementAt(i).Value.tileStates;
                 if (tileStates != null && tileStates.Contains(tileState))
@@ -139,7 +140,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public void ClearStateFromTiles(TileState stateToClear)
         {
             List<GridIndex> tilesWithState = GetAllTilesWithState(stateToClear);
-            for(int i = 0; i < tilesWithState.Count; i++)
+            for (int i = 0; i < tilesWithState.Count; i++)
             {
                 RemoveStateFromTile(tilesWithState[i], stateToClear);
             }
@@ -331,10 +332,25 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                     }
                 }
                 if (tilesToRender.Count > 0)
+                {
                     _gridVisual.UpdateGridVisual(GetCurrentShapeData(), tilesToRender);
+                }
                 else
+                {
                     _gridVisual.ClearGridVisual();
+                }
+
+
+                OnGridGenerated?.Invoke();
             }
+        }
+
+        public bool IsTileWalkable(GridIndex index)
+        {
+            if (_gridTiles.ContainsKey(index))
+                return (GridStatics.IsTileTypeWalkable(_gridTiles[index].tileType));
+            else
+                return false;
         }
 
         public void RespawnGrid()
@@ -383,7 +399,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         public void RemoveGridTile(GridIndex index)
         {
-            if(_gridTiles.Remove(index, out TileData tileData))
+            if (_gridTiles.Remove(index, out TileData tileData))
             {
                 tileData.tileType = TileType.None;
                 _gridVisual.UpdateTileVisual(tileData);

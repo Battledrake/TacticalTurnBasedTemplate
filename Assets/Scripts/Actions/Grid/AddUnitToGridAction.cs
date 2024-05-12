@@ -10,19 +10,16 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             if (actionValue < 0)
                 return false;
 
-            if (_playerActions.TacticsGrid.GetTileDataFromIndex(index, out TileData tileData))
+            if (_playerActions.TacticsGrid.IsTileWalkable(index))
             {
-                if (GridStatics.IsTileTypeWalkable(tileData.tileType))
+                _playerActions.TacticsGrid.GridTiles.TryGetValue(index, out TileData tileData);
+                if (!tileData.unitOnTile)
                 {
-                    if (tileData.unitOnTile == null)
-                    {
-                        Unit newUnit = Instantiate(_unitPrefab, _playerActions.TacticsGrid.GetTilePositionFromGridIndex(index), Quaternion.identity);
-                        newUnit.InitializeUnit((UnitType)actionValue);
-                        tileData.unitOnTile = newUnit;
-                        _playerActions.TacticsGrid.GridTiles[index] = tileData;
+                    Unit newUnit = Instantiate(_unitPrefab);
+                    newUnit.InitializeUnit((UnitType)actionValue);
 
-                        return true;
-                    }
+                    _playerActions.CombatSystem.AddUnitInCombat(newUnit, index);
+                    return true;
                 }
             }
             return false;

@@ -44,6 +44,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             else
             {
                 _borderImage.color = _defaultBorderColor;
+                _playerActions.LeftClickAction.actionValue = -1;
             }
             OnUnitButtonToggled?.Invoke(_unitType);
         }

@@ -8,8 +8,10 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public event Action<ActionBase, ActionBase> OnSelectedActionsChanged;
 
         [SerializeField] private TacticsGrid _tacticsGrid;
+        [SerializeField] private CombatSystem _combatSystem;
 
         public TacticsGrid TacticsGrid { get => _tacticsGrid; }
+        public CombatSystem CombatSystem { get => _combatSystem; }
         public GridIndex HoveredTile { get => _hoveredTile; set => _selectedTile = value; }
         public GridIndex SelectedTile { get => _selectedTile; set => _selectedTile = value; }
         public ActionBase LeftClickAction { get => _leftClickAction; }

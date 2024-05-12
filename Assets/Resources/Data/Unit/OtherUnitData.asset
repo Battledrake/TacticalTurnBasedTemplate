@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   unitType: 3
   unitName: Orc
-  unitIcon: {fileID: 0}
+  unitIcon: {fileID: 21300000, guid: 5caac83ccebff4b48b7e042497c9b2c3, type: 3}
   unitVisual: {fileID: 1091293637548798, guid: b603af86ac880d246a16780f2c468564, type: 3}

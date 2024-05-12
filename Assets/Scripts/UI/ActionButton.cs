@@ -40,7 +40,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             }
             else
             {
-                OnSetActionValue(_actionValue);
+                SetActionValues(_actionValue);
                 _isActive = true;
             }
         }
@@ -48,11 +48,11 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         //HACK: Used for ShowTileNeighborsAction to set an int using a toggle only that button has.
         public void OnSetActionValue(bool newValue)
         {
-            OnSetActionValue(newValue ? 1 : 0);
+            SetActionValues(newValue ? 1 : 0);
         }
 
         //HACK: Used for SetTileType to set an int from a combo box only that button has.
-        public void OnSetActionValue(int newValue)
+        public void SetActionValues(int newValue)
         {
             _actionValue = newValue;
 
