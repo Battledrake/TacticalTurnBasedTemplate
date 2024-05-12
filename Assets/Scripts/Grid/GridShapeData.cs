@@ -12,7 +12,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         Triangle
     }
 
-    [CreateAssetMenu(fileName = "Data", menuName = "TTBTk/Grid/GridShapeData")]
+    [CreateAssetMenu(fileName = "GridData", menuName = "TTBT/Grid/GridShapeData")]
     public class GridShapeData : ScriptableObject
     {
         public GridShape gridShape;

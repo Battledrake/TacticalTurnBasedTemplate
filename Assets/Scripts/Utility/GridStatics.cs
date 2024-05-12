@@ -21,12 +21,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             return value % 2 == 0;
         }
 
-        public static GridShapeData GetGridShapeData(GridShape gridShape)
-        {
-            GridShapeData[] _gridshapeData = Resources.LoadAll<GridShapeData>("Data/Grid");
-            return _gridshapeData.FirstOrDefault<GridShapeData>(data => data.gridShape == gridShape);
-        }
-
         public static bool IsTileTypeWalkable(TileType tileType)
         {
             return tileType != TileType.None && tileType != TileType.Obstacle && tileType != TileType.FlyingOnly;

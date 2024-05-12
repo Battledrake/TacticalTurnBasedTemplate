@@ -12,14 +12,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         IsInPath
     }
 
-    public struct TileData
-    {
-        public GridIndex index;
-        public TileType tileType;
-        public Matrix4x4 tileMatrix;
-        public HashSet<TileState> tileStates;
-    }
-
     [ExecuteInEditMode]
     [RequireComponent(typeof(GridMeshInstancer))]
     public class GridVisual : MonoBehaviour

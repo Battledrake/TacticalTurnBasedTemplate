@@ -28,7 +28,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
             if (_gridShape != GridShape.None)
             {
-                _currentShapeData = GridStatics.GetGridShapeData(_gridShape);
+                _currentShapeData = DataManager.GetGridShapeData(_gridShape);
 
                 _meshFilter.mesh = _currentShapeData.mesh;
                 _meshRenderer.material = GetMaterialFromTileType();

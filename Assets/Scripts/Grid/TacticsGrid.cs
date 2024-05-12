@@ -12,8 +12,16 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         DoubleCost,
         TripleCost,
         FlyingOnly,
-        Obstacle,
-        AbsoluteUnit
+        Obstacle
+    }
+
+    public struct TileData
+    {
+        public GridIndex index;
+        public TileType tileType;
+        public Matrix4x4 tileMatrix;
+        public HashSet<TileState> tileStates;
+        public Unit unitOnTile;
     }
 
     [ExecuteInEditMode]
@@ -71,7 +79,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         public GridShapeData GetCurrentShapeData()
         {
-            return DataManager.GetShapeData(_gridShape);
+            return DataManager.GetGridShapeData(_gridShape);
         }
 
         public bool IsIndexValid(GridIndex index)
