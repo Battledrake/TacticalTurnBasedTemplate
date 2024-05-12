@@ -9,7 +9,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
     {
         Warrior,
         Ranger,
-        Slime
+        Slime,
+        Orc
     }
 
     public class Unit : MonoBehaviour
@@ -20,14 +21,10 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private Animator _unitAnimator;
         private UnitData _unitData;
 
-        private void Awake()
-        {
-            LoadUnitData();
-        }
 
-        [ContextMenu("Load Unit Data")]
-        public void LoadUnitData()
+        public void InitializeUnit(UnitType unitType)
         {
+            _unitType = unitType;
             _unitData = DataManager.GetUnitDataFromType(_unitType);
             if (_unitVisual != null)
                 Destroy(_unitVisual);

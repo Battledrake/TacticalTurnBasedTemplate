@@ -8,14 +8,21 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 {
     public class UnitButton : MonoBehaviour
     {
-        public event Action<UnitData> OnUnitButtonToggled;
+        public event Action<UnitType> OnUnitButtonToggled;
 
         [SerializeField] private Color _defaultBorderColor;
         [SerializeField] private Color _selectedBorderColor;
         [SerializeField] private Image _borderImage;
-        [SerializeField] private Toggle _buttonToggle;
         [SerializeField] private Image _icon;
-        private UnitData _unitData;
+
+        private Toggle _buttonToggle;
+        private UnitType _unitType;
+        private PlayerActions _playerActions;
+
+        private void Awake()
+        {
+            _buttonToggle = this.GetComponent<Toggle>();
+        }
 
         private void OnEnable()
         {
@@ -29,22 +36,23 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void OnButtonToggleChanged(bool isOn)
         {
-            Debug.Log("Test");
             if (isOn)
             {
                 _borderImage.color = _selectedBorderColor;
+                _playerActions.LeftClickAction.actionValue = (int)_unitType;
             }
             else
             {
                 _borderImage.color = _defaultBorderColor;
             }
-            OnUnitButtonToggled?.Invoke(_unitData);
+            OnUnitButtonToggled?.Invoke(_unitType);
         }
 
-        public void InitializeButton(UnitData unitData)
+        public void InitializeButton(UnitType unitType, Sprite icon, PlayerActions playerActions)
         {
-            _unitData = unitData;
-            _icon.sprite = unitData.unitIcon;
+            _unitType = unitType;
+            _icon.sprite = icon;
+            _playerActions = playerActions;
         }
 
         public void DisableButton()

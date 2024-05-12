@@ -11,36 +11,54 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
     {
         [SerializeField] private UnitButton _buttonPrefab;
         [SerializeField] private Transform _buttonParent;
+
+        [SerializeField] private PlayerActions _playerActions;
+
         private Dictionary<UnitType, UnitButton> _iconButtons = new Dictionary<UnitType, UnitButton>();
 
-        private UnitData _selectedData;
+        private int _activeButton = -1;
 
         private void Awake()
         {
             UnitData[] unitData = DataManager.GetAllUnitData();
-            for(int i = 0; i < unitData.Length; i++)
+            for (int i = 0; i < unitData.Length; i++)
             {
                 //TODO: We should have an option to get all data not just one at a time, so we're not calling it a bunch of times.
                 UnitButton unitButton = Instantiate(_buttonPrefab, _buttonParent);
-                unitButton.InitializeButton(unitData[i]);
+                unitButton.InitializeButton(unitData[i].unitType, unitData[i].unitIcon, _playerActions);
                 unitButton.OnUnitButtonToggled += OnUnitButtonToggled;
 
                 _iconButtons.Add(unitData[i].unitType, unitButton);
             }
         }
 
-        private void OnUnitButtonToggled(UnitData unitData)
+        private void OnUnitButtonToggled(UnitType unitButton)
         {
-            if(unitData == _selectedData)
+            //This mean we're passing in the same button.
+            if (_activeButton >= 0 && (UnitType)_activeButton == unitButton)
             {
-                _selectedData = null;
+                _activeButton = -1;
             }
             else
             {
-                if (_selectedData != null)
-                    _iconButtons[_selectedData.unitType].DisableButton();
+                //This means we had a valid button but it's not the one that called this. We need to disable it.
+                if (_activeButton >= 0)
+                {
+                    _iconButtons[(UnitType)_activeButton].DisableButton();
+                }
+                //Now we set the new active button to the one that sent the message.
+                _activeButton = (int)unitButton;
+            }
+        }
 
-                _selectedData = unitData;
+        public void DeselectAllUnitButtons(bool isActionActive)
+        {
+            if (isActionActive)
+                return;
+
+            for(int i = 0; i < _iconButtons.Count; i++)
+            {
+                _iconButtons[(UnitType)i].DisableButton();
             }
         }
     }

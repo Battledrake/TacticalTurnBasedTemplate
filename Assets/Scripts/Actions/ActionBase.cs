@@ -4,7 +4,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 {
     public abstract class ActionBase : MonoBehaviour
     {
-        public int actionValue;
+        public int actionValue = -1;
 
         protected PlayerActions _playerActions;
 
