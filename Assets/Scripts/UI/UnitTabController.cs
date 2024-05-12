@@ -9,8 +9,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 {
     public class UnitTabController : MonoBehaviour
     {
-        [SerializeField] private UnitButton _buttonPrefab;
-        [SerializeField] private Transform _buttonParent;
+        [SerializeField] private UnitButton _unitButtonPrefab;
+        [SerializeField] private Transform _unitButtonContainer;
 
         [SerializeField] private PlayerActions _playerActions;
 
@@ -24,7 +24,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             for (int i = 0; i < unitData.Length; i++)
             {
                 //TODO: We should have an option to get all data not just one at a time, so we're not calling it a bunch of times.
-                UnitButton unitButton = Instantiate(_buttonPrefab, _buttonParent);
+                UnitButton unitButton = Instantiate(_unitButtonPrefab, _unitButtonContainer);
                 unitButton.InitializeButton(unitData[i].unitType, unitData[i].unitIcon, _playerActions);
                 unitButton.OnUnitButtonToggled += OnUnitButtonToggled;
 

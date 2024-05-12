@@ -77,6 +77,20 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             }
         }
 
+        public bool GetTileDataFromIndex(GridIndex index, out TileData tileData)
+        {
+            if (IsIndexValid(index))
+            {
+                tileData = _gridTiles[index];
+                return true;
+            }
+            else
+            {
+                tileData = default(TileData);
+                return false;
+            }
+        }
+
         public GridShapeData GetCurrentShapeData()
         {
             return DataManager.GetGridShapeData(_gridShape);

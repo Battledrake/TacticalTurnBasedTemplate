@@ -5771,7 +5771,7 @@ PrefabInstance:
     - target: {fileID: 3402831239024330239, guid: 8997797976dfd1842ad7ccc8f7c5dda9,
         type: 3}
       propertyPath: m_Name
-      value: AddUnit_Action
+      value: AddRemoveUnit_Action
       objectReference: {fileID: 0}
     - target: {fileID: 4751680773038117805, guid: 8997797976dfd1842ad7ccc8f7c5dda9,
         type: 3}
@@ -5802,6 +5802,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5494473387242778315, guid: 8997797976dfd1842ad7ccc8f7c5dda9,
+        type: 3}
+      propertyPath: m_text
+      value: Add/Remove Unit
       objectReference: {fileID: 0}
     - target: {fileID: 6123252677279302713, guid: 8997797976dfd1842ad7ccc8f7c5dda9,
         type: 3}
@@ -5923,7 +5928,7 @@ PrefabInstance:
         type: 3}
       propertyPath: _rightClickAction
       value: 
-      objectReference: {fileID: -5117646807456087730, guid: 009405f838cc36644bab6d617f436bc9,
+      objectReference: {fileID: 1701700091141188386, guid: d4c4cc00aa6f5aa4b93744dca134f51c,
         type: 3}
     - target: {fileID: 9127293637513576739, guid: 8997797976dfd1842ad7ccc8f7c5dda9,
         type: 3}
@@ -8051,7 +8056,7 @@ MonoBehaviour:
     x: 15
     z: 15
   _gridTileSize: {x: 2, y: 2, z: 2}
-  _useEnvironment: 1
+  _useEnvironment: 0
   _gridVisual: {fileID: 825704805}
   _gridPathfinder: {fileID: 825704806}
 --- !u!114 &825704804
@@ -15960,9 +15965,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e300249587280204389ad733488a670b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _buttonPrefab: {fileID: 4982557686542512055, guid: 8f46826d882d8694591e050883d6b25d,
+  _unitButtonPrefab: {fileID: 4982557686542512055, guid: 8f46826d882d8694591e050883d6b25d,
     type: 3}
-  _buttonParent: {fileID: 170187854}
+  _unitButtonContainer: {fileID: 170187854}
   _playerActions: {fileID: 759534483}
 --- !u!1 &1725964323
 GameObject:
