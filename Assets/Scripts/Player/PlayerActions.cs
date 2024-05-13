@@ -1,4 +1,5 @@
 using System;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace BattleDrakeCreations.TacticalTurnBasedTemplate
@@ -14,11 +15,15 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public CombatSystem CombatSystem { get => _combatSystem; }
         public GridIndex HoveredTile { get => _hoveredTile; set => _selectedTile = value; }
         public GridIndex SelectedTile { get => _selectedTile; set => _selectedTile = value; }
+        public Unit HoveredUnit { get => _hoveredUnit; set => _hoveredUnit = value; }
+        public Unit SelectedUnit { get => _selectedUnit; set => _selectedUnit = value; }
         public ActionBase LeftClickAction { get => _leftClickAction; }
         public ActionBase RightClickAction { get => _rightClickAction; }
 
         private GridIndex _hoveredTile = new GridIndex(int.MinValue, int.MinValue);
         private GridIndex _selectedTile = new GridIndex(int.MinValue, int.MinValue);
+        private Unit _hoveredUnit = null;
+        private Unit _selectedUnit = null;
 
         private ActionBase _leftClickAction;
         private ActionBase _rightClickAction;
@@ -48,7 +53,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void Update()
         {
-            UpdateHoveredTile();
+            UpdatedHoveredTileAndUnit();
 
             if (Input.GetMouseButtonDown(0))
             {
@@ -68,6 +73,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             {
                 _isRightClickDown = false;
             }
+
+
         }
 
         private void TryLeftClickAction()
@@ -81,14 +88,74 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 _rightClickAction.ExecuteAction(_hoveredTile);
         }
 
-        private void UpdateHoveredTile()
+        private void UpdatedHoveredTileAndUnit()
         {
-            if (_tacticsGrid.GetTileIndexUnderCursor() != _hoveredTile)
+            Unit unit = GetUnitUnderCursor();
+            if (_hoveredUnit != unit)
+            {
+                if (_hoveredUnit != null)
+                    _hoveredUnit.SetIsHovered(false);
+
+                if (unit != null)
+                    unit.SetIsHovered(true);
+
+                _hoveredUnit = unit;
+            }
+
+            GridIndex newIndex;
+            if (_hoveredUnit)
+            {
+                newIndex = _hoveredUnit.UnitGridIndex;
+            }
+            else
+            {
+                newIndex = _tacticsGrid.GetTileIndexUnderCursor();
+            }
+
+            if (newIndex != _hoveredTile)
             {
                 _tacticsGrid.RemoveStateFromTile(_hoveredTile, TileState.Hovered);
-                _hoveredTile = _tacticsGrid.GetTileIndexUnderCursor();
+                _hoveredTile = newIndex;
                 _tacticsGrid.AddStateToTile(_hoveredTile, TileState.Hovered);
                 HoverTileChanged?.Invoke();
+            }
+        }
+
+        public void SetSelectedTileAndUnit(GridIndex index)
+        {
+            GridIndex previousTile = _selectedTile;
+            if (previousTile != index)
+            {
+                _tacticsGrid.RemoveStateFromTile(previousTile, TileState.Selected);
+                _selectedTile = index;
+                _tacticsGrid.AddStateToTile(index, TileState.Selected);
+
+            }
+            else //Clicked on a tile that was already selected
+            {
+                _tacticsGrid.RemoveStateFromTile(index, TileState.Selected);
+                _selectedTile = new GridIndex(int.MinValue, int.MinValue);
+                if (_selectedUnit != null)
+                {
+                    _selectedUnit.SetIsSelected(false);
+                    _selectedUnit = null;
+                    return;
+                }
+            }
+
+            _tacticsGrid.GridTiles.TryGetValue(index, out TileData tileData);
+
+            if (tileData.unitOnTile != _selectedUnit)
+            {
+                if (_selectedUnit != null)
+                {
+                    _selectedUnit.SetIsSelected(false);
+                }
+                if (tileData.unitOnTile != null)
+                {
+                    tileData.unitOnTile.SetIsSelected(true);
+                }
+                _selectedUnit = tileData.unitOnTile;
             }
         }
 
@@ -100,7 +167,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         public void SetRightClickActionValue(int value)
         {
-            if( _rightClickAction != null)
+            if (_rightClickAction != null)
                 _rightClickAction.actionValue = value;
         }
 
@@ -123,6 +190,24 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _rightClickAction.InitializeAction(this);
 
             OnSelectedActionsChanged?.Invoke(_leftClickAction, _rightClickAction);
+        }
+
+        public Unit GetUnitUnderCursor()
+        {
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            LayerMask unitLayer = LayerMask.NameToLayer("Unit");
+
+            if (Physics.Raycast(ray, out RaycastHit hitInfo, 1000f, unitLayer))
+            {
+                return hitInfo.transform.GetComponent<Unit>();
+            }
+            else
+            {
+                GridIndex tileIndex = _tacticsGrid.GetTileIndexUnderCursor();
+                _tacticsGrid.GridTiles.TryGetValue(tileIndex, out TileData tileData);
+
+                return tileData.unitOnTile;
+            }
         }
     }
 }

@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 {
-    public class CalculateHeuristicAction : SelectTileAction
+    public class CalculateHeuristicAction : SelectTileAndUnitAction
 	{
         public override bool ExecuteAction(GridIndex index)
         {

@@ -280,6 +280,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public Quaternion GetTileRotationFromGridIndex(GridIndex gridIndex)
         {
             Vector3 rotationVector = new Vector3(-90.0f, 0.0f, 90.0f); //Imported meshes are using Unreal Coordinate System. Adjusting for Unity.
+            //if (_gridShape == GridShape.Hexagon)
+            //    rotationVector = Vector3.zero;
 
             if (_gridShape == GridShape.Triangle)
             {

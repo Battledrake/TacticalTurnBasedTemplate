@@ -25,13 +25,12 @@ public class CombatSystem : MonoBehaviour
 
     private void SetUnitIndexOnGrid(Unit unit, GridIndex gridIndex)
     {
-        if(unit.UnitGridIndex != gridIndex)
+        if (unit.UnitGridIndex != gridIndex)
         {
-            if( _tacticsGrid.GridTiles.TryGetValue(unit.UnitGridIndex, out TileData prevTile))
+            if (_tacticsGrid.GridTiles.TryGetValue(unit.UnitGridIndex, out TileData prevTile))
             {
-                if(prevTile.unitOnTile == unit)
+                if (prevTile.unitOnTile == unit)
                 {
-
                     prevTile.unitOnTile = null;
                     _tacticsGrid.GridTiles[unit.UnitGridIndex] = prevTile;
                 }
@@ -54,17 +53,20 @@ public class CombatSystem : MonoBehaviour
         unit.transform.position = newUnitPosition;
     }
 
-    public void RemoveUnitFromCombat(Unit unit)
+    public void RemoveUnitFromCombat(Unit unit, bool shouldDestroy = true)
     {
         _unitsInCombat.Remove(unit);
 
-        SetUnitIndexOnGrid(unit, new GridIndex(int.MinValue, int.MaxValue));
+        if (shouldDestroy)
+            Destroy(unit.gameObject);
+        else
+            SetUnitIndexOnGrid(unit, new GridIndex(int.MinValue, int.MaxValue));
     }
 
     private void TacticsGrid_OnGridGenerated()
     {
         List<Unit> copyList = new List<Unit>(_unitsInCombat);
-        for(int i = 0; i < copyList.Count; i++)
+        for (int i = 0; i < copyList.Count; i++)
         {
             Unit unit = copyList[i];
             GridIndex unitIndex = unit.UnitGridIndex;
@@ -82,7 +84,7 @@ public class CombatSystem : MonoBehaviour
     private void TacticsGrid_OnTileDataUpdated(GridIndex index)
     {
         List<Unit> copyList = new List<Unit>(_unitsInCombat);
-        for(int i = 0; i < copyList.Count; i++)
+        for (int i = 0; i < copyList.Count; i++)
         {
             if (copyList[i].UnitGridIndex == index)
             {
