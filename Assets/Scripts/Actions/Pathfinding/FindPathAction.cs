@@ -10,7 +10,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
     public class FindPathAction : ActionBase
     {
         private List<GridIndex> _lastPath = new List<GridIndex>();
-        private GridIndex _lastIndex;
 
         public override bool ExecuteAction(GridIndex index)
         {

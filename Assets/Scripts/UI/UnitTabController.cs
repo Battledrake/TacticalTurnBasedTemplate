@@ -51,14 +51,17 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             }
         }
 
-        public void DeselectAllUnitButtons(bool isActionActive)
+        public void AddRemoveUnitActionToggled(bool isActionActive)
         {
             if (isActionActive)
+            {
                 return;
+            }
+
 
             for(int i = 0; i < _iconButtons.Count; i++)
             {
-                _iconButtons[(UnitType)i].DisableButton();
+                _iconButtons.ElementAt(i).Value.DisableButton();
             }
         }
     }

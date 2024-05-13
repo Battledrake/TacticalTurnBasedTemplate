@@ -15,10 +15,10 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         [SerializeField] private TextMeshProUGUI _buttonLabel;
 
         private Toggle _buttonToggle;
-        private int _actionValue = 0;
+        private int _actionValue = -1;
 
         //HACK: SetTileType uses combobox but generic functionality is desired. Also two action buttons that Select Tile. This makes that work.
-        private bool _isActive;
+        private bool _isActive = false;
 
         private void Awake()
         {
@@ -40,20 +40,22 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             }
             else
             {
-                SetActionValues(_actionValue);
                 _isActive = true;
             }
         }
 
         //HACK: Used for ShowTileNeighborsAction to set an int using a toggle only that button has.
-        public void OnSetActionValue(bool newValue)
+        public void SetActionValue(bool newValue)
         {
             SetActionValues(newValue ? 1 : 0);
         }
 
-        //HACK: Used for SetTileType to set an int from a combo box only that button has.
+        //HACK: Used for SetTileType and UnitSelection actions. Default values set on action prefabs.
         public void SetActionValues(int newValue)
         {
+            if (_actionValue == newValue)
+                return;
+
             _actionValue = newValue;
 
             if (_leftClickAction != null)

@@ -92,6 +92,18 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             }
         }
 
+        public void SetLeftClickActionValue(int value)
+        {
+            if (_leftClickAction != null)
+                _leftClickAction.actionValue = value;
+        }
+
+        public void SetRightClickActionValue(int value)
+        {
+            if( _rightClickAction != null)
+                _rightClickAction.actionValue = value;
+        }
+
         public void ClearSelectedActions()
         {
             Destroy(_leftClickAction.gameObject);

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 {
@@ -104,6 +105,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         public Vector3 GetCursorPositionOnGrid()
         {
+            if (EventSystem.current.IsPointerOverGameObject())
+                return new Vector3(-999, -999, -999);
+
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             LayerMask groundLayer = LayerMask.GetMask("Ground");
             if (Physics.Raycast(ray, out RaycastHit hitInfo, 1000f, groundLayer))
