@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using UnityEditor.Experimental.GraphView;
@@ -34,6 +35,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public float heightAllowance;
         public bool includeDiagonals;
         public bool includeStartNode;
+        public List<TileType> validTileTypes;
     }
 
     public class PathNode : IComparable<PathNode>
@@ -119,6 +121,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             pathData.includeDiagonals = _includeDiagonals;
             pathData.allowPartialSolution = _allowPartialSolution;
             pathData.includeStartNode = _includeStartNodeInPath;
+            pathData.validTileTypes = new List<TileType>{ TileType.Normal, TileType.DoubleCost, TileType.TripleCost};
 
             return FindPath(startIndex, targetIndex, pathData);
         }
@@ -165,7 +168,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
             if (pathResult.Result == PathResult.SearchSuccess || pathData.allowPartialSolution)
             {
-                pathResult.Path = ConvertPathNodesToIndexes(startNode, bestNode);
+                pathResult.Path = ConvertPathNodesToIndexes(startNode, bestNode, pathData.includeStartNode);
             }
             return pathResult;
         }
@@ -189,7 +192,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 if (!_tacticsGrid.IsIndexValid(neighbor))
                     continue;
 
-                if (neighbor == currentNode.parent || neighbor == currentNode.index || !IsTraversalAllowed(currentNode.index, neighbor, pathData.heightAllowance))
+                if (neighbor == currentNode.parent || neighbor == currentNode.index || !IsTraversalAllowed(currentNode.index, neighbor, pathData.heightAllowance, pathData.validTileTypes))
                     continue;
 
                 PathNode neighborNode = null;
@@ -231,7 +234,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             return true;
         }
 
-        private List<GridIndex> ConvertPathNodesToIndexes(PathNode startNode, PathNode endNode)
+        private List<GridIndex> ConvertPathNodesToIndexes(PathNode startNode, PathNode endNode, bool includeStartNode)
         {
             List<GridIndex> tileIndexes = new List<GridIndex>();
 
@@ -247,7 +250,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 pathLength++;
             }
 
-            if (!_includeStartNodeInPath)
+            if (!includeStartNode)
                 tileIndexes.RemoveAt(pathLength - 1);
 
             tileIndexes.Reverse();
@@ -336,17 +339,31 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             return 1f;
         }
 
-        private bool IsTraversalAllowed(GridIndex source, GridIndex target, float heightAllowance)
+        private bool IsValidTileType(List<TileType> validTypes, TileType typeBeingChecked)
         {
+            for(int i = 0; i < validTypes.Count; i++)
+            {
+                if (typeBeingChecked == validTypes.ElementAt(i))
+                    return true;
+            }
+            return false;
+        }
+
+        private bool IsTraversalAllowed(GridIndex source, GridIndex target, float heightAllowance, List<TileType> validTileTypes)
+        {
+
             // First check if Valid Tile
-            if (!GridStatics.IsTileTypeWalkable(_tacticsGrid.GridTiles[target].tileType))
+            if (!IsValidTileType(validTileTypes, _tacticsGrid.GridTiles[target].tileType))
             {
                 return false;
             }
 
+            _tacticsGrid.GridTiles.TryGetValue(target, out TileData targetTile);
+            if (targetTile.unitOnTile)
+                return false;
+
             // Height check. We know the tiles are valid because an isValid check is done in the process node function.
             _tacticsGrid.GridTiles.TryGetValue(source, out TileData sourceTile);
-            _tacticsGrid.GridTiles.TryGetValue(target, out TileData targetTile);
             float heightDifference = Mathf.Abs(sourceTile.tileMatrix.GetPosition().y - targetTile.tileMatrix.GetPosition().y);
             if (heightDifference > heightAllowance)
             {
@@ -357,7 +374,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             if (_traversalType == TraversalType.AllNonBlocked || _tacticsGrid.GridShape != GridShape.Square) return true;
 
 
-            //here's where we calculate adjacent tiles to see if our path is being blocked for diagonal movement
+            //here's where we evaluate adjacent tiles to see if our path is being blocked for diagonal movement
             int srcX = source.x;
             int srcZ = source.z;
             GridIndex distance = target - source;

@@ -41,6 +41,13 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void Start()
         {
+            _combatSystem.OnUnitGridIndexChanged += CombatSystem_OnUnitGridIndexChanged;
+        }
+
+        private void CombatSystem_OnUnitGridIndexChanged(Unit unit, GridIndex index)
+        {
+            if (_selectedUnit == unit)
+                SetSelectedTileAndUnit(index);
         }
 
         private void OnHoverTileChanged()
@@ -133,12 +140,11 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 _tacticsGrid.RemoveStateFromTile(previousTile, TileState.Selected);
                 _selectedTile = index;
                 _tacticsGrid.AddStateToTile(index, TileState.Selected);
-
             }
             else //Clicked on a tile that was already selected
             {
                 _tacticsGrid.RemoveStateFromTile(index, TileState.Selected);
-                _selectedTile = new GridIndex(int.MinValue, int.MinValue);
+                _selectedTile = GridIndex.Invalid();
                 if (_selectedUnit != null)
                 {
                     _selectedUnit.SetIsSelected(false);

@@ -9,5 +9,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
     {
         public List<TileType> validTileTypes = new List<TileType> { TileType.Normal, TileType.DoubleCost, TileType.TripleCost };
         public bool canMoveDiagonal = true;
+        public float heightAllowance = 2f;
     }
 }

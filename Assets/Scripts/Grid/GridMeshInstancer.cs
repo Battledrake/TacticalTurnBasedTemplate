@@ -81,7 +81,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             }
             if (state == TileState.Selected)
             {
-                _selectedTiles.Add(_hoveredTile.tileMatrix);
+                _selectedTiles.Add(_instancedTiles[index].tileMatrix);
             }
             if (state == TileState.IsNeighbor)
             {

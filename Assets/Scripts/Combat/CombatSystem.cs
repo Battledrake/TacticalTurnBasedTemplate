@@ -7,6 +7,8 @@ using UnityEngine;
 
 public class CombatSystem : MonoBehaviour
 {
+    public event Action<Unit, GridIndex> OnUnitGridIndexChanged;
+
     [SerializeField] private TacticsGrid _tacticsGrid;
 
     private List<Unit> _unitsInCombat = new List<Unit>();
@@ -15,6 +17,24 @@ public class CombatSystem : MonoBehaviour
     {
         _tacticsGrid.OnGridGenerated += TacticsGrid_OnGridGenerated;
         _tacticsGrid.OnTileDataUpdated += TacticsGrid_OnTileDataUpdated;
+    }
+
+    private void OnEnable()
+    {
+
+        Unit.OnUnitReachedNewTile += Unit_OnUnitReachedNewTile;
+    }
+
+    private void OnDisable()
+    {
+        Unit.OnUnitReachedNewTile -= Unit_OnUnitReachedNewTile;
+    }
+
+    private void Unit_OnUnitReachedNewTile(Unit unit, GridIndex index)
+    {
+        _tacticsGrid.RemoveUnitFromTile(unit.UnitGridIndex);
+        _tacticsGrid.AddUnitToTile(index, unit, false);
+        OnUnitGridIndexChanged?.Invoke(unit, index);
     }
 
     public void AddUnitToCombat(GridIndex gridIndex, Unit unit)
@@ -27,7 +47,7 @@ public class CombatSystem : MonoBehaviour
     {
         _unitsInCombat.Add(unit);
         GridIndex unitIndex = _tacticsGrid.GetTileIndexFromWorldPosition(worldPosition);
-        if(_tacticsGrid.AddUnitToTile(unitIndex, unit))
+        if (_tacticsGrid.AddUnitToTile(unitIndex, unit))
         {
             //Success. Add additional logic in here as project requires.
         }
@@ -91,12 +111,12 @@ public class CombatSystem : MonoBehaviour
     private void TacticsGrid_OnTileDataUpdated(GridIndex index)
     {
         Unit unit = _unitsInCombat.FirstOrDefault<Unit>(u => u.UnitGridIndex == index);
-        if(unit)
+        if (unit)
         {
             if (_tacticsGrid.IsTileWalkable(index))
             {
                 _tacticsGrid.GetTileDataFromIndex(index, out TileData tileData);
-                unit.transform.position = tileData.tileMatrix.GetPosition();
+                unit.transform.position = new Vector3(unit.transform.position.x, tileData.tileMatrix.GetPosition().y, unit.transform.position.z);
             }
             else
             {

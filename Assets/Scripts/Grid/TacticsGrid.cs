@@ -230,7 +230,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
             neighborList.ForEach(n =>
             {
-                if (Vector3.Distance(worldPosition, GetTilePositionFromGridIndex(n)) < Vector3.Distance(worldPosition, GetTilePositionFromGridIndex(closestPoint)))
+                if (Vector3.Distance(worldPosition, GetWorldPositionFromGridIndex(n)) < Vector3.Distance(worldPosition, GetWorldPositionFromGridIndex(closestPoint)))
                 {
                     closestPoint = n;
                 }
@@ -249,7 +249,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             return GridIndex.RoundToInt((vectorTwoPosition / _gridTileSize) * new Vector2(2f, 1f));
         }
 
-        public Vector3 GetTilePositionFromGridIndex(GridIndex gridIndex)
+        public Vector3 GetWorldPositionFromGridIndex(GridIndex gridIndex)
         {
             Vector2 offset = gridIndex * Vector2.one;
 
@@ -313,7 +313,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                         TileData tileData = new TileData();
                         tileData.index = new GridIndex(x, z);
 
-                        Vector3 instancePosition = GetTilePositionFromGridIndex(new GridIndex(x, z));
+                        Vector3 instancePosition = GetWorldPositionFromGridIndex(new GridIndex(x, z));
                         Quaternion instanceRotation = GetTileRotationFromGridIndex(new GridIndex(x, z));
                         Vector3 instanceScale = _gridTileSize;
 
@@ -376,15 +376,20 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             if (sphereHits.Length > 0)
             {
                 returnType = TileType.Normal;
+
+                float highestY = Mathf.NegativeInfinity;
                 for (int i = 0; i < sphereHits.Length; i++)
                 {
+                    if (highestY < sphereHits[0].point.y)
+                        highestY = sphereHits[0].point.y;
+
                     GridModifier gridModifier = sphereHits[i].collider.GetComponent<GridModifier>();
                     if (gridModifier)
                     {
                         returnType = gridModifier.TileType;
                     }
                 }
-                hitPosition.y = sphereHits[0].point.y;
+                hitPosition.y = highestY;
             }
 
             return returnType;
