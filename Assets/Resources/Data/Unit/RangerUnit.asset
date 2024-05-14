@@ -9,11 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c94c558c7b8acf846af2030a3a7b58ee, type: 3}
-  m_Name: RangerData
+  m_Script: {fileID: 11500000, guid: ed03119de806d3e46be6cf82e97cedf9, type: 3}
+  m_Name: RangerUnit
   m_EditorClassIdentifier: 
   unitType: 1
-  unitName: Ranger
-  unitIcon: {fileID: 21300000, guid: f1a99798927b7354f9aecd27333325ea, type: 3}
-  unitVisual: {fileID: 2200631836099642199, guid: 4d18b4bd53093e343864b051232dd676,
-    type: 3}
+  assetData: {fileID: 11400000, guid: 3b5209f5ef77c414ca0598ec9c418c96, type: 2}
+  unitStats: {fileID: 11400000, guid: f708374dd90ac8e4a9893bb7e43f7b6a, type: 2}

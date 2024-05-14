@@ -23,9 +23,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             UnitData[] unitData = DataManager.GetAllUnitData();
             for (int i = 0; i < unitData.Length; i++)
             {
-                //TODO: We should have an option to get all data not just one at a time, so we're not calling it a bunch of times.
                 UnitButton unitButton = Instantiate(_unitButtonPrefab, _unitButtonContainer);
-                unitButton.InitializeButton(unitData[i].unitType, unitData[i].unitIcon, _playerActions);
+                unitButton.InitializeButton(unitData[i].unitType, unitData[i].assetData.unitIcon, _playerActions);
                 unitButton.OnUnitButtonToggled += OnUnitButtonToggled;
 
                 _iconButtons.Add(unitData[i].unitType, unitButton);

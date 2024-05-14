@@ -14,8 +14,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         public static UnitData GetUnitDataFromType(UnitType unitType)
         {
-            UnitData[] _unitData = Resources.LoadAll<UnitData>("Data/Unit");
-            return _unitData.FirstOrDefault<UnitData>(unit => unit.unitType == unitType);
+            UnitData[] unitData = GetAllUnitData();
+            return unitData.FirstOrDefault<UnitData>(data => data.unitType == unitType);
         }
 
         public static UnitData[] GetAllUnitData()

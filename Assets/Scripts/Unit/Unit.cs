@@ -10,7 +10,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         Warrior,
         Ranger,
         Slime,
-        Orc
+        Orc,
+        Mech6
     }
 
     public class Unit : MonoBehaviour, IUnitAnimation
@@ -41,7 +42,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _unitData = DataManager.GetUnitDataFromType(_unitType);
             if (_unitVisual != null)
                 Destroy(_unitVisual);
-            _unitVisual = Instantiate(_unitData.unitVisual, this.transform);
+            _unitVisual = Instantiate(_unitData.assetData.unitVisual, this.transform);
 
             _unitAnimator = _unitVisual.GetComponent<Animator>();
             _unitOutline = _unitVisual.GetComponent<Outline>();
@@ -74,6 +75,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         public void UpdateOutlineVisual()
         {
+            if (!_unitOutline)
+                return;
+
             if (!_isSelected && !_isHovered)
             {
                 _unitOutline.enabled = false;

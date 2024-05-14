@@ -9,10 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c94c558c7b8acf846af2030a3a7b58ee, type: 3}
-  m_Name: OtherUnitData
+  m_Script: {fileID: 11500000, guid: ed03119de806d3e46be6cf82e97cedf9, type: 3}
+  m_Name: OrcUnit
   m_EditorClassIdentifier: 
   unitType: 3
-  unitName: Orc
-  unitIcon: {fileID: 21300000, guid: 5caac83ccebff4b48b7e042497c9b2c3, type: 3}
-  unitVisual: {fileID: 1091293637548798, guid: b603af86ac880d246a16780f2c468564, type: 3}
+  assetData: {fileID: 11400000, guid: 77a3a04fbe8f91a4cace4f8efdcbebb4, type: 2}
+  unitStats: {fileID: 11400000, guid: 291fcb99a5085c7428cb264cea4abd23, type: 2}
