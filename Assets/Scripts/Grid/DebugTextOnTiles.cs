@@ -18,6 +18,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public bool ShowTraversalCost { get => _showTraversalCost; set => _showTraversalCost = value; }
         public bool ShowHeuristicCost { get => _showHeuristicCost; set => _showHeuristicCost = value; }
         public bool ShowTotalCost { get => _showTotalCost; set => _showTotalCost = value; }
+        public bool ShowUnitOnTile { get => _showUnitOnTile; set => _showUnitOnTile = value; }
 
         private Dictionary<GridIndex, GameObject> _spawnedTexts = new Dictionary<GridIndex, GameObject>();
 
@@ -26,9 +27,11 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private bool _showTraversalCost = false;
         private bool _showHeuristicCost = false;
         private bool _showTotalCost = false;
+        private bool _showUnitOnTile = false;
 
         private void OnEnable()
         {
+            _tacticsGrid.OnGridGenerated += UpdateTextOnAllTiles;
             _tacticsGrid.OnTileDataUpdated += (i => UpdateTextOnTile(i));
             _tacticsGrid.OnGridDestroyed += ClearAllTextGameObjects;
             _tacticsGrid.GridPathfinder.OnPathfindingCompleted += UpdateTextOnAllTiles;
@@ -38,6 +41,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void OnDisable()
         {
+            _tacticsGrid.OnGridGenerated -= UpdateTextOnAllTiles;
             _tacticsGrid.OnTileDataUpdated -= (i => UpdateTextOnTile(i));
             _tacticsGrid.OnGridDestroyed -= ClearAllTextGameObjects;
             _tacticsGrid.GridPathfinder.OnPathfindingCompleted -= UpdateTextOnAllTiles;
@@ -47,7 +51,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private bool ShowAnyDebug()
         {
-            return _showTileIndexes || _showTerrainCost || HasPathfindingData();
+            return _showTileIndexes || _showTerrainCost || _showUnitOnTile || HasPathfindingData();
         }
 
         private bool HasPathfindingData()
@@ -60,7 +64,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             if (!ShowAnyDebug())
                 return;
 
-            for(int i = 0; i < _tacticsGrid.GridTiles.Count; i++)
+            for (int i = 0; i < _tacticsGrid.GridTiles.Count; i++)
             {
                 UpdateTextOnTile(_tacticsGrid.GridTiles.ElementAt(i).Key);
             }
@@ -87,7 +91,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
                 if (HasPathfindingData())
                 {
-                    if(_tacticsGrid.GridPathfinder.PathNodePool != null)
+                    if (_tacticsGrid.GridPathfinder.PathNodePool != null)
                     {
                         if (_tacticsGrid.GridPathfinder.PathNodePool.TryGetValue(index, out PathNode pathNode))
                         {
@@ -102,6 +106,12 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                                 debugText += string.Format("total:{0:F1}\n", pathNode.totalCost);
                         }
                     }
+                }
+
+                if (_showUnitOnTile)
+                {
+                    string unitText = tileData.unitOnTile ? tileData.unitOnTile.name : "none";
+                    debugText += string.Format("unit:{0}\n", unitText);
                 }
 
                 if (string.IsNullOrEmpty(debugText))

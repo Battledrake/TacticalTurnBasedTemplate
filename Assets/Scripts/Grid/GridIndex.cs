@@ -1,4 +1,5 @@
 using System;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace BattleDrakeCreations.TacticalTurnBasedTemplate
@@ -18,6 +19,15 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public GridIndex Abs()
         {
             return new GridIndex(Mathf.Abs(x), Mathf.Abs(z));
+        }
+
+        /// <summary>
+        /// Returns a GridIndex with x and z being equal to int.MinValue. Use for ensuring GridIndex is not on grid.
+        /// </summary>
+        /// <returns></returns>
+        public static GridIndex Invalid()
+        {
+            return new GridIndex(int.MinValue, int.MinValue);
         }
 
         public static bool operator ==(GridIndex a, GridIndex b)

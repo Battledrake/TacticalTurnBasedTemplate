@@ -17,50 +17,56 @@ public class CombatSystem : MonoBehaviour
         _tacticsGrid.OnTileDataUpdated += TacticsGrid_OnTileDataUpdated;
     }
 
-    public void AddUnitInCombat(Unit unit, GridIndex gridIndex)
+    public void AddUnitToCombat(GridIndex gridIndex, Unit unit)
     {
         _unitsInCombat.Add(unit);
-        SetUnitIndexOnGrid(unit, gridIndex);
+        _tacticsGrid.AddUnitToTile(gridIndex, unit);
     }
 
-    private void SetUnitIndexOnGrid(Unit unit, GridIndex gridIndex)
+    public void AddUnitToCombat(Vector3 worldPosition, Unit unit)
     {
-        if (unit.UnitGridIndex != gridIndex)
+        _unitsInCombat.Add(unit);
+        GridIndex unitIndex = _tacticsGrid.GetTileIndexFromWorldPosition(worldPosition);
+        if(_tacticsGrid.AddUnitToTile(unitIndex, unit))
         {
-            if (_tacticsGrid.GridTiles.TryGetValue(unit.UnitGridIndex, out TileData prevTile))
-            {
-                if (prevTile.unitOnTile == unit)
-                {
-                    prevTile.unitOnTile = null;
-                    _tacticsGrid.GridTiles[unit.UnitGridIndex] = prevTile;
-                }
-            }
+            //Success. Add additional logic in here as project requires.
         }
-
-        Vector3 newUnitPosition = new Vector3(int.MinValue, 0f, int.MinValue);
-        if (gridIndex != new GridIndex(int.MinValue, int.MinValue))
-        {
-            if (_tacticsGrid.GridTiles.TryGetValue(gridIndex, out TileData newTile))
-            {
-                newTile.unitOnTile = unit;
-                unit.UnitGridIndex = gridIndex;
-
-                _tacticsGrid.GridTiles[gridIndex] = newTile;
-
-                newUnitPosition = newTile.tileMatrix.GetPosition();
-            }
-        }
-        unit.transform.position = newUnitPosition;
     }
 
+    /// <summary>
+    /// Remove unit from combat and place at a desired position. Removes unit from grid.
+    /// </summary>
+    /// <param name="unit"></param>
+    /// <param name="newPosition"></param>
+    public void RemoveUnitFromCombat(Unit unit, Vector3 newPosition)
+    {
+        _unitsInCombat.Remove(unit);
+        _tacticsGrid.RemoveUnitFromTile(unit.UnitGridIndex);
+        unit.UnitGridIndex = GridIndex.Invalid();
+
+        unit.transform.position = newPosition;
+    }
+
+    /// <summary>
+    /// Remove unit from combat with optional choice to destroy gameobject. If not destroyed, unit remains at position but is taken off the grid and out of the combat units list.
+    /// </summary>
+    /// <param name="unit"></param>
+    /// <param name="shouldDestroy"></param>
     public void RemoveUnitFromCombat(Unit unit, bool shouldDestroy = true)
     {
         _unitsInCombat.Remove(unit);
+        _tacticsGrid.RemoveUnitFromTile(unit.UnitGridIndex);
 
         if (shouldDestroy)
+        {
             Destroy(unit.gameObject);
+        }
         else
-            SetUnitIndexOnGrid(unit, new GridIndex(int.MinValue, int.MaxValue));
+        {
+            unit.UnitGridIndex = GridIndex.Invalid();
+            unit.GetComponent<IUnitAnimation>().PlayDeathAnimation();
+        }
+
     }
 
     private void TacticsGrid_OnGridGenerated()
@@ -69,34 +75,32 @@ public class CombatSystem : MonoBehaviour
         for (int i = 0; i < copyList.Count; i++)
         {
             Unit unit = copyList[i];
-            GridIndex unitIndex = unit.UnitGridIndex;
-            if (_tacticsGrid.IsTileWalkable(unitIndex))
+            //GridIndex unitIndex = unit.UnitGridIndex;
+            GridIndex positionIndex = _tacticsGrid.GetTileIndexFromWorldPosition(unit.transform.position);
+            if (_tacticsGrid.IsTileWalkable(positionIndex))
             {
-                SetUnitIndexOnGrid(copyList[i], unitIndex);
+                _tacticsGrid.AddUnitToTile(positionIndex, unit);
             }
             else
             {
-                RemoveUnitFromCombat(copyList[i]);
+                RemoveUnitFromCombat(copyList[i], false);
             }
         }
     }
 
     private void TacticsGrid_OnTileDataUpdated(GridIndex index)
     {
-        List<Unit> copyList = new List<Unit>(_unitsInCombat);
-        for (int i = 0; i < copyList.Count; i++)
+        Unit unit = _unitsInCombat.FirstOrDefault<Unit>(u => u.UnitGridIndex == index);
+        if(unit)
         {
-            if (copyList[i].UnitGridIndex == index)
+            if (_tacticsGrid.IsTileWalkable(index))
             {
-                if (_tacticsGrid.IsTileWalkable(index))
-                {
-                    SetUnitIndexOnGrid(copyList[i], index);
-                }
-                else
-                {
-                    RemoveUnitFromCombat(copyList[i]);
-                }
-                return;
+                _tacticsGrid.GetTileDataFromIndex(index, out TileData tileData);
+                unit.transform.position = tileData.tileMatrix.GetPosition();
+            }
+            else
+            {
+                RemoveUnitFromCombat(unit, false);
             }
         }
     }

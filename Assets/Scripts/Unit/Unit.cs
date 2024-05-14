@@ -13,7 +13,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         Orc
     }
 
-    public class Unit : MonoBehaviour
+    public class Unit : MonoBehaviour, IUnitAnimation
     {
         [SerializeField] private UnitType _unitType = UnitType.Ranger;
         [SerializeField] private Color _hoverColor;
@@ -53,6 +53,13 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             InitializeUnit(_unitType);
         }
 
+        [ContextMenu("AddToCombat")]
+        public void AddUnitToCombat()
+        {
+            GameObject.Find("[CombatSystem]").GetComponent<CombatSystem>().AddUnitToCombat(this.transform.position, this);
+            _unitAnimator.SetTrigger("Respawn");
+        }
+
         public void SetIsHovered(bool isHovered)
         {
             _isHovered = isHovered;
@@ -88,6 +95,11 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 _unitOutline.OutlineColor = _hoverColor;
                 _unitOutline.OutlineWidth = _defaultOutlineWidth;
             }
+        }
+
+        public void PlayDeathAnimation()
+        {
+            _unitAnimator.SetTrigger("Die");
         }
     }
 }

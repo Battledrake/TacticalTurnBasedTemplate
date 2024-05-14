@@ -39,6 +39,10 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             HoverTileChanged += OnHoverTileChanged;
         }
 
+        private void Start()
+        {
+        }
+
         private void OnHoverTileChanged()
         {
             if (_isLeftClickDown)
@@ -195,7 +199,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public Unit GetUnitUnderCursor()
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            LayerMask unitLayer = LayerMask.NameToLayer("Unit");
+            LayerMask unitLayer = LayerMask.GetMask("Unit");
 
             if (Physics.Raycast(ray, out RaycastHit hitInfo, 1000f, unitLayer))
             {

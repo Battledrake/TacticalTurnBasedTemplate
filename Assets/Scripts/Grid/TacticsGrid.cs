@@ -310,7 +310,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 {
                     for (int x = 0; x < _gridTileCount.x; ++x)
                     {
-                        TileData tileData = new TileData(); //Do we need TileData? With the fact we're using RenderMeshInstanced, there's never a need to find an instance. Just update the list of rendering stuff.
+                        TileData tileData = new TileData();
                         tileData.index = new GridIndex(x, z);
 
                         Vector3 instancePosition = GetTilePositionFromGridIndex(new GridIndex(x, z));
@@ -321,7 +321,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                         {
                             tileData.tileType = TileType.Normal;
                             tileData.tileMatrix = Matrix4x4.TRS(instancePosition, instanceRotation, instanceScale);
-                            AddGridTile(tileData);
+                            AddGridTileNoNotify(tileData);
                             tilesToRender.Add(tileData);
                         }
                         else
@@ -331,7 +331,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                             {
                                 tileData.tileType = tileType;
                                 tileData.tileMatrix = Matrix4x4.TRS(hitPosition, instanceRotation, instanceScale);
-                                AddGridTile(tileData);
+                                AddGridTileNoNotify(tileData);
                                 tilesToRender.Add(tileData);
                             }
                         }
@@ -385,10 +385,57 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                     }
                 }
                 hitPosition.y = sphereHits[0].point.y;
-                //TODO: Add snap to grid?
             }
 
             return returnType;
+        }
+
+        public bool AddUnitToTile(GridIndex index, Unit unit, bool shouldPosition = true, bool forceEntry = false)
+        {
+            if (!IsIndexValid(index))
+                return false;
+
+            _gridTiles.TryGetValue(index, out TileData tileData);
+            if (tileData.unitOnTile)
+            {
+                Debug.LogWarning($"Unit already on tile:{index}");
+                if (!forceEntry)
+                    return false;
+            }
+            tileData.unitOnTile = unit;
+            unit.UnitGridIndex = index;
+            if (shouldPosition)
+                unit.transform.position = tileData.tileMatrix.GetPosition();
+
+            _gridTiles[index] = tileData;
+
+            OnTileDataUpdated?.Invoke(index);
+            return true;
+        }
+
+        public bool RemoveUnitFromTile(GridIndex index)
+        {
+            _gridTiles.TryGetValue(index, out TileData tileData);
+            if (tileData.unitOnTile)
+            {
+                tileData.unitOnTile = null;
+                _gridTiles[index] = tileData;
+
+                OnTileDataUpdated?.Invoke(index);
+                return true;
+            }
+            return false;
+        }
+
+        //Avoid issue with OnTileDataUpdated being called when grid is generated
+        public void AddGridTileNoNotify(TileData tileData)
+        {
+            if (_gridTiles.ContainsKey(tileData.index))
+                _gridTiles[tileData.index] = tileData;
+            else
+                _gridTiles.Add(tileData.index, tileData);
+
+            _gridVisual.UpdateTileVisual(tileData);
         }
 
         public void AddGridTile(TileData tileData)
@@ -426,7 +473,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 if (tileData.tileStates.Add(tileState))
                 {
                     _gridTiles[index] = tileData;
-                    //_gridVisual.UpdateTileVisual(tileData);
                     _gridVisual.AddTileState(index, tileState);
                 }
 
@@ -449,7 +495,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                     return;
 
                 _gridTiles[index] = tileData;
-                //_gridVisual.UpdateTileVisual(tileData);
                 _gridVisual.RemoveTileState(index, tileState);
 
                 OnTileDataUpdated?.Invoke(index);

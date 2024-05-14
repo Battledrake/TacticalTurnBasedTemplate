@@ -118,7 +118,7 @@ MonoBehaviour:
   m_MinSize: {x: 300, y: 100}
   m_MaxSize: {x: 24288, y: 16192}
   vertical: 0
-  controlID: 80
+  controlID: 20
 --- !u!114 &6
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -143,7 +143,7 @@ MonoBehaviour:
   m_MinSize: {x: 300, y: 100}
   m_MaxSize: {x: 24288, y: 16192}
   vertical: 1
-  controlID: 81
+  controlID: 21
 --- !u!114 &7
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -169,7 +169,7 @@ MonoBehaviour:
   m_MinSize: {x: 300, y: 50}
   m_MaxSize: {x: 24288, y: 8096}
   vertical: 0
-  controlID: 49
+  controlID: 22
 --- !u!114 &8
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -189,8 +189,8 @@ MonoBehaviour:
     y: 0
     width: 1818
     height: 902
-  m_MinSize: {x: 200, y: 200}
-  m_MaxSize: {x: 4000, y: 4000}
+  m_MinSize: {x: 201, y: 221}
+  m_MaxSize: {x: 4001, y: 4021}
   m_ActualView: {fileID: 15}
   m_Panes:
   - {fileID: 16}
@@ -219,8 +219,8 @@ MonoBehaviour:
     y: 0
     width: 344
     height: 902
-  m_MinSize: {x: 200, y: 200}
-  m_MaxSize: {x: 4000, y: 4000}
+  m_MinSize: {x: 202, y: 221}
+  m_MaxSize: {x: 4002, y: 4021}
   m_ActualView: {fileID: 19}
   m_Panes:
   - {fileID: 19}
@@ -245,8 +245,8 @@ MonoBehaviour:
     y: 0
     width: 398
     height: 902
-  m_MinSize: {x: 276, y: 71}
-  m_MaxSize: {x: 4001, y: 4021}
+  m_MinSize: {x: 275, y: 50}
+  m_MaxSize: {x: 4000, y: 4000}
   m_ActualView: {fileID: 20}
   m_Panes:
   - {fileID: 20}
@@ -354,8 +354,8 @@ MonoBehaviour:
     serializedVersion: 2
     x: 0
     y: 73
-    width: 1873
-    height: 853
+    width: 1817
+    height: 881
   m_SerializedDataModeController:
     m_DataMode: 0
     m_PreferredDataMode: 0
@@ -572,9 +572,9 @@ MonoBehaviour:
     \"m_ObjectId\": \"20cb28d248634cf680ecd420fc7e20c0\",\n    \"m_Group\": {\n       
     \"m_Id\": \"\"\n    },\n    \"m_Name\": \"Property\",\n    \"m_DrawState\": {\n       
     \"m_Expanded\": true,\n        \"m_Position\": {\n            \"serializedVersion\":
-    \"2\",\n            \"x\": 153.99998474121095,\n            \"y\": 983.0000610351563,\n           
-    \"width\": 149.99998474121095,\n            \"height\": 34.0\n        }\n   
-    },\n    \"m_Slots\": [\n        {\n            \"m_Id\": \"2ff9504d628a458db78296ead88ad950\"\n       
+    \"2\",\n            \"x\": -67.99992370605469,\n            \"y\": 939.0,\n           
+    \"width\": 150.00001525878907,\n            \"height\": 33.99993896484375\n       
+    }\n    },\n    \"m_Slots\": [\n        {\n            \"m_Id\": \"2ff9504d628a458db78296ead88ad950\"\n       
     }\n    ],\n    \"synonyms\": [],\n    \"m_Precision\": 0,\n    \"m_PreviewExpanded\":
     true,\n    \"m_DismissedVersion\": 0,\n    \"m_PreviewMode\": 0,\n    \"m_CustomColors\":
     {\n        \"m_SerializableColors\": []\n    },\n    \"m_Property\": {\n       
@@ -762,16 +762,17 @@ MonoBehaviour:
     \"m_Type\": \"UnityEditor.ShaderGraph.ClampNode\",\n    \"m_ObjectId\": \"7d0b0fd71e084e65a71d371a17506efd\",\n   
     \"m_Group\": {\n        \"m_Id\": \"\"\n    },\n    \"m_Name\": \"Clamp\",\n   
     \"m_DrawState\": {\n        \"m_Expanded\": true,\n        \"m_Position\": {\n           
-    \"serializedVersion\": \"2\",\n            \"x\": 632.0,\n            \"y\":
-    746.0,\n            \"width\": 208.0001220703125,\n            \"height\": 326.0001220703125\n       
-    }\n    },\n    \"m_Slots\": [\n        {\n            \"m_Id\": \"e1ec8562479a487fbb74a961daf81dc9\"\n       
-    },\n        {\n            \"m_Id\": \"ffed521cae0842bda210cf0f21a6c06f\"\n       
-    },\n        {\n            \"m_Id\": \"ee351d80edff4fcd8251f606b6cde7fc\"\n       
-    },\n        {\n            \"m_Id\": \"1fb415654735452fa58c222aa931ae8e\"\n       
-    }\n    ],\n    \"synonyms\": [\n        \"limit\"\n    ],\n    \"m_Precision\":
-    0,\n    \"m_PreviewExpanded\": true,\n    \"m_DismissedVersion\": 0,\n    \"m_PreviewMode\":
-    0,\n    \"m_CustomColors\": {\n        \"m_SerializableColors\": []\n    }\n}\n\n{\n   
-    \"m_SGVersion\": 1,\n    \"m_Type\": \"UnityEditor.Rendering.Universal.ShaderGraph.UniversalTarget\",\n   
+    \"serializedVersion\": \"2\",\n            \"x\": 392.99993896484377,\n           
+    \"y\": 802.9999389648438,\n            \"width\": 208.0,\n            \"height\":
+    326.00006103515627\n        }\n    },\n    \"m_Slots\": [\n        {\n           
+    \"m_Id\": \"e1ec8562479a487fbb74a961daf81dc9\"\n        },\n        {\n           
+    \"m_Id\": \"ffed521cae0842bda210cf0f21a6c06f\"\n        },\n        {\n           
+    \"m_Id\": \"ee351d80edff4fcd8251f606b6cde7fc\"\n        },\n        {\n           
+    \"m_Id\": \"1fb415654735452fa58c222aa931ae8e\"\n        }\n    ],\n    \"synonyms\":
+    [\n        \"limit\"\n    ],\n    \"m_Precision\": 0,\n    \"m_PreviewExpanded\":
+    true,\n    \"m_DismissedVersion\": 0,\n    \"m_PreviewMode\": 0,\n    \"m_CustomColors\":
+    {\n        \"m_SerializableColors\": []\n    }\n}\n\n{\n    \"m_SGVersion\":
+    1,\n    \"m_Type\": \"UnityEditor.Rendering.Universal.ShaderGraph.UniversalTarget\",\n   
     \"m_ObjectId\": \"7e5f6e09cf164b5ebd8ea197d703721a\",\n    \"m_Datas\": [],\n   
     \"m_ActiveSubTarget\": {\n        \"m_Id\": \"3d07e967b52546d388c074cbb0f9a68c\"\n   
     },\n    \"m_AllowMaterialOverride\": false,\n    \"m_SurfaceType\": 0,\n    \"m_ZTestMode\":
@@ -851,8 +852,8 @@ MonoBehaviour:
     \"m_ObjectId\": \"a35219e91ac04a04b5e2a01dea319787\",\n    \"m_Group\": {\n       
     \"m_Id\": \"\"\n    },\n    \"m_Name\": \"Property\",\n    \"m_DrawState\": {\n       
     \"m_Expanded\": true,\n        \"m_Position\": {\n            \"serializedVersion\":
-    \"2\",\n            \"x\": -83.99998474121094,\n            \"y\": 706.0000610351563,\n           
-    \"width\": 149.99996948242188,\n            \"height\": 34.0\n        }\n   
+    \"2\",\n            \"x\": -443.99993896484377,\n            \"y\": 840.9999389648438,\n           
+    \"width\": 150.0,\n            \"height\": 34.00006103515625\n        }\n   
     },\n    \"m_Slots\": [\n        {\n            \"m_Id\": \"d085d6f837b947e49bc9abf768a05050\"\n       
     }\n    ],\n    \"synonyms\": [],\n    \"m_Precision\": 0,\n    \"m_PreviewExpanded\":
     true,\n    \"m_DismissedVersion\": 0,\n    \"m_PreviewMode\": 0,\n    \"m_CustomColors\":
@@ -932,8 +933,8 @@ MonoBehaviour:
     \"m_ObjectId\": \"bf5222d9971a4565b9aab457b1ab7b4b\",\n    \"m_Group\": {\n       
     \"m_Id\": \"\"\n    },\n    \"m_Name\": \"Divide\",\n    \"m_DrawState\": {\n       
     \"m_Expanded\": true,\n        \"m_Position\": {\n            \"serializedVersion\":
-    \"2\",\n            \"x\": 341.0,\n            \"y\": 841.0000610351563,\n           
-    \"width\": 207.99993896484376,\n            \"height\": 302.00006103515627\n       
+    \"2\",\n            \"x\": 107.00007629394531,\n            \"y\": 807.0,\n           
+    \"width\": 208.00001525878907,\n            \"height\": 301.9998779296875\n       
     }\n    },\n    \"m_Slots\": [\n        {\n            \"m_Id\": \"f8ae104281ea43dd83ae6bb54ee1a3b2\"\n       
     },\n        {\n            \"m_Id\": \"13df73d060a64f709851689dbdc3206d\"\n       
     },\n        {\n            \"m_Id\": \"19ca64331f60464f9fba37ee73c0ec13\"\n       
@@ -1016,8 +1017,8 @@ MonoBehaviour:
     \"m_ObjectId\": \"e30620b30c4f497784277a032276079e\",\n    \"m_Group\": {\n       
     \"m_Id\": \"\"\n    },\n    \"m_Name\": \"Subtract\",\n    \"m_DrawState\": {\n       
     \"m_Expanded\": true,\n        \"m_Position\": {\n            \"serializedVersion\":
-    \"2\",\n            \"x\": 96.00001525878906,\n            \"y\": 669.0000610351563,\n           
-    \"width\": 207.9999542236328,\n            \"height\": 301.99993896484377\n       
+    \"2\",\n            \"x\": -275.99993896484377,\n            \"y\": 807.0,\n           
+    \"width\": 208.00001525878907,\n            \"height\": 301.9998779296875\n       
     }\n    },\n    \"m_Slots\": [\n        {\n            \"m_Id\": \"227fd7cc575c45e0ae7ffbd716366fa7\"\n       
     },\n        {\n            \"m_Id\": \"b919681647ec489b855f505898d1780d\"\n       
     },\n        {\n            \"m_Id\": \"e21434dd17ff4cafa500515a906b34fb\"\n       
@@ -1589,9 +1590,9 @@ MonoBehaviour:
   m_PlayAudio: 0
   m_AudioPlay: 0
   m_Position:
-    m_Target: {x: 1.1936188, y: 2.178909, z: -0.5348448}
+    m_Target: {x: -4, y: 3.251, z: -4}
     speed: 2
-    m_Value: {x: 1.1936188, y: 2.178909, z: -0.5348448}
+    m_Value: {x: -4, y: 3.251, z: -4}
   m_RenderMode: 0
   m_CameraMode:
     drawMode: 0
@@ -1637,13 +1638,13 @@ MonoBehaviour:
     m_GridAxis: 1
     m_gridOpacity: 0.5
   m_Rotation:
-    m_Target: {x: 0.022028841, y: 0.931875, z: -0.35749212, w: 0.05736437}
+    m_Target: {x: 0.273604, y: 0.18073319, z: -0.052397247, w: 0.9432437}
     speed: 2
-    m_Value: {x: 0.022029199, y: 0.93189013, z: -0.35749793, w: 0.057365306}
+    m_Value: {x: 0.27360705, y: 0.1807352, z: -0.052397832, w: 0.9432542}
   m_Size:
-    m_Target: 3.5293107
+    m_Target: 10
     speed: 2
-    m_Value: 3.5293107
+    m_Value: 10
   m_Ortho:
     m_Target: 0
     speed: 2
@@ -1661,7 +1662,7 @@ MonoBehaviour:
     m_FarClip: 10000
     m_DynamicClip: 1
     m_OcclusionCulling: 0
-  m_LastSceneViewRotation: {x: -0.08717229, y: 0.89959055, z: -0.21045254, w: -0.3726226}
+  m_LastSceneViewRotation: {x: 0.273604, y: 0.18073319, z: -0.052397247, w: 0.9432437}
   m_LastSceneViewOrtho: 0
   m_ReplacementShader: {fileID: 0}
   m_ReplacementString: 
@@ -1824,23 +1825,23 @@ MonoBehaviour:
   m_SceneHierarchy:
     m_TreeViewState:
       scrollPos: {x: 0, y: 0}
-      m_SelectedIDs: 2a7a0000
+      m_SelectedIDs: 44220000
       m_LastClickedID: 0
-      m_ExpandedIDs: 3020f6ff3e36f6ff4436f6ff624cf6ffe46ff6ff6470f6ff9875f6ff0403f7ff9607f7ffd273f7ffa80effffae0effff0efbffff12fbffffa06b0000d26c00001a6d0000286d00005e6d00000e6e0000406e0000466f0000506f0000586f0000b86f0000bc6f0000c66f0000ca6f0000
+      m_ExpandedIDs: 30ecfeff38ecfeff6404ffffc438ffff926effff4e7bffff6abcffff78bcffff16e9ffff34e9ffffeafaffffeefafffffa6c0000506d0000e26d0000e86e00007e6f0000e66f0000f46f0000
       m_RenameOverlay:
         m_UserAcceptedRename: 0
-        m_Name: SK_Ranger
-        m_OriginalName: SK_Ranger
+        m_Name: 
+        m_OriginalName: 
         m_EditFieldRect:
           serializedVersion: 2
           x: 0
           y: 0
           width: 0
           height: 0
-        m_UserData: -636752
+        m_UserData: 0
         m_IsWaitingForDelay: 0
         m_IsRenaming: 0
-        m_OriginalEventType: 0
+        m_OriginalEventType: 11
         m_IsRenamingFilename: 0
         m_ClientGUIView: {fileID: 9}
       m_SearchString: 
@@ -1979,7 +1980,7 @@ MonoBehaviour:
     m_SkipHidden: 0
     m_SearchArea: 1
     m_Folders:
-    - Assets/Prefabs/Units
+    - Assets/Scripts/Player
     m_Globs: []
     m_OriginalText: 
     m_ImportLogFlags: 0
@@ -1987,16 +1988,16 @@ MonoBehaviour:
   m_ViewMode: 1
   m_StartGridSize: 16
   m_LastFolders:
-  - Assets/Prefabs/Units
+  - Assets/Scripts/Player
   m_LastFoldersGridSize: 16
   m_LastProjectPath: D:\Unity\Projects\TacticalTurnBasedTemplate
   m_LockTracker:
     m_IsLocked: 0
   m_FolderTreeState:
-    scrollPos: {x: 0, y: 159}
-    m_SelectedIDs: 949a0300
-    m_LastClickedID: 236180
-    m_ExpandedIDs: 00000000be770000c2770000c4770000c6770000cc770000d0770000e0770000ea770000ec770000fa770000de780200ea78020084690400
+    scrollPos: {x: 0, y: 256}
+    m_SelectedIDs: c2780000
+    m_LastClickedID: 30914
+    m_ExpandedIDs: 0000000056780000587800005a7800005c7800005e7800006478000066780000687800006a780000847800008c7800009a780000ba780000608d0000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -2024,7 +2025,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 2e700000
     m_LastClickedID: 28718
-    m_ExpandedIDs: 00000000be770000c0770000c2770000c4770000c6770000c8770000ca770000cc770000ce770000d0770000
+    m_ExpandedIDs: 0000000056780000587800005a7800005c7800005e78000060780000627800006478000066780000687800006a780000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -3176,10 +3177,10 @@ MonoBehaviour:
       e32: 0
       e33: 1
   m_PreviewAnimator: {fileID: 0}
-  m_AnimatorController: {fileID: 9100000, guid: 340e7c7778ff6b24ebd48e32ff48a690,
+  m_AnimatorController: {fileID: 9100000, guid: ca0ac779e83ef6f4b9e1534f80e50b84,
     type: 2}
   m_BreadCrumbs:
-  - m_Target: {fileID: 1107569522229955288, guid: 340e7c7778ff6b24ebd48e32ff48a690,
+  - m_Target: {fileID: -949800209790739375, guid: ca0ac779e83ef6f4b9e1534f80e50b84,
       type: 2}
     m_ScrollPosition: {x: 0, y: 0}
   stateMachineGraph: {fileID: 0}

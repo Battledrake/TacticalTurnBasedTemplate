@@ -10,10 +10,5 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _playerActions.SetSelectedTileAndUnit(index);
             return true;
         }
-
-        private void OnDestroy()
-        {
-            ExecuteAction(new GridIndex(int.MinValue, int.MinValue));
-        }
     }
 }

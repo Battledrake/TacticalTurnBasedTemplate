@@ -12,7 +12,7 @@ public enum UnitAnimationState
     Respawn
 }
 
-public class IUnitAnimation
+public interface IUnitAnimation
 {
-    public void SetUnitAnimationState(UnitAnimationState animState) { }
+    public void PlayDeathAnimation() { }
 }
