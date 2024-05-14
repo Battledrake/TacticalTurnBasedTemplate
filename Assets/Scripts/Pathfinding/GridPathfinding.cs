@@ -204,7 +204,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 if (_ignoreClosed && neighborNode.isClosed)
                     continue;
 
-                neighborNode.terrainCost = (int)_tacticsGrid.GridTiles[neighborNode.index].tileType; //HACK: only valid tiles will be normal/double/triple at indexes 1,2, 3 of the enum. Implement custom method later.
+                neighborNode.terrainCost = GridStatics.GetTerrainCostFromTileType(_tacticsGrid.GridTiles[neighborNode.index].tileType);
 
                 float newTraversalCost = GetTraversalCost(currentNode.index, neighborNode.index, neighborNode.terrainCost) + currentNode.traversalCost;
                 float newHeuristic = GetHeuristicCost(neighborNode.index, goalNode) * _heuristicScale;

@@ -2971,8 +2971,13 @@ PrefabInstance:
         type: 3}
     - target: {fileID: 253330644107064978, guid: 476ac0bdf1808604d9814c9522eeeb36,
         type: 3}
-      propertyPath: m_IsTrigger
+      propertyPath: m_Convex
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 253330644107064978, guid: 476ac0bdf1808604d9814c9522eeeb36,
+        type: 3}
+      propertyPath: m_IsTrigger
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1627055720860618533, guid: 476ac0bdf1808604d9814c9522eeeb36,
         type: 3}

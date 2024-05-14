@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: SlimeStats
   m_EditorClassIdentifier: 
   validTileTypes: 01000000020000000300000004000000
-  canMoveDiagonal: 1
+  canMoveDiagonal: 0
   heightAllowance: 2

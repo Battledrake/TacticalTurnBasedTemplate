@@ -23,7 +23,19 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         public static bool IsTileTypeWalkable(TileType tileType)
         {
-            return tileType != TileType.None && tileType != TileType.Obstacle && tileType != TileType.FlyingOnly;
+            return tileType != TileType.None && tileType != TileType.Obstacle;
+        }
+
+        public static float GetTerrainCostFromTileType(TileType tileType)
+        {
+            switch (tileType)
+            {
+                case TileType.DoubleCost:
+                    return 2f;
+                case TileType.TripleCost:
+                    return 3f;
+            }
+            return 1f;
         }
     }
 }

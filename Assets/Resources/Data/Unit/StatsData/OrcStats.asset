@@ -13,4 +13,5 @@ MonoBehaviour:
   m_Name: OrcStats
   m_EditorClassIdentifier: 
   validTileTypes: 010000000200000003000000
-  canMoveDiagonal: 1
+  canMoveDiagonal: 0
+  heightAllowance: 2
