@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 6092448361679133331}
   - component: {fileID: -4042936221546923773}
   m_Layer: 0
-  m_Name: Pf_ShowSelectedMoveRange
+  m_Name: Pf_ShowMoveRange
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

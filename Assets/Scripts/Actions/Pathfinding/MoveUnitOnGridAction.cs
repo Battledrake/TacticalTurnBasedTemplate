@@ -16,7 +16,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 _previousPath.Clear();
             }
 
-            if(_currentUnit != null && _currentUnit != _playerActions.SelectedUnit)
+            if (_currentUnit != null && _currentUnit != _playerActions.SelectedUnit)
             {
                 _currentUnit.OnUnitReachedDestination -= SelectedUnit_OnUnitReachedDestination;
             }
@@ -24,25 +24,21 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _currentUnit = _playerActions.SelectedUnit;
             if (_currentUnit != null)
             {
-                _currentUnit.OnUnitReachedDestination += SelectedUnit_OnUnitReachedDestination;
 
-                PathFilter pathFilter;
-                pathFilter.includeDiagonals = true;/* _currentUnit.UnitData.unitStats.canMoveDiagonal;*/
-                pathFilter.heightAllowance = _currentUnit.UnitData.unitStats.heightAllowance;
-                pathFilter.includeStartNode = false;
-                pathFilter.allowPartialSolution = true;
-                pathFilter.validTileTypes = _currentUnit.UnitData.unitStats.validTileTypes;
-                pathFilter.maxPathLength = Mathf.Infinity;
+                PathFilter pathFilter = GridPathfinding.CreatePathFilterFromUnit(_currentUnit, false, false);
 
                 PathfindingResult pathResult = _playerActions.TacticsGrid.GridPathfinder.FindPath(_currentUnit.UnitGridIndex, index, pathFilter);
-                if (pathResult.Result != PathResult.SearchFail)
+                if (pathResult.Result == PathResult.SearchSuccess)
                 {
                     for (int i = 0; i < pathResult.Path.Count; i++)
                     {
                         _playerActions.TacticsGrid.AddStateToTile(pathResult.Path[i], TileState.IsInPath);
                     }
+                    _previousPath = new List<GridIndex>(pathResult.Path);
                     _currentUnit.SetPathAndMove(pathResult.Path);
-                    _previousPath = pathResult.Path;
+
+                    _playerActions.TacticsGrid.ClearStateFromTiles(TileState.IsInMoveRange);
+                    _currentUnit.OnUnitReachedDestination += SelectedUnit_OnUnitReachedDestination;
                     return true;
                 }
             }
@@ -57,6 +53,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void OnDestroy()
         {
+            if (_currentUnit != null)
+                _currentUnit.OnUnitReachedDestination -= SelectedUnit_OnUnitReachedDestination;
+
             _previousPath.Clear();
             _playerActions.TacticsGrid.ClearStateFromTiles(TileState.IsInPath);
         }

@@ -103,15 +103,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             return _gridTiles.ContainsKey(index);
         }
 
-        public bool IsValidTileForUnit(Unit unit, GridIndex index)
-        {
-            if (!IsIndexValid(index))
-                return false;
-
-            List<TileType> tileTypes = unit.UnitData.unitStats.validTileTypes;
-            return tileTypes != null && tileTypes.Count > 0 && tileTypes.Contains(_gridTiles[index].tileType);
-        }
-
         public Vector3 GetCursorPositionOnGrid()
         {
             if (EventSystem.current.IsPointerOverGameObject())

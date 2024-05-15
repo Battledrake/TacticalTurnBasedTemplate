@@ -38,7 +38,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public bool includeStartNode;
         public List<TileType> validTileTypes;
         public float maxPathLength;
-        //public int maxSearchNodes;
     }
 
     public class PathNode : IComparable<PathNode>
@@ -118,18 +117,30 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private Dictionary<GridIndex, PathNode> _pathNodePool = new Dictionary<GridIndex, PathNode>();
         private List<GridIndex> _reachableList = new List<GridIndex>();
 
-        //This exists so that there can be Units that find a path with custom data options. Otherwise, use default values.
-        public PathfindingResult FindPath(GridIndex startIndex, GridIndex targetIndex, float pathLength)
+        public PathFilter CreateDefaultPathFilter(float pathLength)
         {
-            PathFilter pathData;
-            pathData.heightAllowance = _heightAllowance;
-            pathData.includeDiagonals = _includeDiagonals;
-            pathData.allowPartialSolution = _allowPartialSolution;
-            pathData.includeStartNode = _includeStartNodeInPath;
-            pathData.validTileTypes = new List<TileType> { TileType.Normal, TileType.DoubleCost, TileType.TripleCost };
-            pathData.maxPathLength = pathLength;
+            PathFilter pathFilter;
+            pathFilter.heightAllowance = _heightAllowance;
+            pathFilter.includeDiagonals = _includeDiagonals;
+            pathFilter.allowPartialSolution = _allowPartialSolution;
+            pathFilter.includeStartNode = _includeStartNodeInPath;
+            pathFilter.validTileTypes = new List<TileType> { TileType.Normal, TileType.DoubleCost, TileType.TripleCost };
+            pathFilter.maxPathLength = pathLength;
 
-            return FindPath(startIndex, targetIndex, pathData);
+            return pathFilter;
+        }
+
+        public static PathFilter CreatePathFilterFromUnit(Unit unit, bool allowPartialSolution = false, bool includeStartNode = false)
+        {
+            PathFilter pathFilter;
+            pathFilter.includeDiagonals = unit.UnitData.unitStats.canMoveDiagonal;
+            pathFilter.heightAllowance = unit.UnitData.unitStats.heightAllowance;
+            pathFilter.includeStartNode = includeStartNode;
+            pathFilter.allowPartialSolution = allowPartialSolution;
+            pathFilter.validTileTypes = unit.UnitData.unitStats.validTileTypes;
+            pathFilter.maxPathLength = unit.UnitData.unitStats.moveRange;
+
+            return pathFilter;
         }
 
         public PathfindingResult FindPath(GridIndex startIndex, GridIndex targetIndex, PathFilter pathFilter)

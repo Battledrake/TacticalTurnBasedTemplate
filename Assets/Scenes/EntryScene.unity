@@ -5759,6 +5759,41 @@ PrefabInstance:
       propertyPath: m_SizeDelta.y
       value: 20
       objectReference: {fileID: 0}
+    - target: {fileID: 6407871492519256285, guid: f388c05da2c169843bb7457febad6cc3,
+        type: 3}
+      propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6407871492519256285, guid: f388c05da2c169843bb7457febad6cc3,
+        type: 3}
+      propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6407871492519256285, guid: f388c05da2c169843bb7457febad6cc3,
+        type: 3}
+      propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1838948538}
+    - target: {fileID: 6407871492519256285, guid: f388c05da2c169843bb7457febad6cc3,
+        type: 3}
+      propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6407871492519256285, guid: f388c05da2c169843bb7457febad6cc3,
+        type: 3}
+      propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: SetActionValue
+      objectReference: {fileID: 0}
+    - target: {fileID: 6407871492519256285, guid: f388c05da2c169843bb7457febad6cc3,
+        type: 3}
+      propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: BattleDrakeCreations.TacticalTurnBasedTemplate.ActionButton, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 6407871492519256285, guid: f388c05da2c169843bb7457febad6cc3,
+        type: 3}
+      propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
     - target: {fileID: 7763792268230299804, guid: f388c05da2c169843bb7457febad6cc3,
         type: 3}
       propertyPath: m_Name
@@ -8708,10 +8743,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8fc39b059dad3b94aa5896d48e1a54d9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _renderBaseGrid: 0
   _instanceColor: {r: 0, g: 0, b: 0, a: 1}
   _selectedColor: {r: 0, g: 1, b: 0, a: 1}
   _neighborColor: {r: 1, g: 0, b: 1, a: 1}
-  _rangeColor: {r: 0, g: 0.6320754, b: 0.12641512, a: 1}
+  _rangeColor: {r: 0, g: 1, b: 0.06005001, a: 1}
   _pathColor: {r: 0, g: 1, b: 0.14507651, a: 1}
   _hoveredColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
 --- !u!114 &825704805
@@ -14487,7 +14523,7 @@ PrefabInstance:
     - target: {fileID: 4324359650403540053, guid: ae6b52217328ab44bbcc4b8ac8beb50e,
         type: 3}
       propertyPath: m_MaxValue
-      value: 10
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 4324359650403540053, guid: ae6b52217328ab44bbcc4b8ac8beb50e,
         type: 3}
@@ -19296,6 +19332,18 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 1838948536}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1838948538 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8439572193144139815, guid: 8997797976dfd1842ad7ccc8f7c5dda9,
+    type: 3}
+  m_PrefabInstance: {fileID: 1838948536}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b52be71157f784943b558e326e79964d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &1857061116
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -19498,7 +19546,7 @@ PrefabInstance:
         type: 3}
       propertyPath: _leftClickAction
       value: 
-      objectReference: {fileID: -2466491682397543689, guid: 1f8da32813698194eb30d038592fae6a,
+      objectReference: {fileID: -4042936221546923773, guid: 54d797811b8fed04484809b6e92cb1e3,
         type: 3}
     - target: {fileID: 8439572193144139815, guid: 8997797976dfd1842ad7ccc8f7c5dda9,
         type: 3}
