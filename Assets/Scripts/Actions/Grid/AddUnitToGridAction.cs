@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace BattleDrakeCreations.TacticalTurnBasedTemplate
@@ -15,13 +16,18 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 _playerActions.TacticsGrid.GridTiles.TryGetValue(index, out TileData tileData);
                 if (!tileData.unitOnTile)
                 {
-                    Unit newUnit = Instantiate(_unitPrefab);
-                    newUnit.gameObject.name = ((UnitType)actionValue).ToString();
-                    newUnit.InitializeUnit((UnitType)actionValue);
-                    newUnit.SetUnitsGrid(_playerActions.TacticsGrid);
+                    List<TileType> validTileTypes = DataManager.GetUnitDataFromType((UnitType)actionValue).unitStats.validTileTypes;
 
-                    _playerActions.CombatSystem.AddUnitToCombat(index, newUnit);
-                    return true;
+                    if (validTileTypes != null || validTileTypes.Count > 0 || validTileTypes.Contains(tileData.tileType))
+                    {
+                        Unit newUnit = Instantiate(_unitPrefab);
+                        newUnit.gameObject.name = ((UnitType)actionValue).ToString();
+                        newUnit.InitializeUnit((UnitType)actionValue);
+                        newUnit.SetUnitsGrid(_playerActions.TacticsGrid);
+
+                        _playerActions.CombatSystem.AddUnitToCombat(index, newUnit);
+                        return true;
+                    }
                 }
             }
             return false;

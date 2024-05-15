@@ -89,6 +89,15 @@ public class CombatSystem : MonoBehaviour
 
     }
 
+    public bool IsValidTileForUnit(Unit unit, GridIndex index)
+    {
+        if (!_tacticsGrid.IsIndexValid(index))
+            return false;
+
+        List<TileType> tileTypes = unit.UnitData.unitStats.validTileTypes;
+        return tileTypes != null && tileTypes.Contains(_tacticsGrid.GridTiles[index].tileType);
+    }
+
     private void TacticsGrid_OnGridGenerated()
     {
         List<Unit> copyList = new List<Unit>(_unitsInCombat);
@@ -97,7 +106,7 @@ public class CombatSystem : MonoBehaviour
             Unit unit = copyList[i];
             //GridIndex unitIndex = unit.UnitGridIndex;
             GridIndex positionIndex = _tacticsGrid.GetTileIndexFromWorldPosition(unit.transform.position);
-            if (_tacticsGrid.IsTileWalkable(positionIndex))
+            if (IsValidTileForUnit(unit, positionIndex))
             {
                 _tacticsGrid.AddUnitToTile(positionIndex, unit);
             }
@@ -113,7 +122,7 @@ public class CombatSystem : MonoBehaviour
         Unit unit = _unitsInCombat.FirstOrDefault<Unit>(u => u.UnitGridIndex == index);
         if (unit)
         {
-            if (_tacticsGrid.IsTileWalkable(index))
+            if (IsValidTileForUnit(unit, index))
             {
                 _tacticsGrid.GetTileDataFromIndex(index, out TileData tileData);
                 unit.transform.position = new Vector3(unit.transform.position.x, tileData.tileMatrix.GetPosition().y, unit.transform.position.z);
