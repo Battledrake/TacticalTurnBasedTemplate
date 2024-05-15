@@ -36,7 +36,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _tacticsGrid.OnGridDestroyed += ClearAllTextGameObjects;
             _tacticsGrid.GridPathfinder.OnPathfindingCompleted += UpdateTextOnAllTiles;
             _tacticsGrid.GridPathfinder.OnPathfindingDataCleared += UpdateTextOnAllTiles;
-            _tacticsGrid.GridPathfinder.OnPathfindingDataUpdated += UpdateTextOnTile;
+            _tacticsGrid.GridPathfinder.OnPathfindingDataUpdated += UpdateTextOnAllTiles;
         }
 
         private void OnDisable()
@@ -46,7 +46,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _tacticsGrid.OnGridDestroyed -= ClearAllTextGameObjects;
             _tacticsGrid.GridPathfinder.OnPathfindingCompleted -= UpdateTextOnAllTiles;
             _tacticsGrid.GridPathfinder.OnPathfindingDataCleared -= UpdateTextOnAllTiles;
-            _tacticsGrid.GridPathfinder.OnPathfindingDataUpdated -= UpdateTextOnTile;
+            _tacticsGrid.GridPathfinder.OnPathfindingDataUpdated -= UpdateTextOnAllTiles;
         }
 
         private bool ShowAnyDebug()

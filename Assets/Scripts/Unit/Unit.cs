@@ -5,15 +5,6 @@ using UnityEngine;
 
 namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 {
-    //Temporary for building out system.
-    public enum UnitType
-    {
-        Warrior,
-        Ranger,
-        Slime,
-        Orc,
-        Mech6
-    }
 
     public class Unit : MonoBehaviour, IUnitAnimation
     {
@@ -39,7 +30,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private GridIndex _gridIndex = GridIndex.Invalid();
         private List<GridIndex> _currentPathToFollow;
         private bool _isMoving;
-        [SerializeField] private float _moveSpeed = 5f;
+        [SerializeField] private float _moveSpeed = 3f;
         private Matrix4x4 _previousTransform;
         private Matrix4x4 _nextTransform;
         private float _moveTimer = 0f;
@@ -66,6 +57,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             if (_unitVisual != null)
                 Destroy(_unitVisual);
             _unitVisual = Instantiate(_unitData.assetData.unitVisual, this.transform);
+            _moveSpeed = _unitData.unitStats.moveSpeed;
 
             _unitAnimator = _unitVisual.GetComponent<Animator>();
             _unitOutline = _unitVisual.GetComponent<Outline>();
@@ -110,7 +102,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             {
                 _isMoving = false;
                 _unitAnimator.SetFloat("Speed", 0f);
-                _unitAnimator.speed = 0.5f;
+                _unitAnimator.speed = 1f;
                 OnUnitReachedDestination?.Invoke(this);
             }
         }

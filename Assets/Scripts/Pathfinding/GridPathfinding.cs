@@ -76,7 +76,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
     public class GridPathfinding : MonoBehaviour
     {
         public Action OnPathfindingCompleted;
-        public Action<GridIndex> OnPathfindingDataUpdated;
+        public Action OnPathfindingDataUpdated;
         public event Action OnPathfindingDataCleared;
 
         [SerializeField] private TacticsGrid _tacticsGrid;

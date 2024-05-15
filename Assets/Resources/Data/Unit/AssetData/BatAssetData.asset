@@ -9,9 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b8cfa638d92776f4dac56e2b3769ce70, type: 3}
-  m_Name: SlimeStats
+  m_Script: {fileID: 11500000, guid: 5a7f878f2fb993b4eb1b62b27bc20363, type: 3}
+  m_Name: BatAssetData
   m_EditorClassIdentifier: 
-  validTileTypes: 010000000200000003000000
-  canMoveDiagonal: 0
-  heightAllowance: 2
+  unitIcon: {fileID: 21300000, guid: 3868bb9369da0634e991c0adc2e1ebc5, type: 3}
+  unitVisual: {fileID: 1522199433267968, guid: 2e4ab17be462ca346983757421a25d62, type: 3}

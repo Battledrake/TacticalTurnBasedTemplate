@@ -33,7 +33,7 @@ public class CombatSystem : MonoBehaviour
     private void Unit_OnUnitReachedNewTile(Unit unit, GridIndex index)
     {
         _tacticsGrid.RemoveUnitFromTile(unit.UnitGridIndex);
-        _tacticsGrid.AddUnitToTile(index, unit, false);
+        _tacticsGrid.AddUnitToTile(index, unit, true);
         OnUnitGridIndexChanged?.Invoke(unit, index);
     }
 

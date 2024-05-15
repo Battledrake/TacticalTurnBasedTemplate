@@ -21,7 +21,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 GridIndex gridIndex = _playerActions.TacticsGrid.GridTiles.ElementAt(i).Key;
                 PathNode gridNode = _playerActions.TacticsGrid.GridPathfinder.CreateAndAddNodeToPool(gridIndex);
                 gridNode.heuristicCost = _playerActions.TacticsGrid.GridPathfinder.GetHeuristicCost(gridIndex, index);
-                _playerActions.TacticsGrid.GridPathfinder.OnPathfindingDataUpdated?.Invoke(gridIndex);
+                _playerActions.TacticsGrid.GridPathfinder.PathNodePool[gridIndex] = gridNode;
+                _playerActions.TacticsGrid.GridPathfinder.OnPathfindingDataUpdated?.Invoke();
             }
             return true;
         }

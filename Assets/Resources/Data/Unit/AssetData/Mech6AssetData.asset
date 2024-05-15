@@ -12,7 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a7f878f2fb993b4eb1b62b27bc20363, type: 3}
   m_Name: Mech6AssetData
   m_EditorClassIdentifier: 
-  unitType: 4
   unitIcon: {fileID: 21300000, guid: 9bd947dd94a8daa41a9380b75fadedc3, type: 3}
-  unitVisual: {fileID: 679070779171108606, guid: c8a4f63dd78d9104aad2d2ebac264d32,
+  unitVisual: {fileID: 6708709142029202861, guid: b96d8789d9e5e75478af687d20930f31,
     type: 3}
