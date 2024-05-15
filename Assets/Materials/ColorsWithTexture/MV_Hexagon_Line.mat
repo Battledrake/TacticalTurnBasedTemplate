@@ -47,8 +47,8 @@ Material:
     - _Tiling: 0.25
     m_Colors:
     - _Color: {r: 0.5411765, g: 0.5568628, b: 0.60784316, a: 1}
-    - _GridSize: {r: 0.125, g: 0.165, b: 0, a: 0}
-    - _Offset: {r: 1, g: 1.25, b: 0, a: 0}
+    - _GridSize: {r: 2, g: 1.5, b: 0, a: 0}
+    - _Offset: {r: 0.25, g: 0.25, b: 0, a: 0}
     - _Tiling: {r: 6.6, g: 2.5, b: 0, a: 0}
     - _Vector3: {r: 0, g: 0, b: 1, a: 0}
   m_BuildTextureStacks: []
