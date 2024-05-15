@@ -9,6 +9,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         Hovered,
         Selected,
         IsNeighbor,
+        IsInMoveRange,
         IsInPath
     }
 

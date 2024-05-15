@@ -23,7 +23,13 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             GridIndex previousTile = _playerActions.SelectedTile;
             if (previousTile != index)
             {
-                PathfindingResult result = _playerActions.TacticsGrid.GridPathfinder.FindPath(_playerActions.SelectedTile, index);
+                float pathLength = 0f;
+                if (_playerActions.SelectedUnit != null)
+                    pathLength = _playerActions.SelectedUnit.UnitData.unitStats.moveRange;
+                else
+                    pathLength = actionValue;
+                    
+                PathfindingResult result = _playerActions.TacticsGrid.GridPathfinder.FindPath(_playerActions.SelectedTile, index, pathLength);
 
                 _playerActions.TacticsGrid.GridPathfinder.OnPathfindingCompleted?.Invoke();
 

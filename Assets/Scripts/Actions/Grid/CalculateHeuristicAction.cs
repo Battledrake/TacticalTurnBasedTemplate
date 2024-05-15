@@ -7,7 +7,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 	{
         public override bool ExecuteAction(GridIndex index)
         {
-            if (!base.ExecuteAction(index))
+            base.ExecuteAction(index);
+
+            if (index != _playerActions.SelectedTile)
             {
                 _playerActions.TacticsGrid.GridPathfinder.ClearNodePool();
                 return false;

@@ -11,5 +11,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public bool canMoveDiagonal = true;
         public float heightAllowance = 2f;
         public float moveSpeed = 3f;
+        public float moveRange = 5f;
     }
 }

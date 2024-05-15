@@ -32,7 +32,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         }
         private async void ExecuteActionAsync(GridIndex index)
         {
-            PathfindingResult pathResult = await Task.Run(() => { return _playerActions.TacticsGrid.GridPathfinder.FindPath(_playerActions.SelectedTile, index); });
+            PathfindingResult pathResult = await Task.Run(() => { return _playerActions.TacticsGrid.GridPathfinder.FindPath(_playerActions.SelectedTile, index, Mathf.Infinity); });
 
             _playerActions.TacticsGrid.GridPathfinder.OnPathfindingCompleted?.Invoke();
 

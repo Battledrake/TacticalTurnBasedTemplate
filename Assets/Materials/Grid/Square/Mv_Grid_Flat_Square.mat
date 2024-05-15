@@ -39,6 +39,8 @@ Material:
     m_TexEnvs: []
     m_Ints: []
     m_Floats:
+    - _IsFilled: 0
+    - _MaskValue: 0.5
     - _QueueOffset: 0
     m_Colors:
     - _Color: {r: 0, g: 0.3207547, b: 0.06949686, a: 1}

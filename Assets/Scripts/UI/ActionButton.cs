@@ -44,6 +44,13 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             }
         }
 
+
+        //HACK: Used for buttons with sliders
+        public void SetActionValue(float newValue)
+        {
+            SetActionValues((int)newValue);
+        }
+
         //HACK: Used for ShowTileNeighborsAction to set an int using a toggle only that button has.
         public void SetActionValue(bool newValue)
         {
@@ -61,7 +68,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             if (_leftClickAction != null)
                 _playerActions.LeftClickAction.actionValue = _actionValue;
             if (_rightClickAction != null)
-                _playerActions.RightClickAction.actionValue = 0;
+                _playerActions.RightClickAction.actionValue = _actionValue;
         }
 
         public void OnButtonClicked(bool isDown)

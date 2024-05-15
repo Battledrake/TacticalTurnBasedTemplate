@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,13 +30,15 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         NoSharpDiagonals,
         SharpDiagonals
     }
-    public struct PathData
+    public struct PathFilter
     {
         public bool allowPartialSolution;
         public float heightAllowance;
         public bool includeDiagonals;
         public bool includeStartNode;
         public List<TileType> validTileTypes;
+        public float maxPathLength;
+        //public int maxSearchNodes;
     }
 
     public class PathNode : IComparable<PathNode>
@@ -92,6 +95,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public bool IncludeStartNodeInPath { get => _includeStartNodeInPath; set => _includeStartNodeInPath = value; }
 
         public Dictionary<GridIndex, PathNode> PathNodePool { get => _pathNodePool; }
+        public List<GridIndex> ReachableList { get => _reachableList; }
 
         private bool _includeDiagonals = false;
         private float _heightAllowance = 2f;
@@ -105,34 +109,36 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private float _heuristicScale = 1f;
         [Tooltip("Allow a returned path that does not reach the end goal")]
         private bool _allowPartialSolution = false;
-        [Tooltip("Should we revisit closed nodes for a possibly short path at the cost of performance?")]
+        [Tooltip("Should we revisit closed nodes for a possibly shorter path at the cost of performance?")]
         private bool _ignoreClosed = true;
         [Tooltip("Should we include the start node in the end result path?")]
-        private bool _includeStartNodeInPath = true;
+        private bool _includeStartNodeInPath = false;
 
         private PriorityQueue<PathNode> _frontierNodes;
         private Dictionary<GridIndex, PathNode> _pathNodePool = new Dictionary<GridIndex, PathNode>();
+        private List<GridIndex> _reachableList = new List<GridIndex>();
 
         //This exists so that there can be Units that find a path with custom data options. Otherwise, use default values.
-        public PathfindingResult FindPath(GridIndex startIndex, GridIndex targetIndex)
+        public PathfindingResult FindPath(GridIndex startIndex, GridIndex targetIndex, float pathLength)
         {
-            PathData pathData;
+            PathFilter pathData;
             pathData.heightAllowance = _heightAllowance;
             pathData.includeDiagonals = _includeDiagonals;
             pathData.allowPartialSolution = _allowPartialSolution;
             pathData.includeStartNode = _includeStartNodeInPath;
-            pathData.validTileTypes = new List<TileType>{ TileType.Normal, TileType.DoubleCost, TileType.TripleCost};
+            pathData.validTileTypes = new List<TileType> { TileType.Normal, TileType.DoubleCost, TileType.TripleCost };
+            pathData.maxPathLength = pathLength;
 
             return FindPath(startIndex, targetIndex, pathData);
         }
 
-        public PathfindingResult FindPath(GridIndex startIndex, GridIndex targetIndex, PathData pathData)
+        public PathfindingResult FindPath(GridIndex startIndex, GridIndex targetIndex, PathFilter pathFilter)
         {
             PathfindingResult pathResult = new PathfindingResult();
             pathResult.Path = new List<GridIndex>();
             pathResult.Result = PathResult.SearchSuccess;
 
-            if (!_tacticsGrid.IsIndexValid(startIndex) || !_tacticsGrid.IsIndexValid(targetIndex))
+            if (!_tacticsGrid.IsIndexValid(startIndex))
             {
                 pathResult.Result = PathResult.SearchFail;
                 return pathResult;
@@ -145,6 +151,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
             _pathNodePool.Clear();
             _frontierNodes = new PriorityQueue<PathNode>();
+            _reachableList = new List<GridIndex>();
 
             PathNode startNode = CreateAndAddNodeToPool(startIndex);
             startNode.traversalCost = 0;
@@ -160,23 +167,26 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             bool processNodes = true;
             while (_frontierNodes.Count > 0 && processNodes)
             {
-                processNodes = ProcessSingleNode(targetIndex, ref bestNode, ref bestNodeCost, pathData);
+                processNodes = ProcessSingleNode(targetIndex, ref bestNode, ref bestNodeCost, pathFilter);
             }
 
             if (bestNodeCost != 0f)
                 pathResult.Result = PathResult.GoalUnreachable;
 
-            if (pathResult.Result == PathResult.SearchSuccess || pathData.allowPartialSolution)
+            if (pathResult.Result == PathResult.SearchSuccess || pathFilter.allowPartialSolution)
             {
-                pathResult.Path = ConvertPathNodesToIndexes(startNode, bestNode, pathData.includeStartNode);
+                pathResult.Path = ConvertPathNodesToIndexes(startNode, bestNode, pathFilter.includeStartNode);
             }
             return pathResult;
         }
 
-        private bool ProcessSingleNode(GridIndex goalNode, ref PathNode bestNode, ref float bestNodeCost, PathData pathData)
+        private bool ProcessSingleNode(GridIndex goalNode, ref PathNode bestNode, ref float bestNodeCost, PathFilter pathFilter)
         {
             PathNode currentNode = _frontierNodes.Dequeue();
             currentNode.isClosed = true;
+
+            if (!_reachableList.Contains(currentNode.index))
+                _reachableList.Add(currentNode.index);
 
             if (currentNode.index == goalNode)
             {
@@ -185,14 +195,14 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 return false;
             }
 
-            for (int i = 0; i < GetNeighborCount(pathData.includeDiagonals); i++)
+            for (int i = 0; i < GetNeighborCount(pathFilter.includeDiagonals); i++)
             {
-                GridIndex neighbor = GetNeighborIndex(currentNode.index, i, pathData.includeDiagonals);
+                GridIndex neighbor = GetNeighborIndex(currentNode.index, i, pathFilter.includeDiagonals);
 
                 if (!_tacticsGrid.IsIndexValid(neighbor))
                     continue;
 
-                if (neighbor == currentNode.parent || neighbor == currentNode.index || !IsTraversalAllowed(currentNode.index, neighbor, pathData.heightAllowance, pathData.validTileTypes))
+                if (neighbor == currentNode.parent || neighbor == currentNode.index || !IsTraversalAllowed(currentNode.index, neighbor, pathFilter.heightAllowance, pathFilter.validTileTypes))
                     continue;
 
                 PathNode neighborNode = null;
@@ -207,6 +217,11 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 neighborNode.terrainCost = GridStatics.GetTerrainCostFromTileType(_tacticsGrid.GridTiles[neighborNode.index].tileType);
 
                 float newTraversalCost = GetTraversalCost(currentNode.index, neighborNode.index, neighborNode.terrainCost) + currentNode.traversalCost;
+                if (newTraversalCost > pathFilter.maxPathLength)
+                {
+                    continue;
+                }
+
                 float newHeuristic = GetHeuristicCost(neighborNode.index, goalNode) * _heuristicScale;
                 float newTotalCost = newTraversalCost + newHeuristic;
 
@@ -341,7 +356,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private bool IsValidTileType(List<TileType> validTypes, TileType typeBeingChecked)
         {
-            for(int i = 0; i < validTypes.Count; i++)
+            for (int i = 0; i < validTypes.Count; i++)
             {
                 if (typeBeingChecked == validTypes.ElementAt(i))
                     return true;

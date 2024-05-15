@@ -26,17 +26,18 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             {
                 _currentUnit.OnUnitReachedDestination += SelectedUnit_OnUnitReachedDestination;
 
-                PathData pathData;
-                pathData.includeDiagonals = _currentUnit.UnitData.unitStats.canMoveDiagonal;
-                pathData.heightAllowance = _currentUnit.UnitData.unitStats.heightAllowance;
-                pathData.includeStartNode = false;
-                pathData.allowPartialSolution = true;
-                pathData.validTileTypes = _currentUnit.UnitData.unitStats.validTileTypes;
+                PathFilter pathFilter;
+                pathFilter.includeDiagonals = true;/* _currentUnit.UnitData.unitStats.canMoveDiagonal;*/
+                pathFilter.heightAllowance = _currentUnit.UnitData.unitStats.heightAllowance;
+                pathFilter.includeStartNode = false;
+                pathFilter.allowPartialSolution = true;
+                pathFilter.validTileTypes = _currentUnit.UnitData.unitStats.validTileTypes;
+                pathFilter.maxPathLength = Mathf.Infinity;
 
-                PathfindingResult pathResult = _playerActions.TacticsGrid.GridPathfinder.FindPath(_currentUnit.UnitGridIndex, index, pathData);
+                PathfindingResult pathResult = _playerActions.TacticsGrid.GridPathfinder.FindPath(_currentUnit.UnitGridIndex, index, pathFilter);
                 if (pathResult.Result != PathResult.SearchFail)
                 {
-                    for(int i = 0; i < pathResult.Path.Count; i++)
+                    for (int i = 0; i < pathResult.Path.Count; i++)
                     {
                         _playerActions.TacticsGrid.AddStateToTile(pathResult.Path[i], TileState.IsInPath);
                     }
