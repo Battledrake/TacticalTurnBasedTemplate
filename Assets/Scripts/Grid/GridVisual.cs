@@ -22,6 +22,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         [SerializeField] private TacticalMeshInstancer _tacticalMeshInstancer;
         [SerializeField] private TacticsGrid _tacticsGrid;
 
+        public GridMeshInstancer GridMeshInstancer { get => _gridMeshInstancer; }
         public TacticsGrid TacticsGrid { get => _tacticsGrid; }
         public float GroundOffset { get => _groundOffset; set => SetOffsetFromGround(value); }
 
@@ -29,12 +30,12 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         public void HideDefaultGrid()
         {
-            _gridMeshInstancer.enabled = false;
+            _gridMeshInstancer.ShowBaseGrid = false;
         }
 
         public void ShowDefaultGrid()
         {
-            _gridMeshInstancer.enabled = true;
+            _gridMeshInstancer.ShowBaseGrid = true;
         }
         public void HideTacticalGrid()
         {

@@ -8,7 +8,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
     [ExecuteInEditMode]
     public class GridMeshInstancer : MonoBehaviour
     {
-        [SerializeField] private bool _renderBaseGrid = false;
+
 
         [SerializeField] private Color _instanceColor = Color.black;
         [SerializeField] private Color _selectedColor = Color.green;
@@ -16,6 +16,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         [SerializeField] private Color _rangeColor = Color.white;
         [SerializeField] private Color _pathColor = Color.white;
         [SerializeField] private Color _hoveredColor = Color.yellow;
+
+        public bool ShowBaseGrid { get => _renderBaseGrid; set => _renderBaseGrid = value; }
 
         private Dictionary<GridIndex, TileData> _instancedTiles = new Dictionary<GridIndex, TileData>();
         private List<Matrix4x4> _selectedTiles = new List<Matrix4x4>();
@@ -30,6 +32,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private RenderParams _rangeParams;
         private RenderParams _pathParams;
         private RenderParams _hoveredParams;
+
+        private bool _renderBaseGrid = false;
 
         private Mesh _instancedMesh;
 

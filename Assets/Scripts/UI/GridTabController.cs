@@ -23,6 +23,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         [SerializeField] private SliderWidget _tileSizeSlider;
         [SerializeField] private SliderWidget _groundOffsetSlider;
         [SerializeField] private Toggle _useEnvToggle;
+        [SerializeField] private Toggle _showGridToggle;
         [SerializeField] private Toggle _tacticalMeshGridToggle;
 
         [Header("Debug")]
@@ -69,6 +70,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _tileSizeSlider.SetSliderValueWithoutNotify(_tacticsGrid.TileSize);
             _groundOffsetSlider.SetSliderValueWithoutNotify(_tacticsGrid.GridVisual.GroundOffset);
             _useEnvToggle.SetIsOnWithoutNotify(_tacticsGrid.UseEnvironment);
+            _showGridToggle.SetIsOnWithoutNotify(_tacticsGrid.GridVisual.GridMeshInstancer.ShowBaseGrid);
             _tacticalMeshGridToggle.SetIsOnWithoutNotify(false);
 
             _sceneCombo.onValueChanged.AddListener(OnSceneChanged);
@@ -78,6 +80,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _tileSizeSlider.OnSliderValueChanged += OnTileSizeChanged;
             _groundOffsetSlider.OnSliderValueChanged += OnGroundOffsetChanged;
             _useEnvToggle.onValueChanged.AddListener(OnUseEnvironmentToggled);
+            _showGridToggle.onValueChanged.AddListener(OnShowGridToggled);
             _tacticalMeshGridToggle.onValueChanged.AddListener(OnTacticalMeshGridToggled);
 
             _boundsToggle.onValueChanged.AddListener(OnBoundsToggled);
@@ -216,6 +219,11 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _tacticsGrid.UseEnvironment = useEnvironment;
 
             _tacticsGrid.RespawnGrid();
+        }
+
+        private void OnShowGridToggled(bool showGrid)
+        {
+            _tacticsGrid.GridVisual.GridMeshInstancer.ShowBaseGrid = showGrid;
         }
 
         private void OnTacticalMeshGridToggled(bool isOn)
