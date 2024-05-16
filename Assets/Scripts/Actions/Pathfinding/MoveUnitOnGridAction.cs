@@ -12,7 +12,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             if (_previousPath.Count > 0)
             {
-                _playerActions.TacticsGrid.ClearStateFromTiles(TileState.IsInPath);
+                _playerActions.TacticsGrid.ClearStateFromTiles(_previousPath,TileState.IsInPath);
                 _previousPath.Clear();
             }
 
@@ -37,7 +37,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                     _previousPath = new List<GridIndex>(pathResult.Path);
                     _currentUnit.SetPathAndMove(pathResult.Path);
 
-                    _playerActions.TacticsGrid.ClearStateFromTiles(TileState.IsInMoveRange);
+                    _playerActions.TacticsGrid.ClearStateFromTiles(_previousPath, TileState.IsInMoveRange);
                     _currentUnit.OnUnitReachedDestination += SelectedUnit_OnUnitReachedDestination;
                     return true;
                 }
@@ -48,7 +48,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private void SelectedUnit_OnUnitReachedDestination(Unit unit)
         {
             unit.OnUnitReachedDestination -= SelectedUnit_OnUnitReachedDestination;
-            _playerActions.TacticsGrid.ClearStateFromTiles(TileState.IsInPath);
+            _playerActions.TacticsGrid.ClearStateFromTiles(_previousPath, TileState.IsInPath);
         }
 
         private void OnDestroy()
@@ -56,8 +56,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             if (_currentUnit != null)
                 _currentUnit.OnUnitReachedDestination -= SelectedUnit_OnUnitReachedDestination;
 
+            _playerActions.TacticsGrid.ClearStateFromTiles(_previousPath,TileState.IsInPath);
             _previousPath.Clear();
-            _playerActions.TacticsGrid.ClearStateFromTiles(TileState.IsInPath);
         }
     }
 }

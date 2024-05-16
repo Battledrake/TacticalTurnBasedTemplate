@@ -10,6 +10,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
     {
         public static event Action<Unit, GridIndex> OnUnitReachedNewTile;
         public event Action<Unit> OnUnitReachedDestination;
+        public event Action<Unit> OnUnitStartedMovement;
 
         [SerializeField] private UnitType _unitType = UnitType.Ranger;
         [SerializeField] private Color _hoverColor;
@@ -180,6 +181,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _unitAnimator.SetFloat("Speed", _moveSpeed);
             _unitAnimator.speed = _moveSpeed;
             UpdatePath();
+
+            OnUnitStartedMovement?.Invoke(this);
         }
     }
 }

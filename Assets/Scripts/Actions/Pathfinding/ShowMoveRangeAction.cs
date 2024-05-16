@@ -20,7 +20,11 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             }
 
             if (_currentUnit != null && _currentUnit != _playerActions.SelectedUnit)
+            {
+                _currentUnit.OnUnitStartedMovement -= Unit_OnUnitStartedMovement;
                 _currentUnit.OnUnitReachedDestination -= Unit_OnUnitReachedDestination;
+            }
+
 
             if (index != _playerActions.SelectedTile)
                 return false;
@@ -45,17 +49,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             return false;
         }
 
-        private void Unit_OnUnitReachedDestination(Unit unit)
-        {
-            _currentUnit.OnUnitReachedDestination -= Unit_OnUnitReachedDestination;
-
-            if (unit == _currentUnit)
-            {
-                PathFilter pathFilter = GridPathfinding.CreatePathFilterFromUnit(unit);
-                GenerateTilesInRange(unit.UnitGridIndex, pathFilter);
-            }
-        }
-
         private bool GenerateTilesInRange(GridIndex index, PathFilter filter)
         {
             PathfindingResult pathResult = _playerActions.TacticsGrid.GridPathfinder.FindTilesInRange(index, filter);
@@ -67,11 +60,33 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                     _playerActions.TacticsGrid.AddStateToTile(_currentTilesInRange[i], TileState.IsInMoveRange);
                 }
                 if (_currentUnit)
-                    _currentUnit.OnUnitReachedDestination += Unit_OnUnitReachedDestination;
+                    _currentUnit.OnUnitStartedMovement += Unit_OnUnitStartedMovement;
 
                 return true;
             }
             return false;
+        }
+
+        private void Unit_OnUnitStartedMovement(Unit unit)
+        {
+            _playerActions.TacticsGrid.ClearStateFromTiles(_currentTilesInRange, TileState.IsInMoveRange);
+            if (_currentUnit == unit)
+            {
+                unit.OnUnitStartedMovement -= Unit_OnUnitStartedMovement;
+                unit.OnUnitReachedDestination += Unit_OnUnitReachedDestination;
+            }
+
+        }
+
+        private void Unit_OnUnitReachedDestination(Unit unit)
+        {
+            _currentUnit.OnUnitReachedDestination -= Unit_OnUnitReachedDestination;
+
+            if (unit == _currentUnit)
+            {
+                PathFilter pathFilter = GridPathfinding.CreatePathFilterFromUnit(unit);
+                GenerateTilesInRange(unit.UnitGridIndex, pathFilter);
+            }
         }
 
         private void OnDestroy()
@@ -80,7 +95,11 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _currentTilesInRange.Clear();
 
             if (_currentUnit != null)
+            {
+                _currentUnit.OnUnitStartedMovement -= Unit_OnUnitStartedMovement;
                 _currentUnit.OnUnitReachedDestination -= Unit_OnUnitReachedDestination;
+            }
+
         }
     }
 }
