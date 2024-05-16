@@ -58,16 +58,17 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private bool GenerateTilesInRange(GridIndex index, PathFilter filter)
         {
-            PathfindingResult pathResult = _playerActions.TacticsGrid.GridPathfinder.FindPath(index, new GridIndex(-999, -999), filter);
+            PathfindingResult pathResult = _playerActions.TacticsGrid.GridPathfinder.FindTilesInRange(index, filter);
             if (pathResult.Result != PathResult.SearchFail)
             {
-                _currentTilesInRange = new List<GridIndex>(_playerActions.TacticsGrid.GridPathfinder.ReachableList);
+                _currentTilesInRange = new List<GridIndex>(pathResult.Path);
                 foreach (var node in _currentTilesInRange)
                 {
                     _playerActions.TacticsGrid.AddStateToTile(node, TileState.IsInMoveRange);
                 }
                 if (_currentUnit)
                     _currentUnit.OnUnitReachedDestination += Unit_OnUnitReachedDestination;
+
                 return true;
             }
             return false;

@@ -94,7 +94,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public bool IncludeStartNodeInPath { get => _includeStartNodeInPath; set => _includeStartNodeInPath = value; }
 
         public Dictionary<GridIndex, PathNode> PathNodePool { get => _pathNodePool; }
-        public List<GridIndex> ReachableList { get => _reachableList; }
 
         private bool _includeDiagonals = false;
         private float _heightAllowance = 2f;
@@ -114,8 +113,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private bool _includeStartNodeInPath = false;
 
         private PriorityQueue<PathNode> _frontierNodes;
+        private Queue<PathNode> _rangeNodes;
         private Dictionary<GridIndex, PathNode> _pathNodePool = new Dictionary<GridIndex, PathNode>();
-        private List<GridIndex> _reachableList = new List<GridIndex>();
 
         public PathFilter CreateDefaultPathFilter(float pathLength)
         {
@@ -143,13 +142,80 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             return pathFilter;
         }
 
-        public PathfindingResult FindPath(GridIndex startIndex, GridIndex targetIndex, PathFilter pathFilter)
+        public PathfindingResult FindTilesInRange(GridIndex startIndex, PathFilter pathFilter)
         {
             PathfindingResult pathResult = new PathfindingResult();
             pathResult.Path = new List<GridIndex>();
             pathResult.Result = PathResult.SearchSuccess;
 
             if (!_tacticsGrid.IsIndexValid(startIndex))
+            {
+                pathResult.Result = PathResult.SearchFail;
+                return pathResult;
+            }
+
+            _pathNodePool.Clear();
+            _rangeNodes = new Queue<PathNode>();
+            List<GridIndex> indexesInRange = new List<GridIndex>();
+
+            PathNode startNode = CreateAndAddNodeToPool(startIndex);
+            startNode.traversalCost = 0;
+            _rangeNodes.Enqueue(startNode);
+
+            while (_rangeNodes.Count > 0)
+            {
+                PathNode currentNode = _rangeNodes.Dequeue();
+                if (!indexesInRange.Contains(currentNode.index))
+                    indexesInRange.Add(currentNode.index);
+
+
+                for (int i = 0; i < GetNeighborCount(pathFilter.includeDiagonals); i++)
+                {
+                    GridIndex neighborIndex = GetNeighborIndexFromArray(currentNode.index, i);
+
+                    if (!_tacticsGrid.IsIndexValid(neighborIndex))
+                        continue;
+
+                    if (neighborIndex == currentNode.parent || neighborIndex == currentNode.index)
+                        continue;
+
+                    if (!IsTraversalAllowed(currentNode.index, neighborIndex, pathFilter.heightAllowance, pathFilter.validTileTypes))
+                        continue;
+
+                    PathNode neighborNode = null;
+                    if (_pathNodePool.TryGetValue(neighborIndex, out PathNode existingNeighbor))
+                        neighborNode = existingNeighbor;
+                    else
+                        neighborNode = CreateAndAddNodeToPool(neighborIndex);
+
+                    neighborNode.terrainCost = GridStatics.GetTerrainCostFromTileType(_tacticsGrid.GridTiles[neighborNode.index].tileType);
+
+                    float newTraversalCost = currentNode.traversalCost + (GetTraversalCost(currentNode.index, neighborNode.index) * neighborNode.terrainCost);
+
+                    if (newTraversalCost > pathFilter.maxPathLength)
+                        continue;
+
+                    if (newTraversalCost > neighborNode.traversalCost)
+                        continue;
+
+                    neighborNode.traversalCost = newTraversalCost;
+                    neighborNode.parent = currentNode.index;
+
+                    _rangeNodes.Enqueue(neighborNode);
+                    indexesInRange.Add(currentNode.index);
+                }
+            }
+            pathResult.Path = indexesInRange;
+            return pathResult;
+        }
+
+        public PathfindingResult FindPath(GridIndex startIndex, GridIndex targetIndex, PathFilter pathFilter)
+        {
+            PathfindingResult pathResult = new PathfindingResult();
+            pathResult.Path = new List<GridIndex>();
+            pathResult.Result = PathResult.SearchSuccess;
+
+            if (!_tacticsGrid.IsIndexValid(startIndex) || !_tacticsGrid.IsIndexValid(targetIndex))
             {
                 pathResult.Result = PathResult.SearchFail;
                 return pathResult;
@@ -162,7 +228,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
             _pathNodePool.Clear();
             _frontierNodes = new PriorityQueue<PathNode>();
-            _reachableList = new List<GridIndex>();
 
             PathNode startNode = CreateAndAddNodeToPool(startIndex);
             startNode.traversalCost = 0;
@@ -173,7 +238,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
             PathNode bestNode = startNode;
             float bestNodeCost = startNode.totalCost;
-            pathResult.Result = PathResult.SearchSuccess;
 
             bool processNodes = true;
             while (_frontierNodes.Count > 0 && processNodes)
@@ -196,9 +260,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             PathNode currentNode = _frontierNodes.Dequeue();
             currentNode.isClosed = true;
 
-            if (!_reachableList.Contains(currentNode.index))
-                _reachableList.Add(currentNode.index);
-
             if (currentNode.index == goalNode)
             {
                 bestNode = currentNode;
@@ -208,30 +269,29 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
             for (int i = 0; i < GetNeighborCount(pathFilter.includeDiagonals); i++)
             {
-                GridIndex neighbor = GetNeighborIndex(currentNode.index, i, pathFilter.includeDiagonals);
+                GridIndex neighborIndex = GetNeighborIndexFromArray(currentNode.index, i);
 
-                if (!_tacticsGrid.IsIndexValid(neighbor))
+                if (!_tacticsGrid.IsIndexValid(neighborIndex))
                     continue;
 
-                if (neighbor == currentNode.parent || neighbor == currentNode.index || !IsTraversalAllowed(currentNode.index, neighbor, pathFilter.heightAllowance, pathFilter.validTileTypes))
+                if (neighborIndex == currentNode.parent || neighborIndex == currentNode.index || !IsTraversalAllowed(currentNode.index, neighborIndex, pathFilter.heightAllowance, pathFilter.validTileTypes))
                     continue;
 
                 PathNode neighborNode = null;
-                if (_pathNodePool.TryGetValue(neighbor, out PathNode existingNeighbor))
+                if (_pathNodePool.TryGetValue(neighborIndex, out PathNode existingNeighbor))
                     neighborNode = existingNeighbor;
                 else
-                    neighborNode = CreateAndAddNodeToPool(neighbor);
+                    neighborNode = CreateAndAddNodeToPool(neighborIndex);
 
                 if (_ignoreClosed && neighborNode.isClosed)
                     continue;
 
                 neighborNode.terrainCost = GridStatics.GetTerrainCostFromTileType(_tacticsGrid.GridTiles[neighborNode.index].tileType);
 
-                float newTraversalCost = GetTraversalCost(currentNode.index, neighborNode.index, neighborNode.terrainCost) + currentNode.traversalCost;
+                float newTraversalCost = currentNode.traversalCost + (GetTraversalCost(currentNode.index, neighborNode.index) * neighborNode.terrainCost);
+
                 if (newTraversalCost > pathFilter.maxPathLength)
-                {
                     continue;
-                }
 
                 float newHeuristic = GetHeuristicCost(neighborNode.index, goalNode) * _heuristicScale;
                 float newTotalCost = newTraversalCost + newHeuristic;
@@ -304,15 +364,15 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             OnPathfindingDataCleared?.Invoke();
         }
 
-        private float GetTraversalCost(GridIndex source, GridIndex target, float terrainCost)
+        private float GetTraversalCost(GridIndex source, GridIndex target)
         {
             if (_tacticsGrid.GridShape == GridShape.Hexagon)
             {
-                return GetDistanceFromAxialCoordinates(ConvertOddrToAxial(source), ConvertOddrToAxial(target)) * terrainCost;
+                return GetDistanceFromAxialCoordinates(ConvertOddrToAxial(source), ConvertOddrToAxial(target));
             }
             if (_tacticsGrid.GridShape == GridShape.Triangle)
             {
-                return GetTriangleDistance(source, target) * terrainCost;
+                return GetTriangleDistance(source, target);
             }
 
             float traversalCost = 1f;
@@ -335,7 +395,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                     break;
 
             }
-            return traversalCost * terrainCost;
+            return traversalCost;
         }
 
         public float GetHeuristicCost(GridIndex source, GridIndex target)
@@ -449,103 +509,28 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             return 0;
         }
 
-        public List<GridIndex> GetValidTileNeighbors(GridIndex index, bool includeDiagonals = false)
+        public List<GridIndex> GetTileNeighbors(GridIndex index, bool includeDiagonals = false)
         {
-            List<GridIndex> neighborIndexes = GetNeighborIndexes(index, includeDiagonals);
-            List<GridIndex> validNeighbors = new List<GridIndex>();
-            _tacticsGrid.GridTiles.TryGetValue(index, out TileData selectedTile);
-
-            for (int i = 0; i < neighborIndexes.Count; i++)
+            List<GridIndex> neighbors = new List<GridIndex>();
+            for (int i = 0; i < GetNeighborCount(includeDiagonals); i++)
             {
-                if (_tacticsGrid.GridTiles.TryGetValue(neighborIndexes[i], out TileData tileData))
-                {
-                    if (GridStatics.IsTileTypeWalkable(tileData.tileType))
-                    {
-                        float heightDifference = Mathf.Abs(tileData.tileMatrix.GetPosition().y - selectedTile.tileMatrix.GetPosition().y);
-                        if (heightDifference <= _heightAllowance)
-                        {
-                            validNeighbors.Add(tileData.index);
-                        }
-                    }
-                }
+                neighbors.Add(GetNeighborIndexFromArray(index, i));
             }
-            return validNeighbors;
+            return neighbors;
         }
 
-        public GridIndex GetNeighborIndex(GridIndex index, int neighborIndex, bool includeDiagonals = false)
-        {
-            if (GetNeighborIndexes(index).Count > 0)
-                return GetNeighborIndexes(index, includeDiagonals)[neighborIndex];
-            else
-                return new GridIndex(-999, -999);
-        }
-
-        public List<GridIndex> GetNeighborIndexes(GridIndex index, bool includeDiagonals = false)
+        public GridIndex GetNeighborIndexFromArray(GridIndex gridIndex, int arrayIndex)
         {
             switch (_tacticsGrid.GridShape)
             {
                 case GridShape.Square:
-                    return GetNeighborIndexesForSquare(index, includeDiagonals);
+                    return GridStatics.GetSquareNeighborIndex(gridIndex, arrayIndex);
                 case GridShape.Hexagon:
-                    return GetNeighborIndexesForHexagon(index);
+                    return GridStatics.GetHexagonNeighborIndex(gridIndex, arrayIndex);
                 case GridShape.Triangle:
-                    return GetNeighborIndexesForTriangle(index, includeDiagonals);
+                    return GridStatics.GetTriangleNeighborIndex(gridIndex, arrayIndex);
             }
-            return new List<GridIndex>();
-        }
-
-        private List<GridIndex> GetNeighborIndexesForSquare(GridIndex index, bool includeDiagonals = false)
-        {
-            List<GridIndex> neighbors = new List<GridIndex>
-            {
-                index + new GridIndex(1, 0),
-                index + new GridIndex(0, 1),
-                index + new GridIndex(-1, 0),
-                index + new GridIndex(0, -1)
-            };
-
-            if (includeDiagonals)
-            {
-                neighbors.Add(index + new GridIndex(1, 1));
-                neighbors.Add(index + new GridIndex(-1, 1));
-                neighbors.Add(index + new GridIndex(-1, -1));
-                neighbors.Add(index + new GridIndex(1, -1));
-            }
-            return neighbors;
-        }
-
-        private List<GridIndex> GetNeighborIndexesForHexagon(GridIndex index)
-        {
-            bool isOddRow = index.z % 2 == 1;
-            List<GridIndex> neighbors = new List<GridIndex>
-            {
-                index + new GridIndex(-1, 0),
-                index + new GridIndex(1, 0),
-                index + new GridIndex(isOddRow ? 1 : -1, 1),
-                index + new GridIndex(0, 1),
-                index + new GridIndex(isOddRow ? 1 : -1, -1),
-                index + new GridIndex(0, -1)
-            };
-            return neighbors;
-        }
-
-        private List<GridIndex> GetNeighborIndexesForTriangle(GridIndex index, bool includeDiagonals = false)
-        {
-            bool isFacingUp = index.x % 2 == index.z % 2;
-            List<GridIndex> neighbors = new List<GridIndex>
-            {
-                index + new GridIndex(-1, 0),
-                index + new GridIndex(0, isFacingUp ? -1 : 1),
-                index + new GridIndex(1, 0)
-            };
-
-            if (includeDiagonals)
-            {
-                neighbors.Add(index + new GridIndex(-2, isFacingUp ? -1 : 1));
-                neighbors.Add(index + new GridIndex(0, isFacingUp ? 1 : -1));
-                neighbors.Add(index + new GridIndex(2, isFacingUp ? -1 : 1));
-            }
-            return neighbors;
+            return GridIndex.Invalid();
         }
 
         public GridIndex ConvertOddrToAxial(GridIndex hex)
@@ -557,8 +542,11 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         public float GetDistanceFromAxialCoordinates(GridIndex source, GridIndex target)
         {
-            GridIndex distance = source - target;
-            return (Mathf.Abs(distance.x) + Mathf.Abs(distance.x + distance.z) + Mathf.Abs(distance.z)) / 2;
+            int dq = Mathf.Abs(source.x - target.x);
+            int dr = Mathf.Abs(source.z - target.z);
+            int ds = Mathf.Abs((source.x + source.z) - (target.x + target.z));
+
+            return Mathf.Max(dq, dr, ds);
         }
 
         public float GetTriangleDistance(GridIndex source, GridIndex target)

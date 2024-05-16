@@ -150,6 +150,14 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             }
         }
 
+        public void ClearStateFromTiles(List<GridIndex> tiles, TileState stateToClear)
+        {
+            for(int i = 0; i < tiles.Count; i++)
+            {
+                RemoveStateFromTile(tiles[i], stateToClear);
+            }
+        }
+
         public Bounds GetGridBounds()
         {
             //TODO: This still doesn't work properly for hex/triangle grids
@@ -212,16 +220,14 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             int roughZ = Mathf.RoundToInt((worldPosition.z - this.transform.position.z) / _gridTileSize.z / 0.75f);
             GridIndex roughIndex = GridIndex.RoundToInt(new Vector2(roughX, roughZ));
 
-            bool isOddRow = roughZ % 2 == 1;
+            bool isOddRow = Mathf.Abs(roughZ) % 2 == 1;
 
             List<GridIndex> neighborList = new List<GridIndex>
             {
                 roughIndex + new GridIndex(-1, 0),
                 roughIndex + new GridIndex(1, 0),
-
                 roughIndex + new GridIndex(isOddRow ? 1 : -1, 1),
                 roughIndex + new GridIndex(0, 1),
-
                 roughIndex + new GridIndex(isOddRow ? 1 : -1, -1),
                 roughIndex + new GridIndex(0, -1)
             };
