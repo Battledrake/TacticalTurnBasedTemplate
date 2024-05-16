@@ -15,7 +15,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
             if (_currentTilesInRange.Count > 0)
             {
-                _playerActions.TacticsGrid.ClearStateFromTiles(TileState.IsInMoveRange);
+                _playerActions.TacticsGrid.ClearStateFromTiles(_currentTilesInRange, TileState.IsInMoveRange);
                 _currentTilesInRange.Clear();
             }
 
@@ -61,10 +61,10 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             PathfindingResult pathResult = _playerActions.TacticsGrid.GridPathfinder.FindTilesInRange(index, filter);
             if (pathResult.Result != PathResult.SearchFail)
             {
-                _currentTilesInRange = new List<GridIndex>(pathResult.Path);
-                foreach (var node in _currentTilesInRange)
+                _currentTilesInRange = pathResult.Path;
+                for(int i = 0; i < _currentTilesInRange.Count; i++)
                 {
-                    _playerActions.TacticsGrid.AddStateToTile(node, TileState.IsInMoveRange);
+                    _playerActions.TacticsGrid.AddStateToTile(_currentTilesInRange[i], TileState.IsInMoveRange);
                 }
                 if (_currentUnit)
                     _currentUnit.OnUnitReachedDestination += Unit_OnUnitReachedDestination;
@@ -76,8 +76,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void OnDestroy()
         {
+            _playerActions.TacticsGrid.ClearStateFromTiles(_currentTilesInRange, TileState.IsInMoveRange);
             _currentTilesInRange.Clear();
-            _playerActions.TacticsGrid.ClearStateFromTiles(TileState.IsInMoveRange);
 
             if (_currentUnit != null)
                 _currentUnit.OnUnitReachedDestination -= Unit_OnUnitReachedDestination;

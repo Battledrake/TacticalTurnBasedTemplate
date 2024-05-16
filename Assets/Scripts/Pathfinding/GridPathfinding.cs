@@ -108,7 +108,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         [Tooltip("Allow a returned path that does not reach the end goal")]
         private bool _allowPartialSolution = false;
         [Tooltip("Should we revisit closed nodes for a possibly shorter path at the cost of performance?")]
-        private bool _ignoreClosed = true;
+        private bool _ignoreClosed = false;
         [Tooltip("Should we include the start node in the end result path?")]
         private bool _includeStartNodeInPath = false;
 
@@ -165,9 +165,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             while (_rangeNodes.Count > 0)
             {
                 PathNode currentNode = _rangeNodes.Dequeue();
-                if (!indexesInRange.Contains(currentNode.index))
-                    indexesInRange.Add(currentNode.index);
-
 
                 for (int i = 0; i < GetNeighborCount(pathFilter.includeDiagonals); i++)
                 {
@@ -195,14 +192,18 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                     if (newTraversalCost > pathFilter.maxPathLength)
                         continue;
 
-                    if (newTraversalCost > neighborNode.traversalCost)
+                    if (newTraversalCost >= neighborNode.traversalCost)
                         continue;
 
                     neighborNode.traversalCost = newTraversalCost;
                     neighborNode.parent = currentNode.index;
 
-                    _rangeNodes.Enqueue(neighborNode);
-                    indexesInRange.Add(currentNode.index);
+                    if (!neighborNode.isOpened)
+                    {
+                        neighborNode.isOpened = true;
+                        _rangeNodes.Enqueue(neighborNode);
+                        indexesInRange.Add(neighborNode.index);
+                    }
                 }
             }
             pathResult.Path = indexesInRange;

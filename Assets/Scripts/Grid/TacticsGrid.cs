@@ -474,10 +474,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         public void AddStateToTile(GridIndex index, TileState tileState)
         {
-            if (_gridTiles.ContainsKey(index))
+            if (_gridTiles.TryGetValue(index, out TileData tileData))
             {
-                TileData tileData = _gridTiles[index];
-
                 if (tileData.tileStates == null)
                     tileData.tileStates = new HashSet<TileState>();
 
@@ -493,10 +491,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         public void RemoveStateFromTile(GridIndex index, TileState tileState)
         {
-            if (_gridTiles.ContainsKey(index))
+            if (_gridTiles.TryGetValue(index, out TileData tileData))
             {
-                TileData tileData = _gridTiles[index];
-
                 if (tileData.tileStates == null)
                     return;
 
