@@ -89,6 +89,16 @@ public class CombatSystem : MonoBehaviour
 
     }
 
+    public void UseAbility(Ability ability, GridIndex origin, GridIndex target)
+    {
+        Ability abilityObject = Instantiate(ability, _tacticsGrid.GetWorldPositionFromGridIndex(origin), Quaternion.identity);
+        abilityObject.InitializeAbility(_tacticsGrid, origin, target);
+        abilityObject.TryActivateAbility();
+        //GetDataFromAbility
+        //InstantiateAbility
+        // So Abilities should probably have an initialize to pass start, goal, spawn particles, play sound, etc...
+    }
+
     public bool IsValidTileForUnit(Unit unit, GridIndex index)
     {
         if (!_tacticsGrid.IsIndexValid(index))
