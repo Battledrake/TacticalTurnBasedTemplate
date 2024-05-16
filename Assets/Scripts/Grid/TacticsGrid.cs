@@ -152,7 +152,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         public void ClearStateFromTiles(List<GridIndex> tiles, TileState stateToClear)
         {
-            for(int i = 0; i < tiles.Count; i++)
+            for (int i = 0; i < tiles.Count; i++)
             {
                 RemoveStateFromTile(tiles[i], stateToClear);
             }
@@ -377,25 +377,18 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
             Vector3 origin = position + Vector3.up * 10.0f;
             LayerMask groundLayer = LayerMask.GetMask("Ground");
-            float radius = _gridTileSize.x / 3; //TODO: divide by 5 if triangle?
-            RaycastHit[] sphereHits = Physics.SphereCastAll(origin, radius, Vector3.down, 20.0f, groundLayer);
-            if (sphereHits.Length > 0)
+            //float radius = _gridTileSize.x / 3; //TODO: divide by 5 if triangle?
+            if (Physics.Raycast(origin, Vector3.down, out RaycastHit hitInfo, 50.0f, groundLayer))
             {
                 returnType = TileType.Normal;
 
-                float highestY = Mathf.NegativeInfinity;
-                for (int i = 0; i < sphereHits.Length; i++)
-                {
-                    if (highestY < sphereHits[0].point.y)
-                        highestY = sphereHits[0].point.y;
 
-                    GridModifier gridModifier = sphereHits[i].collider.GetComponent<GridModifier>();
-                    if (gridModifier)
-                    {
-                        returnType = gridModifier.TileType;
-                    }
+                GridModifier gridModifier = hitInfo.collider.GetComponent<GridModifier>();
+                if (gridModifier)
+                {
+                    returnType = gridModifier.TileType;
                 }
-                hitPosition.y = highestY;
+                hitPosition.y = hitInfo.point.y;
             }
 
             return returnType;

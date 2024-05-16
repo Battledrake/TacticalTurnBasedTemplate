@@ -7,6 +7,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         [SerializeField] private Ability _testAbility;
         public override bool ExecuteAction(GridIndex index)
         {
+            if (!_playerActions.TacticsGrid.IsIndexValid(_playerActions.SelectedTile) || !_playerActions.TacticsGrid.IsIndexValid(index))
+                return false;
+
             _testAbility = GameObject.Find("TabContent_Abilities").GetComponent<AbilityTabController>().ActiveAbility;
             if (_testAbility != null)
             {

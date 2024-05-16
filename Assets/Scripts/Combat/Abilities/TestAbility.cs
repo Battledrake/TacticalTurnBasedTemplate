@@ -6,12 +6,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 {
     public class TestAbility : Ability
     {
-        [SerializeField] private AnimationCurve _projectileCurve;
-        [SerializeField] private GameObject _projectilePrefab;
+        [SerializeField] private GameObject _vinePrefab;
+        [SerializeField] private float _playbackSpeed = 0.25f;
 
-        [SerializeField] private float _moveSpeed;
-        private bool _startMoving;
-        private float _moveTimer;
         private Vector3 _startPosition;
         private Vector3 _targetPosition;
         private GameObject _spawnedObject;
@@ -40,37 +37,26 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             //ExecuteAbilityTask(Action action);
             _startPosition = _tacticsGrid.GetWorldPositionFromGridIndex(_originIndex) + Vector3.up;
             _targetPosition = _tacticsGrid.GetWorldPositionFromGridIndex(_targetIndex);
-            GameObject projectile = Instantiate(_projectilePrefab, _startPosition, Quaternion.identity, this.transform);
+            Vector3 lookDirection = _targetPosition - _startPosition;
+            GameObject projectile = Instantiate(_vinePrefab, _startPosition, Quaternion.LookRotation(lookDirection), this.transform);
             _spawnedObject = projectile;
 
-            _startMoving = true;
+            ParticleSystem sysMain = _spawnedObject.GetComponent<ParticleSystem>();
+            sysMain.startSpeed = Vector3.Distance(_targetPosition, _startPosition) / 2 * 10;
+            sysMain.playbackSpeed = _playbackSpeed;
+
+            Invoke("EndAbility", 2f);
         }
 
         public override void EndAbility()
         {
-            _startMoving = false;
-            //Do stuff to target
-            //Target.ApplyDamage(10) or something.
             Destroy(_spawnedObject);
+
             Destroy(this.gameObject);
         }
 
         private void Update()
         {
-            if (_startMoving)
-            {
-                _moveTimer += Time.deltaTime * _moveSpeed;
-                float height = _projectileCurve.Evaluate(_moveTimer);
-
-                Vector3 lerpPosition = Vector3.Lerp(_startPosition, _targetPosition + new Vector3(0f, height, 0f), _moveTimer);
-                _spawnedObject.transform.position = lerpPosition;
-
-                if(Vector3.Distance(_spawnedObject.transform.position, _targetPosition) < .2)
-                {
-                    //AbilityTaskCompleted?.Invoke
-                    EndAbility();
-                }
-            }
         }
     }
 }

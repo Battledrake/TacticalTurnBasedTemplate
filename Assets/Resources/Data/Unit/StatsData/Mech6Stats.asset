@@ -16,4 +16,4 @@ MonoBehaviour:
   canMoveDiagonal: 0
   heightAllowance: 1
   moveSpeed: 3
-  moveRange: 3
+  moveRange: 7

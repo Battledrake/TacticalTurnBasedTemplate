@@ -1,56 +1,71 @@
-using BattleDrakeCreations.TacticalTurnBasedTemplate;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AbilityTabController : MonoBehaviour
+namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 {
-    [SerializeField] private List<Ability> _debugAbilities;
-    [SerializeField] private AbilityButton _abilityButtonPrefab;
-    [SerializeField] private Transform _abilityButtonContainer;
-    public Ability ActiveAbility { get => _activeAbility; }
-
-    private Dictionary<int, AbilityButton> _abilityButtons = new Dictionary<int, AbilityButton>();
-    private Ability _activeAbility;
-    private int _activeButton = -1;
-
-    private void Awake()
+    public class AbilityTabController : MonoBehaviour
     {
-        if (_debugAbilities != null && _debugAbilities.Count > 0)
-            _activeAbility = _debugAbilities[0];
+        [SerializeField] private List<Ability> _debugAbilities;
+        [SerializeField] private AbilityButton _abilityButtonPrefab;
+        [SerializeField] private Transform _abilityButtonContainer;
+        public Ability ActiveAbility { get => _activeAbility; }
 
-        for (int i = 0; i < _debugAbilities.Count; i++)
+        private Dictionary<int, AbilityButton> _abilityButtons = new Dictionary<int, AbilityButton>();
+        private Ability _activeAbility;
+        private int _activeButton = -1;
+
+        private void Awake()
         {
-            AbilityButton abilityButton = Instantiate(_abilityButtonPrefab, _abilityButtonContainer);
-            abilityButton.InitializeButton(this, _debugAbilities[i].name, i);
-            abilityButton.OnAbilityButtonSelected += AbilityButton_OnAbilityButtonSelected;
-            abilityButton.OnAbilityButtonDeselected += AbilityButton_OnAbilityButtonDeselected;
+            if (_debugAbilities != null && _debugAbilities.Count > 0)
+                _activeAbility = _debugAbilities[0];
 
-            _abilityButtons.TryAdd(i, abilityButton);
+            for (int i = 0; i < _debugAbilities.Count; i++)
+            {
+                AbilityButton abilityButton = Instantiate(_abilityButtonPrefab, _abilityButtonContainer);
+                abilityButton.InitializeButton(this, _debugAbilities[i].name, i);
+                abilityButton.OnAbilityButtonSelected += AbilityButton_OnAbilityButtonSelected;
+                abilityButton.OnAbilityButtonDeselected += AbilityButton_OnAbilityButtonDeselected;
+
+                _abilityButtons.TryAdd(i, abilityButton);
+            }
         }
-    }
 
-    private void AbilityButton_OnAbilityButtonDeselected(int buttonIndex)
-    {
-        if (_activeButton == buttonIndex)
+        private void AbilityButton_OnAbilityButtonDeselected(int buttonIndex)
         {
-            _activeAbility = null;
-            _activeButton = -1;
+            if (_activeButton == buttonIndex)
+            {
+                _activeAbility = null;
+                _activeButton = -1;
+            }
+            else
+            {
+                _abilityButtons[buttonIndex].DisableButton();
+            }
         }
-        else
+
+        private void AbilityButton_OnAbilityButtonSelected(int buttonIndex)
         {
-            _abilityButtons[buttonIndex].DisableButton();
+            if (_activeButton >= 0)
+                _abilityButtons[_activeButton].DisableButton();
+
+            _activeAbility = _debugAbilities[buttonIndex];
+
+            _activeButton = buttonIndex;
         }
-    }
 
-    private void AbilityButton_OnAbilityButtonSelected(int buttonIndex)
-    {
-        if (_activeButton >= 0)
-            _abilityButtons[_activeButton].DisableButton();
+        public void SelectActiveAbilityToggled(bool isActionActive)
+        {
+            if (isActionActive)
+                return;
 
-        _activeAbility = _debugAbilities[buttonIndex];
-
-        _activeButton = buttonIndex;
+            for (int i = 0; i < _abilityButtons.Count; i++)
+            {
+                _abilityButtons[i].DisableButton();
+                _activeAbility = null;
+                _activeButton = -1;
+            }
+        }
     }
 }
