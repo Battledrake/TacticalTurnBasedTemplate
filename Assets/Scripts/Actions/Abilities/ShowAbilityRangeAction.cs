@@ -67,7 +67,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 if (!_playerActions.CombatSystem.HasLineOfSight(_selectedTile, _lastHoveredTile, 1f))
                     return;
 
-                if (_playerActions.TacticsGrid.GridPathfinder.GetChebyshevDistance(_selectedTile, _lastHoveredTile) > actionValue)
+                if (PathfindingStatics.GetChebyshevDistance(_selectedTile, _lastHoveredTile) > actionValue)
                     return;
 
                 _managedTiles = GetTilesForTargetPattern(_currentAbility._targetPattern, _lastHoveredTile);

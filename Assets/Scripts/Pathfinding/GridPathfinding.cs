@@ -38,6 +38,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public bool includeStartNode;
         public List<TileType> validTileTypes;
         public float maxPathLength;
+
     }
 
     public class PathNode : IComparable<PathNode>
@@ -188,7 +189,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                     else
                         neighborNode = CreateAndAddNodeToPool(neighborIndex);
 
-                    neighborNode.terrainCost = GridStatics.GetTerrainCostFromTileType(_tacticsGrid.GridTiles[neighborNode.index].tileType);
+                    neighborNode.terrainCost = PathfindingStatics.GetTerrainCostFromTileType(_tacticsGrid.GridTiles[neighborNode.index].tileType);
 
                     float newTraversalCost = currentNode.traversalCost + (GetTraversalCost(currentNode.index, neighborNode.index) * neighborNode.terrainCost);
 
@@ -372,30 +373,30 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             if (_tacticsGrid.GridShape == GridShape.Hexagon)
             {
-                return GetDistanceFromAxialCoordinates(ConvertOddrToAxial(source), ConvertOddrToAxial(target));
+                return PathfindingStatics.GetDistanceFromAxialCoordinates(PathfindingStatics.ConvertOddrToAxial(source), PathfindingStatics.ConvertOddrToAxial(target));
             }
             if (_tacticsGrid.GridShape == GridShape.Triangle)
             {
-                return GetTriangleDistance(source, target);
+                return PathfindingStatics.GetTriangleDistance(source, target);
             }
 
             float traversalCost = 1f;
             switch (_traversalCost)
             {
                 case CalculationType.Chebyshev:
-                    traversalCost = GetChebyshevDistance(source, target);
+                    traversalCost = PathfindingStatics.GetChebyshevDistance(source, target);
                     break;
                 case CalculationType.Diagonal:
-                    traversalCost = GetDiagonalDistance(source, target);
+                    traversalCost = PathfindingStatics.GetDiagonalDistance(source, target);
                     break;
                 case CalculationType.DiagonalShortcut:
-                    traversalCost = GetDiagonalShortcutDistance(source, target);
+                    traversalCost = PathfindingStatics.GetDiagonalShortcutDistance(source, target);
                     break;
                 case CalculationType.Manhattan:
-                    traversalCost = GetManhattanDistance(source, target);
+                    traversalCost = PathfindingStatics.GetManhattanDistance(source, target);
                     break;
                 case CalculationType.Euclidean:
-                    traversalCost = GetEuclideanDistance(source, target);
+                    traversalCost = PathfindingStatics.GetEuclideanDistance(source, target);
                     break;
 
             }
@@ -406,25 +407,25 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             if (_tacticsGrid.GridShape == GridShape.Hexagon)
             {
-                return GetDistanceFromAxialCoordinates(ConvertOddrToAxial(source), ConvertOddrToAxial(target));
+                return PathfindingStatics.GetDistanceFromAxialCoordinates(PathfindingStatics.ConvertOddrToAxial(source), PathfindingStatics.ConvertOddrToAxial(target));
             }
             if (_tacticsGrid.GridShape == GridShape.Triangle)
             {
-                return GetTriangleDistance(source, target);
+                return PathfindingStatics.GetTriangleDistance(source, target);
             }
 
             switch (_heuristicCost)
             {
                 case CalculationType.Chebyshev:
-                    return GetChebyshevDistance(source, target);
+                    return PathfindingStatics.GetChebyshevDistance(source, target);
                 case CalculationType.Diagonal:
-                    return GetDiagonalDistance(source, target);
+                    return PathfindingStatics.GetDiagonalDistance(source, target);
                 case CalculationType.DiagonalShortcut:
-                    return GetDiagonalShortcutDistance(source, target);
+                    return PathfindingStatics.GetDiagonalShortcutDistance(source, target);
                 case CalculationType.Manhattan:
-                    return GetManhattanDistance(source, target);
+                    return PathfindingStatics.GetManhattanDistance(source, target);
                 case CalculationType.Euclidean:
-                    return GetEuclideanDistance(source, target);
+                    return PathfindingStatics.GetEuclideanDistance(source, target);
             }
             return 1f;
         }
@@ -535,90 +536,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                     return GridStatics.GetTriangleNeighborAtIndex(gridIndex, arrayIndex);
             }
             return GridIndex.Invalid();
-        }
-
-        public GridIndex ConvertOddrToAxial(GridIndex hex)
-        {
-            var q = hex.x - (hex.z - (hex.z & 1)) / 2;
-            var r = hex.z;
-            return new GridIndex(q, r);
-        }
-
-        public float GetDistanceFromAxialCoordinates(GridIndex source, GridIndex target)
-        {
-            int dq = Mathf.Abs(source.x - target.x);
-            int dr = Mathf.Abs(source.z - target.z);
-            int ds = Mathf.Abs((source.x + source.z) - (target.x + target.z));
-
-            return Mathf.Max(dq, dr, ds);
-        }
-
-        public float GetTriangleDistance(GridIndex source, GridIndex target)
-        {
-            float triangleHeight = Mathf.Sqrt(3) / 2;
-            float triangleWidth = _tacticsGrid.TileSize.x;
-
-            float x1 = source.x + (source.z & 1) * 0.5f;
-            float y1 = source.z * triangleHeight;
-            float x2 = target.x + (target.z & 1) * 0.5f;
-            float y2 = target.z * triangleHeight;
-
-            return Mathf.Sqrt(Mathf.Pow(x2 - x1, 2) + Mathf.Pow(y2 - y1, 2));
-        }
-
-        //Chess style
-        public float GetChebyshevDistance(GridIndex source, GridIndex target)
-        {
-            GridIndex distance = (source - target).Abs();
-            return Mathf.Max(distance.x, distance.z);
-        }
-
-        //Common diagonal allowing square grid heuristic
-        public float GetDiagonalDistance(GridIndex source, GridIndex target)
-        {
-            GridIndex distance = (source - target).Abs();
-            float diagonal = Mathf.Sqrt(2);
-
-            return (distance.x + distance.z) + (diagonal - 2) * Mathf.Min(distance.x, distance.z);
-        }
-
-        //Same as Diagonal but does 1.4 instead of sqrt(2). Less accurate, more performant.
-        public float GetDiagonalShortcutDistance(GridIndex source, GridIndex target)
-        {
-            GridIndex distance = (source - target).Abs();
-
-            return (distance.x + distance.z) + (1.4f - 2) * Mathf.Min(distance.x, distance.z);
-        }
-
-        //Standard algorithm for 4 neighbor squares and Hexagons.
-        public float GetManhattanDistance(GridIndex source, GridIndex target)
-        {
-            if (_tacticsGrid.GridShape == GridShape.Hexagon)
-            {
-                GridIndex sourceAxial = ConvertOddrToAxial(source);
-                GridIndex targetAxial = ConvertOddrToAxial(target);
-
-                int x1 = sourceAxial.x;
-                int z1 = sourceAxial.z;
-                int y1 = -x1 - z1;
-
-                int x2 = targetAxial.x;
-                int z2 = targetAxial.z;
-                int y2 = -x2 - z2;
-
-                return (Mathf.Abs(x1 - x2) + Mathf.Abs(y1 - y2) + Mathf.Abs(z1 - z2)) / 2;
-            }
-            GridIndex distance = (source - target).Abs();
-
-            return distance.x + distance.z;
-        }
-
-        //Straight line from start to end calculation
-        public float GetEuclideanDistance(GridIndex source, GridIndex target)
-        {
-            GridIndex distance = (source - target).Abs();
-
-            return Mathf.Sqrt(distance.x * distance.x + distance.z * distance.z);
         }
     }
 }

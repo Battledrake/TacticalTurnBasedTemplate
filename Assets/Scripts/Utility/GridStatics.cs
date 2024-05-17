@@ -105,17 +105,5 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             return tileType != TileType.None && tileType != TileType.Obstacle;
         }
-
-        public static float GetTerrainCostFromTileType(TileType tileType)
-        {
-            switch (tileType)
-            {
-                case TileType.DoubleCost:
-                    return 2f;
-                case TileType.TripleCost:
-                    return 3f;
-            }
-            return 1f;
-        }
     }
 }
