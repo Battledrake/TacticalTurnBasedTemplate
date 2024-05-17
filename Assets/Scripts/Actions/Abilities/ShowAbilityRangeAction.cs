@@ -6,7 +6,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 {
     public class ShowAbilityRangeAction : SelectTileAndUnitAction
     {
-        [SerializeField] private Ability _currentAbility;
+        private Ability _currentAbility = null;
         private bool _isActive;
         private GridIndex _selectedTile = GridIndex.Invalid();
         private GridIndex _lastHoveredTile = GridIndex.Invalid();
@@ -25,9 +25,19 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             base.ExecuteAction(index);
 
             if (_playerActions.TacticsGrid.IsIndexValid(index) && index != _selectedTile)
+            {
+                _currentAbility = GameObject.Find("TabContent_Abilities").GetComponent<AbilityTabController>().ActiveAbility;
                 _selectedTile = index;
+            }
             else
+            {
+                _currentAbility = null;
                 _selectedTile = GridIndex.Invalid();
+                ClearStateFromPreviousList(_managedTiles);
+            }
+
+
+
 
             return true;
         }
@@ -58,7 +68,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 PathfindingResult pathResult = _playerActions.TacticsGrid.GridPathfinder.FindPath(_selectedTile, _lastHoveredTile, pathFilter);
                 if(pathResult.Result == PathResult.SearchSuccess)
                 {
-                    _managedTiles = GetTilesForTargetPattern(TargetPattern.AOE, _lastHoveredTile);
+                    _managedTiles = GetTilesForTargetPattern(_currentAbility._targetPattern, _lastHoveredTile);
                     SetTileStateToAbilityRange(_managedTiles);
                 }
             }
@@ -77,11 +87,20 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private List<GridIndex> GetTilesForTargetPattern(TargetPattern targetPattern, GridIndex targetIndex)
         {
-            PathFilter pathFilter = _playerActions.TacticsGrid.GridPathfinder.CreateDefaultPathFilter(actionValue);
-            PathfindingResult pathResult = _playerActions.TacticsGrid.GridPathfinder.FindTilesInRange(targetIndex, pathFilter);
-            if (pathResult.Result != PathResult.SearchFail)
+            switch (targetPattern)
             {
-                return pathResult.Path;
+                case TargetPattern.Single:
+                    return new List<GridIndex> { targetIndex };
+                case TargetPattern.AOE:
+                    {
+                        PathFilter pathFilter = _playerActions.TacticsGrid.GridPathfinder.CreateDefaultPathFilter(actionValue);
+                        PathfindingResult pathResult = _playerActions.TacticsGrid.GridPathfinder.FindTilesInRange(targetIndex, pathFilter);
+                        if (pathResult.Result != PathResult.SearchFail)
+                        {
+                            return pathResult.Path;
+                        }
+                    }
+                    break;
             }
             return new List<GridIndex>();
         }
@@ -107,6 +126,11 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             //IsTileValid
             //CombatSystem.GetAbilityRange(index, List<GridIndex> tilesRetrieved)
             //
+        }
+
+        private void OnDestroy()
+        {
+            ClearStateFromPreviousList(_managedTiles);
         }
     }
 }

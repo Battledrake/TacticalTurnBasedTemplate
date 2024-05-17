@@ -18,8 +18,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void Awake()
         {
-            if (_debugAbilities != null && _debugAbilities.Count > 0)
-                _activeAbility = _debugAbilities[0];
+            //if (_debugAbilities != null && _debugAbilities.Count > 0)
+            //    _activeAbility = _debugAbilities[0];
 
             for (int i = 0; i < _debugAbilities.Count; i++)
             {
