@@ -13,8 +13,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _testAbility = GameObject.Find("TabContent_Abilities").GetComponent<AbilityTabController>().ActiveAbility;
             if (_testAbility != null)
             {
-                _playerActions.CombatSystem.UseAbility(_testAbility, _playerActions.SelectedTile, index);
-                return true;
+                return _playerActions.CombatSystem.TryActivateAbility(_testAbility, _playerActions.SelectedTile, index);
             }
             return false;
         }

@@ -16,6 +16,32 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         Square
     }
 
+    public enum TargetType
+    {
+        Self,
+        Enemy,
+        EmptyTile,
+        AnyNotSelf,
+        Any
+    }
+
+    public enum ToTargetPattern
+    {
+        None,
+        MoveTo,
+        Projectile,
+        Line,
+        Cone
+    }
+
+    public enum TargetPattern
+    {
+        Single,
+        AOE,
+        Chain,
+        Relocate
+    }
+
     public class AbilityData
     {
         private AbilityRangePattern _rangePattern;
@@ -26,7 +52,10 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
     {
         
         [SerializeField] protected AbilityRangePattern _rangePattern;
-        [SerializeField] protected Vector2Int _rangeMinMax;
+        [SerializeField] public Vector2Int _rangeMinMax;
+        [SerializeField] public TargetType _targetType;
+        [SerializeField] public ToTargetPattern _toTargetPattern;
+        [SerializeField] public TargetPattern _targetPattern;
 
         protected GridIndex _originIndex;
         protected GridIndex _targetIndex;

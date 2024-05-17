@@ -89,11 +89,11 @@ public class CombatSystem : MonoBehaviour
 
     }
 
-    public void UseAbility(Ability ability, GridIndex origin, GridIndex target)
+    public bool TryActivateAbility(Ability ability, GridIndex origin, GridIndex target)
     {
         Ability abilityObject = Instantiate(ability, _tacticsGrid.GetWorldPositionFromGridIndex(origin), Quaternion.identity);
         abilityObject.InitializeAbility(_tacticsGrid, origin, target);
-        abilityObject.TryActivateAbility();
+        return abilityObject.TryActivateAbility();
         //GetDataFromAbility
         //InstantiateAbility
         // So Abilities should probably have an initialize to pass start, goal, spawn particles, play sound, etc...
@@ -142,5 +142,17 @@ public class CombatSystem : MonoBehaviour
                 RemoveUnitFromCombat(unit, false);
             }
         }
+    }
+
+    public List<GridIndex> GetAbilityRange(GridIndex originIndex)
+    {
+        return new List<GridIndex>();
+    }
+
+    public static List<GridIndex> GetIndexesFromPatternAndRange(GridIndex origin, GridShape gridShape, AbilityRangePattern pattern, Vector2Int rangeMinMax)
+    {
+
+
+        return new List<GridIndex>();
     }
 }

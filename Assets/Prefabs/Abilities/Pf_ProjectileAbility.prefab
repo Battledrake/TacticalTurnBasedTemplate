@@ -45,7 +45,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _rangePattern: 5
-  _rangeMinMax: {x: 0, y: 0}
+  _rangeMinMax: {x: 0, y: 10}
+  _targetType: 1
+  _toTargetPattern: 2
+  _targetPattern: 1
   _projectileCurve:
     serializedVersion: 2
     m_Curve:

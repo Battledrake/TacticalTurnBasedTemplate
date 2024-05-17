@@ -109,6 +109,10 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             {
                 _pathTiles.Add(_instancedTiles[index].tileMatrix);
             }
+            if(state == TileState.IsInAbilityRange)
+            {
+                _abilityRangeTiles.Add(_instancedTiles[index].tileMatrix);
+            }
         }
 
         public void RemoveState(GridIndex index, TileState state)
@@ -132,6 +136,10 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             if (state == TileState.IsInPath)
             {
                 _pathTiles.Remove(_instancedTiles[index].tileMatrix);
+            }
+            if(state == TileState.IsInAbilityRange)
+            {
+                _abilityRangeTiles.Remove(_instancedTiles[index].tileMatrix);
             }
         }
 

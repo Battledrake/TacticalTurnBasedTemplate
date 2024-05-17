@@ -158,6 +158,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _rangeNodes = new Queue<PathNode>();
             List<GridIndex> indexesInRange = new List<GridIndex>();
 
+            if (pathFilter.includeStartNode)
+                indexesInRange.Add(startIndex);
+
             PathNode startNode = CreateAndAddNodeToPool(startIndex);
             startNode.traversalCost = 0;
             _rangeNodes.Enqueue(startNode);
