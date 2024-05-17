@@ -525,11 +525,11 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             switch (_tacticsGrid.GridShape)
             {
                 case GridShape.Square:
-                    return GridStatics.GetSquareNeighborIndex(gridIndex, arrayIndex);
+                    return GridStatics.GetSquareNeighborAtIndex(gridIndex, arrayIndex);
                 case GridShape.Hexagon:
-                    return GridStatics.GetHexagonNeighborIndex(gridIndex, arrayIndex);
+                    return GridStatics.GetHexagonNeighborAtIndex(gridIndex, arrayIndex);
                 case GridShape.Triangle:
-                    return GridStatics.GetTriangleNeighborIndex(gridIndex, arrayIndex);
+                    return GridStatics.GetTriangleNeighborAtIndex(gridIndex, arrayIndex);
             }
             return GridIndex.Invalid();
         }

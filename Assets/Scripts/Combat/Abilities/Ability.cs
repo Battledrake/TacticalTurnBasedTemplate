@@ -4,9 +4,30 @@ using UnityEngine;
 
 namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 {
+
+    public enum AbilityRangePattern
+    {
+        None,
+        Line,
+        Diagonal,
+        HalfDiagonal,
+        Star,
+        Diamond,
+        Square
+    }
+
+    public class AbilityData
+    {
+        private AbilityRangePattern _rangePattern;
+        private Vector2Int _rangeMinMax;
+    }
+
     public abstract class Ability : MonoBehaviour
     {
         
+        [SerializeField] protected AbilityRangePattern _rangePattern;
+        [SerializeField] protected Vector2Int _rangeMinMax;
+
         protected GridIndex _originIndex;
         protected GridIndex _targetIndex;
 

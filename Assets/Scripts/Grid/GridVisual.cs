@@ -10,7 +10,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         Selected,
         IsNeighbor,
         IsInMoveRange,
-        IsInPath
+        IsInPath,
+        IsInAbilityRange
     }
 
     [ExecuteInEditMode]

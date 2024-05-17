@@ -251,6 +251,11 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 3
       objectReference: {fileID: 0}
+    - target: {fileID: 2692235120191640054, guid: 476ac0bdf1808604d9814c9522eeeb36,
+        type: 3}
+      propertyPath: m_TagString
+      value: Environment
+      objectReference: {fileID: 0}
     - target: {fileID: 5926348959299744426, guid: 476ac0bdf1808604d9814c9522eeeb36,
         type: 3}
       propertyPath: m_Materials.Array.data[0]
@@ -701,7 +706,7 @@ GameObject:
   - component: {fileID: 304118681}
   m_Layer: 0
   m_Name: Floor
-  m_TagString: Untagged
+  m_TagString: Environment
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1999,6 +2004,11 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 3
       objectReference: {fileID: 0}
+    - target: {fileID: 2692235120191640054, guid: 476ac0bdf1808604d9814c9522eeeb36,
+        type: 3}
+      propertyPath: m_TagString
+      value: Environment
+      objectReference: {fileID: 0}
     - target: {fileID: 5926348959299744426, guid: 476ac0bdf1808604d9814c9522eeeb36,
         type: 3}
       propertyPath: m_Materials.Array.data[0]
@@ -2032,7 +2042,7 @@ PrefabInstance:
     - target: {fileID: 8305926839582540949, guid: 476ac0bdf1808604d9814c9522eeeb36,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 5.25
+      value: 5.29
       objectReference: {fileID: 0}
     - target: {fileID: 8305926839582540949, guid: 476ac0bdf1808604d9814c9522eeeb36,
         type: 3}
@@ -2292,7 +2302,7 @@ GameObject:
   - component: {fileID: 1137444816}
   m_Layer: 0
   m_Name: Environment
-  m_TagString: Untagged
+  m_TagString: Environment
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -3074,6 +3084,11 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 2692235120191640054, guid: 476ac0bdf1808604d9814c9522eeeb36,
+        type: 3}
+      propertyPath: m_TagString
+      value: Environment
+      objectReference: {fileID: 0}
     - target: {fileID: 5926348959299744426, guid: 476ac0bdf1808604d9814c9522eeeb36,
         type: 3}
       propertyPath: m_Materials.Array.data[0]
@@ -3383,6 +3398,11 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 2692235120191640054, guid: 476ac0bdf1808604d9814c9522eeeb36,
+        type: 3}
+      propertyPath: m_TagString
+      value: Environment
+      objectReference: {fileID: 0}
     - target: {fileID: 5926348959299744426, guid: 476ac0bdf1808604d9814c9522eeeb36,
         type: 3}
       propertyPath: m_Materials.Array.data[0]
@@ -3561,6 +3581,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_IsActive
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2692235120191640054, guid: 476ac0bdf1808604d9814c9522eeeb36,
+        type: 3}
+      propertyPath: m_TagString
+      value: Environment
       objectReference: {fileID: 0}
     - target: {fileID: 5926348959299744426, guid: 476ac0bdf1808604d9814c9522eeeb36,
         type: 3}
@@ -3897,6 +3922,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_IsActive
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2692235120191640054, guid: 476ac0bdf1808604d9814c9522eeeb36,
+        type: 3}
+      propertyPath: m_TagString
+      value: Environment
       objectReference: {fileID: 0}
     - target: {fileID: 5926348959299744426, guid: 476ac0bdf1808604d9814c9522eeeb36,
         type: 3}
@@ -4459,6 +4489,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Layer
       value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 2692235120191640054, guid: 476ac0bdf1808604d9814c9522eeeb36,
+        type: 3}
+      propertyPath: m_TagString
+      value: Environment
       objectReference: {fileID: 0}
     - target: {fileID: 5926348959299744426, guid: 476ac0bdf1808604d9814c9522eeeb36,
         type: 3}

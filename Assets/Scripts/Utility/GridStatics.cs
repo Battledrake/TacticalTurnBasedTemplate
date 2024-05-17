@@ -61,12 +61,12 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         };
 
 
-        public static GridIndex GetSquareNeighborIndex(GridIndex gridIndex, int neighborIndex)
+        public static GridIndex GetSquareNeighborAtIndex(GridIndex gridIndex, int neighborIndex)
         {
             return gridIndex + SquareNeighbors[neighborIndex];
         }
 
-        public static GridIndex GetHexagonNeighborIndex(GridIndex gridIndex, int neighborIndex)
+        public static GridIndex GetHexagonNeighborAtIndex(GridIndex gridIndex, int neighborIndex)
         {
             if (gridIndex.z % 2 == 1)
                 return gridIndex + HexagonOddRowNeighbors[neighborIndex];
@@ -74,9 +74,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 return gridIndex + HexagonEvenRowNeighbors[neighborIndex];
         }
 
-        public static GridIndex GetTriangleNeighborIndex(GridIndex gridIndex, int neighborIndex)
+        public static GridIndex GetTriangleNeighborAtIndex(GridIndex gridIndex, int neighborIndex)
         {
-            if (gridIndex.x % 2 == gridIndex.z % 2)
+            if (IsTriangleTileFacingUp(gridIndex))
                 return gridIndex + TriangleFacingUpNeighbors[neighborIndex];
             else
                 return gridIndex + TriangleFacingDownNeighbors[neighborIndex];
@@ -94,6 +94,11 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public static bool IsFloatEven(float value)
         {
             return value % 2 == 0;
+        }
+
+        public static bool IsTriangleTileFacingUp(GridIndex gridIndex)
+        {
+            return gridIndex.x % 2 == gridIndex.z % 2;
         }
 
         public static bool IsTileTypeWalkable(TileType tileType)

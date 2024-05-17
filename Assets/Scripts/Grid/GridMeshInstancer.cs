@@ -13,8 +13,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         [SerializeField] private Color _instanceColor = Color.black;
         [SerializeField] private Color _selectedColor = Color.green;
         [SerializeField] private Color _neighborColor = Color.magenta;
-        [SerializeField] private Color _rangeColor = Color.white;
-        [SerializeField] private Color _pathColor = Color.white;
+        [SerializeField] private Color _rangeColor = Color.green;
+        [SerializeField] private Color _pathColor = Color.green;
+        [SerializeField] private Color _abilityRangeColor = Color.yellow;
         [SerializeField] private Color _hoveredColor = Color.yellow;
 
         public bool ShowBaseGrid { get => _renderBaseGrid; set => _renderBaseGrid = value; }
@@ -24,6 +25,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private List<Matrix4x4> _neighborTiles = new List<Matrix4x4>();
         private List<Matrix4x4> _rangeTiles = new List<Matrix4x4>();
         private List<Matrix4x4> _pathTiles = new List<Matrix4x4>();
+        private List<Matrix4x4> _abilityRangeTiles = new List<Matrix4x4>();
         private TileData _hoveredTile;
 
         private RenderParams _renderParams;
@@ -31,6 +33,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private RenderParams _neighborParams;
         private RenderParams _rangeParams;
         private RenderParams _pathParams;
+        private RenderParams _abilityRangeParams;
         private RenderParams _hoveredParams;
 
         private bool _renderBaseGrid = false;
@@ -42,6 +45,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private Material _neighborMaterial;
         private Material _rangeMaterial;
         private Material _pathMaterial;
+        private Material _abilityRangeMaterial;
         private Material _hoveredMaterial;
 
         private List<Matrix4x4> _defaultRenders = new List<Matrix4x4>();
@@ -178,6 +182,10 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 {
                     Graphics.RenderMeshInstanced(_pathParams, _instancedMesh, 0, _pathTiles);
                 }
+                if (_abilityRangeTiles.Count > 0)
+                {
+                    Graphics.RenderMeshInstanced(_abilityRangeParams, _instancedMesh, 0, _abilityRangeTiles);
+                }
                 if (!_hoveredTile.Equals(default(TileData)))
                 {
                     Graphics.RenderMeshInstanced(_hoveredParams, _instancedMesh, 0, new[] { _hoveredTile.tileMatrix });
@@ -205,6 +213,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _neighborMaterial = new Material(material);
             _rangeMaterial = new Material(material);
             _pathMaterial = new Material(material);
+            _abilityRangeMaterial = new Material(material);
             _hoveredMaterial = new Material(material);
 
             _instancedMaterial.color = _instanceColor;
@@ -217,6 +226,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _rangeMaterial.SetFloat("_IsFilled", 0.25f);
             _pathMaterial.color = _pathColor;
             _pathMaterial.SetFloat("_IsFilled", 1f);
+            _abilityRangeMaterial.color = _abilityRangeColor;
+            _abilityRangeMaterial.SetFloat("_IsFilled", 0.25f);
             _hoveredMaterial.color = _hoveredColor;
             _hoveredMaterial.SetFloat("_IsFilled", 0.5f);
 
@@ -225,6 +236,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _neighborParams = new RenderParams(_neighborMaterial);
             _rangeParams = new RenderParams(_rangeMaterial);
             _pathParams = new RenderParams(_pathMaterial);
+            _abilityRangeParams = new RenderParams(_abilityRangeMaterial);
             _hoveredParams = new RenderParams(_hoveredMaterial);
 
             gridTiles.ForEach(tile =>

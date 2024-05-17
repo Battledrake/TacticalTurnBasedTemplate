@@ -42,6 +42,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         [SerializeField] private TacticsGrid _tacticsGrid;
 
         private int _sceneSelected = 0;
+        private List<GameObject> _environmentObjects = new List<GameObject>();
 
         private bool _showGridBounds = false;
         private bool _showGridCenter = false;
@@ -230,16 +231,24 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             if (isOn)
             {
-                if (_sceneSelected > 0)
-                    _sceneLoader.UnloadScene(_sceneCombo.options[_sceneSelected].text);
+                //if (_sceneSelected > 0)
+                //    _sceneLoader.UnloadScene(_sceneCombo.options[_sceneSelected].text);
+
+                _environmentObjects = GameObject.FindGameObjectsWithTag("Environment").ToList();
+                _environmentObjects.ForEach(e => e.SetActive(false));
+
                 _tacticsGrid.GridVisual.HideDefaultGrid();
                 _tacticsGrid.GridVisual.ShowTacticalGrid();
 
             }
             else
             {
-                if (_sceneSelected > 0)
-                    _sceneLoader.LoadScene(_sceneCombo.options[_sceneSelected].text);
+                //if (_sceneSelected > 0)
+                //    _sceneLoader.LoadScene(_sceneCombo.options[_sceneSelected].text);
+
+                if (_environmentObjects.Count > 0)
+                    _environmentObjects.ForEach(e => e.SetActive(true));
+
                 _tacticsGrid.GridVisual.HideTacticalGrid();
                 _tacticsGrid.GridVisual.ShowDefaultGrid();
             }
