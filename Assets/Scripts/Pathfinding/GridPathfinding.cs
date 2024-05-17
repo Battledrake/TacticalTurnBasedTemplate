@@ -567,7 +567,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         }
 
         //Chess style
-        private float GetChebyshevDistance(GridIndex source, GridIndex target)
+        public float GetChebyshevDistance(GridIndex source, GridIndex target)
         {
             GridIndex distance = (source - target).Abs();
             return Mathf.Max(distance.x, distance.z);

@@ -64,13 +64,14 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 _lastHoveredTile = _playerActions.HoveredTile;
                 ClearStateFromPreviousList(_managedTiles);
 
-                PathFilter pathFilter = _playerActions.TacticsGrid.GridPathfinder.CreateDefaultPathFilter(_currentAbility._rangeMinMax.y);
-                PathfindingResult pathResult = _playerActions.TacticsGrid.GridPathfinder.FindPath(_selectedTile, _lastHoveredTile, pathFilter);
-                if(pathResult.Result == PathResult.SearchSuccess)
-                {
-                    _managedTiles = GetTilesForTargetPattern(_currentAbility._targetPattern, _lastHoveredTile);
-                    SetTileStateToAbilityRange(_managedTiles);
-                }
+                if (!_playerActions.CombatSystem.HasLineOfSight(_selectedTile, _lastHoveredTile, 1f))
+                    return;
+
+                if (_playerActions.TacticsGrid.GridPathfinder.GetChebyshevDistance(_selectedTile, _lastHoveredTile) > actionValue)
+                    return;
+
+                _managedTiles = GetTilesForTargetPattern(_currentAbility._targetPattern, _lastHoveredTile);
+                SetTileStateToAbilityRange(_managedTiles);
             }
         }
 
@@ -97,7 +98,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                         PathfindingResult pathResult = _playerActions.TacticsGrid.GridPathfinder.FindTilesInRange(targetIndex, pathFilter);
                         if (pathResult.Result != PathResult.SearchFail)
                         {
-                            return pathResult.Path;
+                            return _playerActions.CombatSystem.RemoveIndexesWithoutLineOfSight(targetIndex, pathResult.Path, 1f);
                         }
                     }
                     break;

@@ -108,6 +108,42 @@ public class CombatSystem : MonoBehaviour
         return tileTypes != null && tileTypes.Contains(_tacticsGrid.GridTiles[index].tileType);
     }
 
+    public List<GridIndex> RemoveIndexesWithoutLineOfSight(GridIndex origin, List<GridIndex> tiles, float height)
+    {
+        List<GridIndex> returnList = new List<GridIndex>();
+        for (int i = 0; i < tiles.Count; i++)
+        {
+            if (HasLineOfSight(origin, tiles[i], height))
+            {
+                returnList.Add(tiles[i]);
+            }
+        }
+        return returnList;
+    }
+
+    public bool HasLineOfSight(GridIndex origin, GridIndex target, float height)
+    {
+        _tacticsGrid.GetTileDataFromIndex(origin, out TileData originData);
+        _tacticsGrid.GetTileDataFromIndex(target, out TileData targetData);
+
+        Vector3 startPosition = originData.tileMatrix.GetPosition();
+        startPosition.y += height;
+
+        Vector3 targetPosition = targetData.tileMatrix.GetPosition();
+        targetPosition.y += height;
+
+        Vector3 direction = targetPosition - startPosition;
+
+        if (Physics.Raycast(startPosition, direction, out RaycastHit hitInfo, direction.magnitude))
+        {
+            if (hitInfo.collider.GetComponent<Unit>())
+                return true;
+            else
+                return false;
+        }
+        return true;
+    }
+
     private void TacticsGrid_OnGridGenerated()
     {
         List<Unit> copyList = new List<Unit>(_unitsInCombat);

@@ -56,11 +56,13 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         [SerializeField] public TargetType _targetType;
         [SerializeField] public ToTargetPattern _toTargetPattern;
         [SerializeField] public TargetPattern _targetPattern;
+        [SerializeField] protected bool _requireLineOfSight;
 
         protected GridIndex _originIndex;
         protected GridIndex _targetIndex;
 
         protected TacticsGrid _tacticsGrid;
+
 
         public void InitializeAbility(TacticsGrid tacticsGrid, GridIndex origin, GridIndex target)
         {
