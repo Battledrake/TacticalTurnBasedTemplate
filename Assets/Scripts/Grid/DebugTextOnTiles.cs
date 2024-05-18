@@ -87,7 +87,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                     debugText += $"index: {index}\n";
 
                 if (_showTerrainCost)
-                    debugText += string.Format("terrain:{0:F1}\n", GridStatics.GetTerrainCostFromTileType(tileData.tileType));
+                    debugText += string.Format("terrain:{0:F1}\n", PathfindingStatics.GetTerrainCostFromTileType(tileData.tileType));
 
                 if (HasPathfindingData())
                 {

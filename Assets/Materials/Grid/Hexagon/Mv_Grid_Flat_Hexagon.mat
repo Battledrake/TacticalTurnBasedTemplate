@@ -49,6 +49,7 @@ Material:
     m_Floats:
     - _IsFilled: 1
     - _MaskValue: 0.5
+    - _Opacity: 0.85
     m_Colors:
     - _Color: {r: 0.40784317, g: 0.015686275, b: 0.054901965, a: 1}
   m_BuildTextureStacks: []

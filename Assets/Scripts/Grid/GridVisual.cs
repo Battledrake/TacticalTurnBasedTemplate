@@ -105,10 +105,5 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _gridMeshInstancer.ClearInstances();
             _tacticalMeshInstancer.ClearInstances();
         }
-
-        public void ClearPathVisual()
-        {
-            _gridMeshInstancer.ClearPathVisual();
-        }
     }
 }

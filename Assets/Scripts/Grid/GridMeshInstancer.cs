@@ -207,6 +207,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _selectedTiles.Clear();
             _neighborTiles.Clear();
             _pathTiles.Clear();
+            _abilityRangeTiles.Clear();
             _hoveredTile = default(TileData);
         }
 
@@ -253,11 +254,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             });
 
             _currentDefaultCount = 0;
-        }
-
-        public void ClearPathVisual()
-        {
-            _pathTiles.Clear();
         }
     }
 }

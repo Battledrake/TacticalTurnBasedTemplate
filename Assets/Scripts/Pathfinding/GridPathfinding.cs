@@ -291,7 +291,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 if (_ignoreClosed && neighborNode.isClosed)
                     continue;
 
-                neighborNode.terrainCost = GridStatics.GetTerrainCostFromTileType(_tacticsGrid.GridTiles[neighborNode.index].tileType);
+                neighborNode.terrainCost = PathfindingStatics.GetTerrainCostFromTileType(_tacticsGrid.GridTiles[neighborNode.index].tileType);
 
                 float newTraversalCost = currentNode.traversalCost + (GetTraversalCost(currentNode.index, neighborNode.index) * neighborNode.terrainCost);
 
