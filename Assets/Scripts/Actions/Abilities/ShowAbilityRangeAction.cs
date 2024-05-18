@@ -60,7 +60,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             if (PathfindingStatics.GetChebyshevDistance(_selectedTile, _hoveredTile) > _currentAbility.ToTargetData.rangeMinMax.y)
                 return;
 
-            _managedTiles = GetTilesForTargetPattern(_currentAbility.TargetData.rangePattern, _hoveredTile, _currentAbility.TargetData.rangeMinMax);
+            _managedTiles = GetTilesForTargetPattern(_currentAbility.OnTargetData.rangePattern, _hoveredTile, _currentAbility.OnTargetData.rangeMinMax);
             SetTileStateToAbilityRange(_managedTiles);
         }
 

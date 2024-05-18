@@ -20,7 +20,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             new GridIndex(1, -1)
         };
 
-        private static GridIndex[] HexagonEvenRowNeighbors = new GridIndex[]
+        public static GridIndex[] HexagonEvenRowNeighbors = new GridIndex[]
         {
             new GridIndex(-1, 0),
             new GridIndex(1, 0),
@@ -30,7 +30,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             new GridIndex(0, -1)
         };
 
-        private static GridIndex[] HexagonOddRowNeighbors = new GridIndex[]
+        public static GridIndex[] HexagonOddRowNeighbors = new GridIndex[]
         {
             new GridIndex(-1, 0),
             new GridIndex(1, 0),

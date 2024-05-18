@@ -45,10 +45,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _rangePattern: 0
-  _rangeMinMax: {x: 0, y: 10}
-  _targetType: 1
-  _toTargetPattern: 3
-  _targetPattern: 0
+  _toTargetData:
+    rangePattern: 0
+    rangeMinMax: {x: 0, y: 0}
+  _onTargetData:
+    rangePattern: 0
+    rangeMinMax: {x: 0, y: 0}
+  _requireLineOfSight: 0
   _vinePrefab: {fileID: 1199601900371724, guid: d67ed860424886e4db64e996b4d85493,
     type: 3}
   _playbackSpeed: 0.25

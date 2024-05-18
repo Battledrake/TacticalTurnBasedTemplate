@@ -26,6 +26,13 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             return new GridIndex(q, r);
         }
 
+        public static GridIndex ConvertAxialToOddr(GridIndex hex)
+        {
+            var col = hex.x + (hex.z - (hex.z & 1)) / 2;
+            var row = hex.z;
+            return new GridIndex(col, row);
+        }
+
         public static float GetDistanceFromAxialCoordinates(GridIndex source, GridIndex target)
         {
             int dq = Mathf.Abs(source.x - target.x);

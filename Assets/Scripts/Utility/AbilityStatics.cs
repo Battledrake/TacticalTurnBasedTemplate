@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Net.NetworkInformation;
 using UnityEngine;
 
 namespace BattleDrakeCreations.TacticalTurnBasedTemplate
@@ -128,10 +129,14 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                     case GridShape.Hexagon:
                         returnList.Add(new GridIndex(0, i * 2)); //up
                         returnList.Add(new GridIndex(0, -i * 2)); // down
-                        returnList.Add(new GridIndex(Mathf.CeilToInt(i * 3), i)); //up right
-                        returnList.Add(new GridIndex(-Mathf.CeilToInt(i * 3), i)); //up left
-                        returnList.Add(new GridIndex(Mathf.CeilToInt(i * 3), -i)); //Down Right
-                        returnList.Add(new GridIndex(-Mathf.CeilToInt(i * 3), -i)); //Down Left
+
+                        int negX = origin.z % 2 == 0 ? Mathf.FloorToInt(-i * 1.5f) : Mathf.CeilToInt(-i * 1.5f);
+                        int posX = origin.z % 2 == 0 ? Mathf.FloorToInt(i * 1.5f) : Mathf.CeilToInt(i * 1.5f);
+
+                        returnList.Add(new GridIndex(posX, i)); //up right
+                        returnList.Add(new GridIndex(negX, i)); //up left
+                        returnList.Add(new GridIndex(posX, -i)); //Down Right
+                        returnList.Add(new GridIndex(negX, -i)); //Down Left
                         break;
 
                     case GridShape.Triangle:
@@ -195,7 +200,22 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                             returnList.Add(new GridIndex(-j, -i));
                         }
                         break;
-                    default:
+                    case GridShape.Hexagon:
+                        for (int j = -i; j <= i; j++)
+                        {
+                            if (i != 0)
+                            {
+                                returnList.Add(new GridIndex(i, j)); // Up to down, right
+                                returnList.Add(new GridIndex(-i, j)); // Down to up, left
+                            }
+                            if (i != j)
+                            {
+                                returnList.Add(new GridIndex(j, i)); // Right to left, up
+                                returnList.Add(new GridIndex(j, -i)); // Left to right, down
+                            }
+                        }
+                        break;
+                    case GridShape.Triangle:
                         for (int j = -i; j <= i; j++)
                         {
                             returnList.Add(new GridIndex(-i * 2, j)); //Down To up, Left
@@ -217,6 +237,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             return returnList;
         }
 
+
+
         private static List<GridIndex> GetDiamondPattern(GridIndex origin, GridShape gridShape, Vector2Int rangeMinMax)
         {
             List<GridIndex> returnList = new List<GridIndex>();
@@ -235,17 +257,27 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                         }
                         break;
                     case GridShape.Hexagon:
-                        for (int j = 0; j <= 0; j++)
+                        int hX = 0;
+                        int hZ = i;
+
+                        for (int side = 0; side < 6; side++)
                         {
-                            returnList.Add(new GridIndex(-(i * 2 - j), j)); //Mid to up, left to right
-                            returnList.Add(new GridIndex(i * 2 - j, -j)); //Mid to down, right to left
-                            returnList.Add(new GridIndex(i * 2 - (i - j), i - j)); //Up to Mid, left to right
-                            returnList.Add(new GridIndex(-i * 2 - (i - j), -(i - j))); //Down to mid. Right to left.
-                        }
-                        for (int j = -i - 2; j <= i - 2; j++)
-                        {
-                            returnList.Add(new GridIndex(j, i)); //up, midleft to midright
-                            returnList.Add(new GridIndex(-j, -i)); //up midleft to midright
+                            for (int j = 0; j < i; j++)
+                            {
+                                if (side == 0) { hX++; hZ--; } // Move right-up
+                                else if (side == 1) { hZ--; } // Move up
+                                else if (side == 2) { hX--; } // Move left-up
+                                else if (side == 3) { hX--; hZ++; } // Move left-down
+                                else if (side == 4) { hZ++; } // Move down
+                                else if (side == 5) { hX++; } // Move right-down
+
+                                // Convert axial to odd-r offset
+                                int col = origin.z % 2 == 0 ? hX + (hZ - (hZ & 1)) / 2 : hX + (hZ + (hZ & 1)) / 2;
+
+                                int row = hZ;
+
+                                returnList.Add(new GridIndex(col, row));
+                            }
                         }
                         break;
                     case GridShape.Triangle:

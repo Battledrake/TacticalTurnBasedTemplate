@@ -28,11 +28,11 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         
         [SerializeField] protected AbilityRangePattern _rangePattern;
         [SerializeField] protected AbilityRangeData _toTargetData;
-        [SerializeField] protected AbilityRangeData _targetData;
+        [SerializeField] protected AbilityRangeData _onTargetData;
         [SerializeField] protected bool _requireLineOfSight;
 
         public AbilityRangeData ToTargetData { get => _toTargetData; }
-        public AbilityRangeData TargetData { get => _targetData; }
+        public AbilityRangeData OnTargetData { get => _onTargetData; }
 
         protected GridIndex _originIndex;
         protected GridIndex _targetIndex;
