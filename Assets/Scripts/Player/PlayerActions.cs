@@ -7,6 +7,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
     public class PlayerActions : MonoBehaviour
     {
         public event Action<ActionBase, ActionBase> OnSelectedActionsChanged;
+        public event Action<GridIndex> OnHoveredTileChanged;
 
         [SerializeField] private TacticsGrid _tacticsGrid;
         [SerializeField] private CombatSystem _combatSystem;
@@ -19,6 +20,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public Unit SelectedUnit { get => _selectedUnit; set => _selectedUnit = value; }
         public ActionBase LeftClickAction { get => _leftClickAction; }
         public ActionBase RightClickAction { get => _rightClickAction; }
+        public Ability CurrentAbility { get => _currentAbility; set => _currentAbility = value; }
 
         private GridIndex _hoveredTile = new GridIndex(int.MinValue, int.MinValue);
         private GridIndex _selectedTile = new GridIndex(int.MinValue, int.MinValue);
@@ -28,7 +30,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private ActionBase _leftClickAction;
         private ActionBase _rightClickAction;
 
-        private Action HoverTileChanged;
+        private Ability _currentAbility = null;
 
         private bool _isLeftClickDown = false;
         private bool _isRightClickDown = false;
@@ -36,7 +38,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void Awake()
         {
-            HoverTileChanged += OnHoverTileChanged;
+            OnHoveredTileChanged += OnHoveredTileChanged_UpdateActions;
         }
 
         private void Start()
@@ -50,7 +52,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 SetSelectedTileAndUnit(index);
         }
 
-        private void OnHoverTileChanged()
+        private void OnHoveredTileChanged_UpdateActions(GridIndex gridIndex)
         {
             if (_isLeftClickDown)
             {
@@ -128,7 +130,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 _tacticsGrid.RemoveStateFromTile(_hoveredTile, TileState.Hovered);
                 _hoveredTile = newIndex;
                 _tacticsGrid.AddStateToTile(_hoveredTile, TileState.Hovered);
-                HoverTileChanged?.Invoke();
+                OnHoveredTileChanged?.Invoke(_hoveredTile);
             }
         }
 

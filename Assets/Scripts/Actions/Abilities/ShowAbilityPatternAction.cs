@@ -12,6 +12,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public override bool ExecuteAction(GridIndex index)
         {
             base.ExecuteAction(index);
+
             if (_displayList.Count > 0)
             {
                 _displayList.ForEach(i => _playerActions.TacticsGrid.RemoveStateFromTile(i, TileState.IsInAbilityRange));

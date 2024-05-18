@@ -10,6 +10,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         [SerializeField] private List<Ability> _debugAbilities;
         [SerializeField] private AbilityButton _abilityButtonPrefab;
         [SerializeField] private Transform _abilityButtonContainer;
+        [SerializeField] private PlayerActions _playerActions;
         public Ability ActiveAbility { get => _activeAbility; }
 
         private Dictionary<int, AbilityButton> _abilityButtons = new Dictionary<int, AbilityButton>();
@@ -38,6 +39,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             {
                 _activeAbility = null;
                 _activeButton = -1;
+                _playerActions.CurrentAbility = null;
             }
             else
             {
@@ -51,8 +53,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 _abilityButtons[_activeButton].DisableButton();
 
             _activeAbility = _debugAbilities[buttonIndex];
-
             _activeButton = buttonIndex;
+
+            _playerActions.CurrentAbility = _activeAbility;
         }
 
         public void SelectActiveAbilityToggled(bool isActionActive)
@@ -63,9 +66,10 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             for (int i = 0; i < _abilityButtons.Count; i++)
             {
                 _abilityButtons[i].DisableButton();
-                _activeAbility = null;
-                _activeButton = -1;
             }
+            _activeAbility = null;
+            _activeButton = -1;
+            _playerActions.CurrentAbility = null;
         }
     }
 }
