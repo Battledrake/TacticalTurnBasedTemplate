@@ -74,21 +74,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         //Standard algorithm for 4 neighbor squares and Hexagons.
         public static float GetManhattanDistance(GridIndex source, GridIndex target)
         {
-            //if (_tacticsGrid.GridShape == GridShape.Hexagon)
-            //{
-            //    GridIndex sourceAxial = ConvertOddrToAxial(source);
-            //    GridIndex targetAxial = ConvertOddrToAxial(target);
-
-            //    int x1 = sourceAxial.x;
-            //    int z1 = sourceAxial.z;
-            //    int y1 = -x1 - z1;
-
-            //    int x2 = targetAxial.x;
-            //    int z2 = targetAxial.z;
-            //    int y2 = -x2 - z2;
-
-            //    return (Mathf.Abs(x1 - x2) + Mathf.Abs(y1 - y2) + Mathf.Abs(z1 - z2)) / 2;
-            //}
             GridIndex distance = (source - target).Abs();
 
             return distance.x + distance.z;

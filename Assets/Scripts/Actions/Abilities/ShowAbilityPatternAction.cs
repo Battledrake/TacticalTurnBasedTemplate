@@ -19,7 +19,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 _displayList.Clear();
             }
 
-            _displayList = PatternStatics.GetIndexesFromPatternAndRange(index, _playerActions.TacticsGrid.GridShape, _rangeMinMax, (AbilityRangePattern)actionValue);
+            _displayList = AbilityStatics.GetIndexesFromPatternAndRange(index, _playerActions.TacticsGrid.GridShape, _rangeMinMax, (AbilityRangePattern)actionValue);
             _displayList.ForEach(i => _playerActions.TacticsGrid.AddStateToTile(i, TileState.IsInAbilityRange));
 
             return true;

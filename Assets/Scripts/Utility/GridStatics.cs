@@ -98,7 +98,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         public static bool IsTriangleTileFacingUp(GridIndex gridIndex)
         {
-            return gridIndex.x % 2 == gridIndex.z % 2;
+            return (gridIndex.x + gridIndex.z) % 2 == 0;
         }
 
         public static bool IsTileTypeWalkable(TileType tileType)

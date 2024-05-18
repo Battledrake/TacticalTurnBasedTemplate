@@ -16,47 +16,23 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         Square
     }
 
-    public enum TargetType
+    [System.Serializable]
+    public struct AbilityRangeData
     {
-        Self,
-        Enemy,
-        EmptyTile,
-        AnyNotSelf,
-        Any
-    }
-
-    public enum ToTargetPattern
-    {
-        None,
-        MoveTo,
-        Projectile,
-        Line,
-        Cone
-    }
-
-    public enum TargetPattern
-    {
-        Single,
-        AOE,
-        Chain,
-        Relocate
-    }
-
-    public class AbilityData
-    {
-        private AbilityRangePattern _rangePattern;
-        private Vector2Int _rangeMinMax;
+        public AbilityRangePattern rangePattern;
+        public Vector2Int rangeMinMax;
     }
 
     public abstract class Ability : MonoBehaviour
     {
         
         [SerializeField] protected AbilityRangePattern _rangePattern;
-        [SerializeField] public Vector2Int _rangeMinMax;
-        [SerializeField] public TargetType _targetType;
-        [SerializeField] public ToTargetPattern _toTargetPattern;
-        [SerializeField] public TargetPattern _targetPattern;
+        [SerializeField] protected AbilityRangeData _toTargetData;
+        [SerializeField] protected AbilityRangeData _targetData;
         [SerializeField] protected bool _requireLineOfSight;
+
+        public AbilityRangeData ToTargetData { get => _toTargetData; }
+        public AbilityRangeData TargetData { get => _targetData; }
 
         protected GridIndex _originIndex;
         protected GridIndex _targetIndex;
