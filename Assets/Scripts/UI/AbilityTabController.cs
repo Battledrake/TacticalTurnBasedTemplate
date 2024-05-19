@@ -5,6 +5,7 @@ using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using static UnityEngine.Rendering.DebugUI;
 
 namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 {
@@ -54,7 +55,13 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void OnAbilityRangeLineOfSightToggled(bool isOn)
         {
-            //Add Logic Shoon.
+            ShowAbilityPatternAction showPatternAction = _playerActions.LeftClickAction.GetComponent<ShowAbilityPatternAction>();
+            if (showPatternAction)
+            {
+                showPatternAction.RequireLineOfSight = isOn;
+
+                showPatternAction.ShowAbilityRangePattern();
+            }
         }
 
         private void AbilityPatternButton_OnButtonToggled(bool isDown)

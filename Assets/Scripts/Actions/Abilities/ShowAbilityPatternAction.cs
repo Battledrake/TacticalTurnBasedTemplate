@@ -8,8 +8,10 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
     public class ShowAbilityPatternAction : SelectTileAndUnitAction
     {
         [SerializeField] private Vector2Int _rangeMinMax = new Vector2Int(0, 5);
+        [SerializeField] private bool _requireLineOfSight = false;
 
         public Vector2Int RangeMinMax { get => _rangeMinMax; set => _rangeMinMax = value; }
+        public bool RequireLineOfSight { get => _requireLineOfSight; set => _requireLineOfSight = value; }
 
         private List<GridIndex> _displayList = new List<GridIndex>();
 
