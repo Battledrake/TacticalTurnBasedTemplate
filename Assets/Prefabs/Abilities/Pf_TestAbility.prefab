@@ -44,14 +44,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6d86e668ac114b44baa687cf2a554343, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _rangePattern: 0
   _toTargetData:
     rangePattern: 4
     rangeMinMax: {x: 1, y: 3}
   _onTargetData:
     rangePattern: 0
     rangeMinMax: {x: 0, y: 0}
-  _requireLineOfSight: 0
+  _lineOfSightData:
+    requireLineOfSight: 1
+    height: 0.5
   _vinePrefab: {fileID: 1199601900371724, guid: d67ed860424886e4db64e996b4d85493,
     type: 3}
   _playbackSpeed: 0.25

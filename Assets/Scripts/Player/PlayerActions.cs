@@ -9,6 +9,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
     {
         public event Action<ActionBase, ActionBase> OnSelectedActionsChanged;
         public event Action<GridIndex> OnHoveredTileChanged;
+        public event Action<Ability> OnCurrentAbilityChanged;
 
         [SerializeField] private TacticsGrid _tacticsGrid;
         [SerializeField] private CombatSystem _combatSystem;
@@ -21,7 +22,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public Unit SelectedUnit { get => _selectedUnit; set => _selectedUnit = value; }
         public ActionBase LeftClickAction { get => _leftClickAction; }
         public ActionBase RightClickAction { get => _rightClickAction; }
-        public Ability CurrentAbility { get => _currentAbility; set => _currentAbility = value; }
+        public Ability CurrentAbility { get => _currentAbility; set { _currentAbility = value; OnCurrentAbilityChanged?.Invoke(_currentAbility); } }
 
         private GridIndex _hoveredTile = new GridIndex(int.MinValue, int.MinValue);
         private GridIndex _selectedTile = new GridIndex(int.MinValue, int.MinValue);

@@ -19,6 +19,20 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             base.InitializeAction(playerActions);
 
             _playerActions.OnHoveredTileChanged += PlayerActions_OnHoveredTileChanged;
+            _playerActions.OnCurrentAbilityChanged += PlayerActions_OnCurrentAbilityChanged;
+        }
+
+        private void PlayerActions_OnCurrentAbilityChanged(Ability ability)
+        {
+            ClearStateFromPreviousList(_onTargetTiles);
+            ClearStateFromPreviousList(_toTargetIndexes);
+
+            _currentAbility = ability;
+
+            if(_currentAbility != null && _selectedTile != GridIndex.Invalid())
+            {
+                ShowAbilityRangePattern();
+            }
         }
 
         public override bool ExecuteAction(GridIndex index)
@@ -27,7 +41,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
             if (_playerActions.TacticsGrid.IsIndexValid(index) && index != _selectedTile)
             {
-                _currentAbility = _playerActions.CurrentAbility;
                 _selectedTile = index;
 
                 ClearStateFromPreviousList(_toTargetIndexes);
@@ -51,7 +64,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void ShowAbilityRangePattern()
         {
-            _toTargetIndexes = AbilityStatics.GetIndexesFromPatternAndRange(_selectedTile, _playerActions.TacticsGrid.GridShape, _currentAbility.ToTargetData.rangeMinMax, _currentAbility.ToTargetData.rangePattern);
+            _toTargetIndexes = _playerActions.CombatSystem.GetAbilityToTargetRange(_selectedTile, _currentAbility);
+            if (_currentAbility.LineOfSightData.requireLineOfSight)
+                _toTargetIndexes = _playerActions.CombatSystem.RemoveIndexesWithoutLineOfSight(_selectedTile, _toTargetIndexes, _currentAbility.LineOfSightData.height);
             SetTileStateToAbilityRange(_toTargetIndexes);
         }
 
@@ -95,6 +110,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private void OnDestroy()
         {
             _playerActions.OnHoveredTileChanged -= PlayerActions_OnHoveredTileChanged;
+            _playerActions.OnCurrentAbilityChanged -= PlayerActions_OnCurrentAbilityChanged;
 
             ClearStateFromPreviousList(_onTargetTiles);
             ClearStateFromPreviousList(_toTargetIndexes);

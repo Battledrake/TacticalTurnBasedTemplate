@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using UnityEngine;
 
 namespace BattleDrakeCreations.TacticalTurnBasedTemplate
@@ -138,9 +139,13 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
             if (Physics.Raycast(startPosition, direction, out RaycastHit hitInfo, direction.magnitude))
             {
-                if (hitInfo.collider.GetComponent<Unit>())
+                Unit abilityUnit = originData.unitOnTile;
+                Unit targetUnit = targetData.unitOnTile;
+                Unit hitUnit = hitInfo.collider.GetComponent<Unit>();
+                if (hitUnit != null)
                 {
-                    return true;
+                    if (hitUnit != abilityUnit && hitUnit != targetUnit)
+                        return false;
                 }
                 else
                 {
