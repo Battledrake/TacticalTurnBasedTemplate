@@ -30,7 +30,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             {
                 case AbilityRangePattern.None:
                     patternList.Add(origin);
-                    break;
+                    return patternList;
                 case AbilityRangePattern.Line:
                     patternList = GetLinePattern(origin, gridShape, rangeMinMax);
                     break;

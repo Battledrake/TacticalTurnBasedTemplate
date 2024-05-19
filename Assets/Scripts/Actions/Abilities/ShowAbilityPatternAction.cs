@@ -71,7 +71,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 _toTargetIndexes.Clear();
             }
 
-            if (_toTargetPattern != AbilityRangePattern.None && _playerActions.TacticsGrid.IsIndexValid(_selectedTileIndex))
+            if (_playerActions.TacticsGrid.IsIndexValid(_selectedTileIndex))
             {
                 _toTargetIndexes = AbilityStatics.GetIndexesFromPatternAndRange(_selectedTileIndex, _playerActions.TacticsGrid.GridShape, _toTargetRangeMinMax, _toTargetPattern);
                 if (_toTargetLineOfSight)
@@ -93,7 +93,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             if (!_toTargetIndexes.Contains(_hoveredTileIndex))
                 return;
 
-            if (_onTargetPattern != AbilityRangePattern.None && _playerActions.TacticsGrid.IsIndexValid(_hoveredTileIndex))
+            if (_playerActions.TacticsGrid.IsIndexValid(_hoveredTileIndex))
             {
                 _onTargetIndexes = AbilityStatics.GetIndexesFromPatternAndRange(_hoveredTileIndex, _playerActions.TacticsGrid.GridShape, _onTargetRangeMinMax, _onTargetPattern);
                 if (_onTargetLineOfSight)

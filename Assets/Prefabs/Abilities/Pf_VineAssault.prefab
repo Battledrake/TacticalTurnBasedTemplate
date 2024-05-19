@@ -51,7 +51,7 @@ MonoBehaviour:
       requireLineOfSight: 1
       height: 0.5
   _onTargetData:
-    rangePattern: 6
+    rangePattern: 0
     rangeMinMax: {x: 0, y: 0}
     lineOfSightData:
       requireLineOfSight: 0

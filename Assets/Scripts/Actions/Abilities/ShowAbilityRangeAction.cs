@@ -40,19 +40,14 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             base.ExecuteAction(index);
 
             if (_playerActions.TacticsGrid.IsIndexValid(index) && index != _selectedTileIndex)
-            {
                 _selectedTileIndex = index;
-            }
             else
-            {
-                _currentAbility = null;
                 _selectedTileIndex = GridIndex.Invalid();
-            }
 
             ClearStateFromPreviousList(TileState.IsInToTargetRange, _toTargetIndexes);
             ClearStateFromPreviousList(TileState.IsInOnTargetRange, _onTargetIndexes);
 
-            if (_currentAbility)
+            if (_currentAbility && _selectedTileIndex != GridIndex.Invalid())
             {
                 ShowAbilityToTargetRangePattern();
                 return true;
@@ -74,6 +69,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             if (_currentAbility.OnTargetData.lineOfSightData.requireLineOfSight)
                 _onTargetIndexes = _playerActions.CombatSystem.RemoveIndexesWithoutLineOfSight(_hoveredTileIndex, _onTargetIndexes, _currentAbility.OnTargetData.lineOfSightData.height);
             SetTileStateOnList(TileState.IsInOnTargetRange, _onTargetIndexes);
+            Debug.Log(_onTargetIndexes[0]);
         }
 
         private void PlayerActions_OnHoveredTileChanged(GridIndex index)
