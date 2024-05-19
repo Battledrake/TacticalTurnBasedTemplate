@@ -26,7 +26,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
     public abstract class Ability : MonoBehaviour
     {
         
-        [SerializeField] protected AbilityRangePattern _rangePattern;
         [SerializeField] protected AbilityRangeData _toTargetData;
         [SerializeField] protected AbilityRangeData _onTargetData;
         [SerializeField] protected bool _requireLineOfSight;

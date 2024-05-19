@@ -8,6 +8,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
     [RequireComponent(typeof(Toggle))]
     public class ActionButton : MonoBehaviour
     {
+        public event Action<bool> OnButtonToggled;
+
         [SerializeField] private string _actionName;
         [SerializeField] private ActionBase _leftClickAction;
         [SerializeField] private ActionBase _rightClickAction;
@@ -86,7 +88,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                     _playerActions.ClearSelectedActions();
                 }
                 _playerActions.OnSelectedActionsChanged -= OnSelectedActionsChanged;
+                _playerActions.SetSelectedTileAndUnit(GridIndex.Invalid());
             }
+            OnButtonToggled?.Invoke(isDown);
         }
     }
 }

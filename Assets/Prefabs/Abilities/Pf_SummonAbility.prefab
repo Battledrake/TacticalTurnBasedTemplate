@@ -45,10 +45,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _rangePattern: 0
-  _rangeMinMax: {x: 1, y: 10}
-  _targetType: 2
-  _toTargetPattern: 0
-  _targetPattern: 0
+  _toTargetData:
+    rangePattern: 5
+    rangeMinMax: {x: 1, y: 3}
+  _onTargetData:
+    rangePattern: 0
+    rangeMinMax: {x: 0, y: 0}
+  _requireLineOfSight: 0
   _unitPrefab: {fileID: 8295871943332446403, guid: be08241bbcfd2964b89f684ed3e041b0,
     type: 3}
   _unitType: 5

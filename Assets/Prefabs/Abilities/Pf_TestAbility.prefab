@@ -46,8 +46,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _rangePattern: 0
   _toTargetData:
-    rangePattern: 0
-    rangeMinMax: {x: 0, y: 0}
+    rangePattern: 4
+    rangeMinMax: {x: 1, y: 3}
   _onTargetData:
     rangePattern: 0
     rangeMinMax: {x: 0, y: 0}

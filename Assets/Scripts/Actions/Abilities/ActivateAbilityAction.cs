@@ -10,7 +10,11 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             if (!_playerActions.TacticsGrid.IsIndexValid(_playerActions.SelectedTile) || !_playerActions.TacticsGrid.IsIndexValid(index))
                 return false;
 
-            _testAbility = GameObject.Find("TabContent_Abilities").GetComponent<AbilityTabController>().ActiveAbility;
+            if (_playerActions.CurrentAbility)
+            {
+                _testAbility = _playerActions.CurrentAbility;
+            }
+
             if (_testAbility != null)
             {
                 return _playerActions.CombatSystem.TryActivateAbility(_testAbility, _playerActions.SelectedTile, index);

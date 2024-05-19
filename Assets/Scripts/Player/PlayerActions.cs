@@ -1,6 +1,7 @@
 using System;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 {
@@ -92,6 +93,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void TryLeftClickAction()
         {
+            if (EventSystem.current.IsPointerOverGameObject())
+                return;
+
             if (_leftClickAction)
                 _leftClickAction.ExecuteAction(_hoveredTile);
         }
@@ -136,6 +140,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         public void SetSelectedTileAndUnit(GridIndex index)
         {
+
             GridIndex previousTile = _selectedTile;
             if (previousTile != index)
             {

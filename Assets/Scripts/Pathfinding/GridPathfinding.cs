@@ -38,7 +38,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public bool includeStartNode;
         public List<TileType> validTileTypes;
         public float maxPathLength;
-
     }
 
     public class PathNode : IComparable<PathNode>
