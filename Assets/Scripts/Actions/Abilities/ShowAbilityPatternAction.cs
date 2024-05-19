@@ -9,7 +9,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
     {
         [SerializeField] private Vector2Int _rangeMinMax = new Vector2Int(0, 5);
         [SerializeField] private bool _requireLineOfSight = false;
-        [SerializeField] private float _lineOfSightHeight = 2f;
+        [SerializeField] private float _lineOfSightHeight = 0.5f;
 
         public Vector2Int RangeMinMax { get => _rangeMinMax; set => _rangeMinMax = value; }
         public bool RequireLineOfSight { get => _requireLineOfSight; set => _requireLineOfSight = value; }

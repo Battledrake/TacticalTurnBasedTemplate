@@ -332,7 +332,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                         }
                         else
                         {
-                            TileType tileType = TraceForGround(instancePosition, out Vector3 hitPosition);
+                            TileType tileType = TraceForGroundAndObstacles(instancePosition, out Vector3 hitPosition);
                             if (tileType != TileType.None)
                             {
                                 tileData.tileType = tileType;
@@ -370,13 +370,13 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             SpawnGrid(this.transform.position, _gridTileSize, _gridTileCount, _gridShape);
         }
 
-        public TileType TraceForGround(Vector3 position, out Vector3 hitPosition)
+        public TileType TraceForGroundAndObstacles(Vector3 position, out Vector3 hitPosition)
         {
             TileType returnType = TileType.None;
             hitPosition = position;
 
             Vector3 origin = position + Vector3.up * 10.0f;
-            LayerMask groundLayer = LayerMask.GetMask("Ground");
+            LayerMask groundLayer = LayerMask.GetMask("Ground", "Obstacle");
             //float radius = _gridTileSize.x / 3; //TODO: divide by 5 if triangle?
             if (Physics.Raycast(origin, Vector3.down, out RaycastHit hitInfo, 50.0f, groundLayer))
             {

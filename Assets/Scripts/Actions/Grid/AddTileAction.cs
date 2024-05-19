@@ -15,7 +15,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 newTile.tileType = TileType.Normal;
 
                 Vector3 tilePosition = _playerActions.TacticsGrid.GetWorldPositionFromGridIndex(index);
-                _playerActions.TacticsGrid.TraceForGround(tilePosition, out Vector3 hitPosition);
+                _playerActions.TacticsGrid.TraceForGroundAndObstacles(tilePosition, out Vector3 hitPosition);
                 Quaternion tileRotation = _playerActions.TacticsGrid.GetTileRotationFromGridIndex(index);
                 Vector3 tileSize = _playerActions.TacticsGrid.TileSize;
 

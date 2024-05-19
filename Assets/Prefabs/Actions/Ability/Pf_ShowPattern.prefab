@@ -45,4 +45,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   actionValue: -1
-  _rangeMinMax: {x: 0, y: 5}
+  _rangeMinMax: {x: 0, y: 3}
+  _requireLineOfSight: 0
+  _lineOfSightHeight: 0.5
