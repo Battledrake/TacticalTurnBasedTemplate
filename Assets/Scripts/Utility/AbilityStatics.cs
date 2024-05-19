@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.NetworkInformation;
 using UnityEngine;
 
@@ -61,106 +62,106 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private static List<GridIndex> GetLinePattern(GridIndex origin, GridShape shape, Vector2Int rangeMinMax)
         {
-            List<GridIndex> returnList = new List<GridIndex>();
+            HashSet<GridIndex> returnSet = new HashSet<GridIndex>();
             for (int i = rangeMinMax.x; i <= rangeMinMax.y; i++)
             {
                 switch (shape)
                 {
                     case GridShape.Square:
-                        returnList.Add(new GridIndex(i, 0));
-                        returnList.Add(new GridIndex(-i, 0));
-                        returnList.Add(new GridIndex(0, i));
-                        returnList.Add(new GridIndex(0, -i));
+                        returnSet.Add(new GridIndex(i, 0));
+                        returnSet.Add(new GridIndex(-i, 0));
+                        returnSet.Add(new GridIndex(0, i));
+                        returnSet.Add(new GridIndex(0, -i));
                         break;
 
                     case GridShape.Hexagon:
-                        returnList.Add(new GridIndex(-i, 0));
-                        returnList.Add(new GridIndex(i, 0));
+                        returnSet.Add(new GridIndex(-i, 0));
+                        returnSet.Add(new GridIndex(i, 0));
 
                         int negX = origin.z % 2 == 0 ? Mathf.FloorToInt(-i / 2f) : Mathf.CeilToInt(-i / 2f);
                         int posX = origin.z % 2 == 0 ? Mathf.FloorToInt(i / 2f) : Mathf.CeilToInt(i / 2f);
 
-                        returnList.Add(new GridIndex(posX, i));
-                        returnList.Add(new GridIndex(negX, i));
-                        returnList.Add(new GridIndex(posX, -i));
-                        returnList.Add(new GridIndex(negX, -i));
+                        returnSet.Add(new GridIndex(posX, i));
+                        returnSet.Add(new GridIndex(negX, i));
+                        returnSet.Add(new GridIndex(posX, -i));
+                        returnSet.Add(new GridIndex(negX, -i));
 
                         break;
 
                     case GridShape.Triangle:
-                        returnList.Add(new GridIndex(i, 0));
-                        returnList.Add(new GridIndex(-i, 0));
+                        returnSet.Add(new GridIndex(i, 0));
+                        returnSet.Add(new GridIndex(-i, 0));
 
                         if (GridStatics.IsTriangleTileFacingUp(origin))
                         {
-                            returnList.Add(new GridIndex(Mathf.CeilToInt(i * 0.5f), Mathf.FloorToInt(i * 0.5f)));
-                            returnList.Add(new GridIndex(-Mathf.CeilToInt(i * 0.5f), Mathf.FloorToInt(i * 0.5f)));
-                            returnList.Add(new GridIndex(Mathf.CeilToInt(i * -0.5f), Mathf.FloorToInt(i * -0.5f)));
-                            returnList.Add(new GridIndex(-Mathf.CeilToInt(i * -0.5f), Mathf.FloorToInt(i * -0.5f)));
+                            returnSet.Add(new GridIndex(Mathf.CeilToInt(i * 0.5f), Mathf.FloorToInt(i * 0.5f)));
+                            returnSet.Add(new GridIndex(-Mathf.CeilToInt(i * 0.5f), Mathf.FloorToInt(i * 0.5f)));
+                            returnSet.Add(new GridIndex(Mathf.CeilToInt(i * -0.5f), Mathf.FloorToInt(i * -0.5f)));
+                            returnSet.Add(new GridIndex(-Mathf.CeilToInt(i * -0.5f), Mathf.FloorToInt(i * -0.5f)));
                         }
                         else
                         {
-                            returnList.Add(new GridIndex(Mathf.FloorToInt(i * 0.5f), Mathf.CeilToInt(i * 0.5f)));
-                            returnList.Add(new GridIndex(-Mathf.FloorToInt(i * 0.5f), Mathf.CeilToInt(i * 0.5f)));
-                            returnList.Add(new GridIndex(Mathf.FloorToInt(i * -0.5f), Mathf.CeilToInt(i * -0.5f)));
-                            returnList.Add(new GridIndex(-Mathf.FloorToInt(i * -0.5f), Mathf.CeilToInt(i * -0.5f)));
+                            returnSet.Add(new GridIndex(Mathf.FloorToInt(i * 0.5f), Mathf.CeilToInt(i * 0.5f)));
+                            returnSet.Add(new GridIndex(-Mathf.FloorToInt(i * 0.5f), Mathf.CeilToInt(i * 0.5f)));
+                            returnSet.Add(new GridIndex(Mathf.FloorToInt(i * -0.5f), Mathf.CeilToInt(i * -0.5f)));
+                            returnSet.Add(new GridIndex(-Mathf.FloorToInt(i * -0.5f), Mathf.CeilToInt(i * -0.5f)));
                         }
                         break;
                 }
             }
-            return returnList;
+            return returnSet.ToList();
         }
 
         private static List<GridIndex> GetDiagonalPattern(GridIndex origin, GridShape gridShape, Vector2Int rangeMinMax)
         {
-            List<GridIndex> returnList = new List<GridIndex>();
+            HashSet<GridIndex> returnSet = new HashSet<GridIndex>();
             for (int i = rangeMinMax.x; i <= rangeMinMax.y; i++)
             {
                 switch (gridShape)
                 {
 
                     case GridShape.Square:
-                        returnList.Add(new GridIndex(i, i));
-                        returnList.Add(new GridIndex(-i, -i));
-                        returnList.Add(new GridIndex(-i, i));
-                        returnList.Add(new GridIndex(i, -i));
+                        returnSet.Add(new GridIndex(i, i));
+                        returnSet.Add(new GridIndex(-i, -i));
+                        returnSet.Add(new GridIndex(-i, i));
+                        returnSet.Add(new GridIndex(i, -i));
                         break;
 
                     case GridShape.Hexagon:
-                        returnList.Add(new GridIndex(0, i * 2)); //up
-                        returnList.Add(new GridIndex(0, -i * 2)); // down
+                        returnSet.Add(new GridIndex(0, i * 2)); //up
+                        returnSet.Add(new GridIndex(0, -i * 2)); // down
 
                         int negX = origin.z % 2 == 0 ? Mathf.FloorToInt(-i * 1.5f) : Mathf.CeilToInt(-i * 1.5f);
                         int posX = origin.z % 2 == 0 ? Mathf.FloorToInt(i * 1.5f) : Mathf.CeilToInt(i * 1.5f);
 
-                        returnList.Add(new GridIndex(posX, i)); //up right
-                        returnList.Add(new GridIndex(negX, i)); //up left
-                        returnList.Add(new GridIndex(posX, -i)); //Down Right
-                        returnList.Add(new GridIndex(negX, -i)); //Down Left
+                        returnSet.Add(new GridIndex(posX, i)); //up right
+                        returnSet.Add(new GridIndex(negX, i)); //up left
+                        returnSet.Add(new GridIndex(posX, -i)); //Down Right
+                        returnSet.Add(new GridIndex(negX, -i)); //Down Left
                         break;
 
                     case GridShape.Triangle:
-                        returnList.Add(new GridIndex(0, i));
-                        returnList.Add(new GridIndex(0, -i));
+                        returnSet.Add(new GridIndex(0, i));
+                        returnSet.Add(new GridIndex(0, -i));
 
                         if (GridStatics.IsTriangleTileFacingUp(origin))
                         {
-                            returnList.Add(new GridIndex(Mathf.FloorToInt(i * 0.5f * 3.0f), Mathf.FloorToInt(i * 0.5f)));
-                            returnList.Add(new GridIndex(-Mathf.FloorToInt(i * 0.5f * 3.0f), Mathf.FloorToInt(i * 0.5f)));
-                            returnList.Add(new GridIndex(Mathf.FloorToInt(i * -0.5f * 3.0f), Mathf.FloorToInt(i * -0.5f)));
-                            returnList.Add(new GridIndex(-Mathf.FloorToInt(i * -0.5f * 3.0f), Mathf.FloorToInt(i * -0.5f)));
+                            returnSet.Add(new GridIndex(Mathf.FloorToInt(i * 0.5f * 3.0f), Mathf.FloorToInt(i * 0.5f)));
+                            returnSet.Add(new GridIndex(-Mathf.FloorToInt(i * 0.5f * 3.0f), Mathf.FloorToInt(i * 0.5f)));
+                            returnSet.Add(new GridIndex(Mathf.FloorToInt(i * -0.5f * 3.0f), Mathf.FloorToInt(i * -0.5f)));
+                            returnSet.Add(new GridIndex(-Mathf.FloorToInt(i * -0.5f * 3.0f), Mathf.FloorToInt(i * -0.5f)));
                         }
                         else
                         {
-                            returnList.Add(new GridIndex(Mathf.CeilToInt(i * 0.5f * 3.0f), Mathf.CeilToInt(i * 0.5f)));
-                            returnList.Add(new GridIndex(-Mathf.CeilToInt(i * 0.5f * 3.0f), Mathf.CeilToInt(i * 0.5f)));
-                            returnList.Add(new GridIndex(Mathf.CeilToInt(i * -0.5f * 3.0f), Mathf.CeilToInt(i * -0.5f)));
-                            returnList.Add(new GridIndex(-Mathf.CeilToInt(i * -0.5f * 3.0f), Mathf.CeilToInt(i * -.5f)));
+                            returnSet.Add(new GridIndex(Mathf.CeilToInt(i * 0.5f * 3.0f), Mathf.CeilToInt(i * 0.5f)));
+                            returnSet.Add(new GridIndex(-Mathf.CeilToInt(i * 0.5f * 3.0f), Mathf.CeilToInt(i * 0.5f)));
+                            returnSet.Add(new GridIndex(Mathf.CeilToInt(i * -0.5f * 3.0f), Mathf.CeilToInt(i * -0.5f)));
+                            returnSet.Add(new GridIndex(-Mathf.CeilToInt(i * -0.5f * 3.0f), Mathf.CeilToInt(i * -.5f)));
                         }
                         break;
                 }
             }
-            return returnList;
+            return returnSet.ToList();
         }
 
         public static List<GridIndex> GetHalfDiagonalPattern(GridIndex origin, GridShape gridShape, Vector2Int rangeMinMax)
@@ -186,7 +187,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private static List<GridIndex> GetSquarePattern(GridIndex origin, GridShape gridShape, Vector2Int rangeMinMax)
         {
-            List<GridIndex> returnList = new List<GridIndex>();
+            HashSet<GridIndex> returnSet = new HashSet<GridIndex>();
             for (int i = rangeMinMax.x; i <= rangeMinMax.y; i++)
             {
                 switch (gridShape)
@@ -194,10 +195,10 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                     case GridShape.Square:
                         for (int j = -i; j <= i; j++)
                         {
-                            returnList.Add(new GridIndex(-i, j));
-                            returnList.Add(new GridIndex(j, i));
-                            returnList.Add(new GridIndex(i, -j));
-                            returnList.Add(new GridIndex(-j, -i));
+                            returnSet.Add(new GridIndex(-i, j));
+                            returnSet.Add(new GridIndex(j, i));
+                            returnSet.Add(new GridIndex(i, -j));
+                            returnSet.Add(new GridIndex(-j, -i));
                         }
                         break;
                     case GridShape.Hexagon:
@@ -205,43 +206,43 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                         {
                             if (i != 0)
                             {
-                                returnList.Add(new GridIndex(i, j)); // Up to down, right
-                                returnList.Add(new GridIndex(-i, j)); // Down to up, left
+                                returnSet.Add(new GridIndex(i, j)); // Up to down, right
+                                returnSet.Add(new GridIndex(-i, j)); // Down to up, left
                             }
                             if (i != j)
                             {
-                                returnList.Add(new GridIndex(j, i)); // Right to left, up
-                                returnList.Add(new GridIndex(j, -i)); // Left to right, down
+                                returnSet.Add(new GridIndex(j, i)); // Right to left, up
+                                returnSet.Add(new GridIndex(j, -i)); // Left to right, down
                             }
                         }
                         break;
                     case GridShape.Triangle:
                         for (int j = -i; j <= i; j++)
                         {
-                            returnList.Add(new GridIndex(-i * 2, j)); //Down To up, Left
-                            returnList.Add(new GridIndex(i * 2, -j)); //Up to down, right
+                            returnSet.Add(new GridIndex(-i * 2, j)); //Down To up, Left
+                            returnSet.Add(new GridIndex(i * 2, -j)); //Up to down, right
                             if (i != j)
                             {
-                                returnList.Add(new GridIndex(-i * 2 + 1, j)); //down to up, left
-                                returnList.Add(new GridIndex(i * 2 - 1, -j)); //up to down, right
+                                returnSet.Add(new GridIndex(-i * 2 + 1, j)); //down to up, left
+                                returnSet.Add(new GridIndex(i * 2 - 1, -j)); //up to down, right
                             }
                         }
                         for (int j = -i * 2; j <= i * 2; j++)
                         {
-                            returnList.Add(new GridIndex(j, i)); //Up, Left to Right
-                            returnList.Add(new GridIndex(-j, -i)); //Down, right to left
+                            returnSet.Add(new GridIndex(j, i)); //Up, Left to Right
+                            returnSet.Add(new GridIndex(-j, -i)); //Down, right to left
                         }
                         break;
                 }
             }
-            return returnList;
+            return returnSet.ToList();
         }
 
 
 
         private static List<GridIndex> GetDiamondPattern(GridIndex origin, GridShape gridShape, Vector2Int rangeMinMax)
         {
-            List<GridIndex> returnList = new List<GridIndex>();
+            HashSet<GridIndex> returnSet = new HashSet<GridIndex>();
 
             for (int i = rangeMinMax.x; i <= rangeMinMax.y; i++)
             {
@@ -250,10 +251,10 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                     case GridShape.Square:
                         for (int j = 0; j <= i; j++)
                         {
-                            returnList.Add(new GridIndex(-(i - j), j));
-                            returnList.Add(new GridIndex(j, i - j));
-                            returnList.Add(new GridIndex(i - j, -j));
-                            returnList.Add(new GridIndex(-j, -(i - j)));
+                            returnSet.Add(new GridIndex(-(i - j), j));
+                            returnSet.Add(new GridIndex(j, i - j));
+                            returnSet.Add(new GridIndex(i - j, -j));
+                            returnSet.Add(new GridIndex(-j, -(i - j)));
                         }
                         break;
                     case GridShape.Hexagon:
@@ -276,7 +277,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
                                 int row = hZ;
 
-                                returnList.Add(new GridIndex(col, row));
+                                returnSet.Add(new GridIndex(col, row));
                             }
                         }
                         break;
@@ -287,38 +288,38 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                             int z = isFacingUp ? j : -j;
                             int x = i * 2 - j;
 
-                            returnList.Add(new GridIndex(-x, z));
-                            returnList.Add(new GridIndex(x, -z));
+                            returnSet.Add(new GridIndex(-x, z));
+                            returnSet.Add(new GridIndex(x, -z));
 
                             if (j != i)
-                                returnList.Add(new GridIndex(-x + 1, z));
+                                returnSet.Add(new GridIndex(-x + 1, z));
 
                             if (j != 0)
-                                returnList.Add(new GridIndex(x + 1, -z));
+                                returnSet.Add(new GridIndex(x + 1, -z));
 
 
                             z = isFacingUp ? i - j : -(i - j);
                             x = (i * 2) - (i - j);
 
-                            returnList.Add(new GridIndex(-x, -z));
-                            returnList.Add(new GridIndex(x, z));
+                            returnSet.Add(new GridIndex(-x, -z));
+                            returnSet.Add(new GridIndex(x, z));
 
                             if (j != i)
-                                returnList.Add(new GridIndex(-x - 1, -z));
+                                returnSet.Add(new GridIndex(-x - 1, -z));
 
                             if (j != 0)
-                                returnList.Add(new GridIndex(x - 1, z));
+                                returnSet.Add(new GridIndex(x - 1, z));
 
                         }
                         for (int j = -i; j <= i; j++)
                         {
-                            returnList.Add(new GridIndex(j, isFacingUp ? i : -i));
-                            returnList.Add(new GridIndex(-j, isFacingUp ? -i : i));
+                            returnSet.Add(new GridIndex(j, isFacingUp ? i : -i));
+                            returnSet.Add(new GridIndex(-j, isFacingUp ? -i : i));
                         }
                         break;
                 }
             }
-            return returnList;
+            return returnSet.ToList();
         }
     }
 }

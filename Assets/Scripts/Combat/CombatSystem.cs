@@ -11,6 +11,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
     {
         public event Action<Unit, GridIndex> OnUnitGridIndexChanged;
 
+        [SerializeField] private bool _drawLineOfSightLines = false;
+
         [SerializeField] private TacticsGrid _tacticsGrid;
 
         private List<Unit> _unitsInCombat = new List<Unit>();
@@ -126,8 +128,15 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         public bool HasLineOfSight(GridIndex origin, GridIndex target, float height)
         {
-            _tacticsGrid.GetTileDataFromIndex(origin, out TileData originData);
-            _tacticsGrid.GetTileDataFromIndex(target, out TileData targetData);
+            if(!_tacticsGrid.GetTileDataFromIndex(origin, out TileData originData))
+            {
+                return false;
+            }
+            if(!_tacticsGrid.GetTileDataFromIndex(target, out TileData targetData))
+            {
+                return false;
+            }
+            
 
             Vector3 startPosition = originData.tileMatrix.GetPosition();
             startPosition.y += height;
@@ -136,6 +145,11 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             targetPosition.y += height;
 
             Vector3 direction = targetPosition - startPosition;
+
+            //if (_drawLineOfSightLines)
+            //{
+            //    Debug.DrawLine(startPosition, targetPosition, Color.white, 1f);
+            //}
 
             if (Physics.Raycast(startPosition, direction, out RaycastHit hitInfo, direction.magnitude))
             {
@@ -150,28 +164,43 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 else
                 {
                     //TODO: Logic for doing line of sight checks around corners. Has issue? with height checks and doesn't account for all directions yet. Will fix later.
-                    //if (_tacticsGrid.GridShape == GridShape.Square)
-                    //{
-                    //    //if x = 0 and y = 1 we want to check -x and x
-                    //    //if x = 1 and y = 0 we want to check -y and y
-                    //    //if x = 0 and y = -1 we want to check -x and x
-                    //    //if x = -1 and y = 0 we want to check -y and y
-                    //    Vector3 normalizedDirection = direction.normalized;
-                    //    if (normalizedDirection.x != 0)
-                    //    {
-                    //        _tacticsGrid.GetTileDataFromIndex(new GridIndex(origin.x, origin.z - 1), out TileData negZTile);
-                    //        _tacticsGrid.GetTileDataFromIndex(new GridIndex(origin.x, origin.z + 1), out TileData posZTile);
-                    //        Vector3 negZPosition = negZTile.tileMatrix.GetPosition();
-                    //        negZPosition.y += height;
-                    //        direction.y = negZPosition.y;
-                    //        if (Physics.Raycast(negZPosition, direction, out RaycastHit negZTarget, direction.magnitude))
-                    //        {
-                    //            //do another ray for the other tile.
-                    //            return false;
-                    //        }
-                    //        return true;
-                    //    }
-                    //}
+                    if (_tacticsGrid.GridShape == GridShape.Square)
+                    {
+                        //if x = 0 and y = 1 we want to check -x and x
+                        //if x = 1 and y = 0 we want to check -y and y
+                        //if x = 0 and y = -1 we want to check -x and x
+                        //if x = -1 and y = 0 we want to check -y and y
+                        Debug.Log($"Direction: {direction}, Start: {originData.index}, End: {targetData.index}");
+                        Vector3 normalizedDirection = direction.normalized;
+                        if (normalizedDirection.x != 0)
+                        {
+                            Debug.Log(direction.x);
+                            _tacticsGrid.GetTileDataFromIndex(new GridIndex(origin.x, origin.z - 1), out TileData negZTile);
+                            Vector3 negZPosition = negZTile.tileMatrix.GetPosition();
+                            negZPosition.y += height;
+                            Vector3 checkDirection = new Vector3(direction.x, height, 0f);
+
+                            if (_drawLineOfSightLines)
+                            {
+                                Debug.DrawLine(negZPosition, negZPosition + checkDirection, Color.white, 1f);
+                            }
+
+                            if (Physics.Raycast(negZPosition, checkDirection, out RaycastHit negZHit, direction.magnitude))
+                            {
+                                _tacticsGrid.GetTileDataFromIndex(new GridIndex(origin.x, origin.z + 1), out TileData posZTile);
+                                Vector3 posZPosition = posZTile.tileMatrix.GetPosition();
+                                posZPosition.y += height;
+
+                                if (Physics.Raycast(posZPosition, checkDirection, out RaycastHit posZHit, direction.magnitude))
+                                {
+                                    //do another ray for the other tile.
+                                    return false;
+                                }
+                                return true;
+                            }
+                            return true;
+                        }
+                    }
                     return false;
                 }
             }

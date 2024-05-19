@@ -38,10 +38,13 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 _displayList.Clear();
             }
 
-            _displayList = AbilityStatics.GetIndexesFromPatternAndRange(_currentIndex, _playerActions.TacticsGrid.GridShape, _rangeMinMax, (AbilityRangePattern)actionValue);
-            if (_requireLineOfSight)
-                _displayList = _playerActions.CombatSystem.RemoveIndexesWithoutLineOfSight(_currentIndex, _displayList, _lineOfSightHeight);
-            _displayList.ForEach(i => _playerActions.TacticsGrid.AddStateToTile(i, TileState.IsInAbilityRange));
+            if (_playerActions.TacticsGrid.IsIndexValid(_currentIndex))
+            {
+                _displayList = AbilityStatics.GetIndexesFromPatternAndRange(_currentIndex, _playerActions.TacticsGrid.GridShape, _rangeMinMax, (AbilityRangePattern)actionValue);
+                if (_requireLineOfSight)
+                    _displayList = _playerActions.CombatSystem.RemoveIndexesWithoutLineOfSight(_currentIndex, _displayList, _lineOfSightHeight);
+                _displayList.ForEach(i => _playerActions.TacticsGrid.AddStateToTile(i, TileState.IsInAbilityRange));
+            }
         }
 
 
