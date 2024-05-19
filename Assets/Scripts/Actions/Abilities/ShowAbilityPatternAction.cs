@@ -9,6 +9,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
     {
         [SerializeField] private Vector2Int _rangeMinMax = new Vector2Int(0, 5);
         [SerializeField] private bool _requireLineOfSight = false;
+        [SerializeField] private float _lineOfSightHeight = 2f;
 
         public Vector2Int RangeMinMax { get => _rangeMinMax; set => _rangeMinMax = value; }
         public bool RequireLineOfSight { get => _requireLineOfSight; set => _requireLineOfSight = value; }
@@ -37,6 +38,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             }
 
             _displayList = AbilityStatics.GetIndexesFromPatternAndRange(_currentIndex, _playerActions.TacticsGrid.GridShape, _rangeMinMax, (AbilityRangePattern)actionValue);
+            if (_requireLineOfSight)
+                _displayList = _playerActions.CombatSystem.RemoveIndexesWithoutLineOfSight(_currentIndex, _displayList, _lineOfSightHeight);
             _displayList.ForEach(i => _playerActions.TacticsGrid.AddStateToTile(i, TileState.IsInAbilityRange));
         }
 

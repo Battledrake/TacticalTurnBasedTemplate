@@ -235,7 +235,12 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 //    _sceneLoader.UnloadScene(_sceneCombo.options[_sceneSelected].text);
 
                 _environmentObjects = GameObject.FindGameObjectsWithTag("Environment").ToList();
-                _environmentObjects.ForEach(e => e.SetActive(false));
+                foreach (var obj in _environmentObjects)
+                {
+                    MeshRenderer[] renderers = obj.GetComponentsInChildren<MeshRenderer>(false);
+                    foreach (var render in renderers)
+                        render.enabled = false;
+                }
 
                 _tacticsGrid.GridVisual.HideDefaultGrid();
                 _tacticsGrid.GridVisual.ShowTacticalGrid();
@@ -246,8 +251,12 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 //if (_sceneSelected > 0)
                 //    _sceneLoader.LoadScene(_sceneCombo.options[_sceneSelected].text);
 
-                if (_environmentObjects.Count > 0)
-                    _environmentObjects.ForEach(e => e.SetActive(true));
+                foreach (var obj in _environmentObjects)
+                {
+                    MeshRenderer[] renderers = obj.GetComponentsInChildren<MeshRenderer>(true);
+                    foreach (var render in renderers)
+                        render.enabled = true;
+                }
 
                 _tacticsGrid.GridVisual.HideTacticalGrid();
                 _tacticsGrid.GridVisual.ShowDefaultGrid();

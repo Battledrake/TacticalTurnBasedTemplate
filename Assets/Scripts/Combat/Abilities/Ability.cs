@@ -23,15 +23,23 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public Vector2Int rangeMinMax;
     }
 
+    [System.Serializable]
+    public struct LineOfSightData
+    {
+        public bool requireLineOfSight;
+        public float height;
+    }
+
     public abstract class Ability : MonoBehaviour
     {
-        
+
         [SerializeField] protected AbilityRangeData _toTargetData;
         [SerializeField] protected AbilityRangeData _onTargetData;
-        [SerializeField] protected bool _requireLineOfSight;
+        [SerializeField] protected LineOfSightData _lineOfSightData;
 
         public AbilityRangeData ToTargetData { get => _toTargetData; }
         public AbilityRangeData OnTargetData { get => _onTargetData; }
+        public LineOfSightData LineOfSightData { get => _lineOfSightData; }
 
         protected GridIndex _originIndex;
         protected GridIndex _targetIndex;

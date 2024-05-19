@@ -91,7 +91,7 @@ public class CombatSystem : MonoBehaviour
 
     public bool TryActivateAbility(Ability ability, GridIndex origin, GridIndex target)
     {
-        if(GetAbilityRange(origin, ability.ToTargetData.rangeMinMax, ability.ToTargetData.rangePattern).Contains(target))
+        if(GetAbilityToTargetRange(origin, ability).Contains(target))
         {
             Ability abilityObject = Instantiate(ability, _tacticsGrid.GetWorldPositionFromGridIndex(origin), Quaternion.identity);
             abilityObject.InitializeAbility(_tacticsGrid, origin, target);
@@ -181,8 +181,13 @@ public class CombatSystem : MonoBehaviour
         }
     }
 
-    public List<GridIndex> GetAbilityRange(GridIndex originIndex, Vector2Int rangeMinMax, AbilityRangePattern rangePattern)
+    public List<GridIndex> GetAbilityToTargetRange(GridIndex originIndex, Ability ability)
     {
-        return AbilityStatics.GetIndexesFromPatternAndRange(originIndex, _tacticsGrid.GridShape, rangeMinMax, rangePattern);
+        List<GridIndex> indexesInRange = AbilityStatics.GetIndexesFromPatternAndRange(originIndex, _tacticsGrid.GridShape, ability.ToTargetData.rangeMinMax, ability.ToTargetData.rangePattern);
+        if (ability.LineOfSightData.requireLineOfSight)
+        {
+            indexesInRange = RemoveIndexesWithoutLineOfSight(originIndex, indexesInRange, ability.LineOfSightData.height);
+        }
+        return indexesInRange;
     }
 }
