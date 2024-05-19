@@ -44,14 +44,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7aa4572f0d8bb4b40b43f0dc8a131618, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _rangePattern: 0
   _toTargetData:
     rangePattern: 5
     rangeMinMax: {x: 1, y: 3}
+    lineOfSightData:
+      requireLineOfSight: 0
+      height: 0
   _onTargetData:
-    rangePattern: 0
+    rangePattern: 6
     rangeMinMax: {x: 0, y: 0}
-  _requireLineOfSight: 0
+    lineOfSightData:
+      requireLineOfSight: 1
+      height: 0.5
   _unitPrefab: {fileID: 8295871943332446403, guid: be08241bbcfd2964b89f684ed3e041b0,
     type: 3}
   _unitType: 5

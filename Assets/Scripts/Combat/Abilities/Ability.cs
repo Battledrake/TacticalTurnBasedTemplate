@@ -21,6 +21,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
     {
         public AbilityRangePattern rangePattern;
         public Vector2Int rangeMinMax;
+        public LineOfSightData lineOfSightData;
     }
 
     [System.Serializable]
@@ -32,14 +33,17 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
     public abstract class Ability : MonoBehaviour
     {
-
+        /// <summary>
+        /// Data for determining the range pattern from the source to the target. Includes Pattern enum, MinMax values, and line of sight data.
+        /// </summary>
         [SerializeField] protected AbilityRangeData _toTargetData;
+        /// <summary>
+        /// Data for determining the AOE pattern on the target. Includes Pattern Enum, MinMax values, and line of sight data.
+        /// </summary>
         [SerializeField] protected AbilityRangeData _onTargetData;
-        [SerializeField] protected LineOfSightData _lineOfSightData;
 
         public AbilityRangeData ToTargetData { get => _toTargetData; }
         public AbilityRangeData OnTargetData { get => _onTargetData; }
-        public LineOfSightData LineOfSightData { get => _lineOfSightData; }
 
         protected GridIndex _originIndex;
         protected GridIndex _targetIndex;

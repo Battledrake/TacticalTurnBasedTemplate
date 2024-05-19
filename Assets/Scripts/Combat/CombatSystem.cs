@@ -95,7 +95,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         public bool TryActivateAbility(Ability ability, GridIndex origin, GridIndex target)
         {
-            if (GetAbilityToTargetRange(origin, ability).Contains(target))
+            if (GetAbilityRange(origin, ability.ToTargetData).Contains(target))
             {
                 Ability abilityObject = Instantiate(ability, _tacticsGrid.GetWorldPositionFromGridIndex(origin), Quaternion.identity);
                 abilityObject.InitializeAbility(_tacticsGrid, origin, target);
@@ -128,15 +128,15 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         public bool HasLineOfSight(GridIndex origin, GridIndex target, float height)
         {
-            if(!_tacticsGrid.GetTileDataFromIndex(origin, out TileData originData))
+            if (!_tacticsGrid.GetTileDataFromIndex(origin, out TileData originData))
             {
                 return false;
             }
-            if(!_tacticsGrid.GetTileDataFromIndex(target, out TileData targetData))
+            if (!_tacticsGrid.GetTileDataFromIndex(target, out TileData targetData))
             {
                 return false;
             }
-            
+
 
             Vector3 startPosition = originData.tileMatrix.GetPosition();
             startPosition.y += height;
@@ -163,44 +163,42 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 }
                 else
                 {
-                    //TODO: Logic for doing line of sight checks around corners. Has issue? with height checks and doesn't account for all directions yet. Will fix later.
-                    if (_tacticsGrid.GridShape == GridShape.Square)
-                    {
-                        //if x = 0 and y = 1 we want to check -x and x
-                        //if x = 1 and y = 0 we want to check -y and y
-                        //if x = 0 and y = -1 we want to check -x and x
-                        //if x = -1 and y = 0 we want to check -y and y
-                        Debug.Log($"Direction: {direction}, Start: {originData.index}, End: {targetData.index}");
-                        Vector3 normalizedDirection = direction.normalized;
-                        if (normalizedDirection.x != 0)
-                        {
-                            Debug.Log(direction.x);
-                            _tacticsGrid.GetTileDataFromIndex(new GridIndex(origin.x, origin.z - 1), out TileData negZTile);
-                            Vector3 negZPosition = negZTile.tileMatrix.GetPosition();
-                            negZPosition.y += height;
-                            Vector3 checkDirection = new Vector3(direction.x, height, 0f);
+                    //TODO: Logic for doing line of sight checks around corners. Has issue?s with height checks and doesn't account for all directions yet. Will fix later.
+                    //if (_tacticsGrid.GridShape == GridShape.Square)
+                    //{
+                    //    //if x = 0 and y = 1 we want to check -x and x
+                    //    //if x = 1 and y = 0 we want to check -y and y
+                    //    //if x = 0 and y = -1 we want to check -x and x
+                    //    //if x = -1 and y = 0 we want to check -y and y
+                    //    Vector3 normalizedDirection = direction.normalized;
+                    //    if (normalizedDirection.x != 0)
+                    //    {
+                    //        _tacticsGrid.GetTileDataFromIndex(new GridIndex(origin.x, origin.z - 1), out TileData negZTile);
+                    //        Vector3 negZPosition = negZTile.tileMatrix.GetPosition();
+                    //        negZPosition.y += height;
+                    //        Vector3 checkDirection = new Vector3(direction.x, height, 0f);
 
-                            if (_drawLineOfSightLines)
-                            {
-                                Debug.DrawLine(negZPosition, negZPosition + checkDirection, Color.white, 1f);
-                            }
+                    //        if (_drawLineOfSightLines)
+                    //        {
+                    //            Debug.DrawLine(negZPosition, negZPosition + checkDirection, Color.white, 1f);
+                    //        }
 
-                            if (Physics.Raycast(negZPosition, checkDirection, out RaycastHit negZHit, direction.magnitude))
-                            {
-                                _tacticsGrid.GetTileDataFromIndex(new GridIndex(origin.x, origin.z + 1), out TileData posZTile);
-                                Vector3 posZPosition = posZTile.tileMatrix.GetPosition();
-                                posZPosition.y += height;
+                    //        if (Physics.Raycast(negZPosition, checkDirection, out RaycastHit negZHit, direction.magnitude))
+                    //        {
+                    //            _tacticsGrid.GetTileDataFromIndex(new GridIndex(origin.x, origin.z + 1), out TileData posZTile);
+                    //            Vector3 posZPosition = posZTile.tileMatrix.GetPosition();
+                    //            posZPosition.y += height;
 
-                                if (Physics.Raycast(posZPosition, checkDirection, out RaycastHit posZHit, direction.magnitude))
-                                {
-                                    //do another ray for the other tile.
-                                    return false;
-                                }
-                                return true;
-                            }
-                            return true;
-                        }
-                    }
+                    //            if (Physics.Raycast(posZPosition, checkDirection, out RaycastHit posZHit, direction.magnitude))
+                    //            {
+                    //                //do another ray for the other tile.
+                    //                return false;
+                    //            }
+                    //            return true;
+                    //        }
+                    //        return true;
+                    //    }
+                    //}
                     return false;
                 }
             }
@@ -243,12 +241,12 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             }
         }
 
-        public List<GridIndex> GetAbilityToTargetRange(GridIndex originIndex, Ability ability)
+        public List<GridIndex> GetAbilityRange(GridIndex originIndex, AbilityRangeData rangeData)
         {
-            List<GridIndex> indexesInRange = AbilityStatics.GetIndexesFromPatternAndRange(originIndex, _tacticsGrid.GridShape, ability.ToTargetData.rangeMinMax, ability.ToTargetData.rangePattern);
-            if (ability.LineOfSightData.requireLineOfSight)
+            List<GridIndex> indexesInRange = AbilityStatics.GetIndexesFromPatternAndRange(originIndex, _tacticsGrid.GridShape, rangeData.rangeMinMax, rangeData.rangePattern);
+            if (rangeData.lineOfSightData.requireLineOfSight)
             {
-                indexesInRange = RemoveIndexesWithoutLineOfSight(originIndex, indexesInRange, ability.LineOfSightData.height);
+                indexesInRange = RemoveIndexesWithoutLineOfSight(originIndex, indexesInRange, rangeData.lineOfSightData.height);
             }
             return indexesInRange;
         }

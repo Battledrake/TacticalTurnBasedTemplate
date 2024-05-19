@@ -47,12 +47,15 @@ MonoBehaviour:
   _toTargetData:
     rangePattern: 5
     rangeMinMax: {x: 1, y: 4}
+    lineOfSightData:
+      requireLineOfSight: 0
+      height: 0
   _onTargetData:
-    rangePattern: 0
-    rangeMinMax: {x: 0, y: 0}
-  _lineOfSightData:
-    requireLineOfSight: 0
-    height: 0
+    rangePattern: 5
+    rangeMinMax: {x: 0, y: 2}
+    lineOfSightData:
+      requireLineOfSight: 1
+      height: 0.5
   _projectileCurve:
     serializedVersion: 2
     m_Curve:

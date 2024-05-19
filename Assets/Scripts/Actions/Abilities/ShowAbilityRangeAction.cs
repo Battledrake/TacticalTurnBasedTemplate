@@ -8,11 +8,11 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
     public class ShowAbilityRangeAction : SelectTileAndUnitAction
     {
         private Ability _currentAbility = null;
-        private GridIndex _selectedTile = GridIndex.Invalid();
-        private GridIndex _hoveredTile = GridIndex.Invalid();
+        private GridIndex _selectedTileIndex = GridIndex.Invalid();
+        private GridIndex _hoveredTileIndex = GridIndex.Invalid();
 
         private List<GridIndex> _toTargetIndexes = new List<GridIndex>();
-        private List<GridIndex> _onTargetTiles = new List<GridIndex>();
+        private List<GridIndex> _onTargetIndexes = new List<GridIndex>();
 
         public override void InitializeAction(PlayerActions playerActions)
         {
@@ -24,14 +24,14 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void PlayerActions_OnCurrentAbilityChanged(Ability ability)
         {
-            ClearStateFromPreviousList(_onTargetTiles);
-            ClearStateFromPreviousList(_toTargetIndexes);
+            ClearStateFromPreviousList(TileState.IsInToTargetRange, _toTargetIndexes);
+            ClearStateFromPreviousList(TileState.IsInOnTargetRange, _onTargetIndexes);
 
             _currentAbility = ability;
 
-            if(_currentAbility != null && _selectedTile != GridIndex.Invalid())
+            if(_currentAbility != null && _selectedTileIndex != GridIndex.Invalid())
             {
-                ShowAbilityRangePattern();
+                ShowAbilityToTargetRangePattern();
             }
         }
 
@@ -39,71 +39,74 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             base.ExecuteAction(index);
 
-            if (_playerActions.TacticsGrid.IsIndexValid(index) && index != _selectedTile)
+            if (_playerActions.TacticsGrid.IsIndexValid(index) && index != _selectedTileIndex)
             {
-                _selectedTile = index;
-
-                ClearStateFromPreviousList(_toTargetIndexes);
+                _selectedTileIndex = index;
             }
             else
             {
                 _currentAbility = null;
-                _selectedTile = GridIndex.Invalid();
-                ClearStateFromPreviousList(_onTargetTiles);
-                ClearStateFromPreviousList(_toTargetIndexes);
+                _selectedTileIndex = GridIndex.Invalid();
             }
+
+            ClearStateFromPreviousList(TileState.IsInToTargetRange, _toTargetIndexes);
+            ClearStateFromPreviousList(TileState.IsInOnTargetRange, _onTargetIndexes);
 
             if (_currentAbility)
             {
-                ShowAbilityRangePattern();
+                ShowAbilityToTargetRangePattern();
                 return true;
             }
 
             return false;
         }
 
-        private void ShowAbilityRangePattern()
+        private void ShowAbilityToTargetRangePattern()
         {
-            _toTargetIndexes = _playerActions.CombatSystem.GetAbilityToTargetRange(_selectedTile, _currentAbility);
-            if (_currentAbility.LineOfSightData.requireLineOfSight)
-                _toTargetIndexes = _playerActions.CombatSystem.RemoveIndexesWithoutLineOfSight(_selectedTile, _toTargetIndexes, _currentAbility.LineOfSightData.height);
-            SetTileStateToAbilityRange(_toTargetIndexes);
+            _toTargetIndexes = _playerActions.CombatSystem.GetAbilityRange(_selectedTileIndex, _currentAbility.ToTargetData);
+            if (_currentAbility.ToTargetData.lineOfSightData.requireLineOfSight)
+                _toTargetIndexes = _playerActions.CombatSystem.RemoveIndexesWithoutLineOfSight(_selectedTileIndex, _toTargetIndexes, _currentAbility.ToTargetData.lineOfSightData.height);
+            SetTileStateOnList(TileState.IsInToTargetRange, _toTargetIndexes);
+        }
+        private void ShowAbilityOnTargetRangePattern()
+        {
+            _onTargetIndexes = _playerActions.CombatSystem.GetAbilityRange(_hoveredTileIndex, _currentAbility.OnTargetData);
+            if (_currentAbility.OnTargetData.lineOfSightData.requireLineOfSight)
+                _onTargetIndexes = _playerActions.CombatSystem.RemoveIndexesWithoutLineOfSight(_hoveredTileIndex, _onTargetIndexes, _currentAbility.OnTargetData.lineOfSightData.height);
+            SetTileStateOnList(TileState.IsInOnTargetRange, _onTargetIndexes);
         }
 
         private void PlayerActions_OnHoveredTileChanged(GridIndex index)
         {
-            //if (_currentAbility == null)
-            //    return;
 
-            //if (_selectedTile == GridIndex.Invalid())
-            //{
-            //    ClearStateFromPreviousList(_managedTiles);
-            //    return;
-            //}
+            ClearStateFromPreviousList(TileState.IsInOnTargetRange, _onTargetIndexes);
 
-            //_hoveredTile = index;
+            _hoveredTileIndex = index;
 
-            //ClearStateFromPreviousList(_managedTiles);
+            if (_currentAbility == null)
+                return;
 
-            //if (!_playerActions.CombatSystem.HasLineOfSight(_selectedTile, _hoveredTile, 1f))
-            //    return;
+            if (_selectedTileIndex == GridIndex.Invalid())
+                return;
 
-            //_managedTiles = GetTilesForTargetPattern(_currentAbility.OnTargetData.rangePattern, _hoveredTile, _currentAbility.OnTargetData.rangeMinMax);
-            //SetTileStateToAbilityRange(_managedTiles);
+            if (!_toTargetIndexes.Contains(_hoveredTileIndex))
+                return;
+
+            ShowAbilityOnTargetRangePattern();
         }
 
-        private void ClearStateFromPreviousList(List<GridIndex> tiles)
+        private void ClearStateFromPreviousList(TileState tileState, List<GridIndex> tiles)
         {
             for (int i = 0; i < tiles.Count; i++)
             {
-                _playerActions.TacticsGrid.RemoveStateFromTile(tiles[i], TileState.IsInAbilityRange);
+                _playerActions.TacticsGrid.RemoveStateFromTile(tiles[i], tileState);
             }
         }
-        private void SetTileStateToAbilityRange(List<GridIndex> tiles)
+        private void SetTileStateOnList(TileState tileState, List<GridIndex> tiles)
         {
             for (int i = 0; i < tiles.Count; i++)
             {
-                _playerActions.TacticsGrid.AddStateToTile(tiles[i], TileState.IsInAbilityRange);
+                _playerActions.TacticsGrid.AddStateToTile(tiles[i], tileState);
             }
         }
 
@@ -112,8 +115,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _playerActions.OnHoveredTileChanged -= PlayerActions_OnHoveredTileChanged;
             _playerActions.OnCurrentAbilityChanged -= PlayerActions_OnCurrentAbilityChanged;
 
-            ClearStateFromPreviousList(_onTargetTiles);
-            ClearStateFromPreviousList(_toTargetIndexes);
+            ClearStateFromPreviousList(TileState.IsInOnTargetRange, _onTargetIndexes);
+            ClearStateFromPreviousList(TileState.IsInToTargetRange, _toTargetIndexes);
         }
     }
 }

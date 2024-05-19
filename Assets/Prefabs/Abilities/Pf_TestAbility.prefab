@@ -47,12 +47,15 @@ MonoBehaviour:
   _toTargetData:
     rangePattern: 4
     rangeMinMax: {x: 1, y: 3}
+    lineOfSightData:
+      requireLineOfSight: 0
+      height: 0
   _onTargetData:
-    rangePattern: 0
+    rangePattern: 6
     rangeMinMax: {x: 0, y: 0}
-  _lineOfSightData:
-    requireLineOfSight: 1
-    height: 0.5
+    lineOfSightData:
+      requireLineOfSight: 1
+      height: 0.5
   _vinePrefab: {fileID: 1199601900371724, guid: d67ed860424886e4db64e996b4d85493,
     type: 3}
   _playbackSpeed: 0.25
