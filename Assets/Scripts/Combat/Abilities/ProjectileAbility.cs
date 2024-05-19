@@ -14,8 +14,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private bool _startMoving;
         private float _moveTimer;
         private Vector3 _startPosition;
-        private Vector3 _targetPosition;
-        private GameObject _spawnedObject;
+        private List<Vector3> _targetPositions = new List<Vector3>();
+        private List<GameObject> _spawnedObjects = new List<GameObject>();
 
         public override bool CanActivateAbility()
         {
@@ -40,9 +40,13 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             //ExecuteAbilityTask(Action action);
             _startPosition = _tacticsGrid.GetWorldPositionFromGridIndex(_originIndex) + Vector3.up;
-            _targetPosition = _tacticsGrid.GetWorldPositionFromGridIndex(_targetIndex);
-            GameObject projectile = Instantiate(_projectilePrefab, _startPosition, Quaternion.identity, this.transform);
-            _spawnedObject = projectile;
+            for(int i = 0; i < _targetIndexes.Count; i++)
+            {
+                _targetPositions.Add(_tacticsGrid.GetWorldPositionFromGridIndex(_targetIndexes[i]));
+                GameObject projectile = Instantiate(_projectilePrefab, _startPosition, Quaternion.identity, this.transform);
+                _spawnedObjects.Add(projectile);
+            }
+
 
             _startMoving = true;
         }
@@ -52,9 +56,11 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _startMoving = false;
             //Do stuff to target
             //Target.ApplyDamage(10) or something.
-
-            GameObject explosion = Instantiate(_impactPrefab, _spawnedObject.transform.position, Quaternion.identity, this.transform);
-            Destroy(_spawnedObject);
+            for(int i = 0; i < _spawnedObjects.Count; i++)
+            {
+                GameObject explosion = Instantiate(_impactPrefab, _spawnedObjects[i].transform.position, Quaternion.identity, this.transform);
+                Destroy(_spawnedObjects[i]);
+            }
 
             Destroy(this.gameObject, 2f);
         }
@@ -66,10 +72,14 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 _moveTimer += Time.deltaTime * _moveSpeed;
                 float height = _projectileCurve.Evaluate(_moveTimer);
 
-                Vector3 lerpPosition = Vector3.Lerp(_startPosition, _targetPosition + new Vector3(0f, height, 0f), _moveTimer);
-                _spawnedObject.transform.position = lerpPosition;
+                for(int i = 0; i < _targetPositions.Count; i++)
+                {
+                    Vector3 lerpPosition = Vector3.Lerp(_startPosition, _targetPositions[i] + new Vector3(0f, height, 0f), _moveTimer);
+                    _spawnedObjects[i].transform.position = lerpPosition;
 
-                if(Vector3.Distance(_spawnedObject.transform.position, _targetPosition) < .2)
+                }
+
+                if (Vector3.Distance(_spawnedObjects[0].transform.position, _targetPositions[0]) < .2)
                 {
                     //AbilityTaskCompleted?.Invoke
                     EndAbility();

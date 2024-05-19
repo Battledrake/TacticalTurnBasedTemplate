@@ -21,7 +21,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         public override bool CanActivateAbility()
         {
-            if (_tacticsGrid.IsIndexValid(_targetIndex) && _tacticsGrid.IsTileWalkable(_targetIndex) && _tacticsGrid.GridTiles[_targetIndex].unitOnTile == null)
+            if (_tacticsGrid.IsIndexValid(_targetIndexes[0]) && _tacticsGrid.IsTileWalkable(_targetIndexes[0]) && _tacticsGrid.GridTiles[_targetIndexes[0]].unitOnTile == null)
             {
                 return true;
             }
@@ -41,9 +41,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             if (CanActivateAbility())
             {
-                _summonedUnit = Instantiate(_unitPrefab, _tacticsGrid.GetWorldPositionFromGridIndex(_targetIndex), Quaternion.identity, this.transform);
+                _summonedUnit = Instantiate(_unitPrefab, _tacticsGrid.GetWorldPositionFromGridIndex(_targetIndexes[0]), Quaternion.identity, this.transform);
                 _summonedUnit.InitializeUnit(_unitType);
-                _tacticsGrid.AddUnitToTile(_targetIndex, _summonedUnit, true);
+                _tacticsGrid.AddUnitToTile(_targetIndexes[0], _summonedUnit, true);
                 _isActive = true;
 
                 return true;

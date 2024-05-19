@@ -36,7 +36,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             //ExecuteAbilityTask(Action action);
             _startPosition = _tacticsGrid.GetWorldPositionFromGridIndex(_originIndex) + Vector3.up;
-            _targetPosition = _tacticsGrid.GetWorldPositionFromGridIndex(_targetIndex);
+            _targetPosition = _tacticsGrid.GetWorldPositionFromGridIndex(_targetIndexes[0]);
             Vector3 lookDirection = _targetPosition - _startPosition;
             GameObject projectile = Instantiate(_vinePrefab, _startPosition, Quaternion.LookRotation(lookDirection), this.transform);
             _spawnedObject = projectile;

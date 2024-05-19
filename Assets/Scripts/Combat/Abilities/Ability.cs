@@ -46,16 +46,21 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public AbilityRangeData OnTargetData { get => _onTargetData; }
 
         protected GridIndex _originIndex;
-        protected GridIndex _targetIndex;
+        protected List<GridIndex> _targetIndexes;
 
         protected TacticsGrid _tacticsGrid;
 
 
         public void InitializeAbility(TacticsGrid tacticsGrid, GridIndex origin, GridIndex target)
         {
+            InitializeAbility(tacticsGrid, origin, new List<GridIndex>{ target });
+        }
+
+        public void InitializeAbility(TacticsGrid tacticsGrid, GridIndex origin, List<GridIndex> targetIndexes)
+        {
             _tacticsGrid = tacticsGrid;
             _originIndex = origin;
-            _targetIndex = target;
+            _targetIndexes = targetIndexes;
         }
 
         public abstract bool CanActivateAbility();

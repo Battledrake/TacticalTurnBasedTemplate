@@ -97,8 +97,17 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             if (GetAbilityRange(origin, ability.ToTargetData).Contains(target))
             {
+                List<GridIndex> targetIndexes = new List<GridIndex>();
+                if (ability.OnTargetData.rangePattern == AbilityRangePattern.None)
+                {
+                    targetIndexes.Add(target);
+                }
+                else
+                {
+                     targetIndexes = GetAbilityRange(target, ability.OnTargetData);
+                }
                 Ability abilityObject = Instantiate(ability, _tacticsGrid.GetWorldPositionFromGridIndex(origin), Quaternion.identity);
-                abilityObject.InitializeAbility(_tacticsGrid, origin, target);
+                abilityObject.InitializeAbility(_tacticsGrid, origin, targetIndexes);
                 return abilityObject.TryActivateAbility();
             }
             return false;
@@ -124,6 +133,17 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 }
             }
             return returnList;
+        }
+
+        public List<GridIndex> RemoveNotWalkableIndexes(List<GridIndex> targetIndexes)
+        {
+            List<GridIndex> validIndexes = new List<GridIndex>();
+            for(int i = 0; i < targetIndexes.Count; i++)
+            {
+                if (_tacticsGrid.IsTileWalkable(targetIndexes[i]))
+                    validIndexes.Add(targetIndexes[i]);
+            }
+            return validIndexes;
         }
 
         public bool HasLineOfSight(GridIndex origin, GridIndex target, float height)
@@ -243,7 +263,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         public List<GridIndex> GetAbilityRange(GridIndex originIndex, AbilityRangeData rangeData)
         {
-            List<GridIndex> indexesInRange = AbilityStatics.GetIndexesFromPatternAndRange(originIndex, _tacticsGrid.GridShape, rangeData.rangeMinMax, rangeData.rangePattern);
+            List<GridIndex> indexesInRange = RemoveNotWalkableIndexes(AbilityStatics.GetIndexesFromPatternAndRange(originIndex, _tacticsGrid.GridShape, rangeData.rangeMinMax, rangeData.rangePattern));
             if (rangeData.lineOfSightData.requireLineOfSight)
             {
                 indexesInRange = RemoveIndexesWithoutLineOfSight(originIndex, indexesInRange, rangeData.lineOfSightData.height);

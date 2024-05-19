@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 7710745936017556063}
   - component: {fileID: 7802283948518552907}
   m_Layer: 0
-  m_Name: Pf_TestAbility
+  m_Name: Pf_VineAssault
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -48,13 +48,13 @@ MonoBehaviour:
     rangePattern: 4
     rangeMinMax: {x: 1, y: 3}
     lineOfSightData:
-      requireLineOfSight: 0
-      height: 0
+      requireLineOfSight: 1
+      height: 0.5
   _onTargetData:
     rangePattern: 6
     rangeMinMax: {x: 0, y: 0}
     lineOfSightData:
-      requireLineOfSight: 1
+      requireLineOfSight: 0
       height: 0.5
   _vinePrefab: {fileID: 1199601900371724, guid: d67ed860424886e4db64e996b4d85493,
     type: 3}
