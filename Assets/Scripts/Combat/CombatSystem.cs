@@ -1,193 +1,222 @@
-using BattleDrakeCreations.TacticalTurnBasedTemplate;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class CombatSystem : MonoBehaviour
+namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 {
-    public event Action<Unit, GridIndex> OnUnitGridIndexChanged;
-
-    [SerializeField] private TacticsGrid _tacticsGrid;
-
-    private List<Unit> _unitsInCombat = new List<Unit>();
-
-    private void Start()
+    public class CombatSystem : MonoBehaviour
     {
-        _tacticsGrid.OnGridGenerated += TacticsGrid_OnGridGenerated;
-        _tacticsGrid.OnTileDataUpdated += TacticsGrid_OnTileDataUpdated;
-    }
+        public event Action<Unit, GridIndex> OnUnitGridIndexChanged;
 
-    private void OnEnable()
-    {
+        [SerializeField] private TacticsGrid _tacticsGrid;
 
-        Unit.OnUnitReachedNewTile += Unit_OnUnitReachedNewTile;
-    }
+        private List<Unit> _unitsInCombat = new List<Unit>();
 
-    private void OnDisable()
-    {
-        Unit.OnUnitReachedNewTile -= Unit_OnUnitReachedNewTile;
-    }
-
-    private void Unit_OnUnitReachedNewTile(Unit unit, GridIndex index)
-    {
-        _tacticsGrid.RemoveUnitFromTile(unit.UnitGridIndex);
-        _tacticsGrid.AddUnitToTile(index, unit, true);
-        OnUnitGridIndexChanged?.Invoke(unit, index);
-    }
-
-    public void AddUnitToCombat(GridIndex gridIndex, Unit unit)
-    {
-        _unitsInCombat.Add(unit);
-        _tacticsGrid.AddUnitToTile(gridIndex, unit);
-    }
-
-    public void AddUnitToCombat(Vector3 worldPosition, Unit unit)
-    {
-        _unitsInCombat.Add(unit);
-        GridIndex unitIndex = _tacticsGrid.GetTileIndexFromWorldPosition(worldPosition);
-        if (_tacticsGrid.AddUnitToTile(unitIndex, unit))
+        private void Start()
         {
-            //Success. Add additional logic in here as project requires.
+            _tacticsGrid.OnGridGenerated += TacticsGrid_OnGridGenerated;
+            _tacticsGrid.OnTileDataUpdated += TacticsGrid_OnTileDataUpdated;
         }
-    }
 
-    /// <summary>
-    /// Remove unit from combat and place at a desired position. Removes unit from grid.
-    /// </summary>
-    /// <param name="unit"></param>
-    /// <param name="newPosition"></param>
-    public void RemoveUnitFromCombat(Unit unit, Vector3 newPosition)
-    {
-        _unitsInCombat.Remove(unit);
-        _tacticsGrid.RemoveUnitFromTile(unit.UnitGridIndex);
-        unit.UnitGridIndex = GridIndex.Invalid();
-
-        unit.transform.position = newPosition;
-    }
-
-    /// <summary>
-    /// Remove unit from combat with optional choice to destroy gameobject. If not destroyed, unit remains at position but is taken off the grid and out of the combat units list.
-    /// </summary>
-    /// <param name="unit"></param>
-    /// <param name="shouldDestroy"></param>
-    public void RemoveUnitFromCombat(Unit unit, bool shouldDestroy = true)
-    {
-        _unitsInCombat.Remove(unit);
-        _tacticsGrid.RemoveUnitFromTile(unit.UnitGridIndex);
-
-        if (shouldDestroy)
+        private void OnEnable()
         {
-            Destroy(unit.gameObject);
+
+            Unit.OnUnitReachedNewTile += Unit_OnUnitReachedNewTile;
         }
-        else
+
+        private void OnDisable()
         {
+            Unit.OnUnitReachedNewTile -= Unit_OnUnitReachedNewTile;
+        }
+
+        private void Unit_OnUnitReachedNewTile(Unit unit, GridIndex index)
+        {
+            _tacticsGrid.RemoveUnitFromTile(unit.UnitGridIndex);
+            _tacticsGrid.AddUnitToTile(index, unit, true);
+            OnUnitGridIndexChanged?.Invoke(unit, index);
+        }
+
+        public void AddUnitToCombat(GridIndex gridIndex, Unit unit)
+        {
+            _unitsInCombat.Add(unit);
+            _tacticsGrid.AddUnitToTile(gridIndex, unit);
+        }
+
+        public void AddUnitToCombat(Vector3 worldPosition, Unit unit)
+        {
+            _unitsInCombat.Add(unit);
+            GridIndex unitIndex = _tacticsGrid.GetTileIndexFromWorldPosition(worldPosition);
+            if (_tacticsGrid.AddUnitToTile(unitIndex, unit))
+            {
+                //Success. Add additional logic in here as project requires.
+            }
+        }
+
+        /// <summary>
+        /// Remove unit from combat and place at a desired position. Removes unit from grid.
+        /// </summary>
+        /// <param name="unit"></param>
+        /// <param name="newPosition"></param>
+        public void RemoveUnitFromCombat(Unit unit, Vector3 newPosition)
+        {
+            _unitsInCombat.Remove(unit);
+            _tacticsGrid.RemoveUnitFromTile(unit.UnitGridIndex);
             unit.UnitGridIndex = GridIndex.Invalid();
-            unit.GetComponent<IUnitAnimation>().PlayDeathAnimation();
+
+            unit.transform.position = newPosition;
         }
 
-    }
-
-    public bool TryActivateAbility(Ability ability, GridIndex origin, GridIndex target)
-    {
-        if(GetAbilityToTargetRange(origin, ability).Contains(target))
+        /// <summary>
+        /// Remove unit from combat with optional choice to destroy gameobject. If not destroyed, unit remains at position but is taken off the grid and out of the combat units list.
+        /// </summary>
+        /// <param name="unit"></param>
+        /// <param name="shouldDestroy"></param>
+        public void RemoveUnitFromCombat(Unit unit, bool shouldDestroy = true)
         {
-            Ability abilityObject = Instantiate(ability, _tacticsGrid.GetWorldPositionFromGridIndex(origin), Quaternion.identity);
-            abilityObject.InitializeAbility(_tacticsGrid, origin, target);
-            return abilityObject.TryActivateAbility();
-        }
-        return false;
-    }
+            _unitsInCombat.Remove(unit);
+            _tacticsGrid.RemoveUnitFromTile(unit.UnitGridIndex);
 
-    public bool IsValidTileForUnit(Unit unit, GridIndex index)
-    {
-        if (!_tacticsGrid.IsIndexValid(index))
+            if (shouldDestroy)
+            {
+                Destroy(unit.gameObject);
+            }
+            else
+            {
+                unit.UnitGridIndex = GridIndex.Invalid();
+                unit.GetComponent<IUnitAnimation>().PlayDeathAnimation();
+            }
+
+        }
+
+        public bool TryActivateAbility(Ability ability, GridIndex origin, GridIndex target)
+        {
+            if (GetAbilityToTargetRange(origin, ability).Contains(target))
+            {
+                Ability abilityObject = Instantiate(ability, _tacticsGrid.GetWorldPositionFromGridIndex(origin), Quaternion.identity);
+                abilityObject.InitializeAbility(_tacticsGrid, origin, target);
+                return abilityObject.TryActivateAbility();
+            }
             return false;
-
-        List<TileType> tileTypes = unit.UnitData.unitStats.validTileTypes;
-        return tileTypes != null && tileTypes.Contains(_tacticsGrid.GridTiles[index].tileType);
-    }
-
-    public List<GridIndex> RemoveIndexesWithoutLineOfSight(GridIndex origin, List<GridIndex> tiles, float height)
-    {
-        List<GridIndex> returnList = new List<GridIndex>();
-        for (int i = 0; i < tiles.Count; i++)
-        {
-            if (HasLineOfSight(origin, tiles[i], height))
-            {
-                returnList.Add(tiles[i]);
-            }
         }
-        return returnList;
-    }
 
-    public bool HasLineOfSight(GridIndex origin, GridIndex target, float height)
-    {
-        _tacticsGrid.GetTileDataFromIndex(origin, out TileData originData);
-        _tacticsGrid.GetTileDataFromIndex(target, out TileData targetData);
-
-        Vector3 startPosition = originData.tileMatrix.GetPosition();
-        startPosition.y += height;
-
-        Vector3 targetPosition = targetData.tileMatrix.GetPosition();
-        targetPosition.y += height;
-
-        Vector3 direction = targetPosition - startPosition;
-
-        if (Physics.Raycast(startPosition, direction, out RaycastHit hitInfo, direction.magnitude))
+        public bool IsValidTileForUnit(Unit unit, GridIndex index)
         {
-            if (hitInfo.collider.GetComponent<Unit>())
-                return true;
-            else
+            if (!_tacticsGrid.IsIndexValid(index))
                 return false;
-        }
-        return true;
-    }
 
-    private void TacticsGrid_OnGridGenerated()
-    {
-        List<Unit> copyList = new List<Unit>(_unitsInCombat);
-        for (int i = 0; i < copyList.Count; i++)
-        {
-            Unit unit = copyList[i];
-            //GridIndex unitIndex = unit.UnitGridIndex;
-            GridIndex positionIndex = _tacticsGrid.GetTileIndexFromWorldPosition(unit.transform.position);
-            if (IsValidTileForUnit(unit, positionIndex))
-            {
-                _tacticsGrid.AddUnitToTile(positionIndex, unit);
-            }
-            else
-            {
-                RemoveUnitFromCombat(copyList[i], false);
-            }
+            List<TileType> tileTypes = unit.UnitData.unitStats.validTileTypes;
+            return tileTypes != null && tileTypes.Contains(_tacticsGrid.GridTiles[index].tileType);
         }
-    }
 
-    private void TacticsGrid_OnTileDataUpdated(GridIndex index)
-    {
-        Unit unit = _unitsInCombat.FirstOrDefault<Unit>(u => u.UnitGridIndex == index);
-        if (unit)
+        public List<GridIndex> RemoveIndexesWithoutLineOfSight(GridIndex origin, List<GridIndex> tiles, float height)
         {
-            if (IsValidTileForUnit(unit, index))
+            List<GridIndex> returnList = new List<GridIndex>();
+            for (int i = 0; i < tiles.Count; i++)
             {
-                _tacticsGrid.GetTileDataFromIndex(index, out TileData tileData);
-                unit.transform.position = new Vector3(unit.transform.position.x, tileData.tileMatrix.GetPosition().y, unit.transform.position.z);
+                if (HasLineOfSight(origin, tiles[i], height))
+                {
+                    returnList.Add(tiles[i]);
+                }
             }
-            else
-            {
-                RemoveUnitFromCombat(unit, false);
-            }
+            return returnList;
         }
-    }
 
-    public List<GridIndex> GetAbilityToTargetRange(GridIndex originIndex, Ability ability)
-    {
-        List<GridIndex> indexesInRange = AbilityStatics.GetIndexesFromPatternAndRange(originIndex, _tacticsGrid.GridShape, ability.ToTargetData.rangeMinMax, ability.ToTargetData.rangePattern);
-        if (ability.LineOfSightData.requireLineOfSight)
+        public bool HasLineOfSight(GridIndex origin, GridIndex target, float height)
         {
-            indexesInRange = RemoveIndexesWithoutLineOfSight(originIndex, indexesInRange, ability.LineOfSightData.height);
+            _tacticsGrid.GetTileDataFromIndex(origin, out TileData originData);
+            _tacticsGrid.GetTileDataFromIndex(target, out TileData targetData);
+
+            Vector3 startPosition = originData.tileMatrix.GetPosition();
+            startPosition.y += height;
+
+            Vector3 targetPosition = targetData.tileMatrix.GetPosition();
+            targetPosition.y += height;
+
+            Vector3 direction = targetPosition - startPosition;
+
+            if (Physics.Raycast(startPosition, direction, out RaycastHit hitInfo, direction.magnitude))
+            {
+                if (hitInfo.collider.GetComponent<Unit>())
+                {
+                    return true;
+                }
+                else
+                {
+                    //TODO: Logic for doing line of sight checks around corners. Has issue? with height checks and doesn't account for all directions yet. Will fix later.
+                    //if (_tacticsGrid.GridShape == GridShape.Square)
+                    //{
+                    //    //if x = 0 and y = 1 we want to check -x and x
+                    //    //if x = 1 and y = 0 we want to check -y and y
+                    //    //if x = 0 and y = -1 we want to check -x and x
+                    //    //if x = -1 and y = 0 we want to check -y and y
+                    //    Vector3 normalizedDirection = direction.normalized;
+                    //    if (normalizedDirection.x != 0)
+                    //    {
+                    //        _tacticsGrid.GetTileDataFromIndex(new GridIndex(origin.x, origin.z - 1), out TileData negZTile);
+                    //        _tacticsGrid.GetTileDataFromIndex(new GridIndex(origin.x, origin.z + 1), out TileData posZTile);
+                    //        Vector3 negZPosition = negZTile.tileMatrix.GetPosition();
+                    //        negZPosition.y += height;
+                    //        direction.y = negZPosition.y;
+                    //        if (Physics.Raycast(negZPosition, direction, out RaycastHit negZTarget, direction.magnitude))
+                    //        {
+                    //            //do another ray for the other tile.
+                    //            return false;
+                    //        }
+                    //        return true;
+                    //    }
+                    //}
+                    return false;
+                }
+            }
+            return true;
         }
-        return indexesInRange;
+
+        private void TacticsGrid_OnGridGenerated()
+        {
+            List<Unit> copyList = new List<Unit>(_unitsInCombat);
+            for (int i = 0; i < copyList.Count; i++)
+            {
+                Unit unit = copyList[i];
+                //GridIndex unitIndex = unit.UnitGridIndex;
+                GridIndex positionIndex = _tacticsGrid.GetTileIndexFromWorldPosition(unit.transform.position);
+                if (IsValidTileForUnit(unit, positionIndex))
+                {
+                    _tacticsGrid.AddUnitToTile(positionIndex, unit);
+                }
+                else
+                {
+                    RemoveUnitFromCombat(copyList[i], false);
+                }
+            }
+        }
+
+        private void TacticsGrid_OnTileDataUpdated(GridIndex index)
+        {
+            Unit unit = _unitsInCombat.FirstOrDefault(u => u.UnitGridIndex == index);
+            if (unit)
+            {
+                if (IsValidTileForUnit(unit, index))
+                {
+                    _tacticsGrid.GetTileDataFromIndex(index, out TileData tileData);
+                    unit.transform.position = new Vector3(unit.transform.position.x, tileData.tileMatrix.GetPosition().y, unit.transform.position.z);
+                }
+                else
+                {
+                    RemoveUnitFromCombat(unit, false);
+                }
+            }
+        }
+
+        public List<GridIndex> GetAbilityToTargetRange(GridIndex originIndex, Ability ability)
+        {
+            List<GridIndex> indexesInRange = AbilityStatics.GetIndexesFromPatternAndRange(originIndex, _tacticsGrid.GridShape, ability.ToTargetData.rangeMinMax, ability.ToTargetData.rangePattern);
+            if (ability.LineOfSightData.requireLineOfSight)
+            {
+                indexesInRange = RemoveIndexesWithoutLineOfSight(originIndex, indexesInRange, ability.LineOfSightData.height);
+            }
+            return indexesInRange;
+        }
     }
 }

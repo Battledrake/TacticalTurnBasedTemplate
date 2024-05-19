@@ -13,6 +13,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         public Vector2Int RangeMinMax { get => _rangeMinMax; set => _rangeMinMax = value; }
         public bool RequireLineOfSight { get => _requireLineOfSight; set => _requireLineOfSight = value; }
+        public float LineOfSightHeight { get => _lineOfSightHeight; set => _lineOfSightHeight = value; }
 
         private List<GridIndex> _displayList = new List<GridIndex>();
 

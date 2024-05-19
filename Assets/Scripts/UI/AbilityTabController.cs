@@ -22,6 +22,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         [SerializeField] private TMP_Dropdown _abilityPatternCombo;
         [SerializeField] private SliderWidget _abilityPatternSlider;
         [SerializeField] private Toggle _abilityRangeLoSToggle;
+        [SerializeField] private SliderWidget _lineOfSightHeightSlider;
 
         [Header("Dependences")]
         [SerializeField] private PlayerActions _playerActions;
@@ -51,6 +52,18 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _abilityPatternSlider.OnSliderValueChanged += AbilityPatternSlider_OnSliderValueChanged;
             _abilityPatternButton.OnButtonToggled += AbilityPatternButton_OnButtonToggled;
             _abilityRangeLoSToggle.onValueChanged.AddListener(OnAbilityRangeLineOfSightToggled);
+            _lineOfSightHeightSlider.OnSliderValueChanged += OnLineOfSightHeightSliderChanged;
+        }
+
+        private void OnLineOfSightHeightSliderChanged(int sliderIndex, float value)
+        {
+            ShowAbilityPatternAction showPatternAction = _playerActions.LeftClickAction.GetComponent<ShowAbilityPatternAction>();
+            if (showPatternAction)
+            {
+                showPatternAction.LineOfSightHeight = value;
+
+                showPatternAction.ShowAbilityRangePattern();
+            }
         }
 
         private void OnAbilityRangeLineOfSightToggled(bool isOn)
@@ -69,6 +82,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             if (!isDown)
             {
                 _abilityPatternCombo.SetValueWithoutNotify(0);
+                _lineOfSightHeightSlider.SetSliderValueWithoutNotify(0.5f);
             }
         }
 
