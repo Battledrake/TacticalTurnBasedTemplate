@@ -17,7 +17,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         Square
     }
 
-    [System.Serializable]
+    [Serializable]
     public struct AbilityRangeData
     {
         public AbilityRangePattern rangePattern;
@@ -25,7 +25,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public LineOfSightData lineOfSightData;
     }
 
-    [System.Serializable]
+    [Serializable]
     public struct LineOfSightData
     {
         public bool requireLineOfSight;
@@ -34,10 +34,11 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
     public abstract class Ability : MonoBehaviour
     {
+
         public event Action<Ability> OnBehaviorComplete;
 
-        [SerializeField] private string _name;
-        [SerializeField] private Sprite _icon;
+        [SerializeField] protected string _name;
+        [SerializeField] protected Sprite _icon;
 
         [SerializeField] protected AbilityRangeData _rangeData;
         [SerializeField] protected AbilityRangeData _areaOfEffectData;
@@ -52,7 +53,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         protected List<GridIndex> _aoeIndexes;
 
         protected TacticsGrid _tacticsGrid;
-
 
         public void InitializeAbility(TacticsGrid tacticsGrid, GridIndex originIndex, GridIndex targetIndex)
         {

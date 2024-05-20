@@ -12,6 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a7f878f2fb993b4eb1b62b27bc20363, type: 3}
   m_Name: OrcAssetData
   m_EditorClassIdentifier: 
-  unitType: 3
   unitIcon: {fileID: 21300000, guid: 5caac83ccebff4b48b7e042497c9b2c3, type: 3}
   unitVisual: {fileID: 1091293637548798, guid: b603af86ac880d246a16780f2c468564, type: 3}

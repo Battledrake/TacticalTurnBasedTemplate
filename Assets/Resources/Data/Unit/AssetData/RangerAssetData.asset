@@ -12,7 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a7f878f2fb993b4eb1b62b27bc20363, type: 3}
   m_Name: RangerAssetData
   m_EditorClassIdentifier: 
-  unitType: 1
   unitIcon: {fileID: 21300000, guid: f1a99798927b7354f9aecd27333325ea, type: 3}
   unitVisual: {fileID: 2200631836099642199, guid: 4d18b4bd53093e343864b051232dd676,
     type: 3}

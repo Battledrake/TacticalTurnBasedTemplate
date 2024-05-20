@@ -45,6 +45,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   actionValue: -1
+  _rangePattern: 0
   _rangeMinMax: {x: 0, y: 3}
-  _requireLineOfSight: 0
-  _lineOfSightHeight: 0.5
+  _rangeLineOfSight: 0
+  _rangeLineOfSightHeight: 0.5
+  _areaOfEffectPattern: 0
+  _areaOfEffectRangeMinMax: {x: 0, y: 3}
+  _areaOfEffectLineOfSight: 0
+  _areaOfEffectLoSHeight: 0.5

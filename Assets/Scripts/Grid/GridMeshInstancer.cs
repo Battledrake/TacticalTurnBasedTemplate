@@ -5,11 +5,8 @@ using UnityEngine;
 
 namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 {
-    [ExecuteInEditMode]
     public class GridMeshInstancer : MonoBehaviour
     {
-
-
         [SerializeField] private Color _instanceColor = Color.black;
         [SerializeField] private Color _selectedColor = Color.green;
         [SerializeField] private Color _neighborColor = Color.magenta;

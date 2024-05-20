@@ -12,5 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed03119de806d3e46be6cf82e97cedf9, type: 3}
   m_Name: WarriorUnit
   m_EditorClassIdentifier: 
+  unitType: 0
   assetData: {fileID: 11400000, guid: 2c5c409ceb7e0e9438a3a892bbb40730, type: 2}
   unitStats: {fileID: 11400000, guid: d7756e88ab194a44ab8142f1c42bf127, type: 2}

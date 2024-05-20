@@ -25,7 +25,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public Unit unitOnTile;
     }
 
-    [ExecuteInEditMode]
     public class TacticsGrid : MonoBehaviour
     {
         public event Action<GridIndex> OnTileDataUpdated;
@@ -55,12 +54,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private Dictionary<GridIndex, TileData> _gridTiles = new Dictionary<GridIndex, TileData>();
 
-        //private void Awake()
-        //{
-        //    SpawnGrid(this.transform.position, _gridTileSize, _gridTileCount, _gridShapeToggle);
-        //}
-
-        private void OnValidate()
+        private void Start()
         {
             SpawnGrid(this.transform.position, _gridTileSize, _gridTileCount, _gridShapeToggle);
         }

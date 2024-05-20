@@ -15,7 +15,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         IsInAoeRange
     }
 
-    [ExecuteInEditMode]
     [RequireComponent(typeof(GridMeshInstancer))]
     public class GridVisual : MonoBehaviour
     {

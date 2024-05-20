@@ -12,7 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a7f878f2fb993b4eb1b62b27bc20363, type: 3}
   m_Name: SlimeAssetData
   m_EditorClassIdentifier: 
-  unitType: 2
   unitIcon: {fileID: 21300000, guid: bd76fa9ccdb44524793959386f4cac5a, type: 3}
   unitVisual: {fileID: 3913977627425481915, guid: 88f3f0c3666abc445a3cf0ba5c0fdac5,
     type: 3}
