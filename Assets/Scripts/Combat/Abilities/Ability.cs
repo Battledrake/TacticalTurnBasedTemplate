@@ -33,34 +33,33 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
     public abstract class Ability : MonoBehaviour
     {
-        /// <summary>
-        /// Data for determining the range pattern from the source to the target. Includes Pattern enum, MinMax values, and line of sight data.
-        /// </summary>
-        [SerializeField] protected AbilityRangeData _toTargetData;
-        /// <summary>
-        /// Data for determining the AOE pattern on the target. Includes Pattern Enum, MinMax values, and line of sight data.
-        /// </summary>
-        [SerializeField] protected AbilityRangeData _onTargetData;
 
-        public AbilityRangeData ToTargetData { get => _toTargetData; }
-        public AbilityRangeData OnTargetData { get => _onTargetData; }
+        [SerializeField] protected AbilityRangeData _rangeData;
+        [SerializeField] protected AbilityRangeData _areaOfEffectData;
+
+        public AbilityRangeData RangeData { get => _rangeData; }
+        public AbilityRangeData AreaOfEffectData { get => _areaOfEffectData; }
 
         protected GridIndex _originIndex;
-        protected List<GridIndex> _targetIndexes;
+        protected GridIndex _targetIndex;
+        protected List<GridIndex> _aoeIndexes;
 
         protected TacticsGrid _tacticsGrid;
 
 
-        public void InitializeAbility(TacticsGrid tacticsGrid, GridIndex origin, GridIndex target)
-        {
-            InitializeAbility(tacticsGrid, origin, new List<GridIndex>{ target });
-        }
-
-        public void InitializeAbility(TacticsGrid tacticsGrid, GridIndex origin, List<GridIndex> targetIndexes)
+        public void InitializeAbility(TacticsGrid tacticsGrid, GridIndex originIndex, GridIndex targetIndex)
         {
             _tacticsGrid = tacticsGrid;
-            _originIndex = origin;
-            _targetIndexes = targetIndexes;
+            _originIndex = originIndex;
+            _targetIndex = targetIndex;
+        }
+
+        public void InitializeAbility(TacticsGrid tacticsGrid, GridIndex originIndex, GridIndex targetIndex, List<GridIndex> aoeIndexes)
+        {
+            _tacticsGrid = tacticsGrid;
+            _originIndex = originIndex;
+            _targetIndex = targetIndex;
+            _aoeIndexes = aoeIndexes;
         }
 
         public abstract bool CanActivateAbility();

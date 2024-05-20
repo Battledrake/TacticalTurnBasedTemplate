@@ -44,18 +44,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 97fc42592235a54438299929822099be, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _toTargetData:
+  _rangeData:
     rangePattern: 5
-    rangeMinMax: {x: 1, y: 4}
+    rangeMinMax: {x: 0, y: 3}
     lineOfSightData:
       requireLineOfSight: 0
       height: 0
-  _onTargetData:
+  _areaOfEffectData:
     rangePattern: 5
     rangeMinMax: {x: 0, y: 2}
     lineOfSightData:
-      requireLineOfSight: 1
-      height: 0.5
+      requireLineOfSight: 0
+      height: 0
   _projectileCurve:
     serializedVersion: 2
     m_Curve:
@@ -93,4 +93,4 @@ MonoBehaviour:
     type: 3}
   _impactPrefab: {fileID: 1809022330002312, guid: ed511b7776af6174e9b1255c7a81e59c,
     type: 3}
-  _moveSpeed: 1
+  _moveSpeed: 0.5

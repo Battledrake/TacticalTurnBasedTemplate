@@ -16,6 +16,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private Vector3 _startPosition;
         private List<Vector3> _targetPositions = new List<Vector3>();
         private List<GameObject> _spawnedObjects = new List<GameObject>();
+        private List<GameObject> _explosionObjects = new List<GameObject>();
 
         public override bool CanActivateAbility()
         {
@@ -40,9 +41,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             //ExecuteAbilityTask(Action action);
             _startPosition = _tacticsGrid.GetWorldPositionFromGridIndex(_originIndex) + Vector3.up;
-            for(int i = 0; i < _targetIndexes.Count; i++)
+            for(int i = 0; i < _aoeIndexes.Count; i++)
             {
-                _targetPositions.Add(_tacticsGrid.GetWorldPositionFromGridIndex(_targetIndexes[i]));
+                _targetPositions.Add(_tacticsGrid.GetWorldPositionFromGridIndex(_aoeIndexes[i]));
                 GameObject projectile = Instantiate(_projectilePrefab, _startPosition, Quaternion.identity, this.transform);
                 _spawnedObjects.Add(projectile);
             }
@@ -59,10 +60,12 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             for(int i = 0; i < _spawnedObjects.Count; i++)
             {
                 GameObject explosion = Instantiate(_impactPrefab, _spawnedObjects[i].transform.position, Quaternion.identity, this.transform);
-                Destroy(_spawnedObjects[i]);
+                _explosionObjects.Add(explosion);
+
+                _spawnedObjects[i].SetActive(false);
             }
 
-            Destroy(this.gameObject, 2f);
+            Destroy(gameObject, 2f);
         }
 
         private void Update()

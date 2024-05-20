@@ -17,18 +17,19 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         [SerializeField] private AbilityButton _abilityButtonPrefab;
         [SerializeField] private Transform _abilityButtonContainer;
 
-        [Header("To Target Ability Settings")]
-        [SerializeField] private ActionButton _abilityToTargetButton;
-        [SerializeField] private TMP_Dropdown _abilityToTargetCombo;
-        [SerializeField] private SliderWidget _abilityToTargetRangeSlider;
-        [SerializeField] private Toggle _abilityToTargetLoSToggle;
-        [SerializeField] private SliderWidget _abilityToTargetLoSHeightSlider;
+        [Header("Ability Range Settings")]
+        [SerializeField] private ActionButton _showAbilityPatternsButton;
+        [SerializeField] private TMP_Dropdown _abilityRangeCombo;
+        [SerializeField] private SliderWidget _abilityRangeSlider;
+        [SerializeField] private Toggle _abilityRangeLineOfSightToggle;
+        [SerializeField] private SliderWidget _abilityRangeLineOfSightHeightSlider;
 
-        [Header("On Target Ability Settings")]
-        [SerializeField] private TMP_Dropdown _abilityOnTargetCombo;
-        [SerializeField] private SliderWidget _abilityOnTargetRangeSlider;
-        [SerializeField] private Toggle _abilityOnTargetLoSToggle;
-        [SerializeField] private SliderWidget _abilityOnTargetLoSHeightSlider;
+        [Header("Area of Effect Settings")]
+        [SerializeField] private Toggle _areaOfEffectButton;
+        [SerializeField] private TMP_Dropdown _areaOfEffectCombo;
+        [SerializeField] private SliderWidget _areaOfEffectRangeSlider;
+        [SerializeField] private Toggle _areaOfEffectLineOfSightToggle;
+        [SerializeField] private SliderWidget _areaOfEffectLineOfSightHeightSlider;
 
         [Header("Dependences")]
         [SerializeField] private PlayerActions _playerActions;
@@ -52,124 +53,144 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
                 _abilityButtons.TryAdd(i, abilityButton);
             }
-            _abilityToTargetButton.OnButtonToggled += OnShowAbilityPatternToggled;
+            _showAbilityPatternsButton.OnButtonToggled += OnShowAbilityRangePatternsButtonToggled;
 
-            _abilityToTargetCombo.AddOptions(Enum.GetValues(typeof(AbilityRangePattern)).Cast<AbilityRangePattern>().Select(p => p.ToString()).ToList());
-            _abilityToTargetCombo.onValueChanged.AddListener(OnAbilityToTargetPatternChanged);
+            _abilityRangeCombo.AddOptions(Enum.GetValues(typeof(AbilityRangePattern)).Cast<AbilityRangePattern>().Select(p => p.ToString()).ToList());
+            _abilityRangeCombo.onValueChanged.AddListener(OnAbilityRangePatternChanged);
 
-            _abilityToTargetRangeSlider.OnSliderValueChanged += OnAbilityToTargetRangeSliderChanged;
-            _abilityToTargetLoSToggle.onValueChanged.AddListener(OnAbilityToTargetLoSToggled);
-            _abilityToTargetLoSHeightSlider.OnSliderValueChanged += OnAbilityToTargetLoSSliderChanged;
+            _abilityRangeSlider.OnSliderValueChanged += OnAbilityRangeChanged;
+            _abilityRangeLineOfSightToggle.onValueChanged.AddListener(OnAbilityRangeLineOfSightToggled);
+            _abilityRangeLineOfSightHeightSlider.OnSliderValueChanged += OnAbilityRangeLineOfSightHeightChanged;
 
-            _abilityOnTargetCombo.AddOptions(Enum.GetValues(typeof(AbilityRangePattern)).Cast<AbilityRangePattern>().Select(p => p.ToString()).ToList());
-            _abilityOnTargetCombo.onValueChanged.AddListener(OnAbilityOnTargetPatternChanged);
+            _areaOfEffectButton.onValueChanged.AddListener(OnAreaOfEffectButtonToggled);
 
-            _abilityOnTargetRangeSlider.OnSliderValueChanged += OnAbilityOnTargetRangeSliderChanged;
-            _abilityOnTargetLoSToggle.onValueChanged.AddListener(OnAbilityOnTargetLoSToggled);
-            _abilityOnTargetLoSHeightSlider.OnSliderValueChanged += OnAbilityOnTargetLoSSliderChanged;
+            _areaOfEffectCombo.AddOptions(Enum.GetValues(typeof(AbilityRangePattern)).Cast<AbilityRangePattern>().Select(p => p.ToString()).ToList());
+            _areaOfEffectCombo.onValueChanged.AddListener(OnAreaOfEffectPatternChanged);
+
+            _areaOfEffectRangeSlider.OnSliderValueChanged += OnAreaOfEffectRangeChanged;
+            _areaOfEffectLineOfSightToggle.onValueChanged.AddListener(OnAreaOfEffectLineOfSightToggled);
+            _areaOfEffectLineOfSightHeightSlider.OnSliderValueChanged += OnAreaOfEffectLineOfSightHeightChanged;
         }
 
-        private void OnAbilityOnTargetLoSSliderChanged(int sliderIndex, float value)
+        private void OnAreaOfEffectButtonToggled(bool isOn)
         {
-            ShowAbilityPatternAction showPatternAction = _playerActions.LeftClickAction.GetComponent<ShowAbilityPatternAction>();
-            if (showPatternAction)
+            if (!isOn)
             {
-                showPatternAction.OnTargetLineOfSightHeight = value;
+                _areaOfEffectCombo.SetValueWithoutNotify(0);
+                _areaOfEffectLineOfSightHeightSlider.SetSliderValueWithoutNotify(0.5f);
+                ShowAbilityPatternAction showPatternAction = _playerActions.LeftClickAction?.GetComponent<ShowAbilityPatternAction>();
+                if (showPatternAction)
+                {
+                    showPatternAction.AreaOfEffectPattern = AbilityRangePattern.None;
 
-                showPatternAction.ShowAbilityToTargetRangePattern();
+                    showPatternAction.ShowAbilityAreaOfEffectPattern();
+                }
             }
         }
 
-        private void OnAbilityOnTargetLoSToggled(bool isOn)
+        private void OnAreaOfEffectLineOfSightHeightChanged(int sliderIndex, float value)
         {
-            ShowAbilityPatternAction showPatternAction = _playerActions.LeftClickAction.GetComponent<ShowAbilityPatternAction>();
+            ShowAbilityPatternAction showPatternAction = _playerActions.LeftClickAction?.GetComponent<ShowAbilityPatternAction>();
             if (showPatternAction)
             {
-                showPatternAction.OnTargetRequireLineOfSight = isOn;
+                showPatternAction.AreaOfEffectLoSHeight = value;
 
-                showPatternAction.ShowAbilityToTargetRangePattern();
+                showPatternAction.ShowAbilityRangePattern();
             }
         }
 
-        private void OnAbilityOnTargetRangeSliderChanged(int sliderIndex, float value)
+        private void OnAreaOfEffectLineOfSightToggled(bool isOn)
         {
-            ShowAbilityPatternAction showPatternAction = _playerActions.LeftClickAction.GetComponent<ShowAbilityPatternAction>();
+            ShowAbilityPatternAction showPatternAction = _playerActions.LeftClickAction?.GetComponent<ShowAbilityPatternAction>();
+            if (showPatternAction)
+            {
+                showPatternAction.AreaOfEffectRequireLoS = isOn;
+
+                showPatternAction.ShowAbilityRangePattern();
+            }
+        }
+
+        private void OnAreaOfEffectRangeChanged(int sliderIndex, float value)
+        {
+            ShowAbilityPatternAction showPatternAction = _playerActions.LeftClickAction?.GetComponent<ShowAbilityPatternAction>();
             if (showPatternAction)
             {
                 if (sliderIndex == 0)
-                    showPatternAction.OnTargetRangeMinMax = new Vector2Int((int)value, showPatternAction.OnTargetRangeMinMax.y);
+                    showPatternAction.AreaOfEffectRangeMinMax = new Vector2Int((int)value, showPatternAction.AreaOfEffectRangeMinMax.y);
                 else if (sliderIndex == 1)
-                    showPatternAction.OnTargetRangeMinMax = new Vector2Int(showPatternAction.OnTargetRangeMinMax.x, (int)value);
+                    showPatternAction.AreaOfEffectRangeMinMax = new Vector2Int(showPatternAction.AreaOfEffectRangeMinMax.x, (int)value);
 
-                showPatternAction.ShowAbilityToTargetRangePattern();
+                showPatternAction.ShowAbilityRangePattern();
             }
         }
 
-        private void OnAbilityOnTargetPatternChanged(int onTargetPattern)
+        private void OnAreaOfEffectPatternChanged(int onTargetPattern)
         {
-            ShowAbilityPatternAction showPatternAction = _playerActions.LeftClickAction.GetComponent<ShowAbilityPatternAction>();
+            ShowAbilityPatternAction showPatternAction = _playerActions.LeftClickAction?.GetComponent<ShowAbilityPatternAction>();
             if (showPatternAction && onTargetPattern > 0)
             {
-                _abilityOnTargetRangeSlider.SetSliderValueWithoutNotify(showPatternAction.OnTargetRangeMinMax);
-                showPatternAction.AbilityOnTargetPattern = (AbilityRangePattern)onTargetPattern;
-                showPatternAction.ShowAbilityToTargetRangePattern();
+                _areaOfEffectRangeSlider.SetSliderValueWithoutNotify(showPatternAction.AreaOfEffectRangeMinMax);
+                showPatternAction.AreaOfEffectPattern = (AbilityRangePattern)onTargetPattern;
+                showPatternAction.ShowAbilityRangePattern();
             }
         }
 
-        private void OnAbilityToTargetLoSSliderChanged(int sliderIndex, float value)
+        private void OnAbilityRangeLineOfSightHeightChanged(int sliderIndex, float value)
         {
-            ShowAbilityPatternAction showPatternAction = _playerActions.LeftClickAction.GetComponent<ShowAbilityPatternAction>();
+            ShowAbilityPatternAction showPatternAction = _playerActions.LeftClickAction?.GetComponent<ShowAbilityPatternAction>();
             if (showPatternAction)
             {
-                showPatternAction.ToTargetLineOfSightHeight = value;
+                showPatternAction.RangeLineOfSightHeight = value;
 
-                showPatternAction.ShowAbilityToTargetRangePattern();
+                showPatternAction.ShowAbilityRangePattern();
             }
         }
 
-        private void OnAbilityToTargetLoSToggled(bool isOn)
+        private void OnAbilityRangeLineOfSightToggled(bool isOn)
         {
-            ShowAbilityPatternAction showPatternAction = _playerActions.LeftClickAction.GetComponent<ShowAbilityPatternAction>();
+            ShowAbilityPatternAction showPatternAction = _playerActions.LeftClickAction?.GetComponent<ShowAbilityPatternAction>();
             if (showPatternAction)
             {
-                showPatternAction.ToTargetRequireLineOfSight = isOn;
+                showPatternAction.RangeLineOfSight = isOn;
 
-                showPatternAction.ShowAbilityToTargetRangePattern();
+                showPatternAction.ShowAbilityRangePattern();
             }
         }
 
-        private void OnShowAbilityPatternToggled(bool isDown)
+        private void OnShowAbilityRangePatternsButtonToggled(bool isOn)
         {
-            if (!isDown)
+            if (!isOn)
             {
-                _abilityToTargetCombo.SetValueWithoutNotify(0);
-                _abilityToTargetLoSHeightSlider.SetSliderValueWithoutNotify(0.5f);
+                _abilityRangeCombo.SetValueWithoutNotify(0);
+                _abilityRangeLineOfSightHeightSlider.SetSliderValueWithoutNotify(0.5f);
+
+                _areaOfEffectButton.isOn = isOn;
             }
         }
 
-        private void OnAbilityToTargetRangeSliderChanged(int sliderIndex, float value)
+        private void OnAbilityRangeChanged(int sliderIndex, float value)
         {
-            ShowAbilityPatternAction showPatternAction = _playerActions.LeftClickAction.GetComponent<ShowAbilityPatternAction>();
-            if(showPatternAction)
+            ShowAbilityPatternAction showPatternAction = _playerActions.LeftClickAction?.GetComponent<ShowAbilityPatternAction>();
+            if (showPatternAction)
             {
                 if (sliderIndex == 0)
-                    showPatternAction.ToTargetRangeMinMax = new Vector2Int((int)value, showPatternAction.ToTargetRangeMinMax.y);
+                    showPatternAction.RangeMinMax = new Vector2Int((int)value, showPatternAction.RangeMinMax.y);
                 else if (sliderIndex == 1)
-                    showPatternAction.ToTargetRangeMinMax = new Vector2Int(showPatternAction.ToTargetRangeMinMax.x, (int)value);
+                    showPatternAction.RangeMinMax = new Vector2Int(showPatternAction.RangeMinMax.x, (int)value);
 
-                showPatternAction.ShowAbilityToTargetRangePattern();
+                showPatternAction.ShowAbilityRangePattern();
             }
         }
 
-        private void OnAbilityToTargetPatternChanged(int toTargetPattern)
+        private void OnAbilityRangePatternChanged(int toTargetPattern)
         {
-            ShowAbilityPatternAction showPatternAction = _playerActions.LeftClickAction.GetComponent<ShowAbilityPatternAction>();
+            ShowAbilityPatternAction showPatternAction = _playerActions.LeftClickAction?.GetComponent<ShowAbilityPatternAction>();
             if (showPatternAction && toTargetPattern > 0)
             {
-                _abilityToTargetRangeSlider.SetSliderValueWithoutNotify(showPatternAction.ToTargetRangeMinMax);
-                showPatternAction.AbilityToTargetPattern = (AbilityRangePattern)toTargetPattern;
+                _abilityRangeSlider.SetSliderValueWithoutNotify(showPatternAction.RangeMinMax);
+                showPatternAction.RangePattern = (AbilityRangePattern)toTargetPattern;
 
-                showPatternAction.ShowAbilityToTargetRangePattern();
+                showPatternAction.ShowAbilityRangePattern();
             }
         }
 
