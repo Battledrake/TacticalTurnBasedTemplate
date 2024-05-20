@@ -36,20 +36,23 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             //ExecuteAbilityTask(Action action);
             _startPosition = _tacticsGrid.GetWorldPositionFromGridIndex(_originIndex) + Vector3.up;
-            _targetPosition = _tacticsGrid.GetWorldPositionFromGridIndex(_aoeIndexes[0]);
+            _targetPosition = _tacticsGrid.GetWorldPositionFromGridIndex(_targetIndex);
             Vector3 lookDirection = _targetPosition - _startPosition;
             GameObject projectile = Instantiate(_vinePrefab, _startPosition, Quaternion.LookRotation(lookDirection), this.transform);
             _spawnedObject = projectile;
 
-            ParticleSystem sysMain = _spawnedObject.GetComponent<ParticleSystem>();
+            ParticleSystem particleSystem = _spawnedObject.GetComponent<ParticleSystem>();
+            ParticleSystem.MainModule sysMain = particleSystem.main;
             sysMain.startSpeed = Vector3.Distance(_targetPosition, _startPosition) / 2 * 10;
-            sysMain.playbackSpeed = _playbackSpeed;
+            sysMain.simulationSpeed = _playbackSpeed;
 
             Invoke("EndAbility", 2f);
         }
 
         public override void EndAbility()
         {
+            AbilityBehaviorComplete(this);
+
             Destroy(_spawnedObject);
 
             Destroy(this.gameObject);

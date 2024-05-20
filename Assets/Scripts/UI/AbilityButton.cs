@@ -52,12 +52,13 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             }
         }
 
-        public void InitializeButton(AbilityTabController abilityTab, string name, int abilityIndex)
+        public void InitializeButton(AbilityTabController abilityTab, string name, int abilityIndex, Sprite icon)
         {
             _abilityTab = abilityTab;
             _abilityLabel.text = name;
             _abilityIndex = abilityIndex;
-            //_icon.sprite = icon;
+            if (icon != null)
+                _icon.sprite = icon;
         }
 
         public void DisableButton()

@@ -17,11 +17,19 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         public override void ActivateAbility()
         {
+            CommitAbility();
+
+            _summonedUnit = Instantiate(_unitPrefab, _tacticsGrid.GetWorldPositionFromGridIndex(_targetIndex), Quaternion.identity, this.transform);
+            _summonedUnit.InitializeUnit(_unitType);
+            _tacticsGrid.AddUnitToTile(_targetIndex, _summonedUnit, true);
+            _isActive = true;
+
+            AbilityBehaviorComplete(this);
         }
 
         public override bool CanActivateAbility()
         {
-            if (_tacticsGrid.IsIndexValid(_aoeIndexes[0]) && _tacticsGrid.IsTileWalkable(_aoeIndexes[0]) && _tacticsGrid.GridTiles[_aoeIndexes[0]].unitOnTile == null)
+            if (_tacticsGrid.IsIndexValid(_targetIndex) && _tacticsGrid.IsTileWalkable(_targetIndex) && _tacticsGrid.GridTiles[_targetIndex].unitOnTile == null)
             {
                 return true;
             }
@@ -41,11 +49,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             if (CanActivateAbility())
             {
-                _summonedUnit = Instantiate(_unitPrefab, _tacticsGrid.GetWorldPositionFromGridIndex(_aoeIndexes[0]), Quaternion.identity, this.transform);
-                _summonedUnit.InitializeUnit(_unitType);
-                _tacticsGrid.AddUnitToTile(_aoeIndexes[0], _summonedUnit, true);
-                _isActive = true;
-
+                ActivateAbility();
                 return true;
             }
             return false;
@@ -64,7 +68,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 {
                     EndAbility();
                 }
-
             }
         }
     }

@@ -44,6 +44,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 97fc42592235a54438299929822099be, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _name: Missile Assault
+  _icon: {fileID: 21300000, guid: 9bd947dd94a8daa41a9380b75fadedc3, type: 3}
   _rangeData:
     rangePattern: 5
     rangeMinMax: {x: 0, y: 3}

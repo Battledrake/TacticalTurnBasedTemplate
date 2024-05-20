@@ -34,7 +34,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         }
         protected override void CommitAbility()
         {
-            throw new System.NotImplementedException();
         }
 
         public override void ActivateAbility()
@@ -64,6 +63,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
                 _spawnedObjects[i].SetActive(false);
             }
+
+            AbilityBehaviorComplete(this);
 
             Destroy(gameObject, 2f);
         }

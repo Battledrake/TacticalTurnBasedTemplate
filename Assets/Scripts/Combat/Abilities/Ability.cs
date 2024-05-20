@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -33,10 +34,16 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
     public abstract class Ability : MonoBehaviour
     {
+        public event Action<Ability> OnBehaviorComplete;
+
+        [SerializeField] private string _name;
+        [SerializeField] private Sprite _icon;
 
         [SerializeField] protected AbilityRangeData _rangeData;
         [SerializeField] protected AbilityRangeData _areaOfEffectData;
 
+        public string Name { get => _name; }
+        public Sprite Icon { get => _icon; }
         public AbilityRangeData RangeData { get => _rangeData; }
         public AbilityRangeData AreaOfEffectData { get => _areaOfEffectData; }
 
@@ -60,6 +67,11 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _originIndex = originIndex;
             _targetIndex = targetIndex;
             _aoeIndexes = aoeIndexes;
+        }
+
+        protected void AbilityBehaviorComplete(Ability ability)
+        {
+            OnBehaviorComplete?.Invoke(ability);
         }
 
         public abstract bool CanActivateAbility();
