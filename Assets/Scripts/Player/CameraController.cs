@@ -15,6 +15,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         [SerializeField] private float _zoomSpeed = 5f;
         [SerializeField] private float _minZoom = 2f;
         [SerializeField] private float _maxZoom = 12f;
+        [SerializeField] private float _minFollow = -1f;
+        [SerializeField] private float _maxFollow = -20f;
+        [SerializeField] private float _heightBeforeReturn = 10f;
 
         public float MoveSpeed { get => _moveSpeed; set => _moveSpeed = value; }
         public float RotationSpeed { get => _rotationSpeed; set => _rotationSpeed = value; }
@@ -92,6 +95,15 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 _targetFollowOffset.y += zoomAmount;
             }
             _targetFollowOffset.y = Mathf.Clamp(_targetFollowOffset.y, _minZoom, _maxZoom);
+            if (_targetFollowOffset.y > Mathf.Abs(_maxFollow))
+            {
+              _targetFollowOffset.z = _maxFollow - _heightBeforeReturn + (_targetFollowOffset.y + _maxFollow);
+            }
+            else
+            {
+            _targetFollowOffset.z = -_targetFollowOffset.y;
+            }
+                _targetFollowOffset.z = Mathf.Clamp(_targetFollowOffset.z, _maxFollow, _minFollow);
             _cameraTransposer.m_FollowOffset = Vector3.Lerp(_cameraTransposer.m_FollowOffset, _targetFollowOffset, Time.deltaTime * _zoomSpeed);
         }
     }
