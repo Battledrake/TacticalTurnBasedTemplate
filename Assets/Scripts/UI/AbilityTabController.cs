@@ -40,13 +40,10 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void Awake()
         {
-            //if (_debugAbilities != null && _debugAbilities.Count > 0)
-            //    _activeAbility = _debugAbilities[0];
-
             for (int i = 0; i < _debugAbilities.Count; i++)
             {
                 AbilityButton abilityButton = Instantiate(_abilityButtonPrefab, _abilityButtonContainer);
-                abilityButton.InitializeButton(this, _debugAbilities[i].Name, i, _debugAbilities[i].Icon);
+                abilityButton.InitializeButton(i, _debugAbilities[i].Icon);
                 abilityButton.OnAbilityButtonSelected += AbilityButton_OnAbilityButtonSelected;
                 abilityButton.OnAbilityButtonDeselected += AbilityButton_OnAbilityButtonDeselected;
 

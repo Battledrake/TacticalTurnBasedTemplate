@@ -28,10 +28,10 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _buttonToggle.onValueChanged.AddListener(OnButtonClicked);
         }
 
-        //private void OnValidate()
-        //{
-        //    _buttonLabel.text = _actionName;
-        //}
+        private void OnValidate()
+        {
+            _buttonLabel.text = _actionName;
+        }
 
         private void OnSelectedActionsChanged(ActionBase leftAction, ActionBase rightAction)
         {

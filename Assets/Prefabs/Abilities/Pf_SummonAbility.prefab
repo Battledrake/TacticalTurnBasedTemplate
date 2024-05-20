@@ -48,9 +48,9 @@ MonoBehaviour:
   _icon: {fileID: 21300000, guid: 3868bb9369da0634e991c0adc2e1ebc5, type: 3}
   _rangeData:
     rangePattern: 5
-    rangeMinMax: {x: 0, y: 3}
+    rangeMinMax: {x: 1, y: 3}
     lineOfSightData:
-      requireLineOfSight: 1
+      requireLineOfSight: 0
       height: 0.5
   _areaOfEffectData:
     rangePattern: 0

@@ -95,4 +95,4 @@ MonoBehaviour:
     type: 3}
   _impactPrefab: {fileID: 1809022330002312, guid: ed511b7776af6174e9b1255c7a81e59c,
     type: 3}
-  _moveSpeed: 0.5
+  _moveSpeed: 1

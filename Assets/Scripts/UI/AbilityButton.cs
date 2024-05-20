@@ -16,10 +16,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         [SerializeField] private Color _selectedBorderColor;
         [SerializeField] private Image _borderImage;
         [SerializeField] private Image _icon;
-        [SerializeField] private TextMeshProUGUI _abilityLabel;
 
         private Toggle _buttonToggle;
-        private AbilityTabController _abilityTab;
 
         private int _abilityIndex;
 
@@ -52,10 +50,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             }
         }
 
-        public void InitializeButton(AbilityTabController abilityTab, string name, int abilityIndex, Sprite icon)
+        public void InitializeButton(int abilityIndex, Sprite icon)
         {
-            _abilityTab = abilityTab;
-            _abilityLabel.text = name;
             _abilityIndex = abilityIndex;
             if (icon != null)
                 _icon.sprite = icon;

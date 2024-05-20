@@ -4,53 +4,52 @@ using UnityEngine;
 
 namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 {
-    public class SwordThrowAbility : Ability
+    public class ShortRangeArrowAbility : Ability
     {
         [SerializeField] private float _animationTime = 1f;
         [SerializeField] private float _animationSpeed = 1f;
 
         [SerializeField] private AnimationCurve _positionCurve;
-        [SerializeField] private AnimationCurve _positionXCurve;
-        [SerializeField] private AnimationCurve _rotationYCurve;
+        [SerializeField] private AnimationCurve _positionYCurve;
+        [SerializeField] private AnimationCurve _rotationXCurve;
         [SerializeField] private AnimationCurve _scaleCurve;
-
 
         private Vector3 _startPosition;
         private Vector3 _targetPosition;
 
-        private float _timeElapsed;
-        private bool _isActive;
+        private float _timeElapsed = 0f;
+        private bool _isActive = false;
 
-        private void Update()
+        void Update()
         {
             if (!_isActive)
                 return;
-
             _timeElapsed += Time.deltaTime * _animationSpeed;
 
-            if (_timeElapsed >= _animationTime)
+            if (_timeElapsed > _animationTime)
             {
                 _isActive = false;
                 EndAbility();
             }
 
             if (_positionCurve.length > 0)
-                this.transform.position = Vector3.Lerp(_startPosition, _targetPosition, _positionCurve.Evaluate(_timeElapsed));
+                this.transform.position = Vector3.LerpUnclamped(_startPosition, _targetPosition, _positionCurve.Evaluate(_timeElapsed));
 
-            if(_positionXCurve.length > 0)
+
+            if (_positionYCurve.length > 0)
             {
-                float xOffset = _positionXCurve.Evaluate(_timeElapsed);
-                Vector3 newPosition = this.transform.position + this.transform.right * xOffset;
+                float YOffset = _positionYCurve.Evaluate(_timeElapsed);
+                Vector3 newPosition = this.transform.position + Vector3.up * YOffset;
                 this.transform.position = newPosition;
             }
 
-            if (_rotationYCurve.length > 0)
-                this.transform.rotation = Quaternion.Euler(this.transform.eulerAngles.x, _rotationYCurve.Evaluate(_timeElapsed), this.transform.eulerAngles.z);
+            if (_rotationXCurve.length > 0)
+                this.transform.rotation = Quaternion.Euler(_rotationXCurve.Evaluate(_timeElapsed), this.transform.eulerAngles.y, this.transform.eulerAngles.z);
 
             if (_scaleCurve.length > 0)
                 this.transform.localScale = _scaleCurve.Evaluate(_timeElapsed) * Vector3.one;
-        }
 
+        }
         public override void ActivateAbility()
         {
             _tacticsGrid.GetTileDataFromIndex(_originIndex, out TileData originData);

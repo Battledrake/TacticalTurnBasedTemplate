@@ -118,7 +118,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  _animationSpeed: 1
+  _animationSpeed: 2
 --- !u!1 &8853121353303755906
 GameObject:
   m_ObjectHideFlags: 0
