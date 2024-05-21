@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 8915364689627024881}
   - component: {fileID: -5293755295592201625}
   m_Layer: 0
-  m_Name: Pf_MissileAssault
+  m_Name: Pf_WindGust
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -44,20 +44,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 97fc42592235a54438299929822099be, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _name: Missile Assault
-  _icon: {fileID: 21300000, guid: 9bd947dd94a8daa41a9380b75fadedc3, type: 3}
+  _name: Wind Gust
+  _icon: {fileID: 21300000, guid: 3c7e93125f544564ea234f4f23b39a1e, type: 3}
   _rangeData:
-    rangePattern: 5
-    rangeMinMax: {x: 0, y: 3}
+    rangePattern: 6
+    rangeMinMax: {x: 3, y: 3}
     lineOfSightData:
-      requireLineOfSight: 0
-      height: 0
+      requireLineOfSight: 1
+      height: 0.25
   _areaOfEffectData:
-    rangePattern: 5
+    rangePattern: 4
     rangeMinMax: {x: 0, y: 2}
     lineOfSightData:
-      requireLineOfSight: 0
-      height: 0
+      requireLineOfSight: 1
+      height: 0.25
   _projectileCurve:
     serializedVersion: 2
     m_Curve:
@@ -91,8 +91,8 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  _projectilePrefab: {fileID: 1722081097931586, guid: 4b21d5ab091be5a46ad6e87699fab62c,
+  _projectilePrefab: {fileID: 8467555195680559298, guid: 500f8dbd9712d644a95ac106c8a00ca5,
     type: 3}
-  _impactPrefab: {fileID: 1809022330002312, guid: ed511b7776af6174e9b1255c7a81e59c,
-    type: 3}
-  _moveSpeed: 1
+  _impactPrefab: {fileID: 0}
+  _animationTime: 1
+  _animationSpeed: 2

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro.EditorUtilities;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 {
@@ -87,14 +88,14 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 float xOffset = _positionXCurve.Evaluate(_timeElapsed);
                 Vector3 rightVector = Vector3.Cross(Vector3.up, _direction);
                 Vector3 xOffSetPosition = this.transform.position + rightVector * xOffset;
-                this.transform.position = xOffSetPosition;
+                _objectToAnimate.transform.position = xOffSetPosition;
             }
 
             if (_positionYCurve.length > 0)
             {
                 float YOffset = _positionYCurve.Evaluate(_timeElapsed);
                 Vector3 upPosition = this.transform.position + Vector3.up * YOffset;
-                this.transform.position = upPosition;
+                _objectToAnimate.transform.position = upPosition;
             }
 
             float coreX = this.transform.rotation.eulerAngles.x;
@@ -162,10 +163,19 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
             if (_opacityCurve.length > 0)
             {
-                Renderer[] renderComponents = _objectToAnimate.GetComponents<Renderer>();
+                MeshRenderer[] renderComponents = _objectToAnimate.GetComponentsInChildren<MeshRenderer>();
                 for(int i = 0; i < renderComponents.Length; i++)
                 {
-                    renderComponents[i].material.SetFloat("_Opacity", _opacityCurve.Evaluate(_timeElapsed));
+                    Color materialColor = renderComponents[i].material.color;
+                    materialColor.a = _opacityCurve.Evaluate(_timeElapsed);
+                    renderComponents[i].material.color = materialColor;
+                }
+                SpriteRenderer[] spriteRenderers = _objectToAnimate.GetComponentsInChildren<SpriteRenderer>();
+                for(int i = 0; i < spriteRenderers.Length; i++)
+                {
+                    Color imageColor = spriteRenderers[i].color;
+                    imageColor.a = _opacityCurve.Evaluate(_timeElapsed);
+                    spriteRenderers[i].color = imageColor;
                 }
             }
 
