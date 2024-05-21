@@ -33,6 +33,14 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         [SerializeField] private AnimationCurve _objectRollCurve;
         [Header("Scale")]
         [SerializeField] private AnimationCurve _scaleCurve;
+        [Header("Scale X Only")]
+        [SerializeField] private AnimationCurve _scaleXCurve;
+        [Header("Scale Y Only")]
+        [SerializeField] private AnimationCurve _scaleYCurve;
+        [Header("Scale Z Only")]
+        [SerializeField] private AnimationCurve _scaleZCurve;
+        [Header("Opacity")]
+        [SerializeField] private AnimationCurve _opacityCurve;
 
         private Vector3 _startPosition;
         private Vector3 _targetPosition;
@@ -133,7 +141,32 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
             if (_scaleCurve.length > 0)
             {
-                this.transform.localScale = _scaleCurve.Evaluate(_timeElapsed) * Vector3.one;
+                _objectToAnimate.transform.localScale = _scaleCurve.Evaluate(_timeElapsed) * Vector3.one;
+            }
+
+            Vector3 objectScale = _objectToAnimate.transform.localScale;
+            if(_scaleXCurve.length > 0)
+            {
+                objectScale.x = _scaleXCurve.Evaluate(_timeElapsed);
+            }
+            if (_scaleYCurve.length > 0)
+            {
+                objectScale.y = _scaleYCurve.Evaluate(_timeElapsed);
+            }
+            if (_scaleZCurve.length > 0)
+            {
+                objectScale.z = _scaleZCurve.Evaluate(_timeElapsed);
+            }
+
+            _objectToAnimate.transform.localScale = new Vector3(objectScale.x, objectScale.y, objectScale.z);
+
+            if (_opacityCurve.length > 0)
+            {
+                Renderer[] renderComponents = _objectToAnimate.GetComponents<Renderer>();
+                for(int i = 0; i < renderComponents.Length; i++)
+                {
+                    renderComponents[i].material.SetFloat("_Opacity", _opacityCurve.Evaluate(_timeElapsed));
+                }
             }
 
         }
@@ -242,6 +275,26 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public void ClearScaleCurve()
         {
             _scaleCurve.ClearKeys();
+        }
+        [ContextMenu("ClearKeys/Clear Scale X Keys", false, 10)]
+        public void ClearScaleXCurve()
+        {
+            _scaleCurve.ClearKeys();
+        }
+        [ContextMenu("ClearKeys/Clear Scale Y Keys", false, 11)]
+        public void ClearScaleYCurve()
+        {
+            _scaleCurve.ClearKeys();
+        }
+        [ContextMenu("ClearKeys/Clear Scale Z Keys", false, 12)]
+        public void ClearScaleZCurve()
+        {
+            _scaleCurve.ClearKeys();
+        }
+        [ContextMenu("ClearKeys/Clear Opacity Keys", false, 13)]
+        public void ClearOpacityCurve()
+        {
+            _opacityCurve.ClearKeys();
         }
     }
 }

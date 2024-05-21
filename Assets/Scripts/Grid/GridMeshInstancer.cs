@@ -220,6 +220,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _selectedTiles.Clear();
             _neighborTiles.Clear();
             _pathTiles.Clear();
+            _moveRangeTiles.Clear();
             _abilityRangeTiles.Clear();
             _abilityAreaOfEffectTiles.Clear();
             _hoveredTile = default(TileData);
