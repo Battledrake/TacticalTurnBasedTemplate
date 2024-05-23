@@ -58,9 +58,13 @@ MonoBehaviour:
     lineOfSightData:
       requireLineOfSight: 0
       height: 0
+  _effects:
+  - statType: 0
+    minMaxModifier: {x: -2, y: -3}
   _objectToAnimate: {fileID: 3913977627425481915, guid: 88f3f0c3666abc445a3cf0ba5c0fdac5,
     type: 3}
   _taskPrefab: {fileID: 8862640479722470499, guid: a8b7b17f8fc21544086c91b35cee0944,
     type: 3}
   _taskData: {fileID: 11400000, guid: 3fc9bf9f143e06147a449c48676c3b82, type: 2}
+  _animationSpeed: 1
   _loopAnimation: 0

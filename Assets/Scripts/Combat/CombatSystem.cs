@@ -104,10 +104,19 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 }
                 else
                 {
-                     List<GridIndex> aoeIndexes = GetAbilityRange(target, ability.AreaOfEffectData);
+                    List<GridIndex> aoeIndexes = GetAbilityRange(target, ability.AreaOfEffectData);
                     abilityObject.InitializeAbility(_tacticsGrid, origin, target, aoeIndexes);
                 }
-                return abilityObject.TryActivateAbility();
+                bool wasSuccessfulActivation = abilityObject.TryActivateAbility();
+                if (wasSuccessfulActivation)
+                {
+                    if (_tacticsGrid.GetTileDataFromIndex(origin, out TileData originData))
+                    {
+                        if (originData.unitOnTile)
+                            originData.unitOnTile.GetComponent<Unit>().UseAbility(target);
+                    }
+                }
+                return wasSuccessfulActivation;
             }
             return false;
         }
@@ -137,7 +146,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public List<GridIndex> RemoveNotWalkableIndexes(List<GridIndex> targetIndexes)
         {
             List<GridIndex> validIndexes = new List<GridIndex>();
-            for(int i = 0; i < targetIndexes.Count; i++)
+            for (int i = 0; i < targetIndexes.Count; i++)
             {
                 if (_tacticsGrid.IsTileWalkable(targetIndexes[i]))
                     validIndexes.Add(targetIndexes[i]);

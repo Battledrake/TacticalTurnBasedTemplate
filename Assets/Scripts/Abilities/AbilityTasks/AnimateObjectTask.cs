@@ -39,13 +39,13 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private float _timeElapsed = 0f;
         private bool _hasInitiallyLooped = false;
 
-        public void InitTask(GameObject objectToAnimate,AnimateObjectTaskData taskData, Vector3 startPosition, Vector3 targetPosition, bool loopAnimation = false)
+        public void InitTask(GameObject objectToAnimate,AnimateObjectTaskData taskData, Vector3 startPosition, Vector3 targetPosition, float animationSpeed = 1f, bool loopAnimation = false)
         {
             _objectToAnimate = objectToAnimate;
             _objectToAnimate.transform.parent = this.transform;
 
             _animationTime = taskData.animationTime;
-            _animationSpeed = taskData.animationSpeed;
+            _animationSpeed = animationSpeed;
 
             _positionAlphaCurve = taskData.positionAlphaCurve;
             _pivotYawCurve = taskData.pivotYawCurve;
@@ -134,21 +134,19 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
                 this.transform.rotation = Quaternion.Euler(pivotX, pivotY, pivotZ);
 
-                if (_objectPosXCurve.length > 0)
-                {
-                    float xOffset = _objectPosXCurve.Evaluate(_timeElapsed);
-                    Vector3 rightVector = Vector3.Cross(Vector3.up, this.transform.forward);
-                    Vector3 xOffSetPosition = this.transform.position + rightVector * xOffset;
-                    _objectToAnimate.transform.position = xOffSetPosition;
-                }
+                float objectXPosition = _objectToAnimate.transform.localPosition.x;
+                float objectYPosition = _objectToAnimate.transform.localPosition.y;
+                float objectZPosition = _objectToAnimate.transform.localPosition.z;
 
-                if (_objectPosYCurve.length > 0)
+                if(_objectPosXCurve.length > 0)
                 {
-                    float YOffset = _objectPosYCurve.Evaluate(_timeElapsed);
-                    Vector3 upVector = this.transform.position + this.transform.up * YOffset;
-                    Vector3 upPosition = new Vector3(_objectToAnimate.transform.position.x, upVector.y, _objectToAnimate.transform.position.z);
-                    _objectToAnimate.transform.position = upPosition;
+                    objectXPosition = _objectPosXCurve.Evaluate(_timeElapsed);
                 }
+                if(_objectPosYCurve.length > 0)
+                {
+                    objectYPosition = _objectPosYCurve.Evaluate(_timeElapsed);
+                }
+                _objectToAnimate.transform.localPosition = new Vector3(objectXPosition, objectYPosition, objectZPosition);
 
                 float objectXRotation = _objectToAnimate.transform.localRotation.eulerAngles.x;
                 float objectYRotation = _objectToAnimate.transform.localRotation.eulerAngles.y;

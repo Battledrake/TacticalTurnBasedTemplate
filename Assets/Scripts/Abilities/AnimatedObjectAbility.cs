@@ -9,10 +9,13 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 {
     public class AnimatedObjectAbility : Ability
     {
+        [Header("Animated Object Ability")]
+
         [SerializeField] private GameObject _objectToAnimate;
         [SerializeField] private AnimateObjectTask _taskPrefab;
         [SerializeField] private AnimateObjectTaskData _taskData;
 
+        [SerializeField] private float _animationSpeed = 1f;
         [SerializeField] private bool _loopAnimation = false;
 
         private AnimateObjectTask _activeTask;
@@ -38,7 +41,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
                 GameObject objectToAnimate = Instantiate(_objectToAnimate);
                 _animatingObject = objectToAnimate;
-                task.InitTask(objectToAnimate, _taskData, originData.tileMatrix.GetPosition(), targetData.tileMatrix.GetPosition(), _loopAnimation);
+                task.InitTask(objectToAnimate, _taskData, originData.tileMatrix.GetPosition(), targetData.tileMatrix.GetPosition(), _animationSpeed, _loopAnimation);
                 StartCoroutine(task.ExecuteTask());
             }
         }
@@ -82,13 +85,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public override bool CanActivateAbility()
         {
             return true;
-        }
-
-        public override void EndAbility()
-        {
-            if (_activeTask != null)
-                Destroy(_activeTask.gameObject);
-            Destroy(this.gameObject);
         }
 
         /// <summary>

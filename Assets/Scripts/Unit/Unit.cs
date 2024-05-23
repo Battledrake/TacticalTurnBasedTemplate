@@ -169,6 +169,16 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             }
         }
 
+        public void UseAbility(GridIndex targetIndex)
+        {
+            _tacticsGrid.GetTileDataFromIndex(targetIndex, out TileData tileData);
+            Vector3 lookAtVector = tileData.tileMatrix.GetPosition();
+            lookAtVector.y = this.transform.position.y;
+            this.transform.LookAt(lookAtVector);
+
+            _unitAnimator.SetTrigger("Attack");
+        }
+
         public void TriggerHitAnimation()
         {
             _unitAnimator.SetTrigger("Hit");

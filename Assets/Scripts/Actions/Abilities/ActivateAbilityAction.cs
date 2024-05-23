@@ -1,23 +1,22 @@
+using System;
 using UnityEngine;
 
 namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 {
     public class ActivateAbilityAction : ActionBase
     {
-        [SerializeField] private Ability _testAbility;
+        private Ability _ability = null;
+
         public override bool ExecuteAction(GridIndex index)
         {
             if (!_playerActions.TacticsGrid.IsIndexValid(_playerActions.SelectedTile) || !_playerActions.TacticsGrid.IsIndexValid(index))
                 return false;
 
-            if (_playerActions.CurrentAbility)
-            {
-                _testAbility = _playerActions.CurrentAbility;
-            }
+            _ability = _playerActions.CurrentAbility;
 
-            if (_testAbility != null)
+            if (_ability != null)
             {
-                return _playerActions.CombatSystem.TryActivateAbility(_testAbility, _playerActions.SelectedTile, index);
+                return _playerActions.CombatSystem.TryActivateAbility(_ability, _playerActions.SelectedTile, index);
             }
             return false;
         }

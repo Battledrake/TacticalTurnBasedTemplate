@@ -58,6 +58,9 @@ MonoBehaviour:
     lineOfSightData:
       requireLineOfSight: 1
       height: 0.25
+  _effects:
+  - statType: 0
+    minMaxModifier: {x: -3, y: -4}
   _projectileCurve:
     serializedVersion: 2
     m_Curve:
@@ -93,6 +96,8 @@ MonoBehaviour:
     m_RotationOrder: 4
   _projectilePrefab: {fileID: 8467555195680559298, guid: 500f8dbd9712d644a95ac106c8a00ca5,
     type: 3}
-  _impactPrefab: {fileID: 0}
+  _taskPrefab: {fileID: 8862640479722470499, guid: a8b7b17f8fc21544086c91b35cee0944,
+    type: 3}
+  _taskData: {fileID: 11400000, guid: 5453bef032747ca4eb5acac1930ad5e7, type: 2}
   _animationTime: 1
   _animationSpeed: 2

@@ -11,17 +11,12 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         public override void ActivateAbility()
         {
-
+            EndAbility();
         }
 
         public override bool CanActivateAbility()
         {
-            return false;
-        }
-
-        public override void EndAbility()
-        {
-            Destroy(this.gameObject);
+            return true;
         }
 
         public override bool TryActivateAbility()

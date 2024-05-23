@@ -47,16 +47,28 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public float height;
     }
 
+    [Serializable]
+    public struct AbilityEffect
+    {
+        public AttributeType attributeType;
+        public Vector2Int minMaxModifier;
+    }
+
     public abstract class Ability : MonoBehaviour
     {
 
         public event Action<Ability> OnBehaviorComplete;
 
+        [Header("Ability")]
+
+        [Header("Ability Asset Data")]
         [SerializeField] private AbilityId _abilityId;
         [SerializeField] protected Sprite _icon;
 
+        [Header("Ability Attributes")]
         [SerializeField] protected AbilityRangeData _rangeData;
         [SerializeField] protected AbilityRangeData _areaOfEffectData;
+        [SerializeField] protected List<AbilityEffect> _effects;
 
         public string Name { get => _abilityId.ToString(); }
         public Sprite Icon { get => _icon; }
@@ -101,6 +113,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public abstract void ActivateAbility();
 
         public abstract bool TryActivateAbility();
-        public abstract void EndAbility();
+        public virtual void EndAbility() { Destroy(this.gameObject); }
     }
 }

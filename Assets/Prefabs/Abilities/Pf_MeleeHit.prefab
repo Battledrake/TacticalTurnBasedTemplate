@@ -44,7 +44,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2d380c3b490c9b244b2f516ad1ea7362, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _name: Melee Hit
+  _abilityId: 0
   _icon: {fileID: 21300000, guid: 181a09c7a0504424c8fff87bcb1f376c, type: 3}
   _rangeData:
     rangePattern: 5
@@ -58,4 +58,7 @@ MonoBehaviour:
     lineOfSightData:
       requireLineOfSight: 0
       height: 0
+  _effects:
+  - statType: 0
+    minMaxModifier: {x: -2, y: -3}
   _delay: 0

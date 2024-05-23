@@ -4,6 +4,13 @@ using UnityEngine;
 
 namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 {
+    public enum AttributeType
+    {
+        CurrentHealth,
+        MaxHealth,
+        MoveRange
+    }
+
     [CreateAssetMenu(fileName = "Stats", menuName = "TTBT/Unit/UnitStats")]
     public class UnitStats : ScriptableObject
     {

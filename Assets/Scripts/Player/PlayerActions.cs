@@ -10,6 +10,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public event Action<ActionBase, ActionBase> OnSelectedActionsChanged;
         public event Action<GridIndex> OnHoveredTileChanged;
         public event Action<Ability> OnCurrentAbilityChanged;
+        public event Action<GridIndex> OnSelectedTileChanged;
         public event Action<Unit> OnSelectedUnitChanged;
 
         [SerializeField] private TacticsGrid _tacticsGrid;
@@ -162,6 +163,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                     return;
                 }
             }
+            OnSelectedTileChanged?.Invoke(_selectedTile);
 
             _tacticsGrid.GridTiles.TryGetValue(index, out TileData tileData);
 
