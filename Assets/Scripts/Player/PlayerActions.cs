@@ -10,6 +10,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public event Action<ActionBase, ActionBase> OnSelectedActionsChanged;
         public event Action<GridIndex> OnHoveredTileChanged;
         public event Action<Ability> OnCurrentAbilityChanged;
+        public event Action<Unit> OnSelectedUnitChanged;
 
         [SerializeField] private TacticsGrid _tacticsGrid;
         [SerializeField] private CombatSystem _combatSystem;
@@ -19,7 +20,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public GridIndex HoveredTile { get => _hoveredTile; set => _selectedTile = value; }
         public GridIndex SelectedTile { get => _selectedTile; set => _selectedTile = value; }
         public Unit HoveredUnit { get => _hoveredUnit; set => _hoveredUnit = value; }
-        public Unit SelectedUnit { get => _selectedUnit; set => _selectedUnit = value; }
+        public Unit SelectedUnit { get => _selectedUnit; }
         public ActionBase LeftClickAction { get => _leftClickAction; }
         public ActionBase RightClickAction { get => _rightClickAction; }
         public Ability CurrentAbility { get => _currentAbility; set { _currentAbility = value; OnCurrentAbilityChanged?.Invoke(_currentAbility); } }
@@ -157,6 +158,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 {
                     _selectedUnit.SetIsSelected(false);
                     _selectedUnit = null;
+                    OnSelectedUnitChanged?.Invoke(null);
                     return;
                 }
             }
@@ -174,6 +176,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                     tileData.unitOnTile.SetIsSelected(true);
                 }
                 _selectedUnit = tileData.unitOnTile;
+                OnSelectedUnitChanged?.Invoke(_selectedUnit);
             }
         }
 

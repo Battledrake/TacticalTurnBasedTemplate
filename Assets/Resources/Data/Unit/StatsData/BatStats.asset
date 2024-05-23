@@ -17,3 +17,8 @@ MonoBehaviour:
   heightAllowance: 3
   moveSpeed: 4
   moveRange: 10
+  currentHealth: 10
+  maxHealth: 10
+  abilities:
+  - {fileID: -7179713428241320167, guid: 2acbfa7fcca56f942aa9005729504ba2, type: 3}
+  - {fileID: -1119868919808071195, guid: 1c014012a3c73d8448a0970f5713bec4, type: 3}

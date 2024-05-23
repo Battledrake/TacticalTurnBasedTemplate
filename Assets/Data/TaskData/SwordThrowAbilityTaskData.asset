@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: SwordThrowAbilityTaskData
   m_EditorClassIdentifier: 
   animationTime: 0.75
-  animationSpeed: 1
+  animationSpeed: 0.1
   positionAlphaCurve:
     serializedVersion: 2
     m_Curve:

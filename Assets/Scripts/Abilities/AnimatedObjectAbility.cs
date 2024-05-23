@@ -52,8 +52,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             if (!combatSys)
                 return;
 
-            if (!combatSys.GetAbilityRange(_originIndex, this.AreaOfEffectData).Contains(unit.UnitGridIndex))
+            if (unit.UnitGridIndex != _targetIndex && !combatSys.GetAbilityRange(_originIndex, this.AreaOfEffectData).Contains(unit.UnitGridIndex))
                 return;
+
 
             IUnitAnimation unitAnimation = unit.GetComponent<IUnitAnimation>();
             if (unitAnimation != null)
