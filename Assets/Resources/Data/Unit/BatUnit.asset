@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed03119de806d3e46be6cf82e97cedf9, type: 3}
   m_Name: BatUnit
   m_EditorClassIdentifier: 
-  unitType: 5
+  unitId: 5
   assetData: {fileID: 11400000, guid: 46196dc6526dc9e45b27ffae56e37803, type: 2}
   unitStats: {fileID: 11400000, guid: ac11f7c2fbabae741ad95b0dfecc3956, type: 2}

@@ -44,7 +44,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 97fc42592235a54438299929822099be, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _name: Wind Gust
+  _abilityId: 3
   _icon: {fileID: 21300000, guid: 3c7e93125f544564ea234f4f23b39a1e, type: 3}
   _rangeData:
     rangePattern: 6

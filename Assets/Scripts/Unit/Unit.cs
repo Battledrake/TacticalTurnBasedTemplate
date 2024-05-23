@@ -12,7 +12,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public event Action<Unit> OnUnitReachedDestination;
         public event Action<Unit> OnUnitStartedMovement;
 
-        [SerializeField] private UnitType _unitType = UnitType.Ranger;
+        [SerializeField] private UnitId _unitType = UnitId.Ranger;
         [SerializeField] private Color _hoverColor;
         [SerializeField] private Color _selectedColor = Color.green;
         [SerializeField] private AnimationCurve _positionAlpha;
@@ -48,7 +48,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _tacticsGrid = grid;
         }
 
-        public void InitializeUnit(UnitType unitType)
+        public void InitializeUnit(UnitId unitType)
         {
             if (_unitVisual != null)
                 Destroy(_unitVisual);

@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed03119de806d3e46be6cf82e97cedf9, type: 3}
   m_Name: Mech6Unit
   m_EditorClassIdentifier: 
-  unitType: 4
+  unitId: 4
   assetData: {fileID: 11400000, guid: 28ab3797ef370fd458185b67342e8f42, type: 2}
   unitStats: {fileID: 11400000, guid: d092cbf0755072b4e819f6513f8405b4, type: 2}

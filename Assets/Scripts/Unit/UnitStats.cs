@@ -12,5 +12,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public float heightAllowance = 2f;
         public float moveSpeed = 3f;
         public float moveRange = 5f;
+        public int currentHealth = 10;
+        public int maxHealth = 10;
+        public List<Ability> abilities;
     }
 }

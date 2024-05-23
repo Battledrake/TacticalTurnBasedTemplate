@@ -16,13 +16,13 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 _playerActions.TacticsGrid.GridTiles.TryGetValue(index, out TileData tileData);
                 if (!tileData.unitOnTile)
                 {
-                    List<TileType> validTileTypes = DataManager.GetUnitDataFromType((UnitType)actionValue).unitStats.validTileTypes;
+                    List<TileType> validTileTypes = DataManager.GetUnitDataFromType((UnitId)actionValue).unitStats.validTileTypes;
 
                     if (validTileTypes != null || validTileTypes.Count > 0 || validTileTypes.Contains(tileData.tileType))
                     {
                         Unit newUnit = Instantiate(_unitPrefab);
-                        newUnit.gameObject.name = ((UnitType)actionValue).ToString();
-                        newUnit.InitializeUnit((UnitType)actionValue);
+                        newUnit.gameObject.name = ((UnitId)actionValue).ToString();
+                        newUnit.InitializeUnit((UnitId)actionValue);
                         newUnit.SetUnitsGrid(_playerActions.TacticsGrid);
 
                         _playerActions.CombatSystem.AddUnitToCombat(index, newUnit);

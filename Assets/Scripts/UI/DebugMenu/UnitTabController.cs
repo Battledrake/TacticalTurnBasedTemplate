@@ -14,7 +14,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         [SerializeField] private PlayerActions _playerActions;
 
-        private Dictionary<UnitType, UnitButton> _iconButtons = new Dictionary<UnitType, UnitButton>();
+        private Dictionary<UnitId, UnitButton> _iconButtons = new Dictionary<UnitId, UnitButton>();
 
         private int _activeButton = -1;
 
@@ -24,17 +24,17 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             for (int i = 0; i < unitData.Length; i++)
             {
                 UnitButton unitButton = Instantiate(_unitButtonPrefab, _unitButtonContainer);
-                unitButton.InitializeButton(unitData[i].unitType, unitData[i].assetData.unitIcon, _playerActions);
+                unitButton.InitializeButton(unitData[i].unitId, unitData[i].assetData.unitIcon, _playerActions);
                 unitButton.OnUnitButtonToggled += OnUnitButtonToggled;
 
-                _iconButtons.Add(unitData[i].unitType, unitButton);
+                _iconButtons.Add(unitData[i].unitId, unitButton);
             }
         }
 
-        private void OnUnitButtonToggled(UnitType unitButton)
+        private void OnUnitButtonToggled(UnitId unitButton)
         {
             //This mean we're passing in the same button.
-            if (_activeButton >= 0 && (UnitType)_activeButton == unitButton)
+            if (_activeButton >= 0 && (UnitId)_activeButton == unitButton)
             {
                 _activeButton = -1;
             }
@@ -43,7 +43,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 //This means we had a valid button but it's not the one that called this. We need to disable it.
                 if (_activeButton >= 0)
                 {
-                    _iconButtons[(UnitType)_activeButton].DisableButton();
+                    _iconButtons[(UnitId)_activeButton].DisableButton();
                 }
                 //Now we set the new active button to the one that sent the message.
                 _activeButton = (int)unitButton;

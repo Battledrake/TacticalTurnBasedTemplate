@@ -8,7 +8,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 {
     public class UnitButton : MonoBehaviour
     {
-        public event Action<UnitType> OnUnitButtonToggled;
+        public event Action<UnitId> OnUnitButtonToggled;
 
         [SerializeField] private Color _defaultBorderColor;
         [SerializeField] private Color _selectedBorderColor;
@@ -16,7 +16,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         [SerializeField] private Image _icon;
 
         private Toggle _buttonToggle;
-        private UnitType _unitType;
+        private UnitId _unitType;
         private PlayerActions _playerActions;
 
         private void Awake()
@@ -49,7 +49,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             OnUnitButtonToggled?.Invoke(_unitType);
         }
 
-        public void InitializeButton(UnitType unitType, Sprite icon, PlayerActions playerActions)
+        public void InitializeButton(UnitId unitType, Sprite icon, PlayerActions playerActions)
         {
             _unitType = unitType;
             _icon.sprite = icon;

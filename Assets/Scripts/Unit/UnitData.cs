@@ -4,7 +4,7 @@ using UnityEngine;
 namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 {
     //Temporary for building out system.
-    public enum UnitType
+    public enum UnitId
     {
         Warrior,
         Ranger,
@@ -17,7 +17,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
     [CreateAssetMenu(fileName = "UnitData", menuName = "TTBT/Unit/UnitData")]
     public class UnitData : ScriptableObject
     {
-        public UnitType unitType;
+        public UnitId unitId;
         public UnitAssetData assetData;
         public UnitStats unitStats;
     }

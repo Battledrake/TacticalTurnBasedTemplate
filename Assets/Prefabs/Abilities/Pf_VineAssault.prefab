@@ -44,7 +44,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6d86e668ac114b44baa687cf2a554343, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _name: Vine Assault
+  _abilityId: 2
   _icon: {fileID: 21300000, guid: 384a9982cc7676249932679d732c2b08, type: 3}
   _rangeData:
     rangePattern: 4
