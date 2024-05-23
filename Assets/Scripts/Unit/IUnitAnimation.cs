@@ -15,4 +15,5 @@ public enum UnitAnimationState
 public interface IUnitAnimation
 {
     public void PlayDeathAnimation() { }
+    public void TriggerHitAnimation() { }
 }

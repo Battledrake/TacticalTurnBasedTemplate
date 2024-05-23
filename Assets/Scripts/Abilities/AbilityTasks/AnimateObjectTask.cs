@@ -8,6 +8,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
     public class AnimateObjectTask : AbilityTask
     {
         public event Action<AnimateObjectTask> OnInitialAnimationCompleted;
+        public event Action<Unit> OnObjectCollisionWithUnit;
 
         private GameObject _objectToAnimate;
 
@@ -72,6 +73,15 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             this.transform.LookAt(_targetPosition);
 
             _isRunning = true;
+        }
+
+        private void OnTriggerEnter(Collider other)
+        {
+            Unit unit = other.GetComponent<Unit>();
+            if (unit)
+            {
+                OnObjectCollisionWithUnit(unit);
+            }
         }
 
         public override IEnumerator ExecuteTask()

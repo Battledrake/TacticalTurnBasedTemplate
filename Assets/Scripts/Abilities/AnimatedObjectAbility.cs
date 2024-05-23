@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro.EditorUtilities;
@@ -17,6 +18,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private AnimateObjectTask _activeTask;
         private GameObject _animatingObject;
 
+        private List<Unit> _hitUnits = new List<Unit>();
+
         /// <summary>
         /// Set values for update calls.
         /// </summary>
@@ -31,11 +34,32 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             {
                 _activeTask = task;
                 task.OnInitialAnimationCompleted += AnimateObjectTask_OnInitialAnimationComplete;
+                task.OnObjectCollisionWithUnit += AnimateObjectTask_OnOjbectCollisionWithUnit;
 
                 GameObject objectToAnimate = Instantiate(_objectToAnimate);
                 _animatingObject = objectToAnimate;
                 task.InitTask(objectToAnimate, _taskData, originData.tileMatrix.GetPosition(), targetData.tileMatrix.GetPosition(), _loopAnimation);
                 StartCoroutine(task.ExecuteTask());
+            }
+        }
+
+        private void AnimateObjectTask_OnOjbectCollisionWithUnit(Unit unit)
+        {
+            if (_hitUnits.Contains(unit))
+                return;
+
+            CombatSystem combatSys = GameObject.Find("[CombatSystem]").GetComponent<CombatSystem>();
+            if (!combatSys)
+                return;
+
+            if (!combatSys.GetAbilityRange(_originIndex, this.AreaOfEffectData).Contains(unit.UnitGridIndex))
+                return;
+
+            IUnitAnimation unitAnimation = unit.GetComponent<IUnitAnimation>();
+            if (unitAnimation != null)
+            {
+                _hitUnits.Add(unit);
+                unitAnimation.TriggerHitAnimation();
             }
         }
 
