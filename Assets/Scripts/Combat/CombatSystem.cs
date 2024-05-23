@@ -3,12 +3,15 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using UnityEditor.Playables;
 using UnityEngine;
 
 namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 {
     public class CombatSystem : MonoBehaviour
     {
+        public static CombatSystem Instance;
+
         public event Action<Unit, GridIndex> OnUnitGridIndexChanged;
 
         [SerializeField] private bool _drawLineOfSightLines = false;
@@ -16,6 +19,16 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         [SerializeField] private TacticsGrid _tacticsGrid;
 
         private List<Unit> _unitsInCombat = new List<Unit>();
+
+        private void Awake()
+        {
+            if (Instance != null && Instance != this)
+                Destroy(this);
+            else
+                Instance = this;
+
+            DontDestroyOnLoad(this.gameObject);
+        }
 
         private void Start()
         {
@@ -41,20 +54,28 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             OnUnitGridIndexChanged?.Invoke(unit, index);
         }
 
-        public void AddUnitToCombat(GridIndex gridIndex, Unit unit)
-        {
-            _unitsInCombat.Add(unit);
-            _tacticsGrid.AddUnitToTile(gridIndex, unit);
-        }
-
         public void AddUnitToCombat(Vector3 worldPosition, Unit unit)
         {
-            _unitsInCombat.Add(unit);
             GridIndex unitIndex = _tacticsGrid.GetTileIndexFromWorldPosition(worldPosition);
-            if (_tacticsGrid.AddUnitToTile(unitIndex, unit))
+            AddUnitToCombat(unitIndex, unit);
+        }
+
+        public void AddUnitToCombat(GridIndex gridIndex, Unit unit)
+        {
+            if(_tacticsGrid.AddUnitToTile(gridIndex, unit))
             {
-                //Success. Add additional logic in here as project requires.
+                _unitsInCombat.Add(unit);
+                unit.OnUnitDied += Unit_OnUnitDied;
             }
+            else
+            {
+                Debug.LogWarning("Unable to add unit to tile. Invalid index or unit already exists at GridIndex");
+            }
+        }
+
+        private void Unit_OnUnitDied(Unit unit)
+        {
+            RemoveUnitFromCombat(unit, false);
         }
 
         /// <summary>
@@ -64,6 +85,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         /// <param name="newPosition"></param>
         public void RemoveUnitFromCombat(Unit unit, Vector3 newPosition)
         {
+            unit.OnUnitDied -= Unit_OnUnitDied;
+
             _unitsInCombat.Remove(unit);
             _tacticsGrid.RemoveUnitFromTile(unit.UnitGridIndex);
             unit.UnitGridIndex = GridIndex.Invalid();
@@ -88,24 +111,25 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             else
             {
                 unit.UnitGridIndex = GridIndex.Invalid();
-                unit.GetComponent<IUnitAnimation>().PlayDeathAnimation();
             }
-
         }
 
-        public bool TryActivateAbility(Ability ability, GridIndex origin, GridIndex target)
+        public bool TryActivateAbility(Ability ability, Unit instigator, GridIndex origin, GridIndex target)
         {
             if (GetAbilityRange(origin, ability.RangeData).Contains(target))
             {
                 Ability abilityObject = Instantiate(ability, _tacticsGrid.GetWorldPositionFromGridIndex(origin), Quaternion.identity);
+
+                List<GridIndex> impactIndexes = new List<GridIndex>();
                 if (ability.AreaOfEffectData.rangePattern == AbilityRangePattern.None)
                 {
-                    abilityObject.InitializeAbility(_tacticsGrid, origin, target);
+                    impactIndexes.Add(target);
+                    abilityObject.InitializeAbility(_tacticsGrid, instigator, origin, target);
                 }
                 else
                 {
-                    List<GridIndex> aoeIndexes = GetAbilityRange(target, ability.AreaOfEffectData);
-                    abilityObject.InitializeAbility(_tacticsGrid, origin, target, aoeIndexes);
+                    impactIndexes = GetAbilityRange(target, ability.AreaOfEffectData);
+                    abilityObject.InitializeAbility(_tacticsGrid, instigator, origin, target, impactIndexes);
                 }
                 bool wasSuccessfulActivation = abilityObject.TryActivateAbility();
                 if (wasSuccessfulActivation)
@@ -119,6 +143,19 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 return wasSuccessfulActivation;
             }
             return false;
+        }
+
+        public void ApplyEffectsToUnit(Unit instigator, Unit receiver, List<AbilityEffect> effectsToApply)
+        {
+            List<AbilityEffectReal> effectsRealList = new List<AbilityEffectReal>();
+            for (int i = 0; i < effectsToApply.Count; i++)
+            {
+                AbilityEffectReal effectReal;
+                effectReal.attributeType = effectsToApply[i].attributeType;
+                effectReal.modifier = StaticUtilities.MinMaxRandom(effectsToApply[i].minMaxModifier);
+                effectsRealList.Add(effectReal);
+            }
+            receiver.ApplyEffects(effectsRealList);
         }
 
         public bool IsValidTileForUnit(Unit unit, GridIndex index)

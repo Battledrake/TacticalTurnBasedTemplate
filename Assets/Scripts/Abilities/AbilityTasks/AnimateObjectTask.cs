@@ -80,7 +80,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             Unit unit = other.GetComponent<Unit>();
             if (unit)
             {
-                OnObjectCollisionWithUnit(unit);
+                OnObjectCollisionWithUnit?.Invoke(unit);
             }
         }
 

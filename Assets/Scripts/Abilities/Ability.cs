@@ -54,6 +54,12 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public Vector2Int minMaxModifier;
     }
 
+    public struct AbilityEffectReal
+    {
+        public AttributeType attributeType;
+        public int modifier;
+    }
+
     public abstract class Ability : MonoBehaviour
     {
 
@@ -70,10 +76,15 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         [SerializeField] protected AbilityRangeData _areaOfEffectData;
         [SerializeField] protected List<AbilityEffect> _effects;
 
+        public bool AffectFriendly { get; set; }
+
         public string Name { get => _abilityId.ToString(); }
         public Sprite Icon { get => _icon; }
         public AbilityRangeData RangeData { get => _rangeData; }
         public AbilityRangeData AreaOfEffectData { get => _areaOfEffectData; }
+        public List<AbilityEffect> Effects { get => _effects; }
+
+        protected Unit _instigator;
 
         protected GridIndex _originIndex;
         protected GridIndex _targetIndex;
@@ -86,16 +97,17 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             return _abilityId;
         }
 
-        public void InitializeAbility(TacticsGrid tacticsGrid, GridIndex originIndex, GridIndex targetIndex)
+        public void InitializeAbility(TacticsGrid tacticsGrid, Unit instigator, GridIndex originIndex, GridIndex targetIndex)
         {
             _tacticsGrid = tacticsGrid;
             _originIndex = originIndex;
             _targetIndex = targetIndex;
         }
 
-        public void InitializeAbility(TacticsGrid tacticsGrid, GridIndex originIndex, GridIndex targetIndex, List<GridIndex> aoeIndexes)
+        public void InitializeAbility(TacticsGrid tacticsGrid, Unit instigator, GridIndex originIndex, GridIndex targetIndex, List<GridIndex> aoeIndexes)
         {
             _tacticsGrid = tacticsGrid;
+            _instigator = instigator;
             _originIndex = originIndex;
             _targetIndex = targetIndex;
             _aoeIndexes = aoeIndexes;

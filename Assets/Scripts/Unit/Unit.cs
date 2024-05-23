@@ -11,6 +11,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public static event Action<Unit, GridIndex> OnUnitReachedNewTile;
         public event Action<Unit> OnUnitReachedDestination;
         public event Action<Unit> OnUnitStartedMovement;
+        public event Action<Unit> OnUnitDied;
+        public event Action<Unit> OnUnitRespawn;
 
         [SerializeField] private UnitId _unitType = UnitId.Ranger;
         [SerializeField] private Color _hoverColor;
@@ -26,6 +28,11 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private Animator _unitAnimator;
         private UnitData _unitData;
         private TacticsGrid _tacticsGrid;
+
+        //TODO: Should we have a component for attributes?
+        private float _currentHealth;
+        private float _maxHealth;
+        private float _moveRange;
 
         //TODO: Movement stuff inside its own component like navagent
         private GridIndex _gridIndex = GridIndex.Invalid();
@@ -59,6 +66,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 Destroy(_unitVisual);
             _unitVisual = Instantiate(_unitData.assetData.unitVisual, this.transform);
             _moveSpeed = _unitData.unitStats.moveSpeed;
+            _currentHealth = _unitData.unitStats.currentHealth;
+            _maxHealth = _unitData.unitStats.maxHealth;
+            _moveRange = _unitData.unitStats.moveRange;
 
             _unitAnimator = _unitVisual.GetComponent<Animator>();
             _unitOutline = _unitVisual.GetComponent<Outline>();
@@ -122,11 +132,12 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             InitializeUnit(_unitType);
         }
 
-        [ContextMenu("AddToCombat")]
+        [ContextMenu("ReAddToCombat")]
         public void AddUnitToCombat()
         {
-            GameObject.Find("[CombatSystem]").GetComponent<CombatSystem>().AddUnitToCombat(this.transform.position, this);
+            CombatSystem.Instance.AddUnitToCombat(this.transform.position, this);
             _unitAnimator.SetTrigger("Respawn");
+            _currentHealth = _maxHealth;
         }
 
         public void SetIsHovered(bool isHovered)
@@ -169,6 +180,48 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             }
         }
 
+        public void ApplyEffect(AbilityEffectReal effect)
+        {
+            switch (effect.attributeType)
+            {
+                case AttributeType.CurrentHealth:
+                    ModifyCurrentHealth(effect.modifier);
+                    break;
+                case AttributeType.MaxHealth:
+                    break;
+                case AttributeType.MoveRange:
+                    break;
+            }
+        }
+
+        public void ApplyEffects(List<AbilityEffectReal> effects)
+        {
+            for(int i = 0; i < effects.Count; i++)
+            {
+                ApplyEffect(effects[i]);
+            }
+        }
+
+        private void ModifyCurrentHealth(int effectModifier)
+        {
+            if (_currentHealth == 0 && effectModifier < 0)
+                return;
+            if (_currentHealth == _maxHealth && effectModifier > 0)
+                return;
+
+            _currentHealth = Mathf.Clamp(_currentHealth + effectModifier, 0, _maxHealth);
+
+            if (_currentHealth == 0)
+            {
+                PlayDeathAnimation();
+                OnUnitDied?.Invoke(this);
+                return;
+            }
+
+            if (effectModifier < 0)
+                TriggerHitAnimation();
+        }
+
         public void UseAbility(GridIndex targetIndex)
         {
             _tacticsGrid.GetTileDataFromIndex(targetIndex, out TileData tileData);
@@ -176,6 +229,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             lookAtVector.y = this.transform.position.y;
             this.transform.LookAt(lookAtVector);
 
+            _unitAnimator.ResetTrigger("Attack");
             _unitAnimator.SetTrigger("Attack");
         }
 

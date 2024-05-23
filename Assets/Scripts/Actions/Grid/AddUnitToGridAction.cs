@@ -25,7 +25,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                         newUnit.InitializeUnit((UnitId)actionValue);
                         newUnit.SetUnitsGrid(_playerActions.TacticsGrid);
 
-                        _playerActions.CombatSystem.AddUnitToCombat(index, newUnit);
+                        CombatSystem.Instance.AddUnitToCombat(index, newUnit);
                         return true;
                     }
                 }

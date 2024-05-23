@@ -59,10 +59,10 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void ShowAbilityRangePattern()
         {
-            _rangeIndexes = _playerActions.CombatSystem.GetAbilityRange(_selectedTileIndex, _currentAbility.RangeData);
+            _rangeIndexes = CombatSystem.Instance.GetAbilityRange(_selectedTileIndex, _currentAbility.RangeData);
 
             if (_currentAbility.RangeData.lineOfSightData.requireLineOfSight)
-                _rangeIndexes = _playerActions.CombatSystem.RemoveIndexesWithoutLineOfSight(_selectedTileIndex, _rangeIndexes, _currentAbility.RangeData.lineOfSightData.height);
+                _rangeIndexes = CombatSystem.Instance.RemoveIndexesWithoutLineOfSight(_selectedTileIndex, _rangeIndexes, _currentAbility.RangeData.lineOfSightData.height);
 
             SetTileStateOnList(TileState.IsInAbilityRange, _rangeIndexes);
         }
@@ -71,10 +71,10 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             if (!_rangeIndexes.Contains(_hoveredTileIndex))
                 return;
 
-            _areaOfEffectIndexes = _playerActions.CombatSystem.GetAbilityRange(_hoveredTileIndex, _currentAbility.AreaOfEffectData);
+            _areaOfEffectIndexes = CombatSystem.Instance.GetAbilityRange(_hoveredTileIndex, _currentAbility.AreaOfEffectData);
 
             if (_currentAbility.AreaOfEffectData.lineOfSightData.requireLineOfSight)
-                _areaOfEffectIndexes = _playerActions.CombatSystem.RemoveIndexesWithoutLineOfSight(_hoveredTileIndex, _areaOfEffectIndexes, _currentAbility.AreaOfEffectData.lineOfSightData.height);
+                _areaOfEffectIndexes = CombatSystem.Instance.RemoveIndexesWithoutLineOfSight(_hoveredTileIndex, _areaOfEffectIndexes, _currentAbility.AreaOfEffectData.lineOfSightData.height);
 
             SetTileStateOnList(TileState.IsInAoeRange, _areaOfEffectIndexes);
         }

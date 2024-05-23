@@ -14,10 +14,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public event Action<Unit> OnSelectedUnitChanged;
 
         [SerializeField] private TacticsGrid _tacticsGrid;
-        [SerializeField] private CombatSystem _combatSystem;
 
         public TacticsGrid TacticsGrid { get => _tacticsGrid; }
-        public CombatSystem CombatSystem { get => _combatSystem; }
         public GridIndex HoveredTile { get => _hoveredTile; set => _selectedTile = value; }
         public GridIndex SelectedTile { get => _selectedTile; set => _selectedTile = value; }
         public Unit HoveredUnit { get => _hoveredUnit; set => _hoveredUnit = value; }
@@ -47,7 +45,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void Start()
         {
-            _combatSystem.OnUnitGridIndexChanged += CombatSystem_OnUnitGridIndexChanged;
+            CombatSystem.Instance.OnUnitGridIndexChanged += CombatSystem_OnUnitGridIndexChanged;
         }
 
         private void CombatSystem_OnUnitGridIndexChanged(Unit unit, GridIndex index)

@@ -37,7 +37,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             {
                 _activeTask = task;
                 task.OnInitialAnimationCompleted += AnimateObjectTask_OnInitialAnimationComplete;
-                task.OnObjectCollisionWithUnit += AnimateObjectTask_OnOjbectCollisionWithUnit;
+                task.OnObjectCollisionWithUnit += AnimateObjectTask_OnObjectCollisionWithUnit;
 
                 GameObject objectToAnimate = Instantiate(_objectToAnimate);
                 _animatingObject = objectToAnimate;
@@ -46,25 +46,24 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             }
         }
 
-        private void AnimateObjectTask_OnOjbectCollisionWithUnit(Unit unit)
+        private void AnimateObjectTask_OnObjectCollisionWithUnit(Unit unit)
         {
+            //TODO: Improve on the friendly fire logic
+            if (unit == _instigator && !this.AffectFriendly)
+                return;
+
             if (_hitUnits.Contains(unit))
                 return;
 
-            CombatSystem combatSys = GameObject.Find("[CombatSystem]").GetComponent<CombatSystem>();
-            if (!combatSys)
-                return;
 
-            if (unit.UnitGridIndex != _targetIndex && !combatSys.GetAbilityRange(_originIndex, this.AreaOfEffectData).Contains(unit.UnitGridIndex))
-                return;
-
-
-            IUnitAnimation unitAnimation = unit.GetComponent<IUnitAnimation>();
-            if (unitAnimation != null)
+            if (unit.UnitGridIndex != _targetIndex && !CombatSystem.Instance.GetAbilityRange(_targetIndex, this.AreaOfEffectData).Contains(unit.UnitGridIndex))
             {
-                _hitUnits.Add(unit);
-                unitAnimation.TriggerHitAnimation();
+                return;
             }
+
+
+            _hitUnits.Add(unit);
+            CombatSystem.Instance.ApplyEffectsToUnit(_instigator, unit, _effects);
         }
 
         private void AnimateObjectTask_OnInitialAnimationComplete(AnimateObjectTask task)

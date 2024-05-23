@@ -10,7 +10,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             {
                 if (tileData.unitOnTile != null)
                 {
-                    _playerActions.CombatSystem.RemoveUnitFromCombat(tileData.unitOnTile);
+                    CombatSystem.Instance.RemoveUnitFromCombat(tileData.unitOnTile);
 
                     return true;
                 }

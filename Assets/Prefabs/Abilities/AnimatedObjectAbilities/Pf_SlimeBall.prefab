@@ -59,9 +59,9 @@ MonoBehaviour:
       requireLineOfSight: 0
       height: 0
   _effects:
-  - statType: 0
+  - attributeType: 0
     minMaxModifier: {x: -2, y: -3}
-  _objectToAnimate: {fileID: 3913977627425481915, guid: 88f3f0c3666abc445a3cf0ba5c0fdac5,
+  _objectToAnimate: {fileID: 6636130739088828296, guid: 438e239d4d0f17049a999e30216259f0,
     type: 3}
   _taskPrefab: {fileID: 8862640479722470499, guid: a8b7b17f8fc21544086c91b35cee0944,
     type: 3}

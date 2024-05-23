@@ -16,7 +16,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
             if (_ability != null)
             {
-                return _playerActions.CombatSystem.TryActivateAbility(_ability, _playerActions.SelectedTile, index);
+                return CombatSystem.Instance.TryActivateAbility(_ability, _playerActions.SelectedUnit, _playerActions.SelectedTile, index);
             }
             return false;
         }
