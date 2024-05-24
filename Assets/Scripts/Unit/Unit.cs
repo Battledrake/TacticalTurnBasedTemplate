@@ -64,6 +64,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private void GridMovement_OnReachedDestination()
         {
             OnUnitReachedDestination?.Invoke(this);
+            _unitAnimator.SetFloat("Speed", 0);
+            _unitAnimator.speed = 1f;
         }
 
         private void GridMovement_OnReachedNewTile(GridIndex index)
@@ -74,6 +76,15 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private void GridMovement_OnMovementStarted()
         {
             OnUnitStartedMovement?.Invoke(this);
+        }
+
+        private void Update()
+        {
+            if (_gridMovement.IsMoving)
+            {
+                _unitAnimator.SetFloat("Speed", _gridMovement.CurrentMovementSpeed);
+                _unitAnimator.speed = 2f;
+            }
         }
 
         public void SetUnitsGrid(TacticsGrid grid)
@@ -170,7 +181,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         public void ApplyEffects(List<AbilityEffectReal> effects)
         {
-            for(int i = 0; i < effects.Count; i++)
+            for (int i = 0; i < effects.Count; i++)
             {
                 ApplyEffect(effects[i]);
             }
@@ -196,15 +207,15 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 TriggerHitAnimation();
         }
 
-        public void UseAbility(GridIndex targetIndex)
+        public void LookAtTarget(GridIndex targetIndex)
         {
             _tacticsGrid.GetTileDataFromIndex(targetIndex, out TileData tileData);
             Vector3 lookAtVector = tileData.tileMatrix.GetPosition();
             lookAtVector.y = this.transform.position.y;
             this.transform.LookAt(lookAtVector);
 
-            _unitAnimator.ResetTrigger("Attack");
-            _unitAnimator.SetTrigger("Attack");
+            //_unitAnimator.ResetTrigger("Attack");
+            //_unitAnimator.SetTrigger("Attack");
         }
 
         public void TriggerHitAnimation()
@@ -216,16 +227,5 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             _unitAnimator.SetTrigger("Die");
         }
-
-        //public void SetPathAndMove(List<GridIndex> path)
-        //{
-        //    _currentPathToFollow = new List<GridIndex>(path);
-        //    _isMoving = true;
-        //    _unitAnimator.SetFloat("Speed", _moveSpeed);
-        //    _unitAnimator.speed = _moveSpeed;
-        //    UpdatePath();
-
-        //    OnUnitStartedMovement?.Invoke(this);
-        //}
     }
 }

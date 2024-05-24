@@ -7,22 +7,21 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 {
     public abstract class AbilityTask : MonoBehaviour
     {
-        public event Action OnTaskCompleted;
+        public event Action<AbilityTask> OnTaskCompleted;
 
         protected bool _isRunning = false;
 
-        public abstract IEnumerator ExecuteTask();
+        public abstract IEnumerator ExecuteTask(Ability owner);
         public virtual void EndTask()
         {
             _isRunning = false;
-            StopCoroutine(ExecuteTask());
-            AbilityTaskCompleted();
             Destroy(this.gameObject);
         }
 
         protected void AbilityTaskCompleted()
         {
-            OnTaskCompleted?.Invoke();
+            OnTaskCompleted?.Invoke(this);
+            EndTask();
         }
     }
 }

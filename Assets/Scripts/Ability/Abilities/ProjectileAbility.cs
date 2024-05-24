@@ -20,10 +20,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private List<Unit> _hitUnits = new List<Unit>();
 
-        private bool _isActive;
-        private float _timeElapsed;
-        private Vector3 _startPosition;
-
         public override bool CanActivateAbility()
         {
             //If owner component allows.
@@ -44,9 +40,13 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         public override void ActivateAbility()
         {
-            //ExecuteAbilityTask(Action action);
+            CommitAbility();
+
+            if (_instigator)
+                _instigator.LookAtTarget(_targetIndex);
+
             _tacticsGrid.GetTileDataFromIndex(_targetIndex, out TileData initialTargetData);
-            _startPosition = initialTargetData.tileMatrix.GetPosition();
+            Vector3 startPosition = initialTargetData.tileMatrix.GetPosition();
             for (int i = 0; i < _aoeIndexes.Count; i++)
             {
                 if (_aoeIndexes[i] != _targetIndex)
@@ -56,17 +56,14 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                     GameObject projectile = Instantiate(_projectilePrefab);
 
                     AnimateObjectTask newTask = Instantiate(_taskPrefab);
-                    newTask.InitTask(projectile, _taskData, _startPosition, targetData.tileMatrix.GetPosition(), UnityEngine.Random.Range(.8f, _animationSpeed), false);
+                    newTask.InitTask(projectile, _taskData, startPosition, targetData.tileMatrix.GetPosition(), UnityEngine.Random.Range(.8f, _animationSpeed), false);
 
                     newTask.OnInitialAnimationCompleted += AnimateObjectTask_OnInitialAnimationCompleted;
                     newTask.OnObjectCollisionWithUnit += AnimateObjectTask_OnObjectCollisionWithUnit;
 
-                    StartCoroutine(newTask.ExecuteTask());
+                    StartCoroutine(newTask.ExecuteTask(this));
                 }
             }
-
-
-            _isActive = true;
         }
 
         private void AnimateObjectTask_OnObjectCollisionWithUnit(Unit unit)
@@ -78,7 +75,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             if (_hitUnits.Contains(unit))
                 return;
 
-            if (unit.UnitGridIndex != _targetIndex && !CombatSystem.Instance.GetAbilityRange(_targetIndex, this.AreaOfEffectData).Contains(unit.UnitGridIndex))
+            if (!_aoeIndexes.Contains(unit.UnitGridIndex))
             {
                 return;
             }
@@ -89,16 +86,24 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void AnimateObjectTask_OnInitialAnimationCompleted(AnimateObjectTask task)
         {
+            task.OnInitialAnimationCompleted -= AnimateObjectTask_OnInitialAnimationCompleted;
+            task.OnObjectCollisionWithUnit -= AnimateObjectTask_OnObjectCollisionWithUnit;
 
-            EndAbility();
-        }
-
-        public override void EndAbility()
-        {
+            //HACK: If somehow our object didn't hit a valid unit due to a collision miss or something? hit it here and possibly fix issue that prevented collision in the first place. If Possible.
+            for(int i = 0; i < _aoeIndexes.Count; i++)
+            {
+                _tacticsGrid.GetTileDataFromIndex(_aoeIndexes[i], out TileData tileData);
+                if (tileData.unitOnTile)
+                {
+                    if (!_hitUnits.Contains(tileData.unitOnTile))
+                    {
+                        CombatSystem.Instance.ApplyEffectsToUnit(_instigator, tileData.unitOnTile, _effects);
+                    }
+                }
+            }
 
             AbilityBehaviorComplete(this);
-
-            Destroy(gameObject, 2f);
+            EndAbility();
         }
     }
 }

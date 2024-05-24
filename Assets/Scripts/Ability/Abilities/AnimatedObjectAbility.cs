@@ -18,9 +18,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         [SerializeField] private float _animationSpeed = 1f;
         [SerializeField] private bool _loopAnimation = false;
 
-        private AnimateObjectTask _activeTask;
-        private GameObject _animatingObject;
-
         private List<Unit> _hitUnits = new List<Unit>();
 
         /// <summary>
@@ -29,20 +26,23 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public override void ActivateAbility()
         {
             CommitAbility();
+
+            if (_instigator)
+                _instigator.LookAtTarget(_targetIndex);
+
             _tacticsGrid.GetTileDataFromIndex(_originIndex, out TileData originData);
             _tacticsGrid.GetTileDataFromIndex(_targetIndex, out TileData targetData);
 
             AnimateObjectTask task = Instantiate(_taskPrefab);
             if (task)
             {
-                _activeTask = task;
                 task.OnInitialAnimationCompleted += AnimateObjectTask_OnInitialAnimationComplete;
                 task.OnObjectCollisionWithUnit += AnimateObjectTask_OnObjectCollisionWithUnit;
 
                 GameObject objectToAnimate = Instantiate(_objectToAnimate);
-                _animatingObject = objectToAnimate;
+
                 task.InitTask(objectToAnimate, _taskData, originData.tileMatrix.GetPosition(), targetData.tileMatrix.GetPosition(), _animationSpeed, _loopAnimation);
-                StartCoroutine(task.ExecuteTask());
+                StartCoroutine(task.ExecuteTask(this));
             }
         }
 
@@ -69,10 +69,24 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private void AnimateObjectTask_OnInitialAnimationComplete(AnimateObjectTask task)
         {
             task.OnInitialAnimationCompleted -= AnimateObjectTask_OnInitialAnimationComplete;
+
+            //HACK: If somehow our object didn't hit a valid unit due to a collision miss or something? hit it here and possibly fix issue that prevented collision in the first place. If Possible.
+            for (int i = 0; i < _aoeIndexes.Count; i++)
+            {
+                _tacticsGrid.GetTileDataFromIndex(_aoeIndexes[i], out TileData tileData);
+                if (tileData.unitOnTile)
+                {
+                    if (!_hitUnits.Contains(tileData.unitOnTile))
+                    {
+                        Debug.LogWarning($"Unit at {tileData.index} missed by ability collision. Applying late effect");
+                        CombatSystem.Instance.ApplyEffectsToUnit(_instigator, tileData.unitOnTile, _effects);
+                    }
+                }
+            }
+
             AbilityBehaviorComplete(this);
             if (!_loopAnimation)
             {
-                Destroy(_animatingObject);
                 EndAbility();
             }
         }

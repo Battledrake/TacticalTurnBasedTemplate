@@ -62,7 +62,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
     public abstract class Ability : MonoBehaviour
     {
-
+        public event Action OnAbilityEnd;
         public event Action<Ability> OnBehaviorComplete;
 
         [Header("Ability")]
@@ -100,6 +100,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public void InitializeAbility(TacticsGrid tacticsGrid, Unit instigator, GridIndex originIndex, GridIndex targetIndex)
         {
             _tacticsGrid = tacticsGrid;
+            _instigator = instigator;
             _originIndex = originIndex;
             _targetIndex = targetIndex;
         }
@@ -125,6 +126,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public abstract void ActivateAbility();
 
         public abstract bool TryActivateAbility();
-        public virtual void EndAbility() { Destroy(this.gameObject); }
+        public virtual void EndAbility() { OnAbilityEnd?.Invoke();  Destroy(this.gameObject); }
     }
 }

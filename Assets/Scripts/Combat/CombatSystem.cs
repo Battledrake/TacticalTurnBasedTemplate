@@ -131,22 +131,16 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                     impactIndexes = GetAbilityRange(target, ability.AreaOfEffectData);
                     abilityObject.InitializeAbility(_tacticsGrid, instigator, origin, target, impactIndexes);
                 }
-                bool wasSuccessfulActivation = abilityObject.TryActivateAbility();
-                if (wasSuccessfulActivation)
-                {
-                    if (_tacticsGrid.GetTileDataFromIndex(origin, out TileData originData))
-                    {
-                        if (originData.unitOnTile)
-                            originData.unitOnTile.GetComponent<Unit>().UseAbility(target);
-                    }
-                }
-                return wasSuccessfulActivation;
+                return abilityObject.TryActivateAbility();
             }
             return false;
         }
 
         public void ApplyEffectsToUnit(Unit instigator, Unit receiver, List<AbilityEffect> effectsToApply)
         {
+            if (receiver == null)
+                return;
+
             List<AbilityEffectReal> effectsRealList = new List<AbilityEffectReal>();
             for (int i = 0; i < effectsToApply.Count; i++)
             {

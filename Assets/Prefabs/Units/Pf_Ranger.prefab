@@ -73,10 +73,25 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -8511329401836765540, guid: 93e8826305a181245a5bfcec53d01369,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 93e8826305a181245a5bfcec53d01369,
         type: 3}
       propertyPath: m_Name
       value: Pf_Ranger
+      objectReference: {fileID: 0}
+    - target: {fileID: 1552964737693390393, guid: 93e8826305a181245a5bfcec53d01369,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2045724998158016503, guid: 93e8826305a181245a5bfcec53d01369,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5866666021909216657, guid: 93e8826305a181245a5bfcec53d01369,
         type: 3}
