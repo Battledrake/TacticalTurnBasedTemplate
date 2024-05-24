@@ -326,10 +326,11 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                         }
                         else
                         {
-                            TileType tileType = TraceForGroundAndObstacles(instancePosition, out Vector3 hitPosition);
+                            TileType tileType = TraceForGroundAndObstacles(instancePosition, out Vector3 hitPosition, out Vector3 hitNormal);
                             if (tileType != TileType.None)
                             {
                                 tileData.tileType = tileType;
+                                instanceRotation = Quaternion.FromToRotation(Vector3.up, hitNormal) * instanceRotation;
                                 tileData.tileMatrix = Matrix4x4.TRS(hitPosition, instanceRotation, instanceScale);
                                 AddGridTileNoNotify(tileData);
                                 tilesToRender.Add(tileData);
@@ -364,10 +365,11 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             SpawnGrid(this.transform.position, _gridTileSize, _gridTileCount, _gridShape);
         }
 
-        public TileType TraceForGroundAndObstacles(Vector3 position, out Vector3 hitPosition)
+        public TileType TraceForGroundAndObstacles(Vector3 position, out Vector3 hitPosition, out Vector3 hitNormal)
         {
             TileType returnType = TileType.None;
             hitPosition = position;
+            hitNormal = Vector3.up;
 
             Vector3 origin = position + Vector3.up * 10.0f;
             LayerMask groundLayer = LayerMask.GetMask("Ground", "Obstacle");
@@ -383,6 +385,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                     returnType = gridModifier.TileType;
                 }
                 hitPosition.y = hitInfo.point.y;
+                hitNormal = hitInfo.normal;
             }
 
             return returnType;
@@ -425,7 +428,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             return false;
         }
 
-        //Avoid issue with OnTileDataUpdated being called when grid is generated
         public void AddGridTileNoNotify(TileData tileData)
         {
             if (_gridTiles.ContainsKey(tileData.index))

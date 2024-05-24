@@ -16,9 +16,17 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 _previousPath.Clear();
             }
 
-            if (_currentUnit != null && _currentUnit != _playerActions.SelectedUnit)
+            if (_currentUnit != null)
             {
+                if (_currentUnit != _playerActions.SelectedUnit)
+                {
                 _currentUnit.OnUnitReachedDestination -= SelectedUnit_OnUnitReachedDestination;
+                }
+                else
+                {
+                    if (_currentUnit.IsMoving)
+                        return false;
+                }
             }
 
             _currentUnit = _playerActions.SelectedUnit;

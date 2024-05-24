@@ -20,9 +20,11 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         [SerializeField] private AnimationCurve _positionAlpha;
         [SerializeField] private AnimationCurve _rotationAlpha;
         [SerializeField] private AnimationCurve _jumpCurve;
+        [SerializeField] private float _jumpHeight = 0.2f;
 
         public GridIndex UnitGridIndex { get => _gridIndex; set => _gridIndex = value; }
         public UnitData UnitData { get => _unitData; }
+        public bool IsMoving { get => _isMoving; }
 
         private GameObject _unitVisual;
         private Animator _unitAnimator;
@@ -120,10 +122,10 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private bool ShouldJumpToNextTile()
         {
-            float previousY = this.transform.localToWorldMatrix.GetPosition().y;
+            float previousY = this.transform.position.y;
             float nextY = _nextTransform.GetPosition().y;
 
-            return Mathf.Abs(nextY - previousY) > 0.2f;
+            return Mathf.Abs(nextY - previousY) > _jumpHeight;
         }
 
         [ContextMenu("ChangeType")]

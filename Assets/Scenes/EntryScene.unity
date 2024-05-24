@@ -11473,7 +11473,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _tacticsGrid: {fileID: 825704801}
-  _combatSystem: {fileID: 1700013397}
 --- !u!1 &762671688
 GameObject:
   m_ObjectHideFlags: 0
