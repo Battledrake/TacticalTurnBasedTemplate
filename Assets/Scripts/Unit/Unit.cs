@@ -6,6 +6,7 @@ using UnityEngine;
 namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 {
 
+    [RequireComponent(typeof(GridMovement))]
     public class Unit : MonoBehaviour, IUnitAnimation
     {
         public static event Action<Unit, GridIndex> OnUnitReachedNewTile;
@@ -17,14 +18,10 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         [SerializeField] private UnitId _unitType = UnitId.Ranger;
         [SerializeField] private Color _hoverColor;
         [SerializeField] private Color _selectedColor = Color.green;
-        [SerializeField] private AnimationCurve _positionAlpha;
-        [SerializeField] private AnimationCurve _rotationAlpha;
-        [SerializeField] private AnimationCurve _jumpCurve;
-        [SerializeField] private float _jumpHeight = 0.2f;
 
         public GridIndex UnitGridIndex { get => _gridIndex; set => _gridIndex = value; }
         public UnitData UnitData { get => _unitData; }
-        public bool IsMoving { get => _isMoving; }
+        public bool IsMoving { get => _gridMovement.IsMoving; }
 
         private GameObject _unitVisual;
         private Animator _unitAnimator;
@@ -36,14 +33,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private float _maxHealth;
         private float _moveRange;
 
-        //TODO: Movement stuff inside its own component like navagent
         private GridIndex _gridIndex = GridIndex.Invalid();
-        private List<GridIndex> _currentPathToFollow;
-        private bool _isMoving;
-        [SerializeField] private float _moveSpeed = 3f;
-        private Matrix4x4 _previousTransform;
-        private Matrix4x4 _nextTransform;
-        private float _moveTimer = 0f;
+
+        private GridMovement _gridMovement;
 
         //Outline Stuff
         private Outline _unitOutline;
@@ -52,9 +44,42 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private bool _isHovered = false;
         private bool _isSelected = false;
 
+        private void Awake()
+        {
+            _gridMovement = this.GetComponent<GridMovement>();
+        }
+        private void OnEnable()
+        {
+            _gridMovement.OnMovementStarted += GridMovement_OnMovementStarted;
+            _gridMovement.OnReachedNewTile += GridMovement_OnReachedNewTile;
+            _gridMovement.OnReachedDestination += GridMovement_OnReachedDestination;
+        }
+        private void OnDisable()
+        {
+            _gridMovement.OnMovementStarted -= GridMovement_OnMovementStarted;
+            _gridMovement.OnReachedNewTile -= GridMovement_OnReachedNewTile;
+            _gridMovement.OnReachedDestination -= GridMovement_OnReachedDestination;
+        }
+
+        private void GridMovement_OnReachedDestination()
+        {
+            OnUnitReachedDestination?.Invoke(this);
+        }
+
+        private void GridMovement_OnReachedNewTile(GridIndex index)
+        {
+            OnUnitReachedNewTile?.Invoke(this, index);
+        }
+
+        private void GridMovement_OnMovementStarted()
+        {
+            OnUnitStartedMovement?.Invoke(this);
+        }
+
         public void SetUnitsGrid(TacticsGrid grid)
         {
             _tacticsGrid = grid;
+            _gridMovement.SetPathingGrid(grid);
         }
 
         public void InitializeUnit(UnitId unitType)
@@ -67,65 +92,12 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             if (_unitVisual != null)
                 Destroy(_unitVisual);
             _unitVisual = Instantiate(_unitData.assetData.unitVisual, this.transform);
-            _moveSpeed = _unitData.unitStats.moveSpeed;
             _currentHealth = _unitData.unitStats.currentHealth;
             _maxHealth = _unitData.unitStats.maxHealth;
             _moveRange = _unitData.unitStats.moveRange;
 
             _unitAnimator = _unitVisual.GetComponent<Animator>();
             _unitOutline = _unitVisual.GetComponent<Outline>();
-        }
-
-        private void Update()
-        {
-            if (_isMoving)
-            {
-                if (_moveTimer >= 1f)
-                {
-                    OnUnitReachedNewTile?.Invoke(this, _currentPathToFollow[0]);
-                    _currentPathToFollow.RemoveAt(0);
-                    UpdatePath();
-                }
-                else
-                {
-                    _moveTimer += _moveSpeed * Time.deltaTime;
-                }
-                Vector3 jumpVector = Vector3.zero;
-                if (ShouldJumpToNextTile())
-                    jumpVector.y = _jumpCurve.Evaluate(_moveTimer);
-                this.transform.position = Vector3.Lerp(_previousTransform.GetPosition(), _nextTransform.GetPosition() + jumpVector, _positionAlpha.Evaluate(_moveTimer));
-                this.transform.rotation = Quaternion.Slerp(_previousTransform.rotation, _nextTransform.rotation, _rotationAlpha.Evaluate(_moveTimer));
-            }
-        }
-
-        private void UpdatePath()
-        {
-            if(_currentPathToFollow.Count > 0)
-            {
-                _previousTransform = this.transform.localToWorldMatrix;
-                Matrix4x4 nextTransform = _tacticsGrid.GridTiles[_currentPathToFollow[0]].tileMatrix;
-                Vector3 lookVector = nextTransform.GetPosition() - this.transform.position;
-                lookVector.y = 0f;
-                Quaternion lookRotation = Quaternion.LookRotation(lookVector, Vector3.up);
-
-                _nextTransform = Matrix4x4.TRS(nextTransform.GetPosition(), lookRotation, nextTransform.lossyScale);
-                _moveTimer = 0f;
-            }
-            else
-            {
-                _isMoving = false;
-                _unitAnimator.SetFloat("Speed", 0f);
-                _unitAnimator.speed = 1f;
-                OnUnitReachedDestination?.Invoke(this);
-            }
-        }
-
-        private bool ShouldJumpToNextTile()
-        {
-            float previousY = this.transform.position.y;
-            float nextY = _nextTransform.GetPosition().y;
-
-            return Mathf.Abs(nextY - previousY) > _jumpHeight;
         }
 
         [ContextMenu("ChangeType")]
@@ -245,15 +217,15 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _unitAnimator.SetTrigger("Die");
         }
 
-        public void SetPathAndMove(List<GridIndex> path)
-        {
-            _currentPathToFollow = new List<GridIndex>(path);
-            _isMoving = true;
-            _unitAnimator.SetFloat("Speed", _moveSpeed);
-            _unitAnimator.speed = _moveSpeed;
-            UpdatePath();
+        //public void SetPathAndMove(List<GridIndex> path)
+        //{
+        //    _currentPathToFollow = new List<GridIndex>(path);
+        //    _isMoving = true;
+        //    _unitAnimator.SetFloat("Speed", _moveSpeed);
+        //    _unitAnimator.speed = _moveSpeed;
+        //    UpdatePath();
 
-            OnUnitStartedMovement?.Invoke(this);
-        }
+        //    OnUnitStartedMovement?.Invoke(this);
+        //}
     }
 }

@@ -1,3 +1,4 @@
+using BattleDrakeCreations.TacticalTurnBasedTemplate;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -5,10 +6,12 @@ using UnityEngine;
 
 namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 {
-    public class AbilityManager : MonoBehaviour
+    public class AbilitySystem : MonoBehaviour
     {
         private Dictionary<AbilityId, Ability> _abilities = new Dictionary<AbilityId, Ability>();
         private Ability _activeAbility;
+
+        private List<AbilityEffectReal> _activeEffects = new List<AbilityEffectReal>();
 
         private void Awake()
         {
@@ -16,7 +19,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             if (unit)
             {
                 List<Ability> unitAbilities = unit.UnitData.unitStats.abilities;
-                for(int i = 0; i < unitAbilities.Count; i++)
+                for (int i = 0; i < unitAbilities.Count; i++)
                 {
                     AddAbility(unitAbilities[i].GetAbilityId(), unitAbilities[i]);
                 }
@@ -57,6 +60,5 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             _activeAbility = null;
         }
-
     }
 }

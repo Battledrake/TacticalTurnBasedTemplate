@@ -43,7 +43,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                         _playerActions.TacticsGrid.AddStateToTile(pathResult.Path[i], TileState.IsInPath);
                     }
                     _previousPath = new List<GridIndex>(pathResult.Path);
-                    _currentUnit.SetPathAndMove(pathResult.Path);
+                    _currentUnit.GetComponent<GridMovement>().SetPathAndMove(pathResult.Path);
 
                     _playerActions.TacticsGrid.ClearStateFromTiles(_previousPath, TileState.IsInMoveRange);
                     _currentUnit.OnUnitReachedDestination += SelectedUnit_OnUnitReachedDestination;
