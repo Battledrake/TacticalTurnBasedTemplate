@@ -218,6 +218,11 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             //_unitAnimator.SetTrigger("Attack");
         }
 
+        public void PlayAttackAnimation()
+        {
+            _unitAnimator.SetTrigger("Attack");
+        }
+
         public void TriggerHitAnimation()
         {
             _unitAnimator.SetTrigger("Hit");

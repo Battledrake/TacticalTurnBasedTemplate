@@ -28,7 +28,10 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             CommitAbility();
 
             if (_instigator)
+            {
                 _instigator.LookAtTarget(_targetIndex);
+                _instigator.GetComponent<IUnitAnimation>().PlayAttackAnimation();
+            }
 
             _tacticsGrid.GetTileDataFromIndex(_originIndex, out TileData originData);
             _tacticsGrid.GetTileDataFromIndex(_targetIndex, out TileData targetData);

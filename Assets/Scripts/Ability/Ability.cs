@@ -88,7 +88,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         protected GridIndex _originIndex;
         protected GridIndex _targetIndex;
-        protected List<GridIndex> _aoeIndexes;
+        protected List<GridIndex> _aoeIndexes = new List<GridIndex>();
 
         protected TacticsGrid _tacticsGrid;
 
@@ -116,6 +116,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         protected void AbilityBehaviorComplete(Ability ability)
         {
+            //TODO: No apparent use now, but will be used for turn system to allow ability to exist passed a single turn but still notify that it's finished that turn's behavior.
             OnBehaviorComplete?.Invoke(ability);
         }
 
@@ -126,6 +127,10 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public abstract void ActivateAbility();
 
         public abstract bool TryActivateAbility();
-        public virtual void EndAbility() { OnAbilityEnd?.Invoke();  Destroy(this.gameObject); }
+        public virtual void EndAbility()
+        {
+            OnAbilityEnd?.Invoke();
+            Destroy(this.gameObject); 
+        }
     }
 }
