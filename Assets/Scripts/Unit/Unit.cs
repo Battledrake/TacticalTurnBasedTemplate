@@ -29,14 +29,14 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private GridIndex _gridIndex = GridIndex.Invalid();
 
         //TODO: Should we have a component for attributes?
-        private float _currentHealth;
-        private float _maxHealth;
-        private float _moveRange;
-
+        private int _currentHealth;
+        private int _maxHealth;
+        private int _moveRange;
 
         private TacticsGrid _tacticsGrid;
         private Collider _collider;
         private GridMovement _gridMovement;
+        private Health _healthComponent;
 
         //Outline Stuff
         private Outline _unitOutline;
@@ -49,6 +49,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             _collider = this.GetComponent<Collider>();
             _gridMovement = this.GetComponent<GridMovement>();
+            _healthComponent = this.GetComponent<Health>();
+
+            _healthComponent.OnHealthReachedZero += Die;
         }
         private void OnEnable()
         {
@@ -124,9 +127,12 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public void AddUnitToCombat()
         {
             CombatSystem.Instance.AddUnitToCombat(this.transform.position, this);
+
+            _unitAnimator.ResetTrigger("Hit");
             _unitAnimator.SetTrigger("Respawn");
             _currentHealth = _maxHealth;
             _collider.enabled = true;
+            _healthComponent.UpdateHealth(_maxHealth);
         }
 
         public void SetIsHovered(bool isHovered)
@@ -194,23 +200,32 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void ModifyCurrentHealth(int effectModifier)
         {
-            if (_currentHealth == 0 && effectModifier < 0)
-                return;
-            if (_currentHealth == _maxHealth && effectModifier > 0)
-                return;
+            _healthComponent.UpdateHealth(effectModifier);
 
-            _currentHealth = Mathf.Clamp(_currentHealth + effectModifier, 0, _maxHealth);
+            //if (_currentHealth == 0 && effectModifier < 0)
+            //    return;
+            //if (_currentHealth == _maxHealth && effectModifier > 0)
+            //    return;
 
-            if (_currentHealth == 0)
-            {
-                _collider.enabled = false;
-                PlayDeathAnimation();
-                OnUnitDied?.Invoke(this);
-                return;
-            }
+            //_currentHealth = Mathf.Clamp(_currentHealth + effectModifier, 0, _maxHealth);
+
+            //if (_currentHealth == 0)
+            //{
+            //    _collider.enabled = false;
+            //    PlayDeathAnimation();
+            //    OnUnitDied?.Invoke(this);
+            //    return;
+            //}
 
             if (effectModifier < 0)
                 TriggerHitAnimation();
+        }
+
+        public void Die()
+        {
+            _collider.enabled = false;
+            PlayDeathAnimation();
+            OnUnitDied?.Invoke(this);
         }
 
         public void LookAtTarget(GridIndex targetIndex)

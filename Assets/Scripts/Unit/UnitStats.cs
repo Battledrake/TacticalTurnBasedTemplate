@@ -39,7 +39,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public List<TileType> validTileTypes = new List<TileType> { TileType.Normal, TileType.DoubleCost, TileType.TripleCost };
         public bool canMoveDiagonal = true;
         public float heightAllowance = 2f;
-        public float moveRange = 5f;
+        public int moveRange = 5;
         public int currentHealth = 10;
         public int maxHealth = 10;
         public List<Ability> abilities;

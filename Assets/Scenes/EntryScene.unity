@@ -12221,6 +12221,7 @@ MonoBehaviour:
   _minFollow: -5
   _maxFollow: -15
   _heightBeforeReturn: 10
+  _moveToTargetSpeed: 50
 --- !u!1 &792433138
 GameObject:
   m_ObjectHideFlags: 0
@@ -24893,6 +24894,10 @@ PrefabInstance:
     - target: {fileID: 158070, guid: 004c0bf81fbf1a342af7262f965b564f, type: 3}
       propertyPath: m_Name
       value: Rain_FX
+      objectReference: {fileID: 0}
+    - target: {fileID: 158070, guid: 004c0bf81fbf1a342af7262f965b564f, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 413338, guid: 004c0bf81fbf1a342af7262f965b564f, type: 3}
       propertyPath: m_LocalPosition.x
