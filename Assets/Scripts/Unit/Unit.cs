@@ -110,7 +110,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _moveRange = _unitData.unitStats.moveRange;
 
             _unitAnimator = _unitVisual.GetComponent<Animator>();
-            _unitOutline = _unitVisual.GetComponent<Outline>();
+            _unitOutline = _unitVisual.AddComponent<Outline>();
+            _unitVisual.AddComponent<AnimationEventHandler>();
         }
 
         [ContextMenu("ChangeType")]
