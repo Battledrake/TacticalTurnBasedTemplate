@@ -11,7 +11,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private Animator _unitAnimator;
         private string _animationTrigger;
-        private AnimEventHandler _animEventListener;
+        private AnimationEventHandler _animEventListener;
 
         private float _timeBeforeCancelling = 5f;
 
@@ -23,7 +23,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
             _unitAnimator = unit.GetComponentInChildren<Animator>();
             _animationTrigger = animationTrigger;
-            _animEventListener = unit.GetComponentInChildren<AnimEventHandler>();
+            _animEventListener = unit.GetComponentInChildren<AnimationEventHandler>();
         }
 
         private void OnAnimationEvent_OnAnimationEnd()

@@ -167,7 +167,6 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   _traversalSpeed: 2
-  _rotationSpeed: 2
   _heightBeforeJump: 0.2
 --- !u!1001 &4872950890411100807
 PrefabInstance:

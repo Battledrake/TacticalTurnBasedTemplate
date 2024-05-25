@@ -26,15 +26,16 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private GameObject _unitVisual;
         private Animator _unitAnimator;
         private UnitData _unitData;
-        private TacticsGrid _tacticsGrid;
+        private GridIndex _gridIndex = GridIndex.Invalid();
 
         //TODO: Should we have a component for attributes?
         private float _currentHealth;
         private float _maxHealth;
         private float _moveRange;
 
-        private GridIndex _gridIndex = GridIndex.Invalid();
 
+        private TacticsGrid _tacticsGrid;
+        private Collider _collider;
         private GridMovement _gridMovement;
 
         //Outline Stuff
@@ -46,6 +47,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void Awake()
         {
+            _collider = this.GetComponent<Collider>();
             _gridMovement = this.GetComponent<GridMovement>();
         }
         private void OnEnable()
@@ -123,6 +125,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             CombatSystem.Instance.AddUnitToCombat(this.transform.position, this);
             _unitAnimator.SetTrigger("Respawn");
             _currentHealth = _maxHealth;
+            _collider.enabled = true;
         }
 
         public void SetIsHovered(bool isHovered)
@@ -165,6 +168,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             }
         }
 
+        //TODO: Move this logic to ability component
         public void ApplyEffect(AbilityEffectReal effect)
         {
             switch (effect.attributeType)
@@ -198,6 +202,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
             if (_currentHealth == 0)
             {
+                _collider.enabled = false;
                 PlayDeathAnimation();
                 OnUnitDied?.Invoke(this);
                 return;
@@ -213,9 +218,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             Vector3 lookAtVector = tileData.tileMatrix.GetPosition();
             lookAtVector.y = this.transform.position.y;
             this.transform.LookAt(lookAtVector);
-
-            //_unitAnimator.ResetTrigger("Attack");
-            //_unitAnimator.SetTrigger("Attack");
         }
 
         public void PlayAttackAnimation()

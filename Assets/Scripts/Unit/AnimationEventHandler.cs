@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 {
-    public class AnimEventHandler : MonoBehaviour
+    public class AnimationEventHandler : MonoBehaviour
     {
         public event Action OnAnimationEvent;
         public event Action OnAnimationCompleted;

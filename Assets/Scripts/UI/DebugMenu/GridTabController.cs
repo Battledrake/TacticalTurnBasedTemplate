@@ -25,6 +25,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         [SerializeField] private Toggle _useEnvToggle;
         [SerializeField] private Toggle _showGridToggle;
         [SerializeField] private Toggle _tacticalMeshGridToggle;
+        [SerializeField] private Toggle _hideGridModifiersToggle;
 
         [Header("Debug")]
         [SerializeField] private Toggle _boundsToggle;
@@ -43,6 +44,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private int _sceneSelected = 0;
         private List<GameObject> _environmentObjects = new List<GameObject>();
+        private List<GameObject> _modifierObjects = new List<GameObject>();
 
         private bool _showGridBounds = false;
         private bool _showGridCenter = false;
@@ -83,6 +85,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _useEnvToggle.onValueChanged.AddListener(OnUseEnvironmentToggled);
             _showGridToggle.onValueChanged.AddListener(OnShowGridToggled);
             _tacticalMeshGridToggle.onValueChanged.AddListener(OnTacticalMeshGridToggled);
+            _hideGridModifiersToggle.onValueChanged.AddListener(OnHideGridModifiersToggled);
 
             _boundsToggle.onValueChanged.AddListener(OnBoundsToggled);
             _centerToggle.onValueChanged.AddListener(OnCenterToggled);
@@ -268,7 +271,31 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 _environmentObjects.ForEach(o => o.SetActive(true));
 
                 _tacticsGrid.GridVisual.HideTacticalGrid();
-                _tacticsGrid.GridVisual.ShowDefaultGrid();
+            }
+        }
+
+        private void OnHideGridModifiersToggled(bool isOn)
+        {
+            if (isOn)
+            {
+                _modifierObjects = GameObject.FindGameObjectsWithTag("GridModifier").ToList();
+
+                foreach (var obj in _modifierObjects)
+                {
+                    MeshRenderer[] renderers = obj.GetComponentsInChildren<MeshRenderer>(false);
+                    foreach (var render in renderers)
+                        render.enabled = false;
+                }
+            }
+            else
+            {
+
+                foreach (var obj in _modifierObjects)
+                {
+                    MeshRenderer[] renderers = obj.GetComponentsInChildren<MeshRenderer>(true);
+                    foreach (var render in renderers)
+                        render.enabled = true;
+                }
             }
         }
 
