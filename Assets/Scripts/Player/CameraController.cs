@@ -19,6 +19,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         [SerializeField] private float _maxFollow = -20f;
         [SerializeField] private float _heightBeforeReturn = 10f;
 
+        [SerializeField] private float _moveToTargetSpeed = 50f;
+
         public float MoveSpeed { get => _moveSpeed; set => _moveSpeed = value; }
         public float RotationSpeed { get => _rotationSpeed; set => _rotationSpeed = value; }
         public float ZoomSpeed { get => _zoomSpeed; set => _zoomSpeed = value; }
@@ -28,19 +30,49 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private Vector3 _targetFollowOffset;
         CinemachineTransposer _cameraTransposer;
 
+        private int _currentTargetIndex = 0;
+        private Vector3 _targetPosition;
+        private bool _moveToTarget;
+
+
         private void Start()
         {
             _cameraTransposer = _camera.GetCinemachineComponent<CinemachineTransposer>();
             _targetFollowOffset = _cameraTransposer.m_FollowOffset;
-        }
 
-        private void SliderWidget_OnValueChanged(float value)
-        {
-            _moveSpeed = value;
+            _targetPosition = this.transform.position;
         }
 
         private void Update()
         {
+            if (Input.GetKeyDown(KeyCode.Tab))
+            {
+                if (CombatSystem.Instance.UnitsInCombat.Count <= 0)
+                    return;
+
+                if (_currentTargetIndex >= CombatSystem.Instance.UnitsInCombat.Count)
+                {
+                    _currentTargetIndex = 0;
+                }
+                _targetPosition = CombatSystem.Instance.UnitsInCombat[_currentTargetIndex].transform.position;
+                _moveToTarget = true;
+                _currentTargetIndex++;
+            }
+
+            if (_moveToTarget)
+            {
+                this.transform.position = Vector3.MoveTowards(this.transform.position, _targetPosition, _moveToTargetSpeed * Time.deltaTime);
+
+                if (Vector3.Distance(this.transform.position, _targetPosition) < 0.2f)
+                {
+                    _moveToTarget = false;
+                }
+                else
+                {
+                    return;
+                }
+            }
+
             HandleMovement();
             HandleRotation();
             HandleZoom();
@@ -97,13 +129,13 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _targetFollowOffset.y = Mathf.Clamp(_targetFollowOffset.y, _minZoom, _maxZoom);
             if (_targetFollowOffset.y > Mathf.Abs(_maxFollow))
             {
-              _targetFollowOffset.z = _maxFollow - _heightBeforeReturn + (_targetFollowOffset.y + _maxFollow);
+                _targetFollowOffset.z = _maxFollow - _heightBeforeReturn + (_targetFollowOffset.y + _maxFollow);
             }
             else
             {
-            _targetFollowOffset.z = -_targetFollowOffset.y;
+                _targetFollowOffset.z = -_targetFollowOffset.y;
             }
-                _targetFollowOffset.z = Mathf.Clamp(_targetFollowOffset.z, _maxFollow, _minFollow);
+            _targetFollowOffset.z = Mathf.Clamp(_targetFollowOffset.z, _maxFollow, _minFollow);
             _cameraTransposer.m_FollowOffset = Vector3.Lerp(_cameraTransposer.m_FollowOffset, _targetFollowOffset, Time.deltaTime * _zoomSpeed);
         }
     }

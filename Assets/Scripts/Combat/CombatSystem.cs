@@ -15,8 +15,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public event Action<Unit, GridIndex> OnUnitGridIndexChanged;
 
         [SerializeField] private bool _drawLineOfSightLines = false;
-
         [SerializeField] private TacticsGrid _tacticsGrid;
+
+        public List<Unit> UnitsInCombat { get => _unitsInCombat; }
 
         private List<Unit> _unitsInCombat = new List<Unit>();
 
