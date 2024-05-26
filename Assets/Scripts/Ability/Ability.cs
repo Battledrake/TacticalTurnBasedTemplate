@@ -75,8 +75,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         [SerializeField] protected AbilityRangeData _rangeData;
         [SerializeField] protected AbilityRangeData _areaOfEffectData;
         [SerializeField] protected List<AbilityEffect> _effects;
+        [SerializeField] protected bool _isFriendly = false;
 
-        public bool AffectFriendly { get; set; }
+        public bool IsFriendly { get => _isFriendly; }
 
         public string Name { get => _abilityId.ToString(); }
         public Sprite Icon { get => _icon; }

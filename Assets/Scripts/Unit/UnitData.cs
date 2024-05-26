@@ -11,7 +11,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         Slime,
         Orc,
         Mech6,
-        Bat
+        Bat,
+        Drake
     }
 
     [CreateAssetMenu(fileName = "UnitData", menuName = "TTBT/Unit/UnitData")]

@@ -10,19 +10,19 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public event Action<PlayAnimationTask> OnAnimationCancelled;
 
         private Animator _unitAnimator;
-        private string _animationTrigger;
+        private AnimationType _animationType;
         private AnimationEventHandler _animEventListener;
 
         private float _timeBeforeCancelling = 5f;
 
-        public void InitTask(Unit unit, string animationTrigger, float timeBeforeCancelling = 5f)
+        public void InitTask(Unit unit, AnimationType animationType, float timeBeforeCancelling = 5f)
         {
-            if (!unit || String.IsNullOrEmpty(animationTrigger))
+            if (!unit)
                 return;
             _timeBeforeCancelling = timeBeforeCancelling;
 
             _unitAnimator = unit.GetComponentInChildren<Animator>();
-            _animationTrigger = animationTrigger;
+            _animationType = animationType;
             _animEventListener = unit.GetComponentInChildren<AnimationEventHandler>();
         }
 
@@ -40,13 +40,13 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             owner.OnAbilityEnd += EndTask;
 
-            if (!_unitAnimator && !_animEventListener && String.IsNullOrEmpty(_animationTrigger))
+            if (!_unitAnimator && !_animEventListener)
             {
                 OnAnimationCancelled?.Invoke(this);
                 yield break;
             }
 
-            _unitAnimator.SetTrigger(_animationTrigger);
+            _unitAnimator.SetTrigger(_animationType.ToString());
 
             _animEventListener.OnAnimationEvent += OnAnimationEvent_OnAnimationEvent;
             _animEventListener.OnAnimationCompleted += OnAnimationEvent_OnAnimationEnd;

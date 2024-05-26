@@ -15,6 +15,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         [SerializeField] private AnimateObjectTask _taskPrefab;
         [SerializeField] private AnimateObjectTaskData _taskData;
 
+        [SerializeField] private AnimationType _animationType = AnimationType.Attack;
         [SerializeField] private float _animationSpeed = 1f;
         [SerializeField] private bool _loopAnimation = false;
 
@@ -30,7 +31,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             if (_instigator)
             {
                 _instigator.LookAtTarget(_targetIndex);
-                _instigator.GetComponent<IUnitAnimation>().PlayAttackAnimation();
+                _instigator.GetComponent<IUnitAnimation>().PlayAnimationType(_animationType);
             }
 
             _tacticsGrid.GetTileDataFromIndex(_originIndex, out TileData originData);
@@ -52,7 +53,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private void AnimateObjectTask_OnObjectCollisionWithUnit(Unit unit)
         {
             //TODO: Improve on the friendly fire logic
-            if (unit == _instigator && !this.AffectFriendly)
+            if (unit == _instigator && !this.IsFriendly)
                 return;
 
             if (_hitUnits.Contains(unit))

@@ -69,8 +69,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private void GridMovement_OnReachedDestination()
         {
             OnUnitReachedDestination?.Invoke(this);
-            _unitAnimator.SetFloat("Speed", 0);
-            _unitAnimator.speed = 1f;
+            //_unitAnimator.SetFloat("Speed", 0);
+            //_unitAnimator.speed = 1f;
+            _unitAnimator.SetTrigger(AnimationType.Idle.ToString());
         }
 
         private void GridMovement_OnReachedNewTile(GridIndex index)
@@ -81,14 +82,15 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private void GridMovement_OnMovementStarted()
         {
             OnUnitStartedMovement?.Invoke(this);
+            _unitAnimator.SetTrigger(AnimationType.Run.ToString());
         }
 
         private void Update()
         {
             if (_gridMovement.IsMoving)
             {
-                _unitAnimator.SetFloat("Speed", _gridMovement.CurrentMovementSpeed);
-                _unitAnimator.speed = 2f;
+                //_unitAnimator.SetFloat("Speed", _gridMovement.CurrentMovementSpeed);
+                //_unitAnimator.speed = 2f;
             }
         }
 
@@ -234,6 +236,11 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             Vector3 lookAtVector = tileData.tileMatrix.GetPosition();
             lookAtVector.y = this.transform.position.y;
             this.transform.LookAt(lookAtVector);
+        }
+
+        public void PlayAnimationType(AnimationType animationType)
+        {
+            _unitAnimator.SetTrigger(animationType.ToString());
         }
 
         public void PlayAttackAnimation()

@@ -2,11 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum UnitAnimationState
+public enum AnimationType
 {
     Idle,
-    Walk,
+    Run,
     Attack,
+    Cast,
     Hit,
     Death,
     Respawn
@@ -14,6 +15,7 @@ public enum UnitAnimationState
 
 public interface IUnitAnimation
 {
+    public void PlayAnimationType(AnimationType animationType) { }
     public void PlayAttackAnimation() { }
     public void PlayDeathAnimation() { }
     public void TriggerHitAnimation() { }

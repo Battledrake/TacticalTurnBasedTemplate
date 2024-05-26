@@ -73,7 +73,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private void AnimateObjectTask_OnObjectCollisionWithUnit(Unit unit)
         {
             //TODO: Improve on the friendly fire logic
-            if (unit == _instigator && !this.AffectFriendly)
+            if (unit == _instigator && !this.IsFriendly)
                 return;
 
             if (_hitUnits.Contains(unit))

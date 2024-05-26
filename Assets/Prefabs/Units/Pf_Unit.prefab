@@ -168,7 +168,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  _traversalSpeed: 2
+  _traversalSpeed: 3
   _heightBeforeJump: 0.2
 --- !u!114 &5281935239032978898
 MonoBehaviour:

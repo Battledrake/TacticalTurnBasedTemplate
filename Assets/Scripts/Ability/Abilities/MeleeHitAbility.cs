@@ -9,6 +9,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
     public class MeleeHitAbility : Ability
     {
         [SerializeField] private PlayAnimationTask _playAnimTaskPrefab;
+        [SerializeField] private AnimationType _animationType;
 
         public override void ActivateAbility()
         {
@@ -23,7 +24,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
             PlayAnimationTask animationTask = Instantiate(_playAnimTaskPrefab);
 
-            animationTask.InitTask(_instigator, "Attack", 2f);
+            animationTask.InitTask(_instigator, _animationType, 2f);
             animationTask.OnAnimationEvent += PlayAnimationTask_OnAnimationEvent;
             animationTask.OnTaskCompleted += AbilityTask_OnTaskCompleted;
             animationTask.OnAnimationCancelled += AbilityTask_OnAnimationCancelled;
