@@ -39,9 +39,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public override void EndAbility()
         {
             _isActive = false;
-            _summonedUnit.Die(true);
-            //_tacticsGrid.RemoveUnitFromTile(_summonedUnit.UnitGridIndex);
-            //Destroy(_summonedUnit.gameObject, 3f);
+            if (_summonedUnit != null)
+                _summonedUnit.Die(true);
+
             base.EndAbility();
         }
 
