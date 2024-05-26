@@ -2,24 +2,36 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using UnityEditor.Playables;
 using UnityEngine;
 
 namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 {
+    [Serializable]
+    public struct TeamColorData
+    {
+        public int index;
+        public Color color;
+    }
     public class CombatSystem : MonoBehaviour
     {
         public static CombatSystem Instance;
 
         public event Action<Unit, GridIndex> OnUnitGridIndexChanged;
+        /* Unit, PreviousTeam, NewTeam */
+        public event Action<Unit, int, int> OnUnitTeamChanged;
 
-        [SerializeField] private bool _drawLineOfSightLines = false;
+        [SerializeField] private List<TeamColorData> _teamColors;
+
+        [Header("Dependencies")]
         [SerializeField] private TacticsGrid _tacticsGrid;
 
+
         public List<Unit> UnitsInCombat { get => _unitsInCombat; }
+        public Dictionary<int, HashSet<Unit>> UnitTeams { get => _unitTeams; }
+        public int NumberOfTeams { get => _teamColors.Count; }
 
         private List<Unit> _unitsInCombat = new List<Unit>();
+        private Dictionary<int, HashSet<Unit>> _unitTeams = new Dictionary<int, HashSet<Unit>>();
 
         private void Awake()
         {
@@ -29,6 +41,11 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 Instance = this;
 
             DontDestroyOnLoad(this.gameObject);
+        }
+
+        public Color GetTeamColor(int teamIndex)
+        {
+            return _teamColors.FirstOrDefault(d => d.index == teamIndex).color;
         }
 
         private void Start()
@@ -55,15 +72,15 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             OnUnitGridIndexChanged?.Invoke(unit, index);
         }
 
-        public void AddUnitToCombat(Vector3 worldPosition, Unit unit)
+        public void AddUnitToCombat(Vector3 worldPosition, Unit unit, int teamIndex = 0)
         {
             GridIndex unitIndex = _tacticsGrid.GetTileIndexFromWorldPosition(worldPosition);
-            AddUnitToCombat(unitIndex, unit);
+            AddUnitToCombat(unitIndex, unit, teamIndex);
         }
 
-        public void AddUnitToCombat(GridIndex gridIndex, Unit unit)
+        public void AddUnitToCombat(GridIndex gridIndex, Unit unit, int teamIndex = 0)
         {
-            if(_tacticsGrid.AddUnitToTile(gridIndex, unit))
+            if (_tacticsGrid.AddUnitToTile(gridIndex, unit))
             {
                 _unitsInCombat.Add(unit);
                 unit.OnUnitDied += Unit_OnUnitDied;
@@ -72,6 +89,30 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             {
                 Debug.LogWarning("Unable to add unit to tile. Invalid index or unit already exists at GridIndex");
             }
+            SetUnitTeamIndex(unit, teamIndex);
+        }
+
+        public void SetUnitTeamIndex(Unit unit, int teamIndex)
+        {
+            int previousIndex = unit.TeamIndex;
+            if (previousIndex != -1)
+            {
+                _unitTeams.TryGetValue(previousIndex, out HashSet<Unit> unitsInTeam);
+                if (unitsInTeam != null)
+                    unitsInTeam.Remove(unit);
+            }
+            if (teamIndex != -1)
+            {
+                _unitTeams.TryGetValue(teamIndex, out HashSet<Unit> newTeam);
+                if (newTeam == null)
+                    newTeam = new HashSet<Unit>();
+                newTeam.Add(unit);
+                _unitTeams[teamIndex] = newTeam;
+            }
+
+            unit.TeamIndex = teamIndex;
+
+            OnUnitTeamChanged?.Invoke(unit, previousIndex, teamIndex);
         }
 
         private void Unit_OnUnitDied(Unit unit)
@@ -93,6 +134,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             unit.UnitGridIndex = GridIndex.Invalid();
 
             unit.transform.position = newPosition;
+
+            SetUnitTeamIndex(unit, -1);
         }
 
         /// <summary>
@@ -104,6 +147,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             _unitsInCombat.Remove(unit);
             _tacticsGrid.RemoveUnitFromTile(unit.UnitGridIndex);
+            SetUnitTeamIndex(unit, -1);
 
             if (shouldDestroy)
             {
@@ -206,11 +250,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
             Vector3 direction = targetPosition - startPosition;
 
-            //if (_drawLineOfSightLines)
-            //{
-            //    Debug.DrawLine(startPosition, targetPosition, Color.white, 1f);
-            //}
-
             if (Physics.Raycast(startPosition, direction, out RaycastHit hitInfo, direction.magnitude))
             {
                 Unit abilityUnit = originData.unitOnTile;
@@ -237,11 +276,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                     //        Vector3 negZPosition = negZTile.tileMatrix.GetPosition();
                     //        negZPosition.y += height;
                     //        Vector3 checkDirection = new Vector3(direction.x, height, 0f);
-
-                    //        if (_drawLineOfSightLines)
-                    //        {
-                    //            Debug.DrawLine(negZPosition, negZPosition + checkDirection, Color.white, 1f);
-                    //        }
 
                     //        if (Physics.Raycast(negZPosition, checkDirection, out RaycastHit negZHit, direction.magnitude))
                     //        {

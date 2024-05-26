@@ -189,7 +189,7 @@ MonoBehaviour:
     type: 3}
   _damageColor: {r: 1, g: 0, b: 0, a: 0.78431374}
   _healColor: {r: 0, g: 1, b: 0.024693727, a: 0.78431374}
-  _healthChangeDelay: 0.5
+  _healthChangeDelay: 0.25
   _isImmortal: 0
 --- !u!1001 &1285819045662853863
 PrefabInstance:

@@ -196,8 +196,12 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             Destroy(_leftClickAction.gameObject);
             _leftClickAction = null;
-            Destroy(_rightClickAction.gameObject);
-            _rightClickAction = null;
+
+            if (_rightClickAction != null)
+            {
+                Destroy(_rightClickAction.gameObject);
+                _rightClickAction = null;
+            }
         }
 
         public void SetSelectedActions(ActionBase leftClickAction, ActionBase rightClickAction)
@@ -207,8 +211,12 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
             _leftClickAction = GameObject.Instantiate(leftClickAction);
             _leftClickAction.InitializeAction(this);
-            _rightClickAction = GameObject.Instantiate(rightClickAction);
-            _rightClickAction.InitializeAction(this);
+
+            if (rightClickAction != null)
+            {
+                _rightClickAction = GameObject.Instantiate(rightClickAction);
+                _rightClickAction.InitializeAction(this);
+            }
 
             OnSelectedActionsChanged?.Invoke(_leftClickAction, _rightClickAction);
         }

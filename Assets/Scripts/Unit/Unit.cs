@@ -22,11 +22,21 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public GridIndex UnitGridIndex { get => _gridIndex; set => _gridIndex = value; }
         public UnitData UnitData { get => _unitData; }
         public bool IsMoving { get => _gridMovement.IsMoving; }
+        public int TeamIndex
+        {
+            get => _teamIndex;
+            set
+            {
+                _teamIndex = value;
+                _healthComponent.SetHealthUnitColor(CombatSystem.Instance.GetTeamColor(value));
+            }
+        }
 
         private GameObject _unitVisual;
         private Animator _unitAnimator;
         private UnitData _unitData;
         private GridIndex _gridIndex = GridIndex.Invalid();
+        private int _teamIndex = -1;
 
         //TODO: Should we have a component for attributes?
         private int _currentHealth;

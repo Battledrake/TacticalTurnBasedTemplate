@@ -26,6 +26,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private int _currentHealth = 0;
         private int _maxHealth = 0;
         private bool _updateHealth = false;
+        private Color _healthUnitColor = Color.red;
 
         public void Start()
         {
@@ -37,7 +38,19 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             {
                 GameObject healthUnit = Instantiate(_healthUnitPrefab, _healthBar);
                 _healthUnits.Add(healthUnit);
-                _healthUnitChildren.TryAdd(i + 1, healthUnit.transform.GetChild(0).GetComponent<SpriteRenderer>());
+                SpriteRenderer healthUnitRenderer = healthUnit.transform.GetChild(0).GetComponent<SpriteRenderer>();
+                healthUnitRenderer.color = _healthUnitColor;
+                _healthUnitChildren.TryAdd(i + 1, healthUnitRenderer);
+            }
+        }
+
+        public void SetHealthUnitColor(Color color)
+        {
+            _healthUnitColor = color;
+
+            foreach(var healthUnit in _healthUnitChildren.Values)
+            {
+                healthUnit.color = _healthUnitColor;
             }
         }
 

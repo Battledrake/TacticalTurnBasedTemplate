@@ -2,6 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,7 +13,14 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
     {
         [SerializeField] private UnitButton _unitButtonPrefab;
         [SerializeField] private Transform _unitButtonContainer;
+        [SerializeField] private SliderWidget _setUnitTeamSlider;
+        [SerializeField] private SliderWidget _addUnitTeamSlider;
 
+        [SerializeField] private GameObject _unitDisplayPrefab;
+        [SerializeField] private List<Transform> _teamPanels;
+        [SerializeField] private List<Transform> _teamIndexes;
+
+        [Header("Dependencies")]
         [SerializeField] private PlayerActions _playerActions;
 
         private Dictionary<UnitId, UnitButton> _iconButtons = new Dictionary<UnitId, UnitButton>();
@@ -28,6 +37,64 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 unitButton.OnUnitButtonToggled += OnUnitButtonToggled;
 
                 _iconButtons.Add(unitData[i].unitId, unitButton);
+            }
+
+            _setUnitTeamSlider.OnSliderValueChanged += OnSetUnitTeamSliderChanged;
+            _addUnitTeamSlider.OnSliderValueChanged += OnAddUnitTeamSliderChanged;
+        }
+
+        private void Start()
+        {
+            CombatSystem.Instance.OnUnitTeamChanged += CombatSystem_OnUnitTeamChanged;
+
+            for(int i = 0; i < _teamIndexes.Count; i++)
+            {
+                for(int j = 0; j < _teamIndexes[i].childCount; j++)
+                {
+                    _teamIndexes[i].GetChild(j).GetComponent<TextMeshProUGUI>().color = CombatSystem.Instance.GetTeamColor(i * _teamIndexes[i].childCount + j);
+                }
+            }
+        }
+
+        private void CombatSystem_OnUnitTeamChanged(Unit unit, int prevTeam, int newTeam)
+        {
+            for(int i = 0; i < _teamPanels.Count; i++)
+            {
+                for(int j = 0; j < _teamPanels[i].childCount; j++)
+                {
+                    Destroy(_teamPanels[i].GetChild(j).gameObject);
+                }
+            }
+            var unitTeams = CombatSystem.Instance.UnitTeams;
+            foreach(var unitTeam in unitTeams)
+            {
+                for(int i = 0; i < unitTeam.Value.Count; i++)
+                {
+                    GameObject unitDisplay = Instantiate(_unitDisplayPrefab, _teamPanels[unitTeam.Key]);
+                    unitDisplay.GetComponent<Image>().color = CombatSystem.Instance.GetTeamColor(unitTeam.Key);
+                    unitDisplay.transform.GetChild(0).GetChild(0).GetComponent<Image>().sprite = unitTeam.Value.ElementAt(i).UnitData.assetData.unitIcon;
+                }
+            }
+            //ContainerParent based on team.
+            //GetComponent<Image>().Color = _teamColor;
+            //unitDisplay.transform.GetChild(0).GetChild(0).GetComponent<Image>().icon = unitIcon;
+        }
+
+        private void OnSetUnitTeamSliderChanged(int sliderIndex, float value)
+        {
+            SetUnitTeamAction setUnitTeamAction = _playerActions.LeftClickAction.GetComponent<SetUnitTeamAction>();
+            if (setUnitTeamAction)
+            {
+                setUnitTeamAction.UnitTeamIndex = (int)value;
+            }
+        }
+
+        private void OnAddUnitTeamSliderChanged(int sliderIndex, float value)
+        {
+            AddUnitToGridAction addUnitAction = _playerActions.LeftClickAction.GetComponent<AddUnitToGridAction>();
+            if (addUnitAction)
+            {
+                addUnitAction.UnitTeamIndex = (int)value;
             }
         }
 
@@ -58,7 +125,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             }
 
 
-            for(int i = 0; i < _iconButtons.Count; i++)
+            for (int i = 0; i < _iconButtons.Count; i++)
             {
                 _iconButtons.ElementAt(i).Value.DisableButton();
             }

@@ -6,6 +6,11 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
     public class AddUnitToGridAction : ActionBase
     {
         [SerializeField] private Unit _unitPrefab;
+
+        public int UnitTeamIndex { get => _unitTeamIndex; set => _unitTeamIndex = value; }
+
+        private int _unitTeamIndex = 0;
+
         public override bool ExecuteAction(GridIndex index)
         {
             if (actionValue < 0)
@@ -25,7 +30,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                         newUnit.InitializeUnit((UnitId)actionValue);
                         newUnit.SetUnitsGrid(_playerActions.TacticsGrid);
 
-                        CombatSystem.Instance.AddUnitToCombat(index, newUnit);
+                        CombatSystem.Instance.AddUnitToCombat(index, newUnit, _unitTeamIndex);
                         return true;
                     }
                 }
