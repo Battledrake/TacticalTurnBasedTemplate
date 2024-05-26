@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 namespace BattleDrakeCreations.TacticalTurnBasedTemplate
@@ -10,17 +11,21 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public event Action OnHealthReachedZero;
 
         [SerializeField] private Transform _healthBar;
-
         [SerializeField] private GameObject _healthUnitPrefab;
-        [SerializeField] private bool _updateHealth = false;
+        [SerializeField] private GameObject _floatingNumberPrefab;
 
+        [SerializeField] private Color _damageColor;
+        [SerializeField] private Color _healColor;
         [SerializeField] private float _healthChangeDelay = 0.5f;
+        [SerializeField] private bool _isImmortal = false;
+
 
         private Unit _owner;
         private List<GameObject> _healthUnits = new List<GameObject>();
         private Dictionary<int, SpriteRenderer> _healthUnitChildren = new Dictionary<int, SpriteRenderer>();
         private int _currentHealth = 0;
         private int _maxHealth = 0;
+        private bool _updateHealth = false;
 
         public void Start()
         {
@@ -36,24 +41,29 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             }
         }
 
+        public void DisplayHealthBar(bool shouldDisplay)
+        {
+            _healthBar.gameObject.SetActive(shouldDisplay);
+        }
+
         public void UpdateHealth(int amount)
         {
-            _updateHealth = true;
-            StartCoroutine(UpdateHealthVisual(amount));
-        }
+            if (!_isImmortal)
+            {
+                _updateHealth = true;
+                StartCoroutine(UpdateHealthVisual(amount));
+            }
 
-        [ContextMenu("AddHealth(2)")]
-        public void ContextAddHealth()
-        {
-            _updateHealth = true;
-            StartCoroutine(UpdateHealthVisual(2));
-        }
+            GameObject floatingNumber = Instantiate(_floatingNumberPrefab, _healthBar.position + _healthBar.forward, Quaternion.identity);
+            Animator numberAnim = floatingNumber.GetComponentInChildren<Animator>();
+            numberAnim.SetInteger("Random", UnityEngine.Random.Range(0, 2));
+            numberAnim.speed = UnityEngine.Random.Range(0.8f, 1.2f);
 
-        [ContextMenu("RemoveHealth(2)")]
-        public void ContextRemoveHealth()
-        {
-            _updateHealth = true;
-            StartCoroutine(UpdateHealthVisual(-2));
+            TextMeshPro textComp = floatingNumber.GetComponentInChildren<TextMeshPro>();
+            textComp.color = amount < 0 ? _damageColor : _healColor;
+            textComp.text = amount.ToString();
+
+            Destroy(floatingNumber, 2f);
         }
 
         private void Update()
@@ -63,6 +73,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private IEnumerator UpdateHealthVisual(int amountChanged)
         {
+
             while (_updateHealth)
             {
                 int step = amountChanged < 0 ? -1 : 1;
@@ -70,6 +81,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
                 if (targetHealth <= 0)
                     OnHealthReachedZero?.Invoke();
+                else
+                    yield return new WaitForSeconds(1f);
 
                 int indexStep = amountChanged < 0 ? 0 : 1;
 

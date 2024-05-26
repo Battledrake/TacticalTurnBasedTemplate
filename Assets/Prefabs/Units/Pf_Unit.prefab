@@ -185,8 +185,12 @@ MonoBehaviour:
   _healthBar: {fileID: 4346540276523303900}
   _healthUnitPrefab: {fileID: 1031883965029406708, guid: aba49173a357cb84f941df19e9e77d90,
     type: 3}
-  _updateHealth: 0
-  _healthChangeDelay: 0.2
+  _floatingNumberPrefab: {fileID: 2420382985826304068, guid: 7e45195551bf3c449a11695100dc3436,
+    type: 3}
+  _damageColor: {r: 1, g: 0, b: 0, a: 0.78431374}
+  _healColor: {r: 0, g: 1, b: 0.024693727, a: 0.78431374}
+  _healthChangeDelay: 0.5
+  _isImmortal: 0
 --- !u!1001 &1285819045662853863
 PrefabInstance:
   m_ObjectHideFlags: 0
