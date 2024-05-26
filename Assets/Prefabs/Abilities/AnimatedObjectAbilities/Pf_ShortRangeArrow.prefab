@@ -44,7 +44,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5ec1f05eb76d995429a4a1d5dbe4d949, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _abilityId: 9
+  _abilityId: 10
   _icon: {fileID: 21300000, guid: 8a8afbd2bf68f054fa55c56786d13458, type: 3}
   _rangeData:
     rangePattern: 5
@@ -59,12 +59,14 @@ MonoBehaviour:
       requireLineOfSight: 0
       height: 0
   _effects:
-  - statType: 0
+  - attributeType: 0
     minMaxModifier: {x: -2, y: -5}
+  _isFriendly: 0
   _objectToAnimate: {fileID: 5532487369551238974, guid: db7d39dc961b49e47bd926265d63e932,
     type: 3}
   _taskPrefab: {fileID: 8862640479722470499, guid: a8b7b17f8fc21544086c91b35cee0944,
     type: 3}
   _taskData: {fileID: 11400000, guid: 40d57251649027d4f8b1d3345845acbe, type: 2}
+  _animationType: 2
   _animationSpeed: 1
   _loopAnimation: 0

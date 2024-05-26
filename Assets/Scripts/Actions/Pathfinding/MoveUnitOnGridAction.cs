@@ -20,7 +20,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             {
                 if (_currentUnit != _playerActions.SelectedUnit)
                 {
-                _currentUnit.OnUnitReachedDestination -= SelectedUnit_OnUnitReachedDestination;
+                    _currentUnit.OnUnitReachedDestination -= SelectedUnit_OnUnitReachedDestination;
                 }
                 else
                 {

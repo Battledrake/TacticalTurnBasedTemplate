@@ -13,7 +13,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public event Action<GridIndex> OnSelectedTileChanged;
         public event Action<Unit> OnSelectedUnitChanged;
 
+        [Header("Dependencies")]
         [SerializeField] private TacticsGrid _tacticsGrid;
+        [SerializeField] private AbilityTabController _abilityTabController;
 
         public TacticsGrid TacticsGrid { get => _tacticsGrid; }
         public GridIndex HoveredTile { get => _hoveredTile; set => _selectedTile = value; }
@@ -41,11 +43,31 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private void Awake()
         {
             OnHoveredTileChanged += OnHoveredTileChanged_UpdateActions;
+            OnSelectedUnitChanged += This_OnSelectedUnitChanged;
+        }
+
+        private void This_OnSelectedUnitChanged(Unit unit)
+        {
+            if (!_abilityTabController.ActiveAbility)
+            {
+                _currentAbility = null;
+                OnCurrentAbilityChanged?.Invoke(null);
+            }
         }
 
         private void Start()
         {
             CombatSystem.Instance.OnUnitGridIndexChanged += CombatSystem_OnUnitGridIndexChanged;
+            Unit.OnAnyUnitDied += Unit_OnAnyUnitDied;
+        }
+
+        private void Unit_OnAnyUnitDied(Unit unit)
+        {
+            if(unit == _selectedUnit)
+            {
+                _selectedUnit = null;
+                OnSelectedUnitChanged.Invoke(null);
+            }
         }
 
         private void CombatSystem_OnUnitGridIndexChanged(Unit unit, GridIndex index)
@@ -141,18 +163,19 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         public void SetSelectedTileAndUnit(GridIndex index)
         {
-
             GridIndex previousTile = _selectedTile;
             if (previousTile != index)
             {
                 _tacticsGrid.RemoveStateFromTile(previousTile, TileState.Selected);
                 _selectedTile = index;
+                OnSelectedTileChanged?.Invoke(_selectedTile);
                 _tacticsGrid.AddStateToTile(index, TileState.Selected);
             }
             else //Clicked on a tile that was already selected
             {
                 _tacticsGrid.RemoveStateFromTile(index, TileState.Selected);
                 _selectedTile = GridIndex.Invalid();
+                OnSelectedTileChanged?.Invoke(_selectedTile);
                 if (_selectedUnit != null)
                 {
                     _selectedUnit.SetIsSelected(false);
@@ -161,7 +184,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                     return;
                 }
             }
-            OnSelectedTileChanged?.Invoke(_selectedTile);
 
             _tacticsGrid.GridTiles.TryGetValue(index, out TileData tileData);
 

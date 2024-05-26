@@ -410,6 +410,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
             _gridTiles[index] = tileData;
 
+            unit.SetUnitsGrid(this);
+
             OnTileDataUpdated?.Invoke(index);
             return true;
         }

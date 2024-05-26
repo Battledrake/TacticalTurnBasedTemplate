@@ -8,6 +8,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
     public class GridMovement : MonoBehaviour
     {
         public event Action OnMovementStarted;
+        public event Action OnMovementStopped;
         public event Action<GridIndex> OnReachedNewTile;
         public event Action OnReachedDestination;
 
@@ -82,6 +83,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             _isMoving = false;
             _currentPathToFollow.Clear();
+            OnMovementStopped?.Invoke();
         }
 
         public void Pause(bool isPaused)

@@ -19,9 +19,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             CommitAbility();
 
-            _summonedUnit = Instantiate(_unitPrefab, _tacticsGrid.GetWorldPositionFromGridIndex(_targetIndex), Quaternion.identity, this.transform);
+            _summonedUnit = Instantiate(_unitPrefab, _tacticsGrid.GetWorldPositionFromGridIndex(_targetIndex), Quaternion.identity);
             _summonedUnit.InitializeUnit(_unitType);
-            _tacticsGrid.AddUnitToTile(_targetIndex, _summonedUnit, true);
+            CombatSystem.Instance.AddUnitToCombat(_targetIndex, _summonedUnit);
             _isActive = true;
 
             AbilityBehaviorComplete(this);
@@ -39,10 +39,10 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public override void EndAbility()
         {
             _isActive = false;
-            _summonedUnit.GetComponent<IUnitAnimation>().PlayAnimationType(AnimationType.Death);
-            _tacticsGrid.RemoveUnitFromTile(_summonedUnit.UnitGridIndex);
-            Destroy(_summonedUnit.gameObject, 3f);
-            Destroy(this.gameObject, 5f);
+            _summonedUnit.Die(true);
+            //_tacticsGrid.RemoveUnitFromTile(_summonedUnit.UnitGridIndex);
+            //Destroy(_summonedUnit.gameObject, 3f);
+            base.EndAbility();
         }
 
         public override bool TryActivateAbility()

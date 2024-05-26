@@ -57,12 +57,12 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private void OnEnable()
         {
 
-            Unit.OnUnitReachedNewTile += Unit_OnUnitReachedNewTile;
+            Unit.OnAnyUnitReachedNewTile += Unit_OnUnitReachedNewTile;
         }
 
         private void OnDisable()
         {
-            Unit.OnUnitReachedNewTile -= Unit_OnUnitReachedNewTile;
+            Unit.OnAnyUnitReachedNewTile -= Unit_OnUnitReachedNewTile;
         }
 
         private void Unit_OnUnitReachedNewTile(Unit unit, GridIndex index)
@@ -115,9 +115,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             OnUnitTeamChanged?.Invoke(unit, previousIndex, teamIndex);
         }
 
-        private void Unit_OnUnitDied(Unit unit)
+        private void Unit_OnUnitDied(Unit unit, bool shouldDestroy = false)
         {
-            RemoveUnitFromCombat(unit, false);
+            RemoveUnitFromCombat(unit, shouldDestroy);
         }
 
         /// <summary>
@@ -151,7 +151,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
             if (shouldDestroy)
             {
-                Destroy(unit.gameObject);
+                Destroy(unit.gameObject, 2f);
             }
             else
             {
@@ -161,8 +161,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         public bool TryActivateAbility(Ability ability, Unit instigator, GridIndex origin, GridIndex target)
         {
-            if (GetAbilityRange(origin, ability.RangeData).Contains(target))
+            if (GetAbilityRange(origin, ability.RangeData, instigator).Contains(target))
             {
+                //In the future, we'll want to check if there's already an ability object.
                 Ability abilityObject = Instantiate(ability, _tacticsGrid.GetWorldPositionFromGridIndex(origin), Quaternion.identity);
 
                 List<GridIndex> impactIndexes = new List<GridIndex>();
@@ -176,7 +177,16 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                     impactIndexes = GetAbilityRange(target, ability.AreaOfEffectData);
                     abilityObject.InitializeAbility(_tacticsGrid, instigator, origin, target, impactIndexes);
                 }
-                return abilityObject.TryActivateAbility();
+
+                if (abilityObject.TryActivateAbility())
+                {
+                    return true;
+                }
+                else
+                {
+                    //Ability Failed to activate. Check conditions;
+                    abilityObject.EndAbility();
+                }
             }
             return false;
         }
@@ -335,12 +345,27 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             }
         }
 
-        public List<GridIndex> GetAbilityRange(GridIndex originIndex, AbilityRangeData rangeData)
+        public List<GridIndex> GetAbilityRange(GridIndex originIndex, AbilityRangeData rangeData, Unit unit = null)
         {
-            List<GridIndex> indexesInRange = RemoveNotWalkableIndexes(AbilityStatics.GetIndexesFromPatternAndRange(originIndex, _tacticsGrid.GridShape, rangeData.rangeMinMax, rangeData.rangePattern));
-            if (rangeData.lineOfSightData.requireLineOfSight)
+            List<GridIndex> indexesInRange = new List<GridIndex>();
+            if (rangeData.rangePattern != AbilityRangePattern.Movement)
             {
-                indexesInRange = RemoveIndexesWithoutLineOfSight(originIndex, indexesInRange, rangeData.lineOfSightData.height);
+                indexesInRange = RemoveNotWalkableIndexes(AbilityStatics.GetIndexesFromPatternAndRange(originIndex, _tacticsGrid.GridShape, rangeData.rangeMinMax, rangeData.rangePattern));
+
+                if (rangeData.lineOfSightData.requireLineOfSight)
+                {
+                    indexesInRange = RemoveIndexesWithoutLineOfSight(originIndex, indexesInRange, rangeData.lineOfSightData.height);
+                }
+            }
+            else
+            {
+                PathFilter pathFilter;
+                if (unit)
+                    pathFilter = GridPathfinding.CreatePathFilterFromUnit(unit, false, false);
+                else
+                    pathFilter = _tacticsGrid.GridPathfinder.CreateDefaultPathFilter(rangeData.rangeMinMax.y);
+
+                indexesInRange = _tacticsGrid.GridPathfinder.FindTilesInRange(originIndex, pathFilter).Path;
             }
             return indexesInRange;
         }

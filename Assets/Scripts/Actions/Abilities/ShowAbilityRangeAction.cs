@@ -20,6 +20,20 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
             _playerActions.OnHoveredTileChanged += PlayerActions_OnHoveredTileChanged;
             _playerActions.OnCurrentAbilityChanged += PlayerActions_OnCurrentAbilityChanged;
+            _playerActions.OnSelectedTileChanged += PlayerActions_OnSelectedTileChanged;
+        }
+
+        private void PlayerActions_OnSelectedTileChanged(GridIndex index)
+        {
+            ClearStateFromPreviousList(TileState.IsInAbilityRange, _rangeIndexes);
+            ClearStateFromPreviousList(TileState.IsInAoeRange, _areaOfEffectIndexes);
+
+            _selectedTileIndex = index;
+
+            if (_currentAbility != null && index != GridIndex.Invalid())
+            {
+                ShowAbilityRangePattern();
+            }
         }
 
         private void PlayerActions_OnCurrentAbilityChanged(Ability ability)
@@ -28,8 +42,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             ClearStateFromPreviousList(TileState.IsInAoeRange, _areaOfEffectIndexes);
 
             _currentAbility = ability;
+            _selectedTileIndex = _playerActions.SelectedTile;
 
-            if(_currentAbility != null && _selectedTileIndex != GridIndex.Invalid())
+            if (_currentAbility != null && _selectedTileIndex != GridIndex.Invalid())
             {
                 ShowAbilityRangePattern();
             }
@@ -39,10 +54,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             base.ExecuteAction(index);
 
-            if (_playerActions.TacticsGrid.IsIndexValid(index) && index != _selectedTileIndex)
-                _selectedTileIndex = index;
-            else
-                _selectedTileIndex = GridIndex.Invalid();
+            _selectedTileIndex = _playerActions.SelectedTile;
 
             ClearStateFromPreviousList(TileState.IsInAbilityRange, _rangeIndexes);
             ClearStateFromPreviousList(TileState.IsInAoeRange, _areaOfEffectIndexes);
@@ -59,7 +71,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void ShowAbilityRangePattern()
         {
-            _rangeIndexes = CombatSystem.Instance.GetAbilityRange(_selectedTileIndex, _currentAbility.RangeData);
+            _rangeIndexes = CombatSystem.Instance.GetAbilityRange(_selectedTileIndex, _currentAbility.RangeData, _playerActions.SelectedUnit);
 
             if (_currentAbility.RangeData.lineOfSightData.requireLineOfSight)
                 _rangeIndexes = CombatSystem.Instance.RemoveIndexesWithoutLineOfSight(_selectedTileIndex, _rangeIndexes, _currentAbility.RangeData.lineOfSightData.height);
@@ -114,6 +126,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             _playerActions.OnHoveredTileChanged -= PlayerActions_OnHoveredTileChanged;
             _playerActions.OnCurrentAbilityChanged -= PlayerActions_OnCurrentAbilityChanged;
+            _playerActions.OnSelectedTileChanged -= PlayerActions_OnSelectedTileChanged;
 
             ClearStateFromPreviousList(TileState.IsInAoeRange, _areaOfEffectIndexes);
             ClearStateFromPreviousList(TileState.IsInAbilityRange, _rangeIndexes);

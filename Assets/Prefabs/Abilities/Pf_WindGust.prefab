@@ -44,7 +44,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 97fc42592235a54438299929822099be, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _abilityId: 3
+  _abilityId: 4
   _icon: {fileID: 21300000, guid: 3c7e93125f544564ea234f4f23b39a1e, type: 3}
   _rangeData:
     rangePattern: 6
@@ -67,5 +67,6 @@ MonoBehaviour:
   _taskPrefab: {fileID: 8862640479722470499, guid: a8b7b17f8fc21544086c91b35cee0944,
     type: 3}
   _taskData: {fileID: 11400000, guid: 5453bef032747ca4eb5acac1930ad5e7, type: 2}
+  _animationType: 0
   _animationTime: 1
   _animationSpeed: 2

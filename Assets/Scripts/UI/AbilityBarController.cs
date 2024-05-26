@@ -9,6 +9,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
     {
         [SerializeField] private AbilityButton _abilityButtonPrefab;
         [SerializeField] private Transform _abilityButtonContainer;
+        //Use ToggleGroup on AbilityButtonContainer if not using DebugMenu
         [SerializeField] private ToggleGroup _abilityBarToggleGroup;
 
         [SerializeField] private PlayerActions _playerActions;
@@ -19,13 +20,14 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private void Start()
         {
             _playerActions.OnSelectedUnitChanged += PlayerActions_OnSelectedUnitChanged;
+
         }
 
         private void PlayerActions_OnSelectedUnitChanged(Unit unit)
         {
             ClearBar();
 
-            if(unit != null)
+            if (unit != null)
             {
                 PopulateBar(unit.UnitData.unitStats.abilities);
             }
@@ -43,7 +45,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         public void PopulateBar(List<Ability> abilities)
         {
-            for(int i = 0; i < abilities.Count; i++)
+            for (int i = 0; i < abilities.Count; i++)
             {
                 AbilityButton newButton = Instantiate(_abilityButtonPrefab, _abilityButtonContainer);
                 newButton.InitializeButton(i, abilities[i].Icon);

@@ -15,6 +15,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         [Header("AbilityButtons")]
         [SerializeField] private AbilityButton _abilityButtonPrefab;
         [SerializeField] private Transform _abilityButtonContainer;
+        [SerializeField] private ToggleGroup _abilityButtonsToggleGroup;
 
         [Header("Ability Range Settings")]
         [SerializeField] private ActionButton _showAbilityPatternsButton;
@@ -32,6 +33,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         [Header("Dependences")]
         [SerializeField] private PlayerActions _playerActions;
+
+        public ToggleGroup AbilityButtonsToggleGroup { get => _abilityButtonsToggleGroup; }
         public Ability ActiveAbility { get => _activeAbility; }
 
         private Dictionary<int, AbilityButton> _abilityButtons = new Dictionary<int, AbilityButton>();
@@ -48,6 +51,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 abilityButton.OnAbilityButtonDeselected += AbilityButton_OnAbilityButtonDeselected;
 
                 _abilityButtons.TryAdd(i, abilityButton);
+
+                _abilityButtonsToggleGroup.RegisterToggle(abilityButton.GetComponent<Toggle>());
+                abilityButton.GetComponent<Toggle>().group = _abilityButtonsToggleGroup;
             }
             _showAbilityPatternsButton.OnButtonToggled += OnShowAbilityRangePatternsButtonToggled;
 

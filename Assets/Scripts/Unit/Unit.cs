@@ -9,10 +9,12 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
     [RequireComponent(typeof(GridMovement))]
     public class Unit : MonoBehaviour, IUnitAnimation
     {
-        public static event Action<Unit, GridIndex> OnUnitReachedNewTile;
+        public static event Action<Unit, GridIndex> OnAnyUnitReachedNewTile;
+        public static event Action<Unit> OnAnyUnitDied;
         public event Action<Unit> OnUnitReachedDestination;
         public event Action<Unit> OnUnitStartedMovement;
-        public event Action<Unit> OnUnitDied;
+        public event Action<Unit> OnUnitMovementStopped;
+        public event Action<Unit, bool> OnUnitDied;
         public event Action<Unit> OnUnitRespawn;
 
         [SerializeField] private UnitId _unitType = UnitId.Ranger;
@@ -61,36 +63,46 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _gridMovement = this.GetComponent<GridMovement>();
             _healthComponent = this.GetComponent<Health>();
 
-            _healthComponent.OnHealthReachedZero += Die;
+            _healthComponent.OnHealthReachedZero += HealthComponent_OnHealthReachedZero;
         }
+
         private void OnEnable()
         {
             _gridMovement.OnMovementStarted += GridMovement_OnMovementStarted;
+            _gridMovement.OnMovementStopped += GridMovement_OnMovementStopped;
             _gridMovement.OnReachedNewTile += GridMovement_OnReachedNewTile;
             _gridMovement.OnReachedDestination += GridMovement_OnReachedDestination;
         }
+
+
         private void OnDisable()
         {
             _gridMovement.OnMovementStarted -= GridMovement_OnMovementStarted;
+            _gridMovement.OnMovementStopped -= GridMovement_OnMovementStopped;
             _gridMovement.OnReachedNewTile -= GridMovement_OnReachedNewTile;
             _gridMovement.OnReachedDestination -= GridMovement_OnReachedDestination;
-        }
-
-        private void GridMovement_OnReachedDestination()
-        {
-            OnUnitReachedDestination?.Invoke(this);
-            _unitAnimator.SetTrigger(AnimationType.Idle.ToString());
-        }
-
-        private void GridMovement_OnReachedNewTile(GridIndex index)
-        {
-            OnUnitReachedNewTile?.Invoke(this, index);
         }
 
         private void GridMovement_OnMovementStarted()
         {
             OnUnitStartedMovement?.Invoke(this);
             _unitAnimator.SetTrigger(AnimationType.Run.ToString());
+        }
+
+        private void GridMovement_OnMovementStopped()
+        {
+            OnUnitMovementStopped?.Invoke(this);
+        }
+
+        private void GridMovement_OnReachedNewTile(GridIndex index)
+        {
+            OnAnyUnitReachedNewTile?.Invoke(this, index);
+        }
+
+        private void GridMovement_OnReachedDestination()
+        {
+            OnUnitReachedDestination?.Invoke(this);
+            _unitAnimator.SetTrigger(AnimationType.Idle.ToString());
         }
 
         public void SetUnitsGrid(TacticsGrid grid)
@@ -109,6 +121,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             if (_unitVisual != null)
                 Destroy(_unitVisual);
             _unitVisual = Instantiate(_unitData.assetData.unitVisual, this.transform);
+
             _currentHealth = _unitData.unitStats.currentHealth;
             _maxHealth = _unitData.unitStats.maxHealth;
             _moveRange = _unitData.unitStats.moveRange;
@@ -203,30 +216,25 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             _healthComponent.UpdateHealth(effectModifier);
 
-            //if (_currentHealth == 0 && effectModifier < 0)
-            //    return;
-            //if (_currentHealth == _maxHealth && effectModifier > 0)
-            //    return;
-
-            //_currentHealth = Mathf.Clamp(_currentHealth + effectModifier, 0, _maxHealth);
-
-            //if (_currentHealth == 0)
-            //{
-            //    _collider.enabled = false;
-            //    PlayDeathAnimation();
-            //    OnUnitDied?.Invoke(this);
-            //    return;
-            //}
-
             if (effectModifier < 0)
                 PlayAnimationType(AnimationType.Hit);
         }
 
-        public void Die()
+        private void HealthComponent_OnHealthReachedZero()
         {
+            //TODO: we'll want to run a check to see if we want to destroy.
+            //If it's a summoned unit, can check future effectTypes or something.
+            //Game Design choices as well.
+            Die();
+        }
+
+        public void Die(bool shouldDestroy = false)
+        {
+            _gridMovement.Stop();
             _collider.enabled = false;
             PlayAnimationType(AnimationType.Death);
-            OnUnitDied?.Invoke(this);
+            OnUnitDied?.Invoke(this, shouldDestroy);
+            OnAnyUnitDied?.Invoke(this);
         }
 
         public void LookAtTarget(GridIndex targetIndex)

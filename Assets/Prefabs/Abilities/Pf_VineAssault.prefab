@@ -44,7 +44,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6d86e668ac114b44baa687cf2a554343, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _abilityId: 2
+  _abilityId: 3
   _icon: {fileID: 21300000, guid: 384a9982cc7676249932679d732c2b08, type: 3}
   _rangeData:
     rangePattern: 4
@@ -58,6 +58,8 @@ MonoBehaviour:
     lineOfSightData:
       requireLineOfSight: 0
       height: 0
+  _effects: []
+  _isFriendly: 0
   _vinePrefab: {fileID: 1199601900371724, guid: d67ed860424886e4db64e996b4d85493,
     type: 3}
   _playbackSpeed: 0.25

@@ -73,9 +73,19 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
             if (_playerActions.TacticsGrid.IsIndexValid(_selectedTileIndex))
             {
-                _rangeIndexes = AbilityStatics.GetIndexesFromPatternAndRange(_selectedTileIndex, _playerActions.TacticsGrid.GridShape, _rangeMinMax, _rangePattern);
+                if (_rangePattern != AbilityRangePattern.Movement)
+                {
+                    _rangeIndexes = AbilityStatics.GetIndexesFromPatternAndRange(_selectedTileIndex, _playerActions.TacticsGrid.GridShape, _rangeMinMax, _rangePattern);
+                }
+                else
+                {
+                    PathFilter pathFilter = _playerActions.TacticsGrid.GridPathfinder.CreateDefaultPathFilter(_rangeMinMax.y);
+                    _rangeIndexes = _playerActions.TacticsGrid.GridPathfinder.FindTilesInRange(_selectedTileIndex, pathFilter).Path;
+                }
+
                 if (_rangeLineOfSight)
                     _rangeIndexes = CombatSystem.Instance.RemoveIndexesWithoutLineOfSight(_selectedTileIndex, _rangeIndexes, _rangeLineOfSightHeight);
+
                 _rangeIndexes.ForEach(i => _playerActions.TacticsGrid.AddStateToTile(i, TileState.IsInAbilityRange));
             }
         }

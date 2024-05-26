@@ -7,6 +7,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 {
     public enum AbilityId
     {
+        Movement,
         MeleeHit,
         SummonBat,
         VineAssault,
@@ -29,7 +30,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         HalfDiagonal,
         Star,
         Diamond,
-        Square
+        Square,
+        Movement
     }
 
     [Serializable]

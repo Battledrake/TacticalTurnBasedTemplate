@@ -28,7 +28,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                         Unit newUnit = Instantiate(_unitPrefab);
                         newUnit.gameObject.name = ((UnitId)actionValue).ToString();
                         newUnit.InitializeUnit((UnitId)actionValue);
-                        newUnit.SetUnitsGrid(_playerActions.TacticsGrid);
 
                         CombatSystem.Instance.AddUnitToCombat(index, newUnit, _unitTeamIndex);
                         return true;

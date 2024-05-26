@@ -44,7 +44,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5ec1f05eb76d995429a4a1d5dbe4d949, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _abilityId: 4
+  _abilityId: 5
   _icon: {fileID: 21300000, guid: 5a329004f29430745a281f0b97b7c9c8, type: 3}
   _rangeData:
     rangePattern: 1
@@ -61,10 +61,12 @@ MonoBehaviour:
   _effects:
   - attributeType: 0
     minMaxModifier: {x: -10, y: -10}
+  _isFriendly: 0
   _objectToAnimate: {fileID: 8548907831371414663, guid: 304aeb8e38f1f394abbba2d47b48a593,
     type: 3}
   _taskPrefab: {fileID: 8862640479722470499, guid: a8b7b17f8fc21544086c91b35cee0944,
     type: 3}
   _taskData: {fileID: 11400000, guid: 9ddd427aa7debf04589e93cb0fa78b79, type: 2}
+  _animationType: 2
   _animationSpeed: 1
   _loopAnimation: 0
