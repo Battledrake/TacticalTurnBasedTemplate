@@ -15,6 +15,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         [SerializeField] private AnimateObjectTaskData _taskData;
 
         [Header("Custom Values")]
+        [SerializeField] private AnimationType _animationType;
         [SerializeField] private float _animationTime = 1f;
         [SerializeField] private float _animationSpeed;
 
@@ -45,7 +46,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             if (_instigator)
             {
                 _instigator.LookAtTarget(_targetIndex);
-                _instigator.GetComponent<IUnitAnimation>().PlayAttackAnimation();
+                _instigator.GetComponent<IUnitAnimation>().PlayAnimationType(_animationType);
             }
 
 

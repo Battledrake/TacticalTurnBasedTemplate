@@ -39,7 +39,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public override void EndAbility()
         {
             _isActive = false;
-            _summonedUnit.GetComponent<IUnitAnimation>().PlayDeathAnimation();
+            _summonedUnit.GetComponent<IUnitAnimation>().PlayAnimationType(AnimationType.Death);
             _tacticsGrid.RemoveUnitFromTile(_summonedUnit.UnitGridIndex);
             Destroy(_summonedUnit.gameObject, 3f);
             Destroy(this.gameObject, 5f);

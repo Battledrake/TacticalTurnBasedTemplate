@@ -69,8 +69,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private void GridMovement_OnReachedDestination()
         {
             OnUnitReachedDestination?.Invoke(this);
-            //_unitAnimator.SetFloat("Speed", 0);
-            //_unitAnimator.speed = 1f;
             _unitAnimator.SetTrigger(AnimationType.Idle.ToString());
         }
 
@@ -83,15 +81,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             OnUnitStartedMovement?.Invoke(this);
             _unitAnimator.SetTrigger(AnimationType.Run.ToString());
-        }
-
-        private void Update()
-        {
-            if (_gridMovement.IsMoving)
-            {
-                //_unitAnimator.SetFloat("Speed", _gridMovement.CurrentMovementSpeed);
-                //_unitAnimator.speed = 2f;
-            }
         }
 
         public void SetUnitsGrid(TacticsGrid grid)
@@ -130,8 +119,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             CombatSystem.Instance.AddUnitToCombat(this.transform.position, this);
 
-            _unitAnimator.ResetTrigger("Hit");
-            _unitAnimator.SetTrigger("Respawn");
+            _unitAnimator.ResetTrigger(AnimationType.Hit.ToString());
+            _unitAnimator.SetTrigger(AnimationType.Respawn.ToString());
             _currentHealth = _maxHealth;
             _collider.enabled = true;
             _healthComponent.UpdateHealth(_maxHealth);
@@ -220,13 +209,13 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             //}
 
             if (effectModifier < 0)
-                TriggerHitAnimation();
+                PlayAnimationType(AnimationType.Hit);
         }
 
         public void Die()
         {
             _collider.enabled = false;
-            PlayDeathAnimation();
+            PlayAnimationType(AnimationType.Death);
             OnUnitDied?.Invoke(this);
         }
 
@@ -241,21 +230,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public void PlayAnimationType(AnimationType animationType)
         {
             _unitAnimator.SetTrigger(animationType.ToString());
-        }
-
-        public void PlayAttackAnimation()
-        {
-            _unitAnimator.SetTrigger("Attack");
-        }
-
-        public void TriggerHitAnimation()
-        {
-            _unitAnimator.SetTrigger("Hit");
-        }
-
-        public void PlayDeathAnimation()
-        {
-            _unitAnimator.SetTrigger("Die");
         }
     }
 }

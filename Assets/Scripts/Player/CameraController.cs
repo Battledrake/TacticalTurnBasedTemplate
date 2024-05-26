@@ -55,6 +55,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                     _currentTargetIndex = 0;
                 }
                 _targetPosition = CombatSystem.Instance.UnitsInCombat[_currentTargetIndex].transform.position;
+                _targetPosition.y += 1.5f;
                 _moveToTarget = true;
                 _currentTargetIndex++;
             }

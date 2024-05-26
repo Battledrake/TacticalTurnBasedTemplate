@@ -16,7 +16,4 @@ public enum AnimationType
 public interface IUnitAnimation
 {
     public void PlayAnimationType(AnimationType animationType) { }
-    public void PlayAttackAnimation() { }
-    public void PlayDeathAnimation() { }
-    public void TriggerHitAnimation() { }
 }

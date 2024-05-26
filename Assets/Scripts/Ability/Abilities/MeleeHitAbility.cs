@@ -11,6 +11,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         [SerializeField] private PlayAnimationTask _playAnimTaskPrefab;
         [SerializeField] private AnimationType _animationType;
 
+        [SerializeField] private GameObject _impactFxPrefab;
+
         public override void ActivateAbility()
         {
             CommitAbility();
@@ -18,7 +20,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             if (_instigator)
             {
                 _instigator.LookAtTarget(_targetIndex);
-                _instigator.GetComponent<IUnitAnimation>().PlayAttackAnimation();
+                _instigator.GetComponent<IUnitAnimation>().PlayAnimationType(_animationType);
             }
 
 
@@ -57,6 +59,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             animationTask.OnAnimationEvent -= PlayAnimationTask_OnAnimationEvent;
             _tacticsGrid.GetTileDataFromIndex(_targetIndex, out TileData targetData);
             CombatSystem.Instance.ApplyEffectsToUnit(_instigator, targetData.unitOnTile, _effects);
+
+            GameObject hitFx = Instantiate(_impactFxPrefab, targetData.tileMatrix.GetPosition() + new Vector3(0f, 1.5f, 0f), Quaternion.identity);
+            Destroy(hitFx, 2f);
         }
 
         public override bool CanActivateAbility()

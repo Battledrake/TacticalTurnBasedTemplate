@@ -65,3 +65,5 @@ MonoBehaviour:
   _playAnimTaskPrefab: {fileID: 8348269496721021093, guid: 88a54db5b90bc9f40b0a7c41c57e3d7c,
     type: 3}
   _animationType: 2
+  _impactFxPrefab: {fileID: 1489431029902184, guid: 4430919f14c50f84085d287cbcb2c30e,
+    type: 3}
