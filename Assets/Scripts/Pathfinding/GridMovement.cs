@@ -5,6 +5,7 @@ using UnityEngine;
 
 namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 {
+
     public class GridMovement : MonoBehaviour
     {
         public event Action OnMovementStarted;
@@ -20,23 +21,23 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         [Tooltip("Height difference of current and next tile before jumping is done")]
         [SerializeField] private float _heightBeforeJump = 0.2f;
 
-        public float CurrentMovementSpeed { get => _currentMovementSpeed; }
         public bool IsMoving { get => _isMoving; }
 
         private TacticsGrid _tacticsGrid;
 
         private List<GridIndex> _currentPathToFollow = new List<GridIndex>();
         private bool _isMoving;
-        private float _currentMovementSpeed;
-        private float _currentAngular;
 
         private Matrix4x4 _previousTileTransform;
         private Matrix4x4 _nextTileTransform;
 
-        private Vector3 _previousPosition;
+        private GridIndex _prevIndex;
 
         private float _traversalStep = 0f;
         private float _timeElapsed = 0f;
+
+        private bool _isClimbingUp = false;
+        private bool _isClimbingDown = false;
 
         public void SetPathingGrid(TacticsGrid tacticsGrid)
         {
@@ -57,12 +58,25 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             if (_currentPathToFollow.Count > 0)
             {
                 _previousTileTransform = this.transform.localToWorldMatrix;
-                Matrix4x4 nextTransform = _tacticsGrid.GridTiles[_currentPathToFollow[0]].tileMatrix;
+                _tacticsGrid.GetTileDataFromIndex(_currentPathToFollow[0], out TileData nextTile);
+                Matrix4x4 nextTransform = nextTile.tileMatrix;
                 Vector3 lookVector = nextTransform.GetPosition() - this.transform.position;
                 lookVector.y = 0f;
                 Quaternion lookRotation = Quaternion.LookRotation(lookVector, Vector3.up);
 
                 _nextTileTransform = Matrix4x4.TRS(nextTransform.GetPosition(), lookRotation, nextTransform.lossyScale);
+
+                if (nextTile.climbData.hasClimbLink)
+                {
+                    if (nextTile.climbData.climbLinks.Contains(_prevIndex))
+                    {
+                        Vector3 direction = nextTransform.GetPosition() - this.transform.position;
+                        if (direction.y > 0)
+                            _isClimbingUp = true;
+                        else
+                            _isClimbingDown = true;
+                    }
+                }
             }
             else
             {
@@ -96,23 +110,36 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             if (_isMoving)
             {
                 _timeElapsed += Time.deltaTime;
+
                 _traversalStep = _traversalSpeed * _tacticsGrid.TileSize.magnitude * Time.deltaTime;
 
-                _currentMovementSpeed = (this.transform.position - _previousPosition).magnitude / Time.deltaTime;
-                _previousPosition = this.transform.position;
+                //TODO: Get this working again
+                //Vector3 jumpVector = Vector3.zero;
+                //if (ShouldJumpToNextTile())
+                //    jumpVector.y = _jumpCurve.Evaluate(_traversalStep);
 
-                Vector3 jumpVector = Vector3.zero;
-                if (ShouldJumpToNextTile())
-                    jumpVector.y = _jumpCurve.Evaluate(_traversalStep);
+                Vector3 targetDestination = _nextTileTransform.GetPosition();
+                if (_isClimbingUp)
+                    targetDestination = new Vector3(this.transform.position.x, targetDestination.y, this.transform.position.z);
+                if (_isClimbingDown)
+                    targetDestination = new Vector3(targetDestination.x, this.transform.position.y, targetDestination.z);
+                
 
-                //transform.position = Vector3.Lerp(_previousTileTransform.GetPosition(), _nextTileTransform.GetPosition() + jumpVector, _positionAlpha.Evaluate(_timeElapsed / _traversalSpeed));
-                transform.position = Vector3.MoveTowards(this.transform.position, _nextTileTransform.GetPosition() + jumpVector, _traversalStep);
-                transform.rotation = Quaternion.Slerp(_previousTileTransform.rotation, _nextTileTransform.rotation, _rotationAlpha.Evaluate(_traversalSpeed * _timeElapsed));
+                this.transform.position = Vector3.MoveTowards(this.transform.position, targetDestination, _traversalStep);
+                this.transform.rotation = Quaternion.Slerp(_previousTileTransform.rotation, _nextTileTransform.rotation, _rotationAlpha.Evaluate(_traversalSpeed * _timeElapsed));
 
-                if (Vector3.Distance(this.transform.position, _nextTileTransform.GetPosition() + jumpVector) < 0.1f)
+                if (Vector3.Distance(this.transform.position, targetDestination) < 0.1f)
                 {
+                    if (_isClimbingUp || _isClimbingDown)
+                    {
+                        _isClimbingUp = false;
+                        _isClimbingDown = false;
+                        return;
+                    }
+
                     _timeElapsed = 0f;
                     _traversalStep = 0f;
+                    _prevIndex = _currentPathToFollow[0];
                     OnReachedNewTile?.Invoke(_currentPathToFollow[0]);
                     _currentPathToFollow.RemoveAt(0);
                     UpdatePath();

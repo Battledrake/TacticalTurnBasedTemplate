@@ -14,20 +14,22 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         [SerializeField] private TacticsGrid _tacticsGrid;
 
         public bool ShowTileIndexes { get => _showTileIndexes; set => _showTileIndexes = value; }
+        public bool ShowUnitOnTile { get => _showUnitOnTile; set => _showUnitOnTile = value; }
         public bool ShowTerrainCost { get => _showTerrainCost; set => _showTerrainCost = value; }
         public bool ShowTraversalCost { get => _showTraversalCost; set => _showTraversalCost = value; }
         public bool ShowHeuristicCost { get => _showHeuristicCost; set => _showHeuristicCost = value; }
         public bool ShowTotalCost { get => _showTotalCost; set => _showTotalCost = value; }
-        public bool ShowUnitOnTile { get => _showUnitOnTile; set => _showUnitOnTile = value; }
+        public bool ShowClimbLinks { get => _showClimbLinks; set => _showClimbLinks = value; }
 
         private Dictionary<GridIndex, GameObject> _spawnedTexts = new Dictionary<GridIndex, GameObject>();
 
         private bool _showTileIndexes = false;
+        private bool _showUnitOnTile = false;
         private bool _showTerrainCost = false;
         private bool _showTraversalCost = false;
         private bool _showHeuristicCost = false;
         private bool _showTotalCost = false;
-        private bool _showUnitOnTile = false;
+        private bool _showClimbLinks = false;
 
         private void OnEnable()
         {
@@ -51,7 +53,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private bool ShowAnyDebug()
         {
-            return _showTileIndexes || _showTerrainCost || _showUnitOnTile || HasPathfindingData();
+            return _showTileIndexes || _showTerrainCost || _showUnitOnTile || _showClimbLinks || HasPathfindingData();
         }
 
         private bool HasPathfindingData()
@@ -76,7 +78,11 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             {
                 string debugText = "";
 
-                TextMeshPro textMeshComp = GetTextGameObject(index).GetComponent<TextMeshPro>();
+                GameObject textObject = GetTextGameObject(index);
+                if (textObject == null)
+                    return;
+
+                TextMeshPro textMeshComp = textObject.GetComponent<TextMeshPro>();
 
                 if (_tacticsGrid.GridShape == GridShape.Triangle)
                     textMeshComp.fontSize = 0.75f;
@@ -85,6 +91,12 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
                 if (_showTileIndexes)
                     debugText += $"index: {index}\n";
+
+                if (_showUnitOnTile)
+                {
+                    string unitText = tileData.unitOnTile ? tileData.unitOnTile.name : "none";
+                    debugText += string.Format("unit:{0}\n", unitText);
+                }
 
                 if (_showTerrainCost)
                     debugText += string.Format("terrain:{0:F1}\n", PathfindingStatics.GetTerrainCostFromTileType(tileData.tileType));
@@ -108,10 +120,17 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                     }
                 }
 
-                if (_showUnitOnTile)
+                if (_showClimbLinks)
                 {
-                    string unitText = tileData.unitOnTile ? tileData.unitOnTile.name : "none";
-                    debugText += string.Format("unit:{0}\n", unitText);
+                    if (tileData.climbData.climbLinks != null && tileData.climbData.climbLinks.Count > 0)
+                    {
+                        string climbText = "";
+                        for(int i = 0; i < tileData.climbData.climbLinks.Count; i++)
+                        {
+                            climbText += "cl:" + tileData.climbData.climbLinks[i] + "\n";
+                        }
+                        debugText += climbText;
+                    }
                 }
 
                 if (string.IsNullOrEmpty(debugText))

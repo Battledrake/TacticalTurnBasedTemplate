@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1192918795623329366}
   - component: {fileID: -457582375525523563}
   m_Layer: 0
-  m_Name: Pf_Movement
+  m_Name: Pf_Move
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -45,7 +45,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _abilityId: 0
-  _icon: {fileID: 21300000, guid: 8df5bc2a47ef1054486fab2cc9ffce7d, type: 3}
+  _icon: {fileID: 21300000, guid: e3e1fda3ce21a644dac5ab1939dcde6e, type: 3}
   _rangeData:
     rangePattern: 7
     rangeMinMax: {x: 1, y: 5}

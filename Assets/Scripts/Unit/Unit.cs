@@ -5,7 +5,6 @@ using UnityEngine;
 
 namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 {
-
     [RequireComponent(typeof(GridMovement))]
     public class Unit : MonoBehaviour, IUnitAnimation
     {
@@ -24,6 +23,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public GridIndex UnitGridIndex { get => _gridIndex; set => _gridIndex = value; }
         public UnitData UnitData { get => _unitData; }
         public bool IsMoving { get => _gridMovement.IsMoving; }
+        public int MoveRange { get => _moveRange; set => _moveRange = value; } 
         public int TeamIndex
         {
             get => _teamIndex;
@@ -73,7 +73,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _gridMovement.OnReachedNewTile += GridMovement_OnReachedNewTile;
             _gridMovement.OnReachedDestination += GridMovement_OnReachedDestination;
         }
-
 
         private void OnDisable()
         {
@@ -200,6 +199,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 case AttributeType.MaxHealth:
                     break;
                 case AttributeType.MoveRange:
+                    _moveRange += effect.modifier;
                     break;
             }
         }

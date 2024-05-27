@@ -137,7 +137,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             pathFilter.includeStartNode = includeStartNode;
             pathFilter.allowPartialSolution = allowPartialSolution;
             pathFilter.validTileTypes = unit.UnitData.unitStats.validTileTypes;
-            pathFilter.maxPathLength = unit.UnitData.unitStats.moveRange;
+            pathFilter.maxPathLength = unit.MoveRange;
 
             return pathFilter;
         }
@@ -457,6 +457,11 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             float heightDifference = Mathf.Abs(sourceTile.tileMatrix.GetPosition().y - targetTile.tileMatrix.GetPosition().y);
             if (heightDifference > heightAllowance)
             {
+                if (sourceTile.climbData.hasClimbLink)
+                {
+                    if (sourceTile.climbData.climbLinks.Contains(targetTile.index))
+                        return true;
+                }
                 return false;
             }
 

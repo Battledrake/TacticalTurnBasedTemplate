@@ -16,6 +16,12 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         Obstacle
     }
 
+    public struct ClimbData
+    {
+        public bool hasClimbLink;
+        public List<GridIndex> climbLinks;
+    }
+
     public struct TileData
     {
         public GridIndex index;
@@ -23,6 +29,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public Matrix4x4 tileMatrix;
         public HashSet<TileState> tileStates;
         public Unit unitOnTile;
+        public ClimbData climbData;
     }
 
     public class TacticsGrid : MonoBehaviour
@@ -310,7 +317,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 {
                     for (int x = 0; x < _gridTileCount.x; ++x)
                     {
-                        TileData tileData = new TileData();
+                        TileData tileData = new();
                         tileData.index = new GridIndex(x, z);
 
                         Vector3 instancePosition = GetWorldPositionFromGridIndex(new GridIndex(x, z));
@@ -329,6 +336,13 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                             TileType tileType = TraceForGroundAndObstacles(instancePosition, out Vector3 hitPosition, out Vector3 hitNormal);
                             if (tileType != TileType.None)
                             {
+                                List<GridIndex> climbLinks = TraceForClimbLinks(tileData.index, hitPosition);
+                                if (climbLinks.Count > 0)
+                                {
+                                    tileData.climbData.hasClimbLink = true;
+                                    tileData.climbData.climbLinks = climbLinks;
+                                }
+
                                 tileData.tileType = tileType;
                                 instanceRotation = Quaternion.FromToRotation(Vector3.up, hitNormal) * instanceRotation;
                                 tileData.tileMatrix = Matrix4x4.TRS(hitPosition, instanceRotation, instanceScale);
@@ -350,6 +364,41 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
                 OnGridGenerated?.Invoke();
             }
+        }
+
+        private List<GridIndex> TraceForClimbLinks(GridIndex origin, Vector3 originPosition)
+        {
+            int neighborCount = 0;
+            switch (_gridShape)
+            {
+                case GridShape.Square:
+                    neighborCount = 4;
+                    break;
+                case GridShape.Hexagon:
+                    neighborCount = 6;
+                    break;
+                case GridShape.Triangle:
+                    neighborCount = 3;
+                    break;
+            }
+
+            List<GridIndex> climbLinks = new List<GridIndex>();
+            LayerMask climbLayer = LayerMask.GetMask("Climb");
+
+            for (int i = 0; i < neighborCount; i++)
+            {
+                GridIndex neighborIndex = GridStatics.GetNeighborAtIndexFromShape(origin, i, _gridShape);
+                Vector3 neighborPosition = GetWorldPositionFromGridIndex(neighborIndex);
+                Vector3 direction = neighborPosition - originPosition;
+                direction.y = 0f;
+                direction.Normalize();
+
+                if (Physics.Raycast(originPosition, direction, _gridTileSize.x, climbLayer))
+                {
+                    climbLinks.Add(neighborIndex);
+                }
+            }
+            return climbLinks;
         }
 
         public bool IsTileWalkable(GridIndex index)
