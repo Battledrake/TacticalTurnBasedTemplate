@@ -84,7 +84,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 }
 
                 if (_rangeLineOfSight)
-                    _rangeIndexes = CombatSystem.Instance.RemoveIndexesWithoutLineOfSight(_selectedTileIndex, _rangeIndexes, _rangeLineOfSightHeight);
+                    _rangeIndexes = CombatManager.Instance.RemoveIndexesWithoutLineOfSight(_selectedTileIndex, _rangeIndexes, _rangeLineOfSightHeight);
 
                 _rangeIndexes.ForEach(i => _playerActions.TacticsGrid.AddStateToTile(i, TileState.IsInAbilityRange));
             }
@@ -107,7 +107,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             {
                 _areaOfEffectIndexes = AbilityStatics.GetIndexesFromPatternAndRange(_hoveredTileIndex, _playerActions.TacticsGrid.GridShape, _areaOfEffectRangeMinMax, _areaOfEffectPattern);
                 if (_areaOfEffectLineOfSight)
-                    _areaOfEffectIndexes = CombatSystem.Instance.RemoveIndexesWithoutLineOfSight(_hoveredTileIndex, _areaOfEffectIndexes, _areaOfEffectLoSHeight);
+                    _areaOfEffectIndexes = CombatManager.Instance.RemoveIndexesWithoutLineOfSight(_hoveredTileIndex, _areaOfEffectIndexes, _areaOfEffectLoSHeight);
                 _areaOfEffectIndexes.ForEach(i => _playerActions.TacticsGrid.AddStateToTile(i, TileState.IsInAoeRange));
             }
         }

@@ -86,7 +86,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             }
 
             _hitUnits.Add(unit);
-            CombatSystem.Instance.ApplyEffectsToUnit(_instigator, unit, _effects);
+            CombatManager.Instance.ApplyEffectsToUnit(_instigator, unit, _effects);
         }
 
         private void AnimateObjectTask_OnInitialAnimationCompleted(AnimateObjectTask task)
@@ -102,7 +102,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 {
                     if (!_hitUnits.Contains(tileData.unitOnTile))
                     {
-                        CombatSystem.Instance.ApplyEffectsToUnit(_instigator, tileData.unitOnTile, _effects);
+                        CombatManager.Instance.ApplyEffectsToUnit(_instigator, tileData.unitOnTile, _effects);
                     }
                 }
             }

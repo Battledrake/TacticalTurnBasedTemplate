@@ -12,9 +12,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public int index;
         public Color color;
     }
-    public class CombatSystem : MonoBehaviour
+    public class CombatManager : MonoBehaviour
     {
-        public static CombatSystem Instance;
+        public static CombatManager Instance;
 
         public event Action<Unit, GridIndex> OnUnitGridIndexChanged;
         /* Unit, PreviousTeam, NewTeam */

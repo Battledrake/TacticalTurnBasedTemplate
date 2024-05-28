@@ -60,14 +60,14 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 return;
 
 
-            if (unit.UnitGridIndex != _targetIndex && !CombatSystem.Instance.GetAbilityRange(_targetIndex, this.AreaOfEffectData).Contains(unit.UnitGridIndex))
+            if (unit.UnitGridIndex != _targetIndex && !CombatManager.Instance.GetAbilityRange(_targetIndex, this.AreaOfEffectData).Contains(unit.UnitGridIndex))
             {
                 return;
             }
 
 
             _hitUnits.Add(unit);
-            CombatSystem.Instance.ApplyEffectsToUnit(_instigator, unit, _effects);
+            CombatManager.Instance.ApplyEffectsToUnit(_instigator, unit, _effects);
         }
 
         private void AnimateObjectTask_OnInitialAnimationComplete(AnimateObjectTask task)
@@ -83,7 +83,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                     if (!_hitUnits.Contains(tileData.unitOnTile))
                     {
                         Debug.LogWarning($"Unit at {tileData.index} missed by ability collision. Applying late effect");
-                        CombatSystem.Instance.ApplyEffectsToUnit(_instigator, tileData.unitOnTile, _effects);
+                        CombatManager.Instance.ApplyEffectsToUnit(_instigator, tileData.unitOnTile, _effects);
                     }
                 }
             }

@@ -47,14 +47,14 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             if (Input.GetKeyDown(KeyCode.Tab))
             {
-                if (CombatSystem.Instance.UnitsInCombat.Count <= 0)
+                if (CombatManager.Instance.UnitsInCombat.Count <= 0)
                     return;
 
-                if (_currentTargetIndex >= CombatSystem.Instance.UnitsInCombat.Count)
+                if (_currentTargetIndex >= CombatManager.Instance.UnitsInCombat.Count)
                 {
                     _currentTargetIndex = 0;
                 }
-                _targetPosition = CombatSystem.Instance.UnitsInCombat[_currentTargetIndex].transform.position;
+                _targetPosition = CombatManager.Instance.UnitsInCombat[_currentTargetIndex].transform.position;
                 _targetPosition.y += 1.5f;
                 _moveToTarget = true;
                 _currentTargetIndex++;

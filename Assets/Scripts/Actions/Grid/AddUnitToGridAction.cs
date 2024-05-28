@@ -29,7 +29,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                         newUnit.gameObject.name = ((UnitId)actionValue).ToString();
                         newUnit.InitializeUnit((UnitId)actionValue);
 
-                        CombatSystem.Instance.AddUnitToCombat(index, newUnit, _unitTeamIndex);
+                        CombatManager.Instance.AddUnitToCombat(index, newUnit, _unitTeamIndex);
                         return true;
                     }
                 }

@@ -54,7 +54,7 @@ MonoBehaviour:
       height: 0.5
   _areaOfEffectData:
     rangePattern: 5
-    rangeMinMax: {x: 1, y: 2}
+    rangeMinMax: {x: 1, y: 3}
     lineOfSightData:
       requireLineOfSight: 0
       height: 0

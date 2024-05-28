@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace BattleDrakeCreations.TacticalTurnBasedTemplate
@@ -17,9 +18,11 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public event Action<Unit> OnUnitRespawn;
 
         [SerializeField] private UnitId _unitType = UnitId.Ranger;
+        [SerializeField] private Transform _lookAtTransform;
         [SerializeField] private Color _hoverColor;
         [SerializeField] private Color _selectedColor = Color.green;
 
+        public Transform LookAtTransform { get => _lookAtTransform; }
         public GridIndex UnitGridIndex { get => _gridIndex; set => _gridIndex = value; }
         public UnitData UnitData { get => _unitData; }
         public bool IsMoving { get => _gridMovement.IsMoving; }
@@ -30,7 +33,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             set
             {
                 _teamIndex = value;
-                _healthComponent.SetHealthUnitColor(CombatSystem.Instance.GetTeamColor(value));
+                _healthComponent.SetHealthUnitColor(CombatManager.Instance.GetTeamColor(value));
             }
         }
 
@@ -128,6 +131,17 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _unitAnimator = _unitVisual.GetComponent<Animator>();
             _unitOutline = _unitVisual.AddComponent<Outline>();
             _unitVisual.AddComponent<AnimationEventHandler>();
+
+            Transform headTransform = FindTransform(_unitVisual, "Head");
+            if(headTransform)
+            {
+                _healthComponent.HealthBar.position = headTransform.position + Vector3.up;
+            }
+        }
+
+        private Transform FindTransform(GameObject parentObject, string transformName)
+        {
+            return parentObject.GetComponentsInChildren<Transform>().FirstOrDefault(t => t.name == transformName);
         }
 
         [ContextMenu("ChangeType")]
@@ -139,7 +153,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         [ContextMenu("ReAddToCombat")]
         public void AddUnitToCombat()
         {
-            CombatSystem.Instance.AddUnitToCombat(this.transform.position, this);
+            CombatManager.Instance.AddUnitToCombat(this.transform.position, this);
 
             _unitAnimator.ResetTrigger(AnimationType.Hit.ToString());
             _unitAnimator.SetTrigger(AnimationType.Respawn.ToString());

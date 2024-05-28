@@ -19,6 +19,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         [SerializeField] private float _healthChangeDelay = 0.5f;
         [SerializeField] private bool _isImmortal = false;
 
+        public Transform HealthBar { get => _healthBar; }
 
         private Unit _owner;
         private List<GameObject> _healthUnits = new List<GameObject>();

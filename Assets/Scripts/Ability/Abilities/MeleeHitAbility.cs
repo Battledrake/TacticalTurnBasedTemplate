@@ -20,9 +20,22 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             if (_instigator)
             {
                 _instigator.LookAtTarget(_targetIndex);
-                _instigator.GetComponent<IUnitAnimation>().PlayAnimationType(_animationType);
             }
 
+            _tacticsGrid.GetTileDataFromIndex(_originIndex, out TileData originData);
+            _tacticsGrid.GetTileDataFromIndex(_targetIndex, out TileData targetData);
+            if (originData.unitOnTile)
+            {
+                ActionCameraController.Instance.ShowRandomAction(originData.unitOnTile.transform, targetData.unitOnTile.LookAtTransform);
+                ActionCameraController.Instance.OnActionCameraArrived += ActionCameraArrived;
+            }
+        }
+
+        private void ActionCameraArrived()
+        {
+            ActionCameraController.Instance.OnActionCameraArrived -= ActionCameraArrived;
+
+            _instigator.GetComponent<IUnitAnimation>().PlayAnimationType(_animationType);
 
             PlayAnimationTask animationTask = Instantiate(_playAnimTaskPrefab);
 
@@ -42,8 +55,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             task.OnAnimationCancelled -= AbilityTask_OnAnimationCancelled;
 
             _tacticsGrid.GetTileDataFromIndex(_targetIndex, out TileData targetData);
-            CombatSystem.Instance.ApplyEffectsToUnit(_instigator, targetData.unitOnTile, _effects);
+            CombatManager.Instance.ApplyEffectsToUnit(_instigator, targetData.unitOnTile, _effects);
             AbilityBehaviorComplete(this);
+            ActionCameraController.Instance.HideActionCamera();
             EndAbility();
         }
 
@@ -51,6 +65,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             task.OnTaskCompleted -= AbilityTask_OnTaskCompleted;
             AbilityBehaviorComplete(this);
+            ActionCameraController.Instance.HideActionCamera();
             EndAbility();
         }
 
@@ -58,7 +73,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             animationTask.OnAnimationEvent -= PlayAnimationTask_OnAnimationEvent;
             _tacticsGrid.GetTileDataFromIndex(_targetIndex, out TileData targetData);
-            CombatSystem.Instance.ApplyEffectsToUnit(_instigator, targetData.unitOnTile, _effects);
+            CombatManager.Instance.ApplyEffectsToUnit(_instigator, targetData.unitOnTile, _effects);
 
             GameObject hitFx = Instantiate(_impactFxPrefab, targetData.tileMatrix.GetPosition() + new Vector3(0f, 1.5f, 0f), Quaternion.identity);
             Destroy(hitFx, 2f);

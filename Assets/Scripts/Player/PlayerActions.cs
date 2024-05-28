@@ -57,7 +57,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void Start()
         {
-            CombatSystem.Instance.OnUnitGridIndexChanged += CombatSystem_OnUnitGridIndexChanged;
+            CombatManager.Instance.OnUnitGridIndexChanged += CombatSystem_OnUnitGridIndexChanged;
             Unit.OnAnyUnitDied += Unit_OnAnyUnitDied;
         }
 

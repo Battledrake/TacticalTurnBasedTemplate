@@ -45,13 +45,13 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void Start()
         {
-            CombatSystem.Instance.OnUnitTeamChanged += CombatSystem_OnUnitTeamChanged;
+            CombatManager.Instance.OnUnitTeamChanged += CombatSystem_OnUnitTeamChanged;
 
             for(int i = 0; i < _teamIndexes.Count; i++)
             {
                 for(int j = 0; j < _teamIndexes[i].childCount; j++)
                 {
-                    _teamIndexes[i].GetChild(j).GetComponent<TextMeshProUGUI>().color = CombatSystem.Instance.GetTeamColor(i * _teamIndexes[i].childCount + j);
+                    _teamIndexes[i].GetChild(j).GetComponent<TextMeshProUGUI>().color = CombatManager.Instance.GetTeamColor(i * _teamIndexes[i].childCount + j);
                 }
             }
         }
@@ -65,13 +65,13 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                     Destroy(_teamPanels[i].GetChild(j).gameObject);
                 }
             }
-            var unitTeams = CombatSystem.Instance.UnitTeams;
+            var unitTeams = CombatManager.Instance.UnitTeams;
             foreach(var unitTeam in unitTeams)
             {
                 for(int i = 0; i < unitTeam.Value.Count; i++)
                 {
                     GameObject unitDisplay = Instantiate(_unitDisplayPrefab, _teamPanels[unitTeam.Key]);
-                    unitDisplay.GetComponent<Image>().color = CombatSystem.Instance.GetTeamColor(unitTeam.Key);
+                    unitDisplay.GetComponent<Image>().color = CombatManager.Instance.GetTeamColor(unitTeam.Key);
                     unitDisplay.transform.GetChild(0).GetChild(0).GetComponent<Image>().sprite = unitTeam.Value.ElementAt(i).UnitData.assetData.unitIcon;
                 }
             }

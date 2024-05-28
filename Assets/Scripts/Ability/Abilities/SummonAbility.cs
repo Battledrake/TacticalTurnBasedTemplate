@@ -21,7 +21,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
             _summonedUnit = Instantiate(_unitPrefab, _tacticsGrid.GetWorldPositionFromGridIndex(_targetIndex), Quaternion.identity);
             _summonedUnit.InitializeUnit(_unitType);
-            CombatSystem.Instance.AddUnitToCombat(_targetIndex, _summonedUnit);
+            CombatManager.Instance.AddUnitToCombat(_targetIndex, _summonedUnit);
             _isActive = true;
 
             AbilityBehaviorComplete(this);

@@ -14,7 +14,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             {
                 if (selectedTileData.unitOnTile)
                 {
-                    CombatSystem.Instance.SetUnitTeamIndex(selectedTileData.unitOnTile, _unitTeamIndex);
+                    CombatManager.Instance.SetUnitTeamIndex(selectedTileData.unitOnTile, _unitTeamIndex);
                 }
             }
             return false;
