@@ -17,17 +17,18 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         [SerializeField] private TMP_Dropdown _sceneCombo;
 
         [Header("Grid Generation")]
+        [SerializeField] private CanvasGroup _gridGenCanvasGroup;
         [SerializeField] private TMP_Dropdown _gridShapeCombo;
         [SerializeField] private SliderWidget _positionSlider;
         [SerializeField] private SliderWidget _tileCountSlider;
         [SerializeField] private SliderWidget _tileSizeSlider;
         [SerializeField] private SliderWidget _groundOffsetSlider;
         [SerializeField] private Toggle _useEnvToggle;
+
+        [Header("Debug")]
         [SerializeField] private Toggle _showGridToggle;
         [SerializeField] private Toggle _tacticalMeshGridToggle;
         [SerializeField] private Toggle _hideGridModifiersToggle;
-
-        [Header("Debug")]
         [SerializeField] private Toggle _boundsToggle;
         [SerializeField] private Toggle _centerToggle;
         [SerializeField] private TextMeshProUGUI _centerPositionText;
@@ -92,6 +93,12 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _bottomLeftToggle.onValueChanged.AddListener(OnBottomLeftToggled);
             _mousePositionToggle.onValueChanged.AddListener(OnMousePositionToggled);
             _hoveredTileToggle.onValueChanged.AddListener(OnHoveredTileToggled);
+        }
+
+        private void OnEnable()
+        {
+            CombatManager.Instance.OnCombatStarted += () => _gridGenCanvasGroup.interactable = false;
+            CombatManager.Instance.OnCombatEnded += () => _gridGenCanvasGroup.interactable = true;
         }
 
         private void Update()

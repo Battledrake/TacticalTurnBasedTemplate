@@ -24,6 +24,15 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 _managedWidgets[_activeIndex].SetActive(true);
         }
 
+        private void Start()
+        {
+            for(int i = 0; i < _managedWidgets.Count; i++)
+            {
+                _managedWidgets[i].SetActive(true);
+                _managedWidgets[i].SetActive(false);
+            }
+        }
+
         public void SetActiveWidget(int widgetIndex)
         {
             if (widgetIndex == _activeIndex)

@@ -12,13 +12,24 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public int index;
         public Color color;
     }
+
+    public struct CombatStartParams
+    {
+        public bool canStartCombat;
+        public bool hasEnoughUnits;
+        public bool hasEnoughTeams;
+        public bool isNotInCombat;
+    }
+
     public class CombatManager : MonoBehaviour
     {
         public static CombatManager Instance;
 
         public event Action<Unit, GridIndex> OnUnitGridIndexChanged;
         /* Unit, PreviousTeam, NewTeam */
-        public event Action<Unit, int, int> OnUnitTeamChanged;
+        public event Action OnUnitTeamChanged;
+        public event Action OnCombatStarted;
+        public event Action OnCombatEnded;
 
         [SerializeField] private List<TeamColorData> _teamColors;
 
@@ -32,6 +43,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private List<Unit> _unitsInCombat = new List<Unit>();
         private Dictionary<int, HashSet<Unit>> _unitTeams = new Dictionary<int, HashSet<Unit>>();
+
+        private bool _isInCombat = false;
 
         private void Awake()
         {
@@ -63,6 +76,29 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private void OnDisable()
         {
             Unit.OnAnyUnitReachedNewTile -= Unit_OnUnitReachedNewTile;
+        }
+
+        public CombatStartParams CanStartCombat()
+        {
+            CombatStartParams combatStartParams;
+            combatStartParams.isNotInCombat = !_isInCombat;
+            combatStartParams.hasEnoughTeams = _unitTeams.Count(kvp => kvp.Value.Count > 0) >= 2;
+            combatStartParams.hasEnoughUnits = _unitsInCombat.Count >= 2;
+            combatStartParams.canStartCombat = !_isInCombat && _unitTeams.Count(kvp => kvp.Value.Count > 0) >= 2 && _unitsInCombat.Count >= 2;
+
+            return combatStartParams;
+        }
+
+        public void StartCombat()
+        {
+            _isInCombat = true;
+            OnCombatStarted?.Invoke();
+        }
+
+        public void EndCombat()
+        {
+            _isInCombat = false;
+            OnCombatEnded?.Invoke();
         }
 
         private void Unit_OnUnitReachedNewTile(Unit unit, GridIndex index)
@@ -112,7 +148,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
             unit.TeamIndex = teamIndex;
 
-            OnUnitTeamChanged?.Invoke(unit, previousIndex, teamIndex);
+            OnUnitTeamChanged?.Invoke();
         }
 
         private void Unit_OnUnitDied(Unit unit, bool shouldDestroy = false)

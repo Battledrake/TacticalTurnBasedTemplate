@@ -28,6 +28,22 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _buttonToggle.onValueChanged.AddListener(OnButtonClicked);
         }
 
+        private void OnEnable()
+        {
+            CombatManager.Instance.OnCombatStarted += CombatManager_OnCombatStarted;
+            CombatManager.Instance.OnCombatEnded += CombatManager_OnCombatEnded;
+        }
+
+        private void CombatManager_OnCombatStarted()
+        {
+            _buttonToggle.interactable = false;
+        }
+
+        private void CombatManager_OnCombatEnded()
+        {
+            _buttonToggle.interactable = true;
+        }
+
         private void OnValidate()
         {
             _buttonLabel.text = _actionName;

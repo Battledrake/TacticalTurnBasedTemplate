@@ -57,20 +57,34 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void Start()
         {
-            CombatManager.Instance.OnUnitGridIndexChanged += CombatSystem_OnUnitGridIndexChanged;
+            CombatManager.Instance.OnUnitGridIndexChanged += CombatManager_OnUnitGridIndexChanged;
             Unit.OnAnyUnitDied += Unit_OnAnyUnitDied;
+            CombatManager.Instance.OnCombatStarted += CombatManager_OnCombatStarted;
+            CombatManager.Instance.OnCombatEnded += CombatManager_OnCombatEnded;
+        }
+
+        private void CombatManager_OnCombatEnded()
+        {
+            ClearSelectedActions();
+            SetSelectedTileAndUnit(GridIndex.Invalid());
+        }
+
+        private void CombatManager_OnCombatStarted()
+        {
+            ClearSelectedActions();
+            SetSelectedTileAndUnit(GridIndex.Invalid());
         }
 
         private void Unit_OnAnyUnitDied(Unit unit)
         {
-            if(unit == _selectedUnit)
+            if (unit == _selectedUnit)
             {
                 _selectedUnit = null;
                 OnSelectedUnitChanged.Invoke(null);
             }
         }
 
-        private void CombatSystem_OnUnitGridIndexChanged(Unit unit, GridIndex index)
+        private void CombatManager_OnUnitGridIndexChanged(Unit unit, GridIndex index)
         {
             if (_selectedUnit == unit)
                 SetSelectedTileAndUnit(index);
@@ -216,8 +230,11 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         public void ClearSelectedActions()
         {
-            Destroy(_leftClickAction.gameObject);
-            _leftClickAction = null;
+            if (_leftClickAction != null)
+            {
+                Destroy(_leftClickAction.gameObject);
+                _leftClickAction = null;
+            }
 
             if (_rightClickAction != null)
             {
@@ -228,8 +245,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         public void SetSelectedActions(ActionBase leftClickAction, ActionBase rightClickAction)
         {
-            if (_leftClickAction != null)
-                ClearSelectedActions();
+            ClearSelectedActions();
 
             _leftClickAction = GameObject.Instantiate(leftClickAction);
             _leftClickAction.InitializeAction(this);
