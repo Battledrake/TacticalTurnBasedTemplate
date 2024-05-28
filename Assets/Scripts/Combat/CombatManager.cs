@@ -6,6 +6,13 @@ using UnityEngine;
 
 namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 {
+    public enum CombatTurnMode
+    {
+        Team,
+        Unit,
+        Stat
+    }
+
     [Serializable]
     public struct TeamColorData
     {

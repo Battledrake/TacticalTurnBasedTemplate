@@ -62,11 +62,7 @@ MonoBehaviour:
   - attributeType: 0
     minMaxModifier: {x: -3, y: -5}
   _isFriendly: 0
-  _objectToAnimate: {fileID: 189452740743798854, guid: 0016339c0f7a60849ba29130080935ab,
-    type: 3}
-  _playAnimationTaskPrefab: {fileID: 8348269496721021093, guid: 88a54db5b90bc9f40b0a7c41c57e3d7c,
-    type: 3}
-  _animateObjectTaskprefab: {fileID: 8862640479722470499, guid: a8b7b17f8fc21544086c91b35cee0944,
+  _objectToAnimate: {fileID: 8548907831371414663, guid: 304aeb8e38f1f394abbba2d47b48a593,
     type: 3}
   _taskData: {fileID: 11400000, guid: a1f66b7dd7e1c3c499fadbd74e320cd7, type: 2}
   _animationType: 2

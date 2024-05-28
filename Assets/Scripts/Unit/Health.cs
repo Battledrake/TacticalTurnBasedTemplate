@@ -8,6 +8,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 {
     public class Health : MonoBehaviour
     {
+        public event Action OnHealthChanged;
         public event Action OnHealthReachedZero;
 
         [SerializeField] private Transform _healthBar;
@@ -20,6 +21,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         [SerializeField] private bool _isImmortal = false;
 
         public Transform HealthBar { get => _healthBar; }
+        public int CurrentHealth { get => _currentHealth; }
+        public int MaxHealth { get => _maxHealth; }
 
         private Unit _owner;
         private List<GameObject> _healthUnits = new List<GameObject>();
@@ -36,6 +39,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _maxHealth = _owner.UnitData.unitStats.maxHealth;
             _currentHealth = _maxHealth;
             _displayedHealth = _currentHealth;
+
+            OnHealthChanged?.Invoke();
+
             for (int i = 0; i < _maxHealth; i++)
             {
                 GameObject healthUnit = Instantiate(_healthUnitPrefab, _healthBar);
@@ -66,6 +72,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             if (!_isImmortal)
             {
                 _currentHealth = Mathf.Clamp(_currentHealth + amount, 0, _maxHealth);
+                OnHealthChanged?.Invoke();
                 if (_currentHealth == 0)
                 {
                     OnHealthReachedZero?.Invoke();

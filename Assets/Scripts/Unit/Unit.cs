@@ -11,6 +11,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
     {
         public static event Action<Unit, GridIndex> OnAnyUnitReachedNewTile;
         public static event Action<Unit> OnAnyUnitDied;
+        public static event Action<Unit> OnUnitHealthChanged;
+        public event Action<bool> OnUnitHoveredChanged;
+        public event Action<bool> OnUnitSelectedChanged;
         public event Action<Unit> OnUnitReachedDestination;
         public event Action<Unit> OnUnitStartedMovement;
         public event Action<Unit> OnUnitMovementStopped;
@@ -36,6 +39,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 _healthComponent.SetHealthUnitColor(CombatManager.Instance.GetTeamColor(value));
             }
         }
+        public int CurrentHealth { get => _healthComponent.CurrentHealth; }
+        public int MaxHealth { get => _healthComponent.MaxHealth; }
 
         private GameObject _unitVisual;
         private Animator _unitAnimator;
@@ -66,7 +71,13 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _gridMovement = this.GetComponent<GridMovement>();
             _healthComponent = this.GetComponent<Health>();
 
+            _healthComponent.OnHealthChanged += HealthComponent_OnHealthChanged;
             _healthComponent.OnHealthReachedZero += HealthComponent_OnHealthReachedZero;
+        }
+
+        private void HealthComponent_OnHealthChanged()
+        {
+            OnUnitHealthChanged?.Invoke(this);
         }
 
         private void OnEnable()
@@ -186,12 +197,14 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             _isHovered = isHovered;
             UpdateOutlineVisual();
+            OnUnitHoveredChanged?.Invoke(_isHovered);
         }
 
         public void SetIsSelected(bool isSelected)
         {
             _isSelected = isSelected;
             UpdateOutlineVisual();
+            OnUnitSelectedChanged?.Invoke(_isSelected);
         }
 
         public void UpdateOutlineVisual()

@@ -21,6 +21,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         [SerializeField] private float _moveToTargetSpeed = 50f;
 
+        [SerializeField] private PlayerActions _playerActions;
+
         public float MoveSpeed { get => _moveSpeed; set => _moveSpeed = value; }
         public float RotationSpeed { get => _rotationSpeed; set => _rotationSpeed = value; }
         public float ZoomSpeed { get => _zoomSpeed; set => _zoomSpeed = value; }
@@ -50,14 +52,13 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 if (CombatManager.Instance.UnitsInCombat.Count <= 0)
                     return;
 
-                if (_currentTargetIndex >= CombatManager.Instance.UnitsInCombat.Count)
-                {
-                    _currentTargetIndex = 0;
-                }
-                _targetPosition = CombatManager.Instance.UnitsInCombat[_currentTargetIndex].transform.position;
+                _currentTargetIndex = _currentTargetIndex % CombatManager.Instance.UnitsInCombat.Count;
+                Unit tabSelectedUnit = CombatManager.Instance.UnitsInCombat[_currentTargetIndex];
+                _targetPosition = tabSelectedUnit.transform.position;
                 _targetPosition.y += 1.5f;
                 _moveToTarget = true;
                 _currentTargetIndex++;
+                _playerActions.SetSelectedTileAndUnit(tabSelectedUnit.UnitGridIndex);
             }
 
             if (_moveToTarget)
