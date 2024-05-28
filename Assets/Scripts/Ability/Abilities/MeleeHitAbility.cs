@@ -26,17 +26,21 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _tacticsGrid.GetTileDataFromIndex(_targetIndex, out TileData targetData);
             if (originData.unitOnTile)
             {
-                ActionCameraController.Instance.ShowRandomAction(originData.unitOnTile.transform, targetData.unitOnTile.LookAtTransform);
-                ActionCameraController.Instance.OnActionCameraArrived += ActionCameraArrived;
+                if (targetData.unitOnTile)
+                    ActionCameraController.Instance.ShowRandomAction(originData.unitOnTile.transform, targetData.unitOnTile.LookAtTransform);
+                else
+                    ActionCameraController.Instance.ShowRandomAction(originData.unitOnTile.transform, originData.unitOnTile.LookAtTransform);
+
+                ActionCameraController.Instance.OnActionCameraInPosition += ActionCameraInPosition;
+            }
+            else
+            {
+                SpawnTaskAndExecute();
             }
         }
 
-        private void ActionCameraArrived()
+        private void SpawnTaskAndExecute()
         {
-            ActionCameraController.Instance.OnActionCameraArrived -= ActionCameraArrived;
-
-            _instigator.GetComponent<IUnitAnimation>().PlayAnimationType(_animationType);
-
             PlayAnimationTask animationTask = Instantiate(_playAnimTaskPrefab);
 
             animationTask.InitTask(_instigator, _animationType, 2f);
@@ -45,6 +49,13 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             animationTask.OnAnimationCancelled += AbilityTask_OnAnimationCancelled;
 
             StartCoroutine(animationTask.ExecuteTask(this));
+        }
+
+        private void ActionCameraInPosition()
+        {
+            ActionCameraController.Instance.OnActionCameraInPosition -= ActionCameraInPosition;
+
+            SpawnTaskAndExecute();
         }
 
         //Something went wrong with the animation. Still apply Effect.
