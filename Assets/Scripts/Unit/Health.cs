@@ -25,8 +25,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private List<GameObject> _healthUnits = new List<GameObject>();
         private Dictionary<int, SpriteRenderer> _healthUnitChildren = new Dictionary<int, SpriteRenderer>();
         private int _currentHealth = 0;
+        private int _displayedHealth = 0;
         private int _maxHealth = 0;
-        private bool _updateHealth = false;
         private Color _healthUnitColor = Color.red;
 
         public void Start()
@@ -35,6 +35,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
             _maxHealth = _owner.UnitData.unitStats.maxHealth;
             _currentHealth = _maxHealth;
+            _displayedHealth = _currentHealth;
             for (int i = 0; i < _maxHealth; i++)
             {
                 GameObject healthUnit = Instantiate(_healthUnitPrefab, _healthBar);
@@ -49,7 +50,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             _healthUnitColor = color;
 
-            foreach(var healthUnit in _healthUnitChildren.Values)
+            foreach (var healthUnit in _healthUnitChildren.Values)
             {
                 healthUnit.color = _healthUnitColor;
             }
@@ -64,8 +65,13 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             if (!_isImmortal)
             {
-                _updateHealth = true;
-                StartCoroutine(UpdateHealthVisual(amount));
+                _currentHealth = Mathf.Clamp(_currentHealth + amount, 0, _maxHealth);
+                if (_currentHealth == 0)
+                {
+                    OnHealthReachedZero?.Invoke();
+                }
+                StopCoroutine(UpdateHealthVisual());
+                StartCoroutine(UpdateHealthVisual());
             }
 
             GameObject floatingNumber = Instantiate(_floatingNumberPrefab, _healthBar.position + _healthBar.forward, Quaternion.identity);
@@ -85,31 +91,26 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _healthBar.LookAt(Camera.main.transform);
         }
 
-        private IEnumerator UpdateHealthVisual(int amountChanged)
+        private IEnumerator UpdateHealthVisual()
         {
 
-            while (_updateHealth)
+            while (_displayedHealth != _currentHealth)
             {
-                int step = amountChanged < 0 ? -1 : 1;
-                int targetHealth = _currentHealth + amountChanged;
+                int step = _displayedHealth > _currentHealth ? -1 : 1;
+                int targetHealth = _currentHealth;
 
-                if (targetHealth <= 0)
-                    OnHealthReachedZero?.Invoke();
-                else
-                    yield return new WaitForSeconds(1f);
+                yield return new WaitForSeconds(_healthChangeDelay);
 
-                int indexStep = amountChanged < 0 ? 0 : 1;
+                int indexStep = _displayedHealth > _currentHealth ? 0 : 1;
 
-                for (int i = _currentHealth + indexStep; i != targetHealth + indexStep; i += step)
+                for (int i = _displayedHealth + indexStep; i != targetHealth + indexStep; i += step)
                 {
                     if (_healthUnitChildren.TryGetValue(i, out SpriteRenderer healthUnitChild))
                         healthUnitChild.enabled = step > 0;
 
                     yield return new WaitForSeconds(_healthChangeDelay);
                 }
-                _currentHealth = Mathf.Clamp(targetHealth, 0, _maxHealth);
-
-                _updateHealth = false;
+                _displayedHealth = Mathf.Clamp(targetHealth, 0, _maxHealth);
             }
         }
     }

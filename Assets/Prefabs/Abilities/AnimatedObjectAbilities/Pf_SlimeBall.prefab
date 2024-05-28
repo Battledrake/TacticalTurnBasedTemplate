@@ -64,7 +64,9 @@ MonoBehaviour:
   _isFriendly: 0
   _objectToAnimate: {fileID: 6636130739088828296, guid: 438e239d4d0f17049a999e30216259f0,
     type: 3}
-  _taskPrefab: {fileID: 8862640479722470499, guid: a8b7b17f8fc21544086c91b35cee0944,
+  _playAnimationTaskPrefab: {fileID: 8348269496721021093, guid: 88a54db5b90bc9f40b0a7c41c57e3d7c,
+    type: 3}
+  _animateObjectTaskprefab: {fileID: 8862640479722470499, guid: a8b7b17f8fc21544086c91b35cee0944,
     type: 3}
   _taskData: {fileID: 11400000, guid: 3fc9bf9f143e06147a449c48676c3b82, type: 2}
   _animationType: 2

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro.EditorUtilities;
 using UnityEngine;
+using UnityEngine.Timeline;
 using UnityEngine.UI;
 
 namespace BattleDrakeCreations.TacticalTurnBasedTemplate
@@ -12,7 +13,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         [Header("Animated Object Ability")]
 
         [SerializeField] private GameObject _objectToAnimate;
-        [SerializeField] private AnimateObjectTask _taskPrefab;
         [SerializeField] private AnimateObjectTaskData _taskData;
 
         [SerializeField] private AnimationType _animationType = AnimationType.Attack;
@@ -31,22 +31,51 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             if (_instigator)
             {
                 _instigator.LookAtTarget(_targetIndex);
-                _instigator.GetComponent<IUnitAnimation>().PlayAnimationType(_animationType);
             }
 
+            PlayAnimationTask animationTask = new GameObject("PlayAnimationTask", typeof(PlayAnimationTask)).GetComponent<PlayAnimationTask>();
+            animationTask.transform.SetParent(this.transform);
+
+            animationTask.InitTask(_instigator, _animationType, 2f);
+            animationTask.OnAnimationEvent += PlayAnimationTask_OnAnimationEvent;
+            animationTask.OnAnimationCancelled += AbilityTask_OnAnimationCancelled;
+
+            StartCoroutine(animationTask.ExecuteTask(this));
+
+
+        }
+
+        private void AbilityTask_OnAnimationCancelled(PlayAnimationTask animationTask)
+        {
+            animationTask.OnAnimationEvent -= PlayAnimationTask_OnAnimationEvent;
+            animationTask.OnAnimationCancelled -= AbilityTask_OnAnimationCancelled;
+            SpawnAnimateObjectTaskAndExecute();
+        }
+
+        private void PlayAnimationTask_OnAnimationEvent(PlayAnimationTask animationTask)
+        {
+            animationTask.OnAnimationEvent -= PlayAnimationTask_OnAnimationEvent;
+            animationTask.OnAnimationCancelled -= AbilityTask_OnAnimationCancelled;
+            SpawnAnimateObjectTaskAndExecute();
+        }
+
+        private void SpawnAnimateObjectTaskAndExecute()
+        {
             _tacticsGrid.GetTileDataFromIndex(_originIndex, out TileData originData);
             _tacticsGrid.GetTileDataFromIndex(_targetIndex, out TileData targetData);
 
-            AnimateObjectTask task = Instantiate(_taskPrefab);
-            if (task)
+            AnimateObjectTask animateObjectTask = new GameObject("AnimateObjectTask", new[] { typeof(AnimateObjectTask), typeof(Rigidbody) }).GetComponent<AnimateObjectTask>();
+            animateObjectTask.GetComponent<Rigidbody>().useGravity = false;
+            animateObjectTask.transform.SetParent(this.transform);
+            if (animateObjectTask)
             {
-                task.OnInitialAnimationCompleted += AnimateObjectTask_OnInitialAnimationComplete;
-                task.OnObjectCollisionWithUnit += AnimateObjectTask_OnObjectCollisionWithUnit;
+                animateObjectTask.OnInitialAnimationCompleted += AnimateObjectTask_OnInitialAnimationComplete;
+                animateObjectTask.OnObjectCollisionWithUnit += AnimateObjectTask_OnObjectCollisionWithUnit;
 
                 GameObject objectToAnimate = Instantiate(_objectToAnimate);
 
-                task.InitTask(objectToAnimate, _taskData, originData.tileMatrix.GetPosition(), targetData.tileMatrix.GetPosition(), _animationSpeed, _loopAnimation);
-                StartCoroutine(task.ExecuteTask(this));
+                animateObjectTask.InitTask(objectToAnimate, _taskData, originData.tileMatrix.GetPosition(), targetData.tileMatrix.GetPosition(), _animationSpeed, _loopAnimation);
+                StartCoroutine(animateObjectTask.ExecuteTask(this));
             }
         }
 

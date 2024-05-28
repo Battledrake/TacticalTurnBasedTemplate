@@ -11,7 +11,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private Animator _unitAnimator;
         private AnimationType _animationType;
-        private AnimationEventHandler _animEventListener;
+        private AnimationEventHandler _animEventHandler;
 
         private float _timeBeforeCancelling = 5f;
 
@@ -19,11 +19,12 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             if (!unit)
                 return;
+
             _timeBeforeCancelling = timeBeforeCancelling;
 
             _unitAnimator = unit.GetComponentInChildren<Animator>();
             _animationType = animationType;
-            _animEventListener = unit.GetComponentInChildren<AnimationEventHandler>();
+            _animEventHandler = unit.GetComponentInChildren<AnimationEventHandler>();
         }
 
         private void OnAnimationEvent_OnAnimationEnd()
@@ -40,25 +41,30 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             owner.OnAbilityEnd += EndTask;
 
-            if (!_unitAnimator && !_animEventListener)
+            if (!_unitAnimator && !_animEventHandler)
             {
+                Debug.LogWarning("Instigator does not have an Animator or AnimationEventHandler. Cancelling Animation Task");
                 OnAnimationCancelled?.Invoke(this);
                 yield break;
             }
 
             _unitAnimator.SetTrigger(_animationType.ToString());
 
-            _animEventListener.OnAnimationEvent += OnAnimationEvent_OnAnimationEvent;
-            _animEventListener.OnAnimationCompleted += OnAnimationEvent_OnAnimationEnd;
+            _animEventHandler.OnAnimationEvent += OnAnimationEvent_OnAnimationEvent;
+            _animEventHandler.OnAnimationCompleted += OnAnimationEvent_OnAnimationEnd;
 
             yield return new WaitForSeconds(_timeBeforeCancelling);
+            Debug.LogWarning("Instigator did not receive AnimationEvent. Cancelling Animation Task");
             OnAnimationCancelled?.Invoke(this);
         }
 
         private void OnDestroy()
         {
-            _animEventListener.OnAnimationEvent -= OnAnimationEvent_OnAnimationEvent;
-            _animEventListener.OnAnimationCompleted -= OnAnimationEvent_OnAnimationEnd;
+            if(_animEventHandler != null)
+            {
+                _animEventHandler.OnAnimationEvent -= OnAnimationEvent_OnAnimationEvent;
+                _animEventHandler.OnAnimationCompleted -= OnAnimationEvent_OnAnimationEnd;
+            }
         }
     }
 }

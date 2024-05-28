@@ -8,7 +8,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 {
     public class MeleeHitAbility : Ability
     {
-        [SerializeField] private PlayAnimationTask _playAnimTaskPrefab;
         [SerializeField] private AnimationType _animationType;
 
         [SerializeField] private GameObject _impactFxPrefab;
@@ -41,7 +40,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void SpawnTaskAndExecute()
         {
-            PlayAnimationTask animationTask = Instantiate(_playAnimTaskPrefab);
+            PlayAnimationTask animationTask = new GameObject("PlayAnimationTask", typeof(PlayAnimationTask)).GetComponent<PlayAnimationTask>();
 
             animationTask.InitTask(_instigator, _animationType, 2f);
             animationTask.OnAnimationEvent += PlayAnimationTask_OnAnimationEvent;

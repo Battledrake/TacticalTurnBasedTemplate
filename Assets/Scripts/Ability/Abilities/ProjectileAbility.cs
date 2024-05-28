@@ -11,7 +11,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         [Header("Projectile Ability Dependencies")]
         [SerializeField] private GameObject _projectilePrefab;
-        [SerializeField] private AnimateObjectTask _taskPrefab;
         [SerializeField] private AnimateObjectTaskData _taskData;
 
         [Header("Custom Values")]
@@ -60,13 +59,16 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
                     GameObject projectile = Instantiate(_projectilePrefab);
 
-                    AnimateObjectTask newTask = Instantiate(_taskPrefab);
-                    newTask.InitTask(projectile, _taskData, startPosition, targetData.tileMatrix.GetPosition(), UnityEngine.Random.Range(.8f, _animationSpeed), false);
+                    AnimateObjectTask animateObjectTask = new GameObject("AnimateObjectTask", new[] { typeof(AnimateObjectTask), typeof(Rigidbody) }).GetComponent<AnimateObjectTask>();
+                    animateObjectTask.transform.SetParent(this.transform);
+                    animateObjectTask.GetComponent<Rigidbody>().useGravity = false;
 
-                    newTask.OnInitialAnimationCompleted += AnimateObjectTask_OnInitialAnimationCompleted;
-                    newTask.OnObjectCollisionWithUnit += AnimateObjectTask_OnObjectCollisionWithUnit;
+                    animateObjectTask.InitTask(projectile, _taskData, startPosition, targetData.tileMatrix.GetPosition(), UnityEngine.Random.Range(.8f, _animationSpeed), false);
 
-                    StartCoroutine(newTask.ExecuteTask(this));
+                    animateObjectTask.OnInitialAnimationCompleted += AnimateObjectTask_OnInitialAnimationCompleted;
+                    animateObjectTask.OnObjectCollisionWithUnit += AnimateObjectTask_OnObjectCollisionWithUnit;
+
+                    StartCoroutine(animateObjectTask.ExecuteTask(this));
                 }
             }
         }
@@ -89,10 +91,10 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             CombatManager.Instance.ApplyEffectsToUnit(_instigator, unit, _effects);
         }
 
-        private void AnimateObjectTask_OnInitialAnimationCompleted(AnimateObjectTask task)
+        private void AnimateObjectTask_OnInitialAnimationCompleted(AnimateObjectTask animateObjectTask)
         {
-            task.OnInitialAnimationCompleted -= AnimateObjectTask_OnInitialAnimationCompleted;
-            task.OnObjectCollisionWithUnit -= AnimateObjectTask_OnObjectCollisionWithUnit;
+            animateObjectTask.OnInitialAnimationCompleted -= AnimateObjectTask_OnInitialAnimationCompleted;
+            animateObjectTask.OnObjectCollisionWithUnit -= AnimateObjectTask_OnObjectCollisionWithUnit;
 
             //HACK: If somehow our object didn't hit a valid unit due to a collision miss or something? hit it here and possibly fix issue that prevented collision in the first place. If Possible.
             for(int i = 0; i < _aoeIndexes.Count; i++)
