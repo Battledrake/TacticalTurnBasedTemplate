@@ -36,6 +36,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void CombatManager_OnCombatStarted()
         {
+            _buttonToggle.isOn = false;
             _buttonToggle.interactable = false;
         }
 

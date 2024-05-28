@@ -45,7 +45,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _abilityId: 1
-  _icon: {fileID: 21300000, guid: c45f0b7da6045bc4695e3f71bb62d405, type: 3}
+  _icon: {fileID: 21300000, guid: e46b31ee3c968d741bec385da46e8410, type: 3}
   _rangeData:
     rangePattern: 5
     rangeMinMax: {x: 1, y: 1}
@@ -62,8 +62,6 @@ MonoBehaviour:
   - attributeType: 0
     minMaxModifier: {x: -2, y: -3}
   _isFriendly: 0
-  _playAnimTaskPrefab: {fileID: 8348269496721021093, guid: 88a54db5b90bc9f40b0a7c41c57e3d7c,
-    type: 3}
   _animationType: 2
   _impactFxPrefab: {fileID: 1489431029902184, guid: 4430919f14c50f84085d287cbcb2c30e,
     type: 3}

@@ -77,6 +77,26 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _gridMovement.OnReachedDestination += GridMovement_OnReachedDestination;
         }
 
+        public void CombatStarted()
+        {
+            Debug.Log("I'm Ready!");
+        }
+
+        public void CombatEnded()
+        {
+            Debug.Log("Whew, that was rough");
+        }
+
+        public void TurnStarted()
+        {
+            Debug.Log("Lets Rock!");
+        }
+
+        public void TurnEnded()
+        {
+            Debug.Log("Turn Over");
+        }
+
         private void OnDisable()
         {
             _gridMovement.OnMovementStarted -= GridMovement_OnMovementStarted;

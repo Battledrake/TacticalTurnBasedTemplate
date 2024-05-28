@@ -26,10 +26,11 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public static CombatManager Instance;
 
         public event Action<Unit, GridIndex> OnUnitGridIndexChanged;
-        /* Unit, PreviousTeam, NewTeam */
         public event Action OnUnitTeamChanged;
         public event Action OnCombatStarted;
         public event Action OnCombatEnded;
+        public event Action<Unit> OnUnitTurnStarted;
+        public event Action<Unit> OnUnitTurnEnded;
 
         [SerializeField] private List<TeamColorData> _teamColors;
 
@@ -45,6 +46,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private Dictionary<int, HashSet<Unit>> _unitTeams = new Dictionary<int, HashSet<Unit>>();
 
         private bool _isInCombat = false;
+
+        private Unit _activeUnit;
 
         private void Awake()
         {
@@ -69,7 +72,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void OnEnable()
         {
-
             Unit.OnAnyUnitReachedNewTile += Unit_OnUnitReachedNewTile;
         }
 
@@ -91,14 +93,43 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         public void StartCombat()
         {
+            for (int i = 0; i < _unitsInCombat.Count; i++)
+            {
+                _unitsInCombat[i].CombatStarted();
+            }
+
             _isInCombat = true;
             OnCombatStarted?.Invoke();
+
+            _activeUnit = null;
+            NextUnit();
         }
 
         public void EndCombat()
         {
+            for (int i = 0; i < _unitsInCombat.Count; i++)
+            {
+                _unitsInCombat[i].CombatEnded();
+            }
+
+            _activeUnit = null;
             _isInCombat = false;
             OnCombatEnded?.Invoke();
+        }
+
+        public void NextUnit()
+        {
+            if (_activeUnit)
+            {
+                _activeUnit.TurnEnded();
+                OnUnitTurnEnded?.Invoke(_activeUnit);
+            }
+
+            int _currentIndex = _unitsInCombat.IndexOf(_activeUnit);
+            _currentIndex++;
+            _activeUnit = _unitsInCombat[_currentIndex % _unitsInCombat.Count];
+            _activeUnit.TurnStarted();
+            OnUnitTurnStarted?.Invoke(_activeUnit);
         }
 
         private void Unit_OnUnitReachedNewTile(Unit unit, GridIndex index)

@@ -18,12 +18,14 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         [SerializeField] private Image _icon;
 
         private Toggle _buttonToggle;
+        private Animator _animator;
 
         private int _abilityIndex;
 
         private void Awake()
         {
             _buttonToggle = GetComponent<Toggle>();
+            _animator = GetComponent<Animator>();
         }
 
         private void OnEnable()
@@ -48,6 +50,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 _borderImage.color = _defaultBorderColor;
                 OnAbilityButtonDeselected?.Invoke(_abilityIndex);
             }
+            if (_animator)
+                _animator.SetBool("Selected", isOn);
         }
 
         public void InitializeButton(int abilityIndex, Sprite icon)
@@ -61,6 +65,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             _buttonToggle.SetIsOnWithoutNotify(false);
             _borderImage.color = _defaultBorderColor;
+
+            if (_animator)
+                _animator.SetBool("Selected", false);
         }
     }
 }

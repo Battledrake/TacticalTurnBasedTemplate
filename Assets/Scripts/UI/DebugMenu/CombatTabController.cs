@@ -21,7 +21,7 @@ public class CombatTabController : MonoBehaviour
     [SerializeField] private List<Transform> _teamIndexes;
 
     [Header("Combat")]
-    [SerializeField] private Toggle _startCombatButton;
+    [SerializeField] private Button _startCombatButton;
     [SerializeField] private TextMeshProUGUI _requirementTextHeader;
     [SerializeField] private TextMeshProUGUI _requirementTextUnits;
     [SerializeField] private TextMeshProUGUI _requirementTextTeams;
@@ -63,13 +63,24 @@ public class CombatTabController : MonoBehaviour
             }
         }
 
-        _startCombatButton.onValueChanged.AddListener(OnStartCombatToggled);
+        _startCombatButton.onClick.AddListener(OnStartCombatClicked);
 
-        CombatManager.Instance.OnUnitTeamChanged += CombatSystem_OnUnitTeamChanged;
+        CombatManager.Instance.OnUnitTeamChanged += CombatManager_OnUnitTeamChanged;
+        CombatManager.Instance.OnCombatStarted += CombatManager_OnCombatStarted;
+        CombatManager.Instance.OnCombatEnded += CombatManager_OnCombatEnded;
         UpdateButtonAndTexts();
     }
 
-    private void CombatSystem_OnUnitTeamChanged()
+    private void CombatManager_OnCombatEnded()
+    {
+        UpdateButtonAndTexts();
+    }
+
+    private void CombatManager_OnCombatStarted()
+    {
+    }
+
+    private void CombatManager_OnUnitTeamChanged()
     {
         for (int i = 0; i < _teamPanels.Count; i++)
         {
@@ -92,12 +103,9 @@ public class CombatTabController : MonoBehaviour
         UpdateButtonAndTexts();
     }
 
-    private void OnStartCombatToggled(bool isOn)
+    private void OnStartCombatClicked()
     {
-        if (isOn)
-            CombatManager.Instance.StartCombat();
-        else
-            CombatManager.Instance.EndCombat();
+        CombatManager.Instance.StartCombat();
 
         UpdateButtonAndTexts();
     }
@@ -148,7 +156,7 @@ public class CombatTabController : MonoBehaviour
 
     private void OnSetUnitTeamSliderChanged(int sliderIndex, float value)
     {
-        SetUnitTeamAction setUnitTeamAction = _playerActions.LeftClickAction.GetComponent<SetUnitTeamAction>();
+        SetUnitTeamAction setUnitTeamAction = _playerActions.LeftClickAction?.GetComponent<SetUnitTeamAction>();
         if (setUnitTeamAction)
         {
             setUnitTeamAction.UnitTeamIndex = (int)value;
@@ -157,7 +165,7 @@ public class CombatTabController : MonoBehaviour
 
     private void OnAddUnitTeamSliderChanged(int sliderIndex, float value)
     {
-        AddUnitToGridAction addUnitAction = _playerActions.LeftClickAction.GetComponent<AddUnitToGridAction>();
+        AddUnitToGridAction addUnitAction = _playerActions.LeftClickAction?.GetComponent<AddUnitToGridAction>();
         if (addUnitAction)
         {
             addUnitAction.UnitTeamIndex = (int)value;

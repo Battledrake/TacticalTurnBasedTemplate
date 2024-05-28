@@ -2,6 +2,7 @@ using System;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 {
@@ -12,6 +13,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public event Action<Ability> OnCurrentAbilityChanged;
         public event Action<GridIndex> OnSelectedTileChanged;
         public event Action<Unit> OnSelectedUnitChanged;
+
+        [SerializeField] private Button _endCombatButton;
+        [SerializeField] private Button _endTurnButton;
 
         [Header("Dependencies")]
         [SerializeField] private TacticsGrid _tacticsGrid;
@@ -61,18 +65,34 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             Unit.OnAnyUnitDied += Unit_OnAnyUnitDied;
             CombatManager.Instance.OnCombatStarted += CombatManager_OnCombatStarted;
             CombatManager.Instance.OnCombatEnded += CombatManager_OnCombatEnded;
-        }
-
-        private void CombatManager_OnCombatEnded()
-        {
-            ClearSelectedActions();
-            SetSelectedTileAndUnit(GridIndex.Invalid());
+            CombatManager.Instance.OnUnitTurnStarted += CombatManager_OnUnitTurnStarted;
+            CombatManager.Instance.OnUnitTurnEnded += CombatManager_OnUnitTurnEnded;
         }
 
         private void CombatManager_OnCombatStarted()
         {
+            _endCombatButton.gameObject.SetActive(true);
             ClearSelectedActions();
             SetSelectedTileAndUnit(GridIndex.Invalid());
+        }
+
+        private void CombatManager_OnCombatEnded()
+        {
+            _endCombatButton.gameObject.SetActive(false);
+            _endTurnButton.gameObject.SetActive(false);
+            ClearSelectedActions();
+            SetSelectedTileAndUnit(GridIndex.Invalid());
+        }
+
+        private void CombatManager_OnUnitTurnStarted(Unit unit)
+        {
+            _endTurnButton.gameObject.SetActive(true);
+            SetSelectedTileAndUnit(unit.UnitGridIndex);
+        }
+
+        private void CombatManager_OnUnitTurnEnded(Unit unit)
+        {
+            _endTurnButton.gameObject.SetActive(false);
         }
 
         private void Unit_OnAnyUnitDied(Unit unit)
