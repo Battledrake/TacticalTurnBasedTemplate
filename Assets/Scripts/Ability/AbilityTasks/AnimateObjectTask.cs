@@ -86,8 +86,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         public override IEnumerator ExecuteTask(Ability owner)
         {
-            owner.OnAbilityEnd += EndTask;
-
             while (_isRunning)
             {
                 _timeElapsed += Time.deltaTime * _animationSpeed;
@@ -105,7 +103,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                     }
                     else
                     {
-                        owner.OnAbilityEnd -= EndTask;
                         AbilityTaskCompleted();
                     }
                 }

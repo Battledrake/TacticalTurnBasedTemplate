@@ -39,8 +39,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         public override IEnumerator ExecuteTask(Ability owner)
         {
-            owner.OnAbilityEnd += EndTask;
-
             if (!_unitAnimator && !_animEventHandler)
             {
                 Debug.LogWarning("Instigator does not have an Animator or AnimationEventHandler. Cancelling Animation Task");
