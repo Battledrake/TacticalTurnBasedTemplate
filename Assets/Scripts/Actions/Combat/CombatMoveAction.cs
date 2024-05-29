@@ -38,6 +38,12 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             if (_isUnitMoving)
                 return;
 
+            if (!_playerActions.SelectedUnit)
+                return;
+
+            if (_playerActions.SelectedUnit.CurrentActionPoints <= 0)
+                return;
+
             if (_playerActions.HoveredUnit)
             {
                 GenerateTilesInMoveRange(_playerActions.HoveredUnit);
@@ -105,13 +111,18 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
             unit.OnUnitStartedMovement -= Unit_OnUnitReachedDestination;
 
-            GenerateTilesInMoveRange(unit);
+            if (unit.CurrentActionPoints > 0)
+                GenerateTilesInMoveRange(unit);
+        }
+
+        private void OnDisable()
+        {
+            _playerActions.TacticsGrid.ClearAllTilesWithState(TileState.IsInMoveRange);
+            _playerActions.TacticsGrid.ClearAllTilesWithState(TileState.IsInPath);
         }
 
         private void OnDestroy()
         {
-            _playerActions.TacticsGrid.ClearAllTilesWithState(TileState.IsInMoveRange);
-            _playerActions.TacticsGrid.ClearAllTilesWithState(TileState.IsInPath);
         }
     }
 }

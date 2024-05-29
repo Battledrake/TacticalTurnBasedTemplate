@@ -48,6 +48,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public List<Unit> UnitsInCombat { get => _unitsInCombat; }
         public Dictionary<int, HashSet<Unit>> UnitTeams { get => _unitTeams; }
         public int NumberOfTeams { get => _teamColors.Count; }
+        public bool IsInCombat { get => _isInCombat; }
 
         private List<Unit> _unitsInCombat = new List<Unit>();
         private Dictionary<int, HashSet<Unit>> _unitTeams = new Dictionary<int, HashSet<Unit>>();
@@ -55,6 +56,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private bool _isInCombat = false;
 
         private Unit _activeUnit;
+        private int _actionPointDeduction = 0;
 
         private void Awake()
         {
@@ -75,16 +77,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             _tacticsGrid.OnGridGenerated += TacticsGrid_OnGridGenerated;
             _tacticsGrid.OnTileDataUpdated += TacticsGrid_OnTileDataUpdated;
-        }
-
-        private void OnEnable()
-        {
-            Unit.OnAnyUnitReachedNewTile += Unit_OnUnitReachedNewTile;
-        }
-
-        private void OnDisable()
-        {
-            Unit.OnAnyUnitReachedNewTile -= Unit_OnUnitReachedNewTile;
         }
 
         public CombatStartParams CanStartCombat()
@@ -143,14 +135,23 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             GridMovement gridMoveComp = unit.GetComponent<GridMovement>();
             if (gridMoveComp)
+            {
+                unit.OnUnitReachedDestination += Unit_OnUnitReachedDestination;
                 gridMoveComp.SetPathAndMove(path);
+            }
+
+            _actionPointDeduction = path.Count <= unit.MoveRange ? 1 : 2;
+
+            _tacticsGrid.RemoveUnitFromTile(unit.UnitGridIndex);
+            _tacticsGrid.AddUnitToTile(path.Last(), unit, false);
+            OnUnitGridIndexChanged?.Invoke(unit, path.Last());
         }
 
-        private void Unit_OnUnitReachedNewTile(Unit unit, GridIndex index)
+        private void Unit_OnUnitReachedDestination(Unit unit)
         {
-            _tacticsGrid.RemoveUnitFromTile(unit.UnitGridIndex);
-            _tacticsGrid.AddUnitToTile(index, unit, true);
-            OnUnitGridIndexChanged?.Invoke(unit, index);
+            unit.OnUnitReachedDestination -= Unit_OnUnitReachedDestination;
+            unit.RemoveActionPoints(_actionPointDeduction);
+            _actionPointDeduction = 0;
         }
 
         public void AddUnitToCombat(Vector3 worldPosition, Unit unit, int teamIndex = 0)
@@ -242,7 +243,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         public bool TryActivateAbility(Ability ability, Unit instigator, GridIndex origin, GridIndex target)
         {
-            if (GetAbilityRange(origin, ability.RangeData, instigator).Contains(target))
+            if (GetAbilityRange(origin, ability.RangeData).Contains(target))
             {
                 //In the future, we'll want to check if there's already an ability object.
                 Ability abilityObject = Instantiate(ability, _tacticsGrid.GetWorldPositionFromGridIndex(origin), Quaternion.identity);
@@ -261,6 +262,10 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
                 if (abilityObject.TryActivateAbility())
                 {
+                    abilityObject.OnBehaviorComplete += Ability_OnBehaviorComplete;
+                    //TODO: Ability point deduction logic.
+                    _actionPointDeduction = 2;
+                    //TODO: Maybe add an OnAbilityActivated or something here for the AbilityBar.
                     return true;
                 }
                 else
@@ -270,6 +275,13 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 }
             }
             return false;
+        }
+
+        private void Ability_OnBehaviorComplete(Ability ability)
+        {
+            ability.OnBehaviorComplete -= Ability_OnBehaviorComplete;
+            ability.Instigator.RemoveActionPoints(_actionPointDeduction);
+            _actionPointDeduction = 0;
         }
 
         public void ApplyEffectsToUnit(Unit instigator, Unit receiver, List<AbilityEffect> effectsToApply)
@@ -426,27 +438,13 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             }
         }
 
-        public List<GridIndex> GetAbilityRange(GridIndex originIndex, AbilityRangeData rangeData, Unit unit = null)
+        public List<GridIndex> GetAbilityRange(GridIndex originIndex, AbilityRangeData rangeData)
         {
-            List<GridIndex> indexesInRange = new List<GridIndex>();
-            if (rangeData.rangePattern != AbilityRangePattern.Movement)
-            {
-                indexesInRange = RemoveNotWalkableIndexes(AbilityStatics.GetIndexesFromPatternAndRange(originIndex, _tacticsGrid.GridShape, rangeData.rangeMinMax, rangeData.rangePattern));
+            List<GridIndex> indexesInRange = RemoveNotWalkableIndexes(AbilityStatics.GetIndexesFromPatternAndRange(originIndex, _tacticsGrid.GridShape, rangeData.rangeMinMax, rangeData.rangePattern));
 
-                if (rangeData.lineOfSightData.requireLineOfSight)
-                {
-                    indexesInRange = RemoveIndexesWithoutLineOfSight(originIndex, indexesInRange, rangeData.lineOfSightData.height);
-                }
-            }
-            else
+            if (rangeData.lineOfSightData.requireLineOfSight)
             {
-                PathParams pathParams;
-                if (unit)
-                    pathParams = GridPathfinding.CreatePathParamsFromUnit(unit);
-                else
-                    pathParams = _tacticsGrid.GridPathfinder.CreateDefaultPathParams(rangeData.rangeMinMax.y);
-
-                indexesInRange = _tacticsGrid.GridPathfinder.FindTilesInRange(originIndex, pathParams).Path;
+                indexesInRange = RemoveIndexesWithoutLineOfSight(originIndex, indexesInRange, rangeData.lineOfSightData.height);
             }
             return indexesInRange;
         }

@@ -30,8 +30,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         HalfDiagonal,
         Star,
         Diamond,
-        Square,
-        Movement
+        Square
     }
 
     [Serializable]
@@ -84,6 +83,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         [SerializeField] protected AbilityRangeData _rangeData;
         [SerializeField] protected AbilityRangeData _areaOfEffectData;
         [SerializeField] protected List<AbilityEffect> _effects;
+        [SerializeField] protected int _abilityCost;
         [SerializeField] protected bool _isFriendly = false;
 
         public bool IsFriendly { get => _isFriendly; }
@@ -93,6 +93,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public AbilityRangeData RangeData { get => _rangeData; }
         public AbilityRangeData AreaOfEffectData { get => _areaOfEffectData; }
         public List<AbilityEffect> Effects { get => _effects; }
+        public int AbilityCost { get => _abilityCost; }
+        public Unit Instigator { get => _instigator; }
 
         protected Unit _instigator;
 

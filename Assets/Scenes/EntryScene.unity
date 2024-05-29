@@ -7683,7 +7683,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_IgnoreLayout: 0
   m_MinWidth: -1
-  m_MinHeight: 600
+  m_MinHeight: 750
   m_PreferredWidth: -1
   m_PreferredHeight: -1
   m_FlexibleWidth: -1
@@ -14541,32 +14541,32 @@ PrefabInstance:
     - target: {fileID: 8686266317598625381, guid: 5074a686a13b6374d8a6839ec36abcac,
         type: 3}
       propertyPath: m_Pivot.x
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8686266317598625381, guid: 5074a686a13b6374d8a6839ec36abcac,
         type: 3}
       propertyPath: m_Pivot.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8686266317598625381, guid: 5074a686a13b6374d8a6839ec36abcac,
         type: 3}
       propertyPath: m_AnchorMax.x
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8686266317598625381, guid: 5074a686a13b6374d8a6839ec36abcac,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8686266317598625381, guid: 5074a686a13b6374d8a6839ec36abcac,
         type: 3}
       propertyPath: m_AnchorMin.x
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8686266317598625381, guid: 5074a686a13b6374d8a6839ec36abcac,
         type: 3}
       propertyPath: m_AnchorMin.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8686266317598625381, guid: 5074a686a13b6374d8a6839ec36abcac,
         type: 3}
@@ -14616,12 +14616,12 @@ PrefabInstance:
     - target: {fileID: 8686266317598625381, guid: 5074a686a13b6374d8a6839ec36abcac,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 759
+      value: -50
       objectReference: {fileID: 0}
     - target: {fileID: 8686266317598625381, guid: 5074a686a13b6374d8a6839ec36abcac,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -869
+      value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 8686266317598625381, guid: 5074a686a13b6374d8a6839ec36abcac,
         type: 3}
@@ -14745,8 +14745,11 @@ MonoBehaviour:
   _endTurnButton: {fileID: 743188489}
   _combatMoveActionPrefab: {fileID: -6665767660138094297, guid: 7924346fa48fe1e48949b25c86b025c1,
     type: 3}
+  _combatUseAbilityActionPrefab: {fileID: -3823736100193597377, guid: 68849e6b2e4ca454ebe696d634862e4f,
+    type: 3}
   _tacticsGrid: {fileID: 825704801}
   _abilityTabController: {fileID: 333215435}
+  _abilityBarController: {fileID: 611645626}
 --- !u!1 &762671688
 GameObject:
   m_ObjectHideFlags: 0
@@ -15894,6 +15897,7 @@ MonoBehaviour:
   _abilityRangeColor: {r: 0.9339623, g: 0.8203833, b: 0.4978195, a: 1}
   _abilityAreaOfEffectColor: {r: 1, g: 0.33572823, b: 0.015686274, a: 1}
   _hoveredColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  _testRangeMaterial: {fileID: 2100000, guid: f7da9df5cefbc7c44ad86a44112435b6, type: 2}
 --- !u!114 &825704805
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -22319,7 +22323,7 @@ RectTransform:
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 100}
-  m_SizeDelta: {x: 150, y: 650}
+  m_SizeDelta: {x: 150, y: 800}
   m_Pivot: {x: 1, y: 0.5}
 --- !u!114 &1164973927
 MonoBehaviour:
@@ -31649,7 +31653,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: 0, y: -367}
+  m_AnchoredPosition: {x: 0, y: -450}
   m_SizeDelta: {x: 800, y: 150}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!114 &1791490480
@@ -31723,7 +31727,7 @@ MonoBehaviour:
   m_ChildAlignment: 4
   m_StartCorner: 0
   m_StartAxis: 0
-  m_CellSize: {x: 100, y: 100}
+  m_CellSize: {x: 125, y: 125}
   m_Spacing: {x: 10, y: 0}
   m_Constraint: 2
   m_ConstraintCount: 1

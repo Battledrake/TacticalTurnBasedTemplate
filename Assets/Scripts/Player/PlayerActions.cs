@@ -19,10 +19,12 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         [Header("Actions")]
         [SerializeField] private CombatMoveAction _combatMoveActionPrefab;
+        [SerializeField] private CombatUseAbilityAction _combatUseAbilityActionPrefab;
 
         [Header("Dependencies")]
         [SerializeField] private TacticsGrid _tacticsGrid;
         [SerializeField] private AbilityTabController _abilityTabController;
+        [SerializeField] private AbilityBarController _abilityBarController;
 
         public TacticsGrid TacticsGrid { get => _tacticsGrid; }
         public GridIndex HoveredTile { get => _hoveredTile; set => _selectedTile = value; }
@@ -32,6 +34,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public ActionBase LeftClickAction { get => _leftClickAction; }
         public ActionBase RightClickAction { get => _rightClickAction; }
         public Ability CurrentAbility { get => _currentAbility; set { _currentAbility = value; OnCurrentAbilityChanged?.Invoke(_currentAbility); } }
+        public AbilityBarController PlayerAbilityBar { get => _abilityBarController; }
 
         private GridIndex _hoveredTile = new GridIndex(int.MinValue, int.MinValue);
         private GridIndex _selectedTile = new GridIndex(int.MinValue, int.MinValue);
@@ -50,17 +53,17 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private void Awake()
         {
             OnHoveredTileChanged += OnHoveredTileChanged_UpdateActions;
-            OnSelectedUnitChanged += This_OnSelectedUnitChanged;
+            //OnSelectedUnitChanged += This_OnSelectedUnitChanged;
         }
 
-        private void This_OnSelectedUnitChanged(Unit unit)
-        {
-            if (!_abilityTabController.ActiveAbility)
-            {
-                _currentAbility = null;
-                OnCurrentAbilityChanged?.Invoke(null);
-            }
-        }
+        //private void This_OnSelectedUnitChanged(Unit unit)
+        //{
+        //    if (!_abilityTabController.ActiveAbility)
+        //    {
+        //        _currentAbility = null;
+        //        OnCurrentAbilityChanged?.Invoke(null);
+        //    }
+        //}
 
         private void Start()
         {
@@ -70,6 +73,25 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             CombatManager.Instance.OnCombatEnded += CombatManager_OnCombatEnded;
             CombatManager.Instance.OnUnitTurnStarted += CombatManager_OnUnitTurnStarted;
             CombatManager.Instance.OnUnitTurnEnded += CombatManager_OnUnitTurnEnded;
+            _abilityBarController.OnSelectedAbilityChanged += AbilityBar_OnSelectedAbilityChanged;
+        }
+
+        private void AbilityBar_OnSelectedAbilityChanged(Ability ability)
+        {
+            if (ability != null)
+            {
+                SetSelectedActions(_combatUseAbilityActionPrefab, null);
+                CombatUseAbilityAction useAbilityAction = _leftClickAction.GetComponent<CombatUseAbilityAction>();
+                if (useAbilityAction)
+                {
+                    useAbilityAction.SetAbility(ability);
+                }
+            }
+            else
+            {
+                if (_leftClickAction.GetType() != typeof(CombatMoveAction))
+                    SetSelectedActions(_combatMoveActionPrefab, null);
+            }
         }
 
         private void CombatManager_OnCombatStarted()
@@ -155,6 +177,15 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 _isRightClickDown = false;
             }
 
+            string inputString = Input.inputString;
+            if (!string.IsNullOrEmpty(inputString))
+            {
+                char pressedChar = inputString[0];
+                if(pressedChar >= '0' && pressedChar <= '9')
+                {
+                    _abilityBarController.SetSelectedAbilityFromIndex(pressedChar - 49);
+                }
+            }
 
         }
 

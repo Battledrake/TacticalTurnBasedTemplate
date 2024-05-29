@@ -66,15 +66,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
             if (_playerActions.TacticsGrid.IsIndexValid(_selectedTileIndex))
             {
-                if (_rangePattern != AbilityRangePattern.Movement)
-                {
-                    _rangeIndexes = AbilityStatics.GetIndexesFromPatternAndRange(_selectedTileIndex, _playerActions.TacticsGrid.GridShape, _rangeMinMax, _rangePattern);
-                }
-                else
-                {
-                    PathParams pathParams = _playerActions.TacticsGrid.GridPathfinder.CreateDefaultPathParams(_rangeMinMax.y);
-                    _rangeIndexes = _playerActions.TacticsGrid.GridPathfinder.FindTilesInRange(_selectedTileIndex, pathParams).Path;
-                }
+                _rangeIndexes = AbilityStatics.GetIndexesFromPatternAndRange(_selectedTileIndex, _playerActions.TacticsGrid.GridShape, _rangeMinMax, _rangePattern);
 
                 if (_rangeLineOfSight)
                     _rangeIndexes = CombatManager.Instance.RemoveIndexesWithoutLineOfSight(_selectedTileIndex, _rangeIndexes, _rangeLineOfSightHeight);

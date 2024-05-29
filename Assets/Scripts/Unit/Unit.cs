@@ -20,11 +20,15 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public event Action<Unit, bool> OnUnitDied;
         public event Action<Unit> OnUnitRespawn;
 
+        [SerializeField] private int _baseActionPoints = 2;
+        [SerializeField] private int _currentActionPoints = 0;
+
         [SerializeField] private UnitId _unitType = UnitId.Ranger;
         [SerializeField] private Transform _lookAtTransform;
         [SerializeField] private Color _hoverColor;
         [SerializeField] private Color _selectedColor = Color.green;
 
+        public int CurrentActionPoints { get => _currentActionPoints; }
         public Transform LookAtTransform { get => _lookAtTransform; }
         public GridIndex UnitGridIndex { get => _gridIndex; set => _gridIndex = value; }
         public UnitData UnitData { get => _unitData; }
@@ -100,12 +104,24 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         public void TurnStarted()
         {
-            Debug.Log("Lets Rock!");
+            _currentActionPoints = _baseActionPoints;
         }
 
         public void TurnEnded()
         {
             Debug.Log("Turn Over");
+        }
+
+        public void RemoveActionPoints(int numberToRemove)
+        {
+            _currentActionPoints -= numberToRemove;
+            if (_currentActionPoints <= 0)
+                CombatManager.Instance.NextUnit();
+        }
+
+        public void AddActionPoints(int numberToAdd)
+        {
+            _currentActionPoints += numberToAdd;
         }
 
         private void OnDisable()

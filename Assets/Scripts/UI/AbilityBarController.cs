@@ -7,6 +7,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 {
     public class AbilityBarController : MonoBehaviour
     {
+        public event Action<Ability> OnSelectedAbilityChanged;
+
         [SerializeField] private AbilityButton _abilityButtonPrefab;
         [SerializeField] private Transform _abilityButtonContainer;
         //Use ToggleGroup on AbilityButtonContainer if not using DebugMenu
@@ -63,12 +65,31 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void AbilityButton_OnAbilityButtonSelected(int index)
         {
-            _playerActions.CurrentAbility = _abilities[index];
+            OnSelectedAbilityChanged?.Invoke(_abilities[index]);
+            //_playerActions.CurrentAbility = _abilities[index];
         }
 
         private void AbilityButton_OnAbilityButtonDeselected(int index)
         {
-            _playerActions.CurrentAbility = null;
+            OnSelectedAbilityChanged?.Invoke(null);
+            //_playerActions.CurrentAbility = null;
+        }
+
+        public void SetSelectedAbilityFromIndex(int index)
+        {
+            if(_abilityButtons.TryGetValue(index, out AbilityButton abilityButton))
+            {
+                Toggle abilityButtonToggle = abilityButton.GetComponent<Toggle>();
+                if (abilityButtonToggle.isOn)
+                    abilityButtonToggle.isOn = false;
+                else
+                    abilityButtonToggle.isOn = true;
+            }
+            else
+            {
+                _abilityBarToggleGroup.SetAllTogglesOff();
+                OnSelectedAbilityChanged?.Invoke(null);
+            }
         }
     }
 }
