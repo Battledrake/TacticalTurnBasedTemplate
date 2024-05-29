@@ -49,6 +49,13 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public float height;
     }
 
+    public enum EffectType
+    {
+        Instant,
+        Duration,
+        Permanent
+    }
+
     [Serializable]
     public struct AbilityEffect
     {

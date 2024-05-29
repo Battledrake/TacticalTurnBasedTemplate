@@ -18,9 +18,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             if (!_playerActions.TacticsGrid.IsIndexValid(index))
                 return false;
 
-            for(int i = 0; i < _playerActions.TacticsGrid.GridTiles.Count; i++)
+            foreach(var gridTilePair in _playerActions.TacticsGrid.GridTiles)
             {
-                GridIndex gridIndex = _playerActions.TacticsGrid.GridTiles.ElementAt(i).Key;
+                GridIndex gridIndex = gridTilePair.Key;
                 PathNode gridNode = _playerActions.TacticsGrid.GridPathfinder.CreateAndAddNodeToPool(gridIndex);
                 gridNode.heuristicCost = _playerActions.TacticsGrid.GridPathfinder.GetHeuristicCost(gridIndex, index);
                 _playerActions.TacticsGrid.GridPathfinder.PathNodePool[gridIndex] = gridNode;

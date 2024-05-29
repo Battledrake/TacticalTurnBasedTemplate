@@ -155,9 +155,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         public void UpdateGroundOffset(float offset)
         {
-            for (int i = 0; i < _instancedTiles.Count; i++)
+            foreach (var instancedTilePair in _instancedTiles)
             {
-                TileData tileData = _instancedTiles.ElementAt(i).Value;
+                TileData tileData = instancedTilePair.Value;
                 Vector3 newPos = tileData.tileMatrix.GetPosition();
                 newPos.y += offset;
                 tileData.tileMatrix = Matrix4x4.TRS(newPos, tileData.tileMatrix.rotation, tileData.tileMatrix.lossyScale);
@@ -174,9 +174,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                     if (_currentDefaultCount != _instancedTiles.Count)
                     {
                         _defaultRenders.Clear();
-                        for (int i = 0; i < _instancedTiles.Count; i++)
+                        foreach(var instancedTilePair in _instancedTiles)
                         {
-                            Matrix4x4 instanceMatrix = _instancedTiles.ElementAt(i).Value.tileMatrix;
+                            Matrix4x4 instanceMatrix = instancedTilePair.Value.tileMatrix;
                             _defaultRenders.Add(instanceMatrix);
                         }
                         _currentDefaultCount = _instancedTiles.Count;

@@ -17,6 +17,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         [SerializeField] private Button _endCombatButton;
         [SerializeField] private Button _endTurnButton;
 
+        [Header("Actions")]
+        [SerializeField] private CombatMoveAction _combatMoveActionPrefab;
+
         [Header("Dependencies")]
         [SerializeField] private TacticsGrid _tacticsGrid;
         [SerializeField] private AbilityTabController _abilityTabController;
@@ -88,11 +91,13 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             _endTurnButton.gameObject.SetActive(true);
             SetSelectedTileAndUnit(unit.UnitGridIndex);
+            SetSelectedActions(_combatMoveActionPrefab, null);
         }
 
         private void CombatManager_OnUnitTurnEnded(Unit unit)
         {
             _endTurnButton.gameObject.SetActive(false);
+            ClearSelectedActions();
         }
 
         private void Unit_OnAnyUnitDied(Unit unit)
@@ -267,12 +272,12 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             ClearSelectedActions();
 
-            _leftClickAction = GameObject.Instantiate(leftClickAction);
+            _leftClickAction = Instantiate(leftClickAction);
             _leftClickAction.InitializeAction(this);
 
             if (rightClickAction != null)
             {
-                _rightClickAction = GameObject.Instantiate(rightClickAction);
+                _rightClickAction = Instantiate(rightClickAction);
                 _rightClickAction.InitializeAction(this);
             }
 

@@ -30,7 +30,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         NoSharpDiagonals,
         SharpDiagonals
     }
-    public struct PathFilter
+    public struct PathParams
     {
         public bool allowPartialSolution;
         public float heightAllowance;
@@ -116,33 +116,33 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private Queue<PathNode> _rangeNodes;
         private Dictionary<GridIndex, PathNode> _pathNodePool = new Dictionary<GridIndex, PathNode>();
 
-        public PathFilter CreateDefaultPathFilter(float pathLength)
+        public PathParams CreateDefaultPathParams(float pathLength)
         {
-            PathFilter pathFilter;
-            pathFilter.heightAllowance = _heightAllowance;
-            pathFilter.includeDiagonals = _includeDiagonals;
-            pathFilter.allowPartialSolution = _allowPartialSolution;
-            pathFilter.includeStartNode = _includeStartNodeInPath;
-            pathFilter.validTileTypes = new List<TileType> { TileType.Normal, TileType.DoubleCost, TileType.TripleCost };
-            pathFilter.maxPathLength = pathLength;
+            PathParams pathParams;
+            pathParams.heightAllowance = _heightAllowance;
+            pathParams.includeDiagonals = _includeDiagonals;
+            pathParams.allowPartialSolution = _allowPartialSolution;
+            pathParams.includeStartNode = _includeStartNodeInPath;
+            pathParams.validTileTypes = new List<TileType> { TileType.Normal, TileType.DoubleCost, TileType.TripleCost };
+            pathParams.maxPathLength = pathLength;
 
-            return pathFilter;
+            return pathParams;
         }
 
-        public static PathFilter CreatePathFilterFromUnit(Unit unit, bool allowPartialSolution = false, bool includeStartNode = false)
+        public static PathParams CreatePathParamsFromUnit(Unit unit, bool allowPartialSolution = false, bool includeStartNode = false)
         {
-            PathFilter pathFilter;
-            pathFilter.includeDiagonals = unit.UnitData.unitStats.canMoveDiagonal;
-            pathFilter.heightAllowance = unit.UnitData.unitStats.heightAllowance;
-            pathFilter.includeStartNode = includeStartNode;
-            pathFilter.allowPartialSolution = allowPartialSolution;
-            pathFilter.validTileTypes = unit.UnitData.unitStats.validTileTypes;
-            pathFilter.maxPathLength = unit.MoveRange;
+            PathParams pathParams;
+            pathParams.includeDiagonals = unit.UnitData.unitStats.canMoveDiagonal;
+            pathParams.heightAllowance = unit.UnitData.unitStats.heightAllowance;
+            pathParams.includeStartNode = includeStartNode;
+            pathParams.allowPartialSolution = allowPartialSolution;
+            pathParams.validTileTypes = unit.UnitData.unitStats.validTileTypes;
+            pathParams.maxPathLength = unit.MoveRange;
 
-            return pathFilter;
+            return pathParams;
         }
 
-        public PathfindingResult FindTilesInRange(GridIndex startIndex, PathFilter pathFilter)
+        public PathfindingResult FindTilesInRange(GridIndex startIndex, PathParams pathParams)
         {
             PathfindingResult pathResult = new PathfindingResult();
             pathResult.Path = new List<GridIndex>();
@@ -158,7 +158,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _rangeNodes = new Queue<PathNode>();
             List<GridIndex> indexesInRange = new List<GridIndex>();
 
-            if (pathFilter.includeStartNode)
+            if (pathParams.includeStartNode)
                 indexesInRange.Add(startIndex);
 
             PathNode startNode = CreateAndAddNodeToPool(startIndex);
@@ -169,7 +169,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             {
                 PathNode currentNode = _rangeNodes.Dequeue();
 
-                for (int i = 0; i < GetNeighborCount(pathFilter.includeDiagonals); i++)
+                for (int i = 0; i < GetNeighborCount(pathParams.includeDiagonals); i++)
                 {
                     GridIndex neighborIndex = GetNeighborIndexFromArray(currentNode.index, i);
 
@@ -179,7 +179,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                     if (neighborIndex == currentNode.parent || neighborIndex == currentNode.index)
                         continue;
 
-                    if (!IsTraversalAllowed(currentNode.index, neighborIndex, pathFilter.heightAllowance, pathFilter.validTileTypes))
+                    if (!IsTraversalAllowed(currentNode.index, neighborIndex, pathParams.heightAllowance, pathParams.validTileTypes))
                         continue;
 
                     PathNode neighborNode = null;
@@ -192,7 +192,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
                     float newTraversalCost = currentNode.traversalCost + (GetTraversalCost(currentNode.index, neighborNode.index) * neighborNode.terrainCost);
 
-                    if (newTraversalCost > pathFilter.maxPathLength)
+                    if (newTraversalCost > pathParams.maxPathLength)
                         continue;
 
                     if (newTraversalCost >= neighborNode.traversalCost)
@@ -213,7 +213,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             return pathResult;
         }
 
-        public PathfindingResult FindPath(GridIndex startIndex, GridIndex targetIndex, PathFilter pathFilter)
+        public PathfindingResult FindPath(GridIndex startIndex, GridIndex targetIndex, PathParams pathParams)
         {
             PathfindingResult pathResult = new PathfindingResult();
             pathResult.Path = new List<GridIndex>();
@@ -246,20 +246,20 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             bool processNodes = true;
             while (_frontierNodes.Count > 0 && processNodes)
             {
-                processNodes = ProcessSingleNode(targetIndex, ref bestNode, ref bestNodeCost, pathFilter);
+                processNodes = ProcessSingleNode(targetIndex, ref bestNode, ref bestNodeCost, pathParams);
             }
 
             if (bestNodeCost != 0f)
                 pathResult.Result = PathResult.GoalUnreachable;
 
-            if (pathResult.Result == PathResult.SearchSuccess || pathFilter.allowPartialSolution)
+            if (pathResult.Result == PathResult.SearchSuccess || pathParams.allowPartialSolution)
             {
-                pathResult.Path = ConvertPathNodesToIndexes(startNode, bestNode, pathFilter.includeStartNode);
+                pathResult.Path = ConvertPathNodesToIndexes(startNode, bestNode, pathParams.includeStartNode);
             }
             return pathResult;
         }
 
-        private bool ProcessSingleNode(GridIndex goalNode, ref PathNode bestNode, ref float bestNodeCost, PathFilter pathFilter)
+        private bool ProcessSingleNode(GridIndex goalNode, ref PathNode bestNode, ref float bestNodeCost, PathParams pathParams)
         {
             PathNode currentNode = _frontierNodes.Dequeue();
             currentNode.isClosed = true;
@@ -271,14 +271,14 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 return false;
             }
 
-            for (int i = 0; i < GetNeighborCount(pathFilter.includeDiagonals); i++)
+            for (int i = 0; i < GetNeighborCount(pathParams.includeDiagonals); i++)
             {
                 GridIndex neighborIndex = GetNeighborIndexFromArray(currentNode.index, i);
 
                 if (!_tacticsGrid.IsIndexValid(neighborIndex))
                     continue;
 
-                if (neighborIndex == currentNode.parent || neighborIndex == currentNode.index || !IsTraversalAllowed(currentNode.index, neighborIndex, pathFilter.heightAllowance, pathFilter.validTileTypes))
+                if (neighborIndex == currentNode.parent || neighborIndex == currentNode.index || !IsTraversalAllowed(currentNode.index, neighborIndex, pathParams.heightAllowance, pathParams.validTileTypes))
                     continue;
 
                 PathNode neighborNode = null;
@@ -294,7 +294,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
                 float newTraversalCost = currentNode.traversalCost + (GetTraversalCost(currentNode.index, neighborNode.index) * neighborNode.terrainCost);
 
-                if (newTraversalCost > pathFilter.maxPathLength)
+                if (newTraversalCost > pathParams.maxPathLength)
                     continue;
 
                 float newHeuristic = GetHeuristicCost(neighborNode.index, goalNode) * _heuristicScale;
@@ -433,7 +433,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             for (int i = 0; i < validTypes.Count; i++)
             {
-                if (typeBeingChecked == validTypes.ElementAt(i))
+                if (typeBeingChecked == validTypes[i])
                     return true;
             }
             return false;

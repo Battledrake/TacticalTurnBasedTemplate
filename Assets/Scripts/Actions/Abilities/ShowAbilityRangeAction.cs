@@ -80,10 +80,25 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         }
         private void ShowAbilityAreaOfEffectPattern()
         {
-            if (!_rangeIndexes.Contains(_hoveredTileIndex))
-                return;
 
-            _areaOfEffectIndexes = CombatManager.Instance.GetAbilityRange(_hoveredTileIndex, _currentAbility.AreaOfEffectData);
+            if (_currentAbility.AreaOfEffectData.rangePattern != AbilityRangePattern.Movement)
+            {
+                if (!_rangeIndexes.Contains(_hoveredTileIndex))
+                    return;
+
+                _areaOfEffectIndexes = CombatManager.Instance.GetAbilityRange(_hoveredTileIndex, _currentAbility.AreaOfEffectData);
+            }
+            else
+            {
+                AbilityRangeData sprintRange = _currentAbility.RangeData;
+                sprintRange.rangeMinMax = sprintRange.rangeMinMax * new Vector2Int(0, 2);
+                _areaOfEffectIndexes = CombatManager.Instance.GetAbilityRange(_selectedTileIndex, sprintRange);
+
+                for (int i = 0; i < _rangeIndexes.Count; i++)
+                {
+                    _areaOfEffectIndexes.Remove(_rangeIndexes[i]);
+                }
+            }
 
             if (_currentAbility.AreaOfEffectData.lineOfSightData.requireLineOfSight)
                 _areaOfEffectIndexes = CombatManager.Instance.RemoveIndexesWithoutLineOfSight(_hoveredTileIndex, _areaOfEffectIndexes, _currentAbility.AreaOfEffectData.lineOfSightData.height);

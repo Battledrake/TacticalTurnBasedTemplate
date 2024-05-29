@@ -50,14 +50,14 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         public void UpdateGroundOffset(float offset)
         {
-            for (int i = 0; i < _tileTypeRenders.Count; i++)
+            foreach (var tileRenderPair in _tileTypeRenders)
             {
-                _tileTypeRenders.ElementAt(i).Value.Clear();
+                tileRenderPair.Value.Clear();
             }
 
-            for (int i = 0; i < _instancedTiles.Count; i++)
+            foreach (var instancedTilePair in _instancedTiles)
             {
-                TileData tileData = _instancedTiles.ElementAt(i).Value;
+                TileData tileData = instancedTilePair.Value;
                 Vector3 newPos = tileData.tileMatrix.GetPosition();
                 newPos.y += offset;
                 tileData.tileMatrix = Matrix4x4.TRS(newPos, tileData.tileMatrix.rotation, tileData.tileMatrix.lossyScale);
@@ -71,11 +71,11 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             if (_tileTypeRenders.Count > 0)
             {
-                for (int i = 0; i < _tileTypeRenders.Count; i++)
+                foreach (var tileRenderPair in _tileTypeRenders)
                 {
-                    if (_tileTypeRenders.ElementAt(i).Value.Count > 0)
+                    if (tileRenderPair.Value.Count > 0)
                     {
-                        Graphics.RenderMeshInstanced(_renderParams[(TileType)_tileTypeRenders.ElementAt(i).Key], _instancedMesh, 0, _tileTypeRenders.ElementAt(i).Value);
+                        Graphics.RenderMeshInstanced(_renderParams[(TileType)tileRenderPair.Key], _instancedMesh, 0, tileRenderPair.Value);
                     }
                 }
             }
@@ -84,9 +84,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public void ClearInstances()
         {
             _instancedTiles.Clear();
-            for (int i = 0; i < _tileTypeRenders.Count; i++)
+            foreach (var tileRenderPair in _tileTypeRenders)
             {
-                _tileTypeRenders.ElementAt(i).Value.Clear();
+                tileRenderPair.Value.Clear();
             }
         }
 

@@ -14743,6 +14743,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _endCombatButton: {fileID: 1618155782}
   _endTurnButton: {fileID: 743188489}
+  _combatMoveActionPrefab: {fileID: -6665767660138094297, guid: 7924346fa48fe1e48949b25c86b025c1,
+    type: 3}
   _tacticsGrid: {fileID: 825704801}
   _abilityTabController: {fileID: 333215435}
 --- !u!1 &762671688

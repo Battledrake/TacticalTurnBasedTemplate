@@ -11,12 +11,29 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             switch (tileType)
             {
+                case TileType.Normal:
+                    return 1f;
                 case TileType.DoubleCost:
                     return 2f;
                 case TileType.TripleCost:
                     return 3f;
+                case TileType.FlyingOnly:
+                    return 1f;
             }
             return 1f;
+        }
+
+
+        public static float GetPathCost(TacticsGrid tacticsGrid, List<GridIndex> path)
+        {
+            float pathCost = 0;
+            for (int i = 0; i < path.Count; i++)
+            {
+                tacticsGrid.GetTileDataFromIndex(path[i], out TileData tileData);
+                pathCost += 1f * GetTerrainCostFromTileType(tileData.tileType);
+            }
+
+            return pathCost;
         }
 
         public static GridIndex ConvertOddrToAxial(GridIndex hex)

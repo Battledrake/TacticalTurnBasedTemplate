@@ -92,11 +92,11 @@ public class CombatTabController : MonoBehaviour
         var unitTeams = CombatManager.Instance.UnitTeams;
         foreach (var unitTeam in unitTeams)
         {
-            for (int i = 0; i < unitTeam.Value.Count; i++)
+            foreach (var unit in unitTeam.Value)
             {
                 GameObject unitDisplay = Instantiate(_unitDisplayPrefab, _teamPanels[unitTeam.Key]);
                 unitDisplay.GetComponent<Image>().color = CombatManager.Instance.GetTeamColor(unitTeam.Key);
-                unitDisplay.transform.GetChild(0).GetChild(0).GetComponent<Image>().sprite = unitTeam.Value.ElementAt(i).UnitData.assetData.unitIcon;
+                unitDisplay.transform.GetChild(0).GetChild(0).GetComponent<Image>().sprite = unit.UnitData.assetData.unitIcon;
             }
         }
 
@@ -147,10 +147,9 @@ public class CombatTabController : MonoBehaviour
             return;
         }
 
-
-        for (int i = 0; i < _iconButtons.Count; i++)
+        foreach(var iconButtonPair in _iconButtons)
         {
-            _iconButtons.ElementAt(i).Value.DisableButton();
+            iconButtonPair.Value.DisableButton();
         }
     }
 

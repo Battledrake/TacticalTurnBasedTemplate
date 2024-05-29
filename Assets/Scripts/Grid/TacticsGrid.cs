@@ -60,6 +60,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private GridShape _gridShape = GridShape.None;
 
         private Dictionary<GridIndex, TileData> _gridTiles = new Dictionary<GridIndex, TileData>();
+        private Dictionary<TileState, HashSet<GridIndex>> _tileStateIndexes = new Dictionary<TileState, HashSet<GridIndex>>();
 
         private void Start()
         {
@@ -130,31 +131,34 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         public List<GridIndex> GetAllTilesWithState(TileState tileState)
         {
-            List<GridIndex> tiles = new List<GridIndex>();
-            for (int i = 0; i < _gridTiles.Count; i++)
-            {
-                HashSet<TileState> tileStates = _gridTiles.ElementAt(i).Value.tileStates;
-                if (tileStates != null && tileStates.Contains(tileState))
-                {
-                    tiles.Add(_gridTiles.ElementAt(i).Key);
-                }
-            }
-            return tiles;
+            if (_tileStateIndexes.TryGetValue(tileState, out HashSet<GridIndex> stateIndexes))
+                return stateIndexes.ToList();
+            return new List<GridIndex>();
         }
 
-        public void ClearStateFromTiles(TileState stateToClear)
+        public void ClearAllTilesWithState(TileState stateToClear)
         {
-            List<GridIndex> tilesWithState = GetAllTilesWithState(stateToClear);
-            for (int i = 0; i < tilesWithState.Count; i++)
+            if (_tileStateIndexes.TryGetValue(stateToClear, out HashSet<GridIndex> indexesWithState))
             {
-                RemoveStateFromTile(tilesWithState[i], stateToClear);
+                foreach (var index in indexesWithState)
+                {
+                    RemoveStateFromTile(index, stateToClear);
+                }
+                indexesWithState.Clear();
             }
         }
 
         public void ClearStateFromTiles(List<GridIndex> tiles, TileState stateToClear)
         {
+
+
+            _tileStateIndexes.TryGetValue(stateToClear, out HashSet<GridIndex> stateIndexes);
+
             for (int i = 0; i < tiles.Count; i++)
             {
+                if (stateIndexes != null)
+                    stateIndexes.Remove(tiles[i]);
+
                 RemoveStateFromTile(tiles[i], stateToClear);
             }
         }
@@ -508,6 +512,16 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 tileData.tileType = TileType.None;
                 _gridVisual.UpdateTileVisual(tileData);
 
+                if (tileData.tileStates != null)
+                {
+                    foreach (var tileState in tileData.tileStates)
+                    {
+
+                        _tileStateIndexes.TryGetValue(tileState, out HashSet<GridIndex> stateIndexes);
+                        stateIndexes.Remove(index);
+                    }
+                }
+
                 OnTileDataUpdated?.Invoke(index);
             }
         }
@@ -523,6 +537,14 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 {
                     _gridTiles[index] = tileData;
                     _gridVisual.AddTileState(index, tileState);
+
+                    if (!_tileStateIndexes.TryGetValue(tileState, out HashSet<GridIndex> tileStateIndexes))
+                    {
+                        tileStateIndexes = new HashSet<GridIndex>();
+                        _tileStateIndexes[tileState] = tileStateIndexes;
+                    }
+
+                    tileStateIndexes.Add(index);
                 }
 
                 OnTileDataUpdated?.Invoke(index);

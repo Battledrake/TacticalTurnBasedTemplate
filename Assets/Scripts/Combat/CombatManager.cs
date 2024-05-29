@@ -433,13 +433,13 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             }
             else
             {
-                PathFilter pathFilter;
+                PathParams pathParams;
                 if (unit)
-                    pathFilter = GridPathfinding.CreatePathFilterFromUnit(unit, false, false);
+                    pathParams = GridPathfinding.CreatePathParamsFromUnit(unit);
                 else
-                    pathFilter = _tacticsGrid.GridPathfinder.CreateDefaultPathFilter(rangeData.rangeMinMax.y);
+                    pathParams = _tacticsGrid.GridPathfinder.CreateDefaultPathParams(rangeData.rangeMinMax.y);
 
-                indexesInRange = _tacticsGrid.GridPathfinder.FindTilesInRange(originIndex, pathFilter).Path;
+                indexesInRange = _tacticsGrid.GridPathfinder.FindTilesInRange(originIndex, pathParams).Path;
             }
             return indexesInRange;
         }

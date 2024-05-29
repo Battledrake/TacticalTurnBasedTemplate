@@ -79,8 +79,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 }
                 else
                 {
-                    PathFilter pathFilter = _playerActions.TacticsGrid.GridPathfinder.CreateDefaultPathFilter(_rangeMinMax.y);
-                    _rangeIndexes = _playerActions.TacticsGrid.GridPathfinder.FindTilesInRange(_selectedTileIndex, pathFilter).Path;
+                    PathParams pathParams = _playerActions.TacticsGrid.GridPathfinder.CreateDefaultPathParams(_rangeMinMax.y);
+                    _rangeIndexes = _playerActions.TacticsGrid.GridPathfinder.FindTilesInRange(_selectedTileIndex, pathParams).Path;
                 }
 
                 if (_rangeLineOfSight)

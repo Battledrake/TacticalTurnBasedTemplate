@@ -66,9 +66,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             if (!ShowAnyDebug())
                 return;
 
-            for (int i = 0; i < _tacticsGrid.GridTiles.Count; i++)
+            foreach (var gridTilePair in _tacticsGrid.GridTiles)
             {
-                UpdateTextOnTile(_tacticsGrid.GridTiles.ElementAt(i).Key);
+                UpdateTextOnTile(gridTilePair.Key);
             }
         }
 
@@ -125,7 +125,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                     if (tileData.climbData.climbLinks != null && tileData.climbData.climbLinks.Count > 0)
                     {
                         string climbText = "";
-                        for(int i = 0; i < tileData.climbData.climbLinks.Count; i++)
+                        for (int i = 0; i < tileData.climbData.climbLinks.Count; i++)
                         {
                             climbText += "cl:" + tileData.climbData.climbLinks[i] + "\n";
                         }
@@ -175,9 +175,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             }
             else
             {
-                for (int i = 0; i < _tacticsGrid.GridTiles.Count; i++)
+                foreach (var gridTilePair in _tacticsGrid.GridTiles)
                 {
-                    UpdateTextOnTile(_tacticsGrid.GridTiles.ElementAt(i).Key);
+                    UpdateTextOnTile(gridTilePair.Key);
                 }
             }
         }
@@ -193,9 +193,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         public void ClearAllTextGameObjects()
         {
-            for (int i = 0; i < _spawnedTexts.Count; i++)
+            foreach (var spawnedTextsPair in _spawnedTexts)
             {
-                Destroy(_spawnedTexts.ElementAt(i).Value);
+                Destroy(spawnedTextsPair.Value);
             }
             _spawnedTexts.Clear();
         }

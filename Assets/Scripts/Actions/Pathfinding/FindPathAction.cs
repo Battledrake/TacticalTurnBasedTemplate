@@ -25,7 +25,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             {
                 float pathLength = actionValue;
 
-                PathFilter filter = _playerActions.TacticsGrid.GridPathfinder.CreateDefaultPathFilter(pathLength);
+                PathParams filter = _playerActions.TacticsGrid.GridPathfinder.CreateDefaultPathParams(pathLength);
                     
                 PathfindingResult result = _playerActions.TacticsGrid.GridPathfinder.FindPath(_playerActions.SelectedTile, index, filter);
 

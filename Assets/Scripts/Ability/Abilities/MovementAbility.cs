@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Collections;
 using UnityEngine;
 
 namespace BattleDrakeCreations.TacticalTurnBasedTemplate
@@ -13,9 +14,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             CommitAbility();
 
             //TODO: Move this to a task. MoveToLocationTask?;
-            PathFilter pathFilter = GridPathfinding.CreatePathFilterFromUnit(_instigator, false, false);
+            PathParams pathParams = GridPathfinding.CreatePathParamsFromUnit(_instigator);
 
-            PathfindingResult pathResult = _tacticsGrid.GridPathfinder.FindPath(_instigator.UnitGridIndex, _targetIndex, pathFilter);
+            PathfindingResult pathResult = _tacticsGrid.GridPathfinder.FindPath(_instigator.UnitGridIndex, _targetIndex, pathParams);
             if (pathResult.Result == PathResult.SearchSuccess)
             {
                 _instigator.GetComponent<GridMovement>().SetPathAndMove(pathResult.Path);
