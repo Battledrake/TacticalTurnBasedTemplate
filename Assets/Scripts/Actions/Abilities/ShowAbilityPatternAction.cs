@@ -34,19 +34,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private GridIndex _selectedTileIndex = GridIndex.Invalid();
         private GridIndex _hoveredTileIndex = GridIndex.Invalid();
 
-        public override void InitializeAction(PlayerActions playerActions)
-        {
-            base.InitializeAction(playerActions);
-
-            _playerActions.OnHoveredTileChanged += PlayerActions_OnHoveredTileChanged;
-        }
-
-        private void PlayerActions_OnHoveredTileChanged(GridIndex index)
-        {
-            _hoveredTileIndex = index;
-            ShowAbilityAreaOfEffectPattern();
-        }
-
         public override bool ExecuteAction(GridIndex index)
         {
             base.ExecuteAction(index);
@@ -63,11 +50,17 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             return true;
         }
 
+        public override void ExecuteHoveredAction(GridIndex hoveredIndex)
+        {
+            _hoveredTileIndex = hoveredIndex;
+            ShowAbilityAreaOfEffectPattern();
+        }
+
         public void ShowAbilityRangePattern()
         {
             if (_rangeIndexes.Count > 0)
             {
-                _rangeIndexes.ForEach(i => _playerActions.TacticsGrid.RemoveStateFromTile(i, TileState.IsInAbilityRange));
+                _playerActions.TacticsGrid.ClearAllTilesWithState(TileState.IsInAbilityRange);
                 _rangeIndexes.Clear();
             }
 
@@ -93,7 +86,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             if (_areaOfEffectIndexes.Count > 0)
             {
-                _areaOfEffectIndexes.ForEach(i => _playerActions.TacticsGrid.RemoveStateFromTile(i, TileState.IsInAoeRange));
+                _playerActions.TacticsGrid.ClearAllTilesWithState(TileState.IsInAoeRange);
                 _areaOfEffectIndexes.Clear();
             }
 
@@ -115,12 +108,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void OnDestroy()
         {
-            _playerActions.OnHoveredTileChanged -= PlayerActions_OnHoveredTileChanged;
-
-            if (_rangeIndexes.Count > 0)
-                _rangeIndexes.ForEach(i => _playerActions.TacticsGrid.RemoveStateFromTile(i, TileState.IsInAbilityRange));
-            if (_areaOfEffectIndexes.Count > 0)
-                _areaOfEffectIndexes.ForEach(i => _playerActions.TacticsGrid.RemoveStateFromTile(i, TileState.IsInAoeRange));
+            _playerActions.TacticsGrid.ClearAllTilesWithState(TileState.IsInAbilityRange);
+            _playerActions.TacticsGrid.ClearAllTilesWithState(TileState.IsInAoeRange);
         }
     }
 }

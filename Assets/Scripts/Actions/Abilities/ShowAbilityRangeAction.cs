@@ -18,15 +18,14 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             base.InitializeAction(playerActions);
 
-            _playerActions.OnHoveredTileChanged += PlayerActions_OnHoveredTileChanged;
             _playerActions.OnCurrentAbilityChanged += PlayerActions_OnCurrentAbilityChanged;
             _playerActions.OnSelectedTileChanged += PlayerActions_OnSelectedTileChanged;
         }
 
         private void PlayerActions_OnSelectedTileChanged(GridIndex index)
         {
-            ClearStateFromPreviousList(TileState.IsInAbilityRange, _rangeIndexes);
-            ClearStateFromPreviousList(TileState.IsInAoeRange, _areaOfEffectIndexes);
+            ClearStateFromPreviousList(TileState.IsInAbilityRange);
+            ClearStateFromPreviousList(TileState.IsInAoeRange);
 
             _selectedTileIndex = index;
 
@@ -38,8 +37,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void PlayerActions_OnCurrentAbilityChanged(Ability ability)
         {
-            ClearStateFromPreviousList(TileState.IsInAbilityRange, _rangeIndexes);
-            ClearStateFromPreviousList(TileState.IsInAoeRange, _areaOfEffectIndexes);
+            ClearStateFromPreviousList(TileState.IsInAbilityRange);
+            ClearStateFromPreviousList(TileState.IsInAoeRange);
 
             _currentAbility = ability;
             _selectedTileIndex = _playerActions.SelectedTile;
@@ -56,8 +55,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
             _selectedTileIndex = _playerActions.SelectedTile;
 
-            ClearStateFromPreviousList(TileState.IsInAbilityRange, _rangeIndexes);
-            ClearStateFromPreviousList(TileState.IsInAoeRange, _areaOfEffectIndexes);
+            ClearStateFromPreviousList(TileState.IsInAbilityRange);
+            ClearStateFromPreviousList(TileState.IsInAoeRange);
 
             if (_currentAbility && _selectedTileIndex != GridIndex.Invalid())
             {
@@ -67,6 +66,21 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             }
 
             return false;
+        }
+
+        public override void ExecuteHoveredAction(GridIndex hoveredIndex)
+        {
+            ClearStateFromPreviousList(TileState.IsInAoeRange);
+
+            _hoveredTileIndex = hoveredIndex;
+
+            if (_currentAbility == null)
+                return;
+
+            if (_selectedTileIndex == GridIndex.Invalid())
+                return;
+
+            ShowAbilityAreaOfEffectPattern();
         }
 
         private void ShowAbilityRangePattern()
@@ -106,28 +120,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             SetTileStateOnList(TileState.IsInAoeRange, _areaOfEffectIndexes);
         }
 
-        private void PlayerActions_OnHoveredTileChanged(GridIndex index)
+        private void ClearStateFromPreviousList(TileState tileState)
         {
-
-            ClearStateFromPreviousList(TileState.IsInAoeRange, _areaOfEffectIndexes);
-
-            _hoveredTileIndex = index;
-
-            if (_currentAbility == null)
-                return;
-
-            if (_selectedTileIndex == GridIndex.Invalid())
-                return;
-
-            ShowAbilityAreaOfEffectPattern();
-        }
-
-        private void ClearStateFromPreviousList(TileState tileState, List<GridIndex> tiles)
-        {
-            for (int i = 0; i < tiles.Count; i++)
-            {
-                _playerActions.TacticsGrid.RemoveStateFromTile(tiles[i], tileState);
-            }
+            _playerActions.TacticsGrid.ClearAllTilesWithState(tileState);
         }
         private void SetTileStateOnList(TileState tileState, List<GridIndex> tiles)
         {
@@ -139,12 +134,11 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void OnDestroy()
         {
-            _playerActions.OnHoveredTileChanged -= PlayerActions_OnHoveredTileChanged;
             _playerActions.OnCurrentAbilityChanged -= PlayerActions_OnCurrentAbilityChanged;
             _playerActions.OnSelectedTileChanged -= PlayerActions_OnSelectedTileChanged;
 
-            ClearStateFromPreviousList(TileState.IsInAoeRange, _areaOfEffectIndexes);
-            ClearStateFromPreviousList(TileState.IsInAbilityRange, _rangeIndexes);
+            ClearStateFromPreviousList(TileState.IsInAoeRange);
+            ClearStateFromPreviousList(TileState.IsInAbilityRange);
         }
     }
 }

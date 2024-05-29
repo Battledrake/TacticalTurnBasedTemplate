@@ -5,10 +5,11 @@ using UnityEngine;
 namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 {
     public class CombatMoveAction : ActionBase
-	{
-        private List<GridIndex> _currentTilesInRange = new List<GridIndex>();
+    {
 
         private Unit _currentUnit;
+        private List<GridIndex> _generatedPath = new List<GridIndex>();
+        private bool _isUnitMoving = false;
 
         private void Start()
         {
@@ -17,18 +18,40 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         public override bool ExecuteAction(GridIndex index)
         {
-            //Display Reachables
-            //Display Path while active.
-            //Click tile = move
-            //Hover unit, display range.
-            //Don't display reachables on movement
-            //Hide path when start movement
-            return true;
+            if (_generatedPath.Count > 0)
+            {
+                _playerActions.SelectedUnit.OnUnitStartedMovement += Unit_OnUnitStartedMovement;
+                _playerActions.SelectedUnit.OnUnitReachedDestination += Unit_OnUnitReachedDestination;
+
+                CombatManager.Instance.MoveUnit(_playerActions.SelectedUnit, _generatedPath);
+
+                _generatedPath.Clear();
+                _isUnitMoving = true;
+
+                return true;
+            }
+            return false;
+        }
+
+        public override void ExecuteHoveredAction(GridIndex hoveredIndex)
+        {
+            if (_isUnitMoving)
+                return;
+
+            if (_playerActions.HoveredUnit)
+            {
+                GenerateTilesInMoveRange(_playerActions.HoveredUnit);
+            }
+            else
+            {
+                GenerateTilesInMoveRange(_playerActions.SelectedUnit);
+                GeneratePathForUnit();
+            }
         }
 
         private void GenerateTilesInMoveRange(Unit unit)
         {
-            if(_currentUnit != unit)
+            if (_currentUnit != unit)
             {
                 _currentUnit = unit;
 
@@ -36,25 +59,59 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
                 PathParams pathParams = GridPathfinding.CreatePathParamsFromUnit(unit);
                 PathfindingResult pathResult = _playerActions.TacticsGrid.GridPathfinder.FindTilesInRange(unit.UnitGridIndex, pathParams);
-                if(pathResult.Result != PathResult.SearchFail)
+                if (pathResult.Result != PathResult.SearchFail)
                 {
-                    _currentTilesInRange = pathResult.Path;
-                    for (int i = 0; i < _currentTilesInRange.Count; i++)
+                    for (int i = 0; i < pathResult.Path.Count; i++)
                     {
-                        _playerActions.TacticsGrid.AddStateToTile(_currentTilesInRange[i], TileState.IsInMoveRange);
+                        _playerActions.TacticsGrid.AddStateToTile(pathResult.Path[i], TileState.IsInMoveRange);
                     }
+                }
+            }
+        }
+
+        private void GeneratePathForUnit()
+        {
+            _playerActions.TacticsGrid.ClearAllTilesWithState(TileState.IsInPath);
+            _generatedPath.Clear();
+
+            PathParams pathParams = GridPathfinding.CreatePathParamsFromUnit(_playerActions.SelectedUnit);
+            PathfindingResult result = _playerActions.TacticsGrid.GridPathfinder.FindPath(_playerActions.SelectedTile, _playerActions.HoveredTile, pathParams);
+
+            if (result.Result == PathResult.SearchSuccess || result.Result == PathResult.GoalUnreachable)
+            {
+                //What's this for again?
+                //_playerActions.TacticsGrid.GridPathfinder.OnPathfindingCompleted?.Invoke();
+                _generatedPath = result.Path;
+
+                for (int i = 0; i < result.Path.Count; i++)
+                {
+                    _playerActions.TacticsGrid.AddStateToTile(_generatedPath[i], TileState.IsInPath);
                 }
             }
         }
 
         private void Unit_OnUnitStartedMovement(Unit unit)
         {
-            _playerActions.TacticsGrid.ClearStateFromTiles(_currentTilesInRange, TileState.IsInMoveRange);
-            if (_currentUnit == unit)
-            {
-                unit.OnUnitStartedMovement -= Unit_OnUnitStartedMovement;
-            }
-            //Hide Reachables
+            _playerActions.TacticsGrid.ClearAllTilesWithState(TileState.IsInMoveRange);
+            _playerActions.TacticsGrid.ClearAllTilesWithState(TileState.IsInPath);
+            unit.OnUnitStartedMovement -= Unit_OnUnitStartedMovement;
+
+            _currentUnit = null;
+        }
+
+        private void Unit_OnUnitReachedDestination(Unit unit)
+        {
+            _isUnitMoving = false;
+
+            unit.OnUnitStartedMovement -= Unit_OnUnitReachedDestination;
+
+            GenerateTilesInMoveRange(unit);
+        }
+
+        private void OnDestroy()
+        {
+            _playerActions.TacticsGrid.ClearAllTilesWithState(TileState.IsInMoveRange);
+            _playerActions.TacticsGrid.ClearAllTilesWithState(TileState.IsInPath);
         }
     }
 }

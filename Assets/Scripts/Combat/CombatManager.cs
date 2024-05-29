@@ -139,6 +139,13 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             OnUnitTurnStarted?.Invoke(_activeUnit);
         }
 
+        public void MoveUnit(Unit unit, List<GridIndex> path)
+        {
+            GridMovement gridMoveComp = unit.GetComponent<GridMovement>();
+            if (gridMoveComp)
+                gridMoveComp.SetPathAndMove(path);
+        }
+
         private void Unit_OnUnitReachedNewTile(Unit unit, GridIndex index)
         {
             _tacticsGrid.RemoveUnitFromTile(unit.UnitGridIndex);

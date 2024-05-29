@@ -117,6 +117,11 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void OnHoveredTileChanged_UpdateActions(GridIndex gridIndex)
         {
+            if (_leftClickAction != null)
+                _leftClickAction.ExecuteHoveredAction(gridIndex);
+            if (_rightClickAction != null)
+                _rightClickAction.ExecuteHoveredAction(gridIndex);
+
             if (_isLeftClickDown)
             {
                 TryLeftClickAction();

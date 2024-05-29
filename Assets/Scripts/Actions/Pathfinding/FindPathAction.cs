@@ -9,31 +9,23 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 {
     public class FindPathAction : ActionBase
     {
-        private List<GridIndex> _lastPath = new List<GridIndex>();
-
         public override bool ExecuteAction(GridIndex index)
         {
-            if (_lastPath.Count > 0)
-            {
-                _lastPath.ForEach(i => _playerActions.TacticsGrid.RemoveStateFromTile(i, TileState.IsInPath));
-                _lastPath.Clear();
-                _playerActions.TacticsGrid.GridPathfinder.ClearNodePool();
-            }
+            _playerActions.TacticsGrid.ClearAllTilesWithState(TileState.IsInPath);
 
             GridIndex previousTile = _playerActions.SelectedTile;
             if (previousTile != index)
             {
                 float pathLength = actionValue;
 
-                PathParams filter = _playerActions.TacticsGrid.GridPathfinder.CreateDefaultPathParams(pathLength);
+                PathParams pathParams = _playerActions.TacticsGrid.GridPathfinder.CreateDefaultPathParams(pathLength);
                     
-                PathfindingResult result = _playerActions.TacticsGrid.GridPathfinder.FindPath(_playerActions.SelectedTile, index, filter);
+                PathfindingResult result = _playerActions.TacticsGrid.GridPathfinder.FindPath(_playerActions.SelectedTile, index, pathParams);
 
                 _playerActions.TacticsGrid.GridPathfinder.OnPathfindingCompleted?.Invoke();
 
-                if (result.Result == PathResult.SearchSuccess || result.Result == PathResult.GoalUnreachable)
+                if (result.Result != PathResult.SearchFail)
                 {
-                    _lastPath = result.Path;
                     for (int i = 0; i < result.Path.Count; i++)
                     {
                         _playerActions.TacticsGrid.AddStateToTile(result.Path[i], TileState.IsInPath);
@@ -46,11 +38,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void OnDestroy()
         {
-            if (_lastPath.Count > 0)
-            {
-                _lastPath.ForEach(i => _playerActions.TacticsGrid.RemoveStateFromTile(i, TileState.IsInPath));
-            }
-            _playerActions.TacticsGrid.GridPathfinder.ClearNodePool();
+            _playerActions.TacticsGrid.ClearAllTilesWithState(TileState.IsInPath);
         }
     }
 }

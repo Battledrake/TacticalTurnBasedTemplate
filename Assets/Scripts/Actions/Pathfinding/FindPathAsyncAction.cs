@@ -7,18 +7,11 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 {
     public class FindPathAsyncAction : ActionBase
     {
-        private List<GridIndex> _lastPath = new List<GridIndex>();
-        private GridIndex _lastIndex;
         private bool _isSearching = false;
 
         public override bool ExecuteAction(GridIndex index)
         {
-            if (_lastPath.Count > 0)
-            {
-                _lastPath.ForEach(i => _playerActions.TacticsGrid.RemoveStateFromTile(i, TileState.IsInPath));
-                _lastPath.Clear();
-                _playerActions.TacticsGrid.GridPathfinder.ClearNodePool();
-            }
+            _playerActions.TacticsGrid.ClearAllTilesWithState(TileState.IsInPath);
 
             GridIndex previousTile = _playerActions.SelectedTile;
             if (previousTile != index)
@@ -26,6 +19,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 if (!_isSearching)
                 {
                     ExecuteActionAsync(index);
+                    _isSearching = true;
                 }
             }
             return false;
@@ -38,25 +32,20 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
             _playerActions.TacticsGrid.GridPathfinder.OnPathfindingCompleted?.Invoke();
 
-            _isSearching = false;
-
-            if (pathResult.Result == PathResult.SearchSuccess || pathResult.Result == PathResult.GoalUnreachable)
+            if (pathResult.Result != PathResult.SearchFail)
             {
-                _lastPath = pathResult.Path;
                 for (int i = 0; i < pathResult.Path.Count; i++)
                 {
                     _playerActions.TacticsGrid.AddStateToTile(pathResult.Path[i], TileState.IsInPath);
                 }
             }
+
+            _isSearching = false;
         }
 
         private void OnDestroy()
         {
-            if (_lastPath.Count > 0)
-            {
-                _lastPath.ForEach(i => _playerActions.TacticsGrid.RemoveStateFromTile(i, TileState.IsInPath));
-            }
-            _playerActions.TacticsGrid.GridPathfinder.ClearNodePool();
+            _playerActions.TacticsGrid.ClearAllTilesWithState(TileState.IsInPath);
         }
     }
 }

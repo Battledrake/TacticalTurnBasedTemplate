@@ -155,13 +155,14 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         public void UpdateGroundOffset(float offset)
         {
-            foreach (var instancedTilePair in _instancedTiles)
+            for(int i = 0; i < _instancedTiles.Keys.Count; i++)
             {
-                TileData tileData = instancedTilePair.Value;
+                GridIndex tileIndex = _instancedTiles.Keys.ElementAt(i);
+                TileData tileData = _instancedTiles[tileIndex];
                 Vector3 newPos = tileData.tileMatrix.GetPosition();
                 newPos.y += offset;
                 tileData.tileMatrix = Matrix4x4.TRS(newPos, tileData.tileMatrix.rotation, tileData.tileMatrix.lossyScale);
-                _instancedTiles[tileData.index] = tileData;
+                _instancedTiles[tileIndex] = tileData;
             }
         }
 
