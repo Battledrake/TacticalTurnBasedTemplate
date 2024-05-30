@@ -38,6 +38,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public event Action OnCombatEnded;
         public event Action<Unit> OnUnitTurnStarted;
         public event Action<Unit> OnUnitTurnEnded;
+        public event Action OnAbilityBehaviorComplete;
 
         [SerializeField] private List<TeamColorData> _teamColors;
 
@@ -285,6 +286,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void Ability_OnBehaviorComplete(Ability ability)
         {
+            OnAbilityBehaviorComplete?.Invoke();
             ability.OnBehaviorComplete -= Ability_OnBehaviorComplete;
             ability.Instigator.RemoveActionPoints(_actionPointDeduction);
             _actionPointDeduction = 0;

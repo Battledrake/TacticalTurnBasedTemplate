@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -11,11 +12,19 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         public override bool ExecuteAction(GridIndex index)
         {
-            CombatManager.Instance.TryActivateAbility(_currentAbility, _playerActions.SelectedUnit, _playerActions.SelectedTile, index);
-            _playerActions.TacticsGrid.ClearAllTilesWithState(TileState.IsInAbilityRange);
-            _playerActions.TacticsGrid.ClearAllTilesWithState(TileState.IsInAoeRange);
-            _playerActions.PlayerAbilityBar.SetSelectedAbilityFromIndex(-1);
+            if(CombatManager.Instance.TryActivateAbility(_currentAbility, _playerActions.SelectedUnit, _playerActions.SelectedTile, index))
+            {
+                _playerActions.TacticsGrid.ClearAllTilesWithState(TileState.IsInAbilityRange);
+                _playerActions.TacticsGrid.ClearAllTilesWithState(TileState.IsInAoeRange);
+                CombatManager.Instance.OnAbilityBehaviorComplete += CombatManager_OnAbilityBehaviorComplete;
+            }
             return true;
+        }
+
+        private void CombatManager_OnAbilityBehaviorComplete()
+        {
+            CombatManager.Instance.OnAbilityBehaviorComplete -= CombatManager_OnAbilityBehaviorComplete;
+            _playerActions.PlayerAbilityBar.SetSelectedAbilityFromIndex(-1);
         }
 
         public override void ExecuteHoveredAction(GridIndex hoveredIndex)

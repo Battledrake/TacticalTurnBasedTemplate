@@ -585,7 +585,7 @@ MonoBehaviour:
   m_Rotation:
     m_Target: {x: -0.20559329, y: 0.38164774, z: -0.08744744, w: -0.8969565}
     speed: 2
-    m_Value: {x: -0.20558284, y: 0.38162836, z: -0.087443, w: -0.89691097}
+    m_Value: {x: -0.20559329, y: 0.3816477, z: -0.08744744, w: -0.8969565}
   m_Size:
     m_Target: 11.925186
     speed: 2
@@ -773,7 +773,7 @@ MonoBehaviour:
     m_CachedPref: 446
     m_ControlHash: 1412526313
     m_PrefName: Preview_InspectorPreview
-  m_LastInspectedObjectInstanceID: -1
+  m_LastInspectedObjectInstanceID: 37982
   m_LastVerticalScrollValue: 0
   m_GlobalObjectId: 
   m_InspectorMode: 0
@@ -799,8 +799,8 @@ MonoBehaviour:
     y: 0
     width: 539
     height: 858
-  m_MinSize: {x: 200, y: 200}
-  m_MaxSize: {x: 4000, y: 4000}
+  m_MinSize: {x: 202, y: 221}
+  m_MaxSize: {x: 4002, y: 4021}
   m_ActualView: {fileID: 11}
   m_Panes:
   - {fileID: 11}
@@ -844,8 +844,8 @@ MonoBehaviour:
   m_SceneHierarchy:
     m_TreeViewState:
       scrollPos: {x: 0, y: 0}
-      m_SelectedIDs: 0e08f3ff
-      m_LastClickedID: -849906
+      m_SelectedIDs: b6760700
+      m_LastClickedID: 0
       m_ExpandedIDs: 6279f5ff4a45f6ff4e45f6ff5245f6ff5645f6ff5e45f6ff6245f6ff6645f6ff6a45f6ff9a45f6ff9e45f6ffb045f6ffb845f6ffbc45f6ffc445f6ffc845f6ffcc45f6ffd445f6ffd845f6ffdc45f6ffe045f6ffe445f6ffe845f6ffec45f6fff445f6fff845f6ff0046f6ff0446f6ff0846f6ff1046f6ff1446f6ff1846f6ff1c46f6ff2046f6ff2446f6ff2846f6ff2c46f6ff3046f6ff3446f6ff3846f6ff3c46f6ff4246f6ff6246f6ff70b9f6ff74b9f6ff78b9f6ff7cb9f6ff84b9f6ff88b9f6ff8cb9f6ff90b9f6ffc0b9f6ffc4b9f6ffd6b9f6ffdeb9f6ffe2b9f6ffeab9f6ffeeb9f6fff2b9f6fffab9f6fffeb9f6ff02baf6ff06baf6ff0abaf6ff0ebaf6ff12baf6ff1abaf6ff1ebaf6ff26baf6ff2abaf6ff2ebaf6ff36baf6ff3abaf6ff3ebaf6ff42baf6ff46baf6ff4abaf6ff4ebaf6ff52baf6ff56baf6ff5abaf6ff5ebaf6ff62baf6ff68baf6ff88baf6ff501af8ff2c86f8ff0e61fbff4e61fbffa405fcffa628fcffd4c0fcff7618fdffb618fdffd440fdfff477fdfffe77fdffc4e9fdfff081fefffe81feff1082feff1a82feff3082feff3e82feff5082feff5a82feff7082feff7e82feff9082feff9a82feffb082feffbe82feffd082feffda82fefff082fefffe82feff1083feff1a83feff3083feff3e83feff5083feff5a83feff7083feff7e83feff9083feff9a83feffb083feffbe83feffd083feffda83feff7a96feff1aa1feff387fffff0efbffff12fbffffb49d0100
       m_RenameOverlay:
         m_UserAcceptedRename: 0
@@ -889,8 +889,8 @@ MonoBehaviour:
     y: 0
     width: 352
     height: 858
-  m_MinSize: {x: 275, y: 50}
-  m_MaxSize: {x: 4000, y: 4000}
+  m_MinSize: {x: 276, y: 71}
+  m_MaxSize: {x: 4001, y: 4021}
   m_ActualView: {fileID: 13}
   m_Panes:
   - {fileID: 13}
@@ -1004,7 +1004,7 @@ MonoBehaviour:
   m_MinSize: {x: 200, y: 50}
   m_MaxSize: {x: 16192, y: 8096}
   vertical: 0
-  controlID: 87301
+  controlID: 90381
 --- !u!114 &16
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -1080,7 +1080,7 @@ MonoBehaviour:
     m_SkipHidden: 0
     m_SearchArea: 1
     m_Folders:
-    - Assets/Prefabs/UI
+    - Assets/Prefabs/Abilities/AnimatedObjectAbilities
     m_Globs: []
     m_OriginalText: 
     m_ImportLogFlags: 0
@@ -1088,15 +1088,15 @@ MonoBehaviour:
   m_ViewMode: 1
   m_StartGridSize: 16
   m_LastFolders:
-  - Assets/Prefabs/UI
+  - Assets/Prefabs/Abilities/AnimatedObjectAbilities
   m_LastFoldersGridSize: 16
   m_LastProjectPath: D:\Unity\Projects\TacticalTurnBasedTemplate
   m_LockTracker:
     m_IsLocked: 0
   m_FolderTreeState:
-    scrollPos: {x: 0, y: 120}
-    m_SelectedIDs: ec9d0000
-    m_LastClickedID: 40428
+    scrollPos: {x: 0, y: 180}
+    m_SelectedIDs: 28a10000
+    m_LastClickedID: 41256
     m_ExpandedIDs: 00000000989d00009a9d00009c9d00009e9d0000a09d0000a29d0000a49d0000a69d0000b09d0000ca9d0000dc9d0000909e0000929e0000bc9e0000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
@@ -1150,8 +1150,8 @@ MonoBehaviour:
       m_Icon: {fileID: 0}
       m_ResourceFile: 
   m_ListAreaState:
-    m_SelectedInstanceIDs: 0e08f3ff
-    m_LastClickedInstanceID: -849906
+    m_SelectedInstanceIDs: b6760700
+    m_LastClickedInstanceID: 489142
     m_HadKeyboardFocusLastEvent: 1
     m_ExpandedInstanceIDs: c623000062aa00007ac70000f4cf000014a200002a9e00009cdb000078c60000d49b0000a68100000e2601000a2601000c26010044710000ce6b0000d66b0000988a0000e269000020a70300a2f60400be7100006ad701006c2904000c2904007e950300ce980300f2980300fe980300e69803000a9903005ac3010060c30100dac40100d8c4010004b404001ab40400fe760000a0870100608a00001aca030086e2030024d2030018b803003e6b0f008a650f009e5f0f0036720f00946d0f0076d903008ec2030084a703003ce3030064a80300d0e1030046c6030050a603000ab40300d4b9030074ab030044cc03003edc0300eaa70300b4b203004e5a0f0082df04002e0b01004c8c0000568c00002a8c0000088c0000f28b0000908c0000620801006ed8000096d800001ac100002ec10000723c0100000000006ca4060076a6060072ad06007ead060078ad060084ad0600bcae0600b4ad06001cac060022ac06003aac060034ac06009eae0600a4ae06007cac060018ad0600e2ac060082ac0600acac0600beac060048ad0600d8ad0600e4ad06002cae0600b83a0700d83a0700c4760700b6ae060074390700c8390700d0390700f8390700783a0700803a0700
     m_RenameOverlay:
@@ -2190,7 +2190,7 @@ MonoBehaviour:
     m_OverlaysVisible: 1
   m_LockTracker:
     m_IsLocked: 0
-  m_LastSelectedObjectID: 248032
+  m_LastSelectedObjectID: -874004
 --- !u!114 &20
 MonoBehaviour:
   m_ObjectHideFlags: 52
