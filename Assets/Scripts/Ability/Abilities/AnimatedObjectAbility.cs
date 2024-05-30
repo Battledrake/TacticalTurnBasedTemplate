@@ -32,6 +32,28 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             {
                 _instigator.LookAtTarget(_targetIndex);
             }
+            _tacticsGrid.GetTileDataFromIndex(_originIndex, out TileData originData);
+            _tacticsGrid.GetTileDataFromIndex(_targetIndex, out TileData targetData);
+
+            if (originData.unitOnTile)
+            {
+                if (targetData.unitOnTile)
+                    ActionCameraController.Instance.ShowFramingTransposerAction(originData.unitOnTile.transform, targetData.unitOnTile.LookAtTransform);
+                else
+                    ActionCameraController.Instance.ShowFramingTransposerAction(originData.unitOnTile.transform, originData.unitOnTile.LookAtTransform);
+
+                ActionCameraController.Instance.OnActionCameraInPosition += ActionCameraController_OnActionCameraInPosition;
+            }
+            else
+            {
+                SpawnAnimateObjectTaskAndExecute();
+            }
+
+        }
+
+        private void ActionCameraController_OnActionCameraInPosition()
+        {
+            ActionCameraController.Instance.OnActionCameraInPosition -= ActionCameraController_OnActionCameraInPosition;
 
             PlayAnimationTask animationTask = new GameObject("PlayAnimationTask", typeof(PlayAnimationTask)).GetComponent<PlayAnimationTask>();
             animationTask.transform.SetParent(this.transform);
@@ -41,8 +63,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             animationTask.OnAnimationCancelled += AbilityTask_OnAnimationCancelled;
 
             StartCoroutine(animationTask.ExecuteTask(this));
-
-
         }
 
         private void AbilityTask_OnAnimationCancelled(PlayAnimationTask animationTask)
@@ -124,6 +144,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             }
 
             AbilityBehaviorComplete(this);
+            ActionCameraController.Instance.HideActionCamera();
             if (!_loopAnimation)
             {
                 EndAbility();

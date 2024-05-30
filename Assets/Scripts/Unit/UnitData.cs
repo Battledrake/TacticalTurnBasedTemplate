@@ -12,7 +12,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         Orc,
         Mech6,
         Bat,
-        Drake
+        Drake,
+        Cyborg
     }
 
     [CreateAssetMenu(fileName = "UnitData", menuName = "TTBT/Unit/UnitData")]

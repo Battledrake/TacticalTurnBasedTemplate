@@ -26,11 +26,11 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             if (originData.unitOnTile)
             {
                 if (targetData.unitOnTile)
-                    ActionCameraController.Instance.ShowRandomAction(originData.unitOnTile.transform, targetData.unitOnTile.LookAtTransform);
+                    ActionCameraController.Instance.ShowFramingTransposerAction(originData.unitOnTile.transform, targetData.unitOnTile.LookAtTransform);
                 else
-                    ActionCameraController.Instance.ShowRandomAction(originData.unitOnTile.transform, originData.unitOnTile.LookAtTransform);
+                    ActionCameraController.Instance.ShowFramingTransposerAction(originData.unitOnTile.transform, originData.unitOnTile.LookAtTransform);
 
-                ActionCameraController.Instance.OnActionCameraInPosition += ActionCameraInPosition;
+                ActionCameraController.Instance.OnActionCameraInPosition += ActionCameraController_OnCameraInPosition;
             }
             else
             {
@@ -50,9 +50,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             StartCoroutine(animationTask.ExecuteTask(this));
         }
 
-        private void ActionCameraInPosition()
+        private void ActionCameraController_OnCameraInPosition()
         {
-            ActionCameraController.Instance.OnActionCameraInPosition -= ActionCameraInPosition;
+            ActionCameraController.Instance.OnActionCameraInPosition -= ActionCameraController_OnCameraInPosition;
 
             SpawnTaskAndExecute();
         }
