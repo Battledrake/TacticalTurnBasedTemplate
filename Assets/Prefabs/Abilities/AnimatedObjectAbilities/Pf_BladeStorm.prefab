@@ -61,14 +61,12 @@ MonoBehaviour:
   _effects:
   - attributeType: 0
     minMaxModifier: {x: -10, y: -10}
+  _abilityCost: 0
   _isFriendly: 0
   _objectToAnimate: {fileID: 8548907831371414663, guid: 304aeb8e38f1f394abbba2d47b48a593,
     type: 3}
-  _playAnimationTaskPrefab: {fileID: 8348269496721021093, guid: 88a54db5b90bc9f40b0a7c41c57e3d7c,
-    type: 3}
-  _animateObjectTaskprefab: {fileID: 8862640479722470499, guid: a8b7b17f8fc21544086c91b35cee0944,
-    type: 3}
   _taskData: {fileID: 11400000, guid: 9ddd427aa7debf04589e93cb0fa78b79, type: 2}
   _animationType: 2
+  _animationTime: 1
   _animationSpeed: 1
   _loopAnimation: 0

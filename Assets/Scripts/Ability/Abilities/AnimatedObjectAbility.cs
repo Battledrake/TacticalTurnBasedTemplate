@@ -16,7 +16,11 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         [SerializeField] private AnimateObjectTaskData _taskData;
 
         [SerializeField] private AnimationType _animationType = AnimationType.Attack;
+        [Tooltip("How long the animation task runs for.")]
+        [SerializeField] private float _animationTime = 1f;
+        [Tooltip("How fast the animation plays. 1 is default curve speed")]
         [SerializeField] private float _animationSpeed = 1f;
+        [Tooltip("Idea was to allow ability to run after animation, but will likely move to effects. No use currently.")]
         [SerializeField] private bool _loopAnimation = false;
 
         private List<Unit> _hitUnits = new List<Unit>();
@@ -94,7 +98,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
                 GameObject objectToAnimate = Instantiate(_objectToAnimate);
 
-                animateObjectTask.InitTask(objectToAnimate, _taskData, originData.tileMatrix.GetPosition(), targetData.tileMatrix.GetPosition(), _animationSpeed, _loopAnimation);
+                animateObjectTask.InitTask(objectToAnimate, _taskData, originData.tileMatrix.GetPosition(), targetData.tileMatrix.GetPosition(), _animationTime, _animationSpeed, _loopAnimation);
                 StartCoroutine(animateObjectTask.ExecuteTask(this));
             }
         }

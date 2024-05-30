@@ -49,11 +49,13 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public Dictionary<int, HashSet<Unit>> UnitTeams { get => _unitTeams; }
         public int NumberOfTeams { get => _teamColors.Count; }
         public bool IsInCombat { get => _isInCombat; }
+        public bool ShowEnemyMoveRange { get => _showEnemyMoveRange; set => _showEnemyMoveRange = value; }
 
         private List<Unit> _unitsInCombat = new List<Unit>();
         private Dictionary<int, HashSet<Unit>> _unitTeams = new Dictionary<int, HashSet<Unit>>();
 
         private bool _isInCombat = false;
+        private bool _showEnemyMoveRange = false;
 
         private Unit _activeUnit;
         private int _actionPointDeduction = 0;
@@ -136,6 +138,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _activeUnit = _unitsInCombat[_currentIndex % _unitsInCombat.Count];
             _activeUnit.TurnStarted();
             OnUnitTurnStarted?.Invoke(_activeUnit);
+
+            GameObject.Find("[CameraControllers]").GetComponent<CameraController>().SetMoveToTarget(_activeUnit.transform.position);
         }
 
         public void MoveUnit(Unit unit, List<GridIndex> path)
@@ -266,7 +270,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 {
                     abilityObject.OnBehaviorComplete += Ability_OnBehaviorComplete;
                     //TODO: Ability point deduction logic.
-                    _actionPointDeduction = 2;
+                    _actionPointDeduction = abilityObject.AbilityCost;
                     //TODO: Maybe add an OnAbilityActivated or something here for the AbilityBar.
                     return true;
                 }
@@ -364,40 +368,37 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 {
                     if (hitUnit != abilityUnit && hitUnit != targetUnit)
                         return false;
+                    else
+                        return true;
                 }
                 else
                 {
-                    //TODO: Logic for doing line of sight checks around corners. Has issue?s with height checks and doesn't account for all directions yet. Will fix later.
-                    //if (_tacticsGrid.GridShape == GridShape.Square)
-                    //{
-                    //    //if x = 0 and y = 1 we want to check -x and x
-                    //    //if x = 1 and y = 0 we want to check -y and y
-                    //    //if x = 0 and y = -1 we want to check -x and x
-                    //    //if x = -1 and y = 0 we want to check -y and y
-                    //    Vector3 normalizedDirection = direction.normalized;
-                    //    if (normalizedDirection.x != 0)
-                    //    {
-                    //        _tacticsGrid.GetTileDataFromIndex(new GridIndex(origin.x, origin.z - 1), out TileData negZTile);
-                    //        Vector3 negZPosition = negZTile.tileMatrix.GetPosition();
-                    //        negZPosition.y += height;
-                    //        Vector3 checkDirection = new Vector3(direction.x, height, 0f);
-
-                    //        if (Physics.Raycast(negZPosition, checkDirection, out RaycastHit negZHit, direction.magnitude))
-                    //        {
-                    //            _tacticsGrid.GetTileDataFromIndex(new GridIndex(origin.x, origin.z + 1), out TileData posZTile);
-                    //            Vector3 posZPosition = posZTile.tileMatrix.GetPosition();
-                    //            posZPosition.y += height;
-
-                    //            if (Physics.Raycast(posZPosition, checkDirection, out RaycastHit posZHit, direction.magnitude))
-                    //            {
-                    //                //do another ray for the other tile.
-                    //                return false;
-                    //            }
-                    //            return true;
-                    //        }
-                    //        return true;
-                    //    }
-                    //}
+                    //Allows corner line of sights.
+                    Vector2[] offsets = new Vector2[]
+                    {
+                        new Vector2(-.5f, 0f),
+                        new Vector2(0f, .5f),
+                        new Vector2(.5f, 0f),
+                        new Vector2(0f, -.5f)
+                    };
+                    for(int i = 0; i < offsets.Length; i++)
+                    {
+                        Vector3 startOffset = startPosition + new Vector3(offsets[i].x, 0f, offsets[i].y);
+                        if(!Physics.Raycast(startOffset, direction, out hitInfo, direction.magnitude))
+                        {
+                            return true;
+                        }
+                        else
+                        {
+                            if (hitUnit = hitInfo.collider.GetComponent<Unit>())
+                            {
+                                if (hitUnit != abilityUnit && hitUnit != targetUnit)
+                                    return false;
+                                else
+                                    return true;
+                            }
+                        }
+                    }
                     return false;
                 }
             }

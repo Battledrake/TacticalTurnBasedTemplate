@@ -11,7 +11,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
     {
         public static event Action<Unit, GridIndex> OnAnyUnitReachedNewTile;
         public static event Action<Unit> OnAnyUnitDied;
-        public static event Action<Unit> OnUnitHealthChanged;
+        public static event Action<Unit> OnAnyUnitHealthChanged;
         public event Action<bool> OnUnitHoveredChanged;
         public event Action<bool> OnUnitSelectedChanged;
         public event Action<Unit> OnUnitReachedDestination;
@@ -81,7 +81,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void HealthComponent_OnHealthChanged()
         {
-            OnUnitHealthChanged?.Invoke(this);
+            OnAnyUnitHealthChanged?.Invoke(this);
         }
 
         private void OnEnable()

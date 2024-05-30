@@ -14,6 +14,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private void Start()
         {
             GenerateTilesInMoveRange(_playerActions.SelectedUnit);
+            GeneratePathForUnit();
         }
 
         public override bool ExecuteAction(GridIndex index)
@@ -44,7 +45,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             if (_playerActions.SelectedUnit.CurrentActionPoints <= 0)
                 return;
 
-            if (_playerActions.HoveredUnit)
+            if (_playerActions.HoveredUnit && CombatManager.Instance.ShowEnemyMoveRange)
             {
                 GenerateTilesInMoveRange(_playerActions.HoveredUnit);
             }

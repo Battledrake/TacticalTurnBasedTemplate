@@ -5,8 +5,8 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "NewTaskData", menuName = "TTBT/Data/AnimateObjectData")]
 public class AnimateObjectTaskData : ScriptableObject
 {
-    public float animationTime = 1f;
-    public float animationSpeed = 1f;
+    //public float animationTime = 1f;
+    //public float animationSpeed = 1f;
 
     [Header("Main Position Alpha")]
     public AnimationCurve positionAlphaCurve;

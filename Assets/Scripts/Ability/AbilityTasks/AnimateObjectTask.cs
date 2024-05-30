@@ -39,12 +39,13 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private float _timeElapsed = 0f;
         private bool _hasInitiallyLooped = false;
 
-        public void InitTask(GameObject objectToAnimate,AnimateObjectTaskData taskData, Vector3 startPosition, Vector3 targetPosition, float animationSpeed = 1f, bool loopAnimation = false)
+        public void InitTask(GameObject objectToAnimate, AnimateObjectTaskData taskData, Vector3 startPosition, Vector3 targetPosition, float animationTime = 1f, float animationSpeed = 1f, bool loopAnimation = false)
         {
             _objectToAnimate = objectToAnimate;
             _objectToAnimate.transform.parent = this.transform;
 
-            _animationTime = taskData.animationTime;
+            _animationTime = animationTime;
+            //_animationTime = taskData.animationTime;
             _animationSpeed = animationSpeed;
 
             _positionAlphaCurve = taskData.positionAlphaCurve;
@@ -88,7 +89,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             while (_isRunning)
             {
-                _timeElapsed += Time.deltaTime * _animationSpeed;
+                _timeElapsed += Time.deltaTime;
 
                 if (_timeElapsed >= _animationTime)
                 {
@@ -107,9 +108,11 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                     }
                 }
 
+                float evalSpeed = _timeElapsed * _animationSpeed;
+
                 if (_positionAlphaCurve.length > 0)
                 {
-                    this.transform.position = Vector3.LerpUnclamped(_startPosition, _targetPosition, _positionAlphaCurve.Evaluate(_timeElapsed));
+                    this.transform.position = Vector3.LerpUnclamped(_startPosition, _targetPosition, _positionAlphaCurve.Evaluate(evalSpeed));
                 }
 
 
@@ -119,17 +122,17 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
                 if (_pivotPitchCurve.length > 0)
                 {
-                    pivotX = _pivotPitchCurve.Evaluate(_timeElapsed);
+                    pivotX = _pivotPitchCurve.Evaluate(evalSpeed);
                 }
 
                 if (_pivotYawCurve.length > 0)
                 {
-                    pivotY = _pivotYawCurve.Evaluate(_timeElapsed);
+                    pivotY = _pivotYawCurve.Evaluate(evalSpeed);
                 }
 
                 if (_pivotRollCurve.length > 0)
                 {
-                    pivotZ = _pivotRollCurve.Evaluate(_timeElapsed);
+                    pivotZ = _pivotRollCurve.Evaluate(evalSpeed);
                 }
 
                 this.transform.rotation = Quaternion.Euler(pivotX, pivotY, pivotZ);
@@ -140,11 +143,11 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
                 if(_objectPosXCurve.length > 0)
                 {
-                    objectXPosition = _objectPosXCurve.Evaluate(_timeElapsed);
+                    objectXPosition = _objectPosXCurve.Evaluate(evalSpeed);
                 }
                 if(_objectPosYCurve.length > 0)
                 {
-                    objectYPosition = _objectPosYCurve.Evaluate(_timeElapsed);
+                    objectYPosition = _objectPosYCurve.Evaluate(evalSpeed);
                 }
                 _objectToAnimate.transform.localPosition = new Vector3(objectXPosition, objectYPosition, objectZPosition);
 
@@ -154,38 +157,38 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
                 if (_objectPitchCurve.length > 0)
                 {
-                    objectXRotation = _objectPitchCurve.Evaluate(_timeElapsed);
+                    objectXRotation = _objectPitchCurve.Evaluate(evalSpeed);
                 }
 
                 if (_objectYawCurve.length > 0)
                 {
-                    objectYRotation = _objectYawCurve.Evaluate(_timeElapsed);
+                    objectYRotation = _objectYawCurve.Evaluate(evalSpeed);
                 }
 
                 if (_objectRollCurve.length > 0)
                 {
-                    objectZRotation = _objectRollCurve.Evaluate(_timeElapsed);
+                    objectZRotation = _objectRollCurve.Evaluate(evalSpeed);
                 }
 
                 _objectToAnimate.transform.localRotation = Quaternion.Euler(objectXRotation, objectYRotation, objectZRotation);
 
                 if (_uniformScaleCurve.length > 0)
                 {
-                    _objectToAnimate.transform.localScale = _uniformScaleCurve.Evaluate(_timeElapsed) * Vector3.one;
+                    _objectToAnimate.transform.localScale = _uniformScaleCurve.Evaluate(evalSpeed) * Vector3.one;
                 }
 
                 Vector3 objectScale = _objectToAnimate.transform.localScale;
                 if (_scaleXCurve.length > 0)
                 {
-                    objectScale.x = _scaleXCurve.Evaluate(_timeElapsed);
+                    objectScale.x = _scaleXCurve.Evaluate(evalSpeed);
                 }
                 if (_scaleYCurve.length > 0)
                 {
-                    objectScale.y = _scaleYCurve.Evaluate(_timeElapsed);
+                    objectScale.y = _scaleYCurve.Evaluate(evalSpeed);
                 }
                 if (_scaleZCurve.length > 0)
                 {
-                    objectScale.z = _scaleZCurve.Evaluate(_timeElapsed);
+                    objectScale.z = _scaleZCurve.Evaluate(evalSpeed);
                 }
 
                 _objectToAnimate.transform.localScale = new Vector3(objectScale.x, objectScale.y, objectScale.z);
@@ -196,14 +199,14 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                     for (int i = 0; i < renderComponents.Length; i++)
                     {
                         Color materialColor = renderComponents[i].material.color;
-                        materialColor.a = _opacityCurve.Evaluate(_timeElapsed);
+                        materialColor.a = _opacityCurve.Evaluate(evalSpeed);
                         renderComponents[i].material.color = materialColor;
                     }
                     SpriteRenderer[] spriteRenderers = _objectToAnimate.GetComponentsInChildren<SpriteRenderer>();
                     for (int i = 0; i < spriteRenderers.Length; i++)
                     {
                         Color imageColor = spriteRenderers[i].color;
-                        imageColor.a = _opacityCurve.Evaluate(_timeElapsed);
+                        imageColor.a = _opacityCurve.Evaluate(evalSpeed);
                         spriteRenderers[i].color = imageColor;
                     }
                 }

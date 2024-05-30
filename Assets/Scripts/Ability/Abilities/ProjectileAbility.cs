@@ -63,7 +63,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                     animateObjectTask.transform.SetParent(this.transform);
                     animateObjectTask.GetComponent<Rigidbody>().useGravity = false;
 
-                    animateObjectTask.InitTask(projectile, _taskData, startPosition, targetData.tileMatrix.GetPosition(), UnityEngine.Random.Range(.8f, _animationSpeed), false);
+                    animateObjectTask.InitTask(projectile, _taskData, startPosition, targetData.tileMatrix.GetPosition(), _animationTime, UnityEngine.Random.Range(.8f, _animationSpeed), false);
 
                     animateObjectTask.OnInitialAnimationCompleted += AnimateObjectTask_OnInitialAnimationCompleted;
                     animateObjectTask.OnObjectCollisionWithUnit += AnimateObjectTask_OnObjectCollisionWithUnit;

@@ -22,7 +22,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         public void UpdateIcon(Unit unit)
         {
-            Unit.OnUnitHealthChanged -= Unit_OnUnitHealthChanged;
+            Unit.OnAnyUnitHealthChanged -= Unit_OnAnyUnitHealthChanged;
             if (_unit)
             {
                 _unit.OnUnitHoveredChanged -= Unit_OnUnitHoveredChanged;
@@ -38,7 +38,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
             _iconImage.sprite = unit.UnitData.assetData.unitIcon;
             UpdateIconHealth(_unit.CurrentHealth, _unit.MaxHealth);
-            Unit.OnUnitHealthChanged += Unit_OnUnitHealthChanged;
+            Unit.OnAnyUnitHealthChanged += Unit_OnAnyUnitHealthChanged;
             _unit.OnUnitHoveredChanged += Unit_OnUnitHoveredChanged;
             _unit.OnUnitSelectedChanged += Unit_OnUnitSelectedChanged;
         }
@@ -79,7 +79,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _bgImage.color = colorAlpha;
         }
 
-        private void Unit_OnUnitHealthChanged(Unit unit)
+        private void Unit_OnAnyUnitHealthChanged(Unit unit)
         {
             if (_unit == unit)
                 UpdateIconHealth(_unit.CurrentHealth, _unit.MaxHealth);
