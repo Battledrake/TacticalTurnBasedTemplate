@@ -51,13 +51,15 @@ MonoBehaviour:
     rangeMinMax: {x: 2, y: 5}
     lineOfSightData:
       requireLineOfSight: 1
-      height: 0.5
+      height: 1.5
+      offsetDistance: 0.75
   _areaOfEffectData:
     rangePattern: 0
     rangeMinMax: {x: 0, y: 0}
     lineOfSightData:
       requireLineOfSight: 0
       height: 0
+      offsetDistance: 0
   _effects:
   - attributeType: 0
     minMaxModifier: {x: -2, y: -5}

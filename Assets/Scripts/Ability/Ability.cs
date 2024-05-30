@@ -44,8 +44,19 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
     [Serializable]
     public struct LineOfSightData
     {
+        /// <summary>
+        /// Validate target with line of sight raytrace.
+        /// </summary>
         public bool requireLineOfSight;
+        /// <summary>
+        /// Height tile floor to raycast from.
+        /// </summary>
         public float height;
+        /// <summary>
+        /// If greater than 0, % distance from center to edge for Cardinal-based offset checks.
+        /// </summary>
+        [Range(0.0f, 1f)]
+        public float offsetDistance;
     }
 
     public enum EffectType

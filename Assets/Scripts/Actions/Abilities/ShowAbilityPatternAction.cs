@@ -12,12 +12,14 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         [SerializeField] private Vector2Int _rangeMinMax = new Vector2Int(0, 3);
         [SerializeField] private bool _rangeLineOfSight = false;
         [SerializeField] private float _rangeLineOfSightHeight = 0.5f;
+        [SerializeField] private float _rangeLineOfSightOffsetDistance = 0.75f;
 
         [Header("Area of Effect Pattern")]
         [SerializeField] private AbilityRangePattern _areaOfEffectPattern = AbilityRangePattern.None;
         [SerializeField] private Vector2Int _areaOfEffectRangeMinMax = new Vector2Int(0, 3);
         [SerializeField] private bool _areaOfEffectLineOfSight = false;
         [SerializeField] private float _areaOfEffectLoSHeight = 0.5f;
+        [SerializeField] private float _areaOfEffectLoSOffsetDistance = 0.75f;
 
         public AbilityRangePattern RangePattern { get => _rangePattern; set => _rangePattern = value; }
         public AbilityRangePattern AreaOfEffectPattern { get => _areaOfEffectPattern; set => _areaOfEffectPattern = value; }
@@ -27,6 +29,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public bool AreaOfEffectRequireLoS { get => _areaOfEffectLineOfSight; set => _areaOfEffectLineOfSight = value; }
         public float RangeLineOfSightHeight { get => _rangeLineOfSightHeight; set => _rangeLineOfSightHeight = value; }
         public float AreaOfEffectLoSHeight { get => _areaOfEffectLoSHeight; set => _areaOfEffectLoSHeight = value; }
+        public float RangeLineOfSightOffsetDistance { get => _rangeLineOfSightOffsetDistance; set => _rangeLineOfSightOffsetDistance = value; }
+        public float AreaOfEffectLoSOffsetDistance { get => _areaOfEffectLoSOffsetDistance; set => _areaOfEffectLoSOffsetDistance = value; }
 
         private List<GridIndex> _rangeIndexes = new List<GridIndex>();
         private List<GridIndex> _areaOfEffectIndexes = new List<GridIndex>();
@@ -69,7 +73,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 _rangeIndexes = AbilityStatics.GetIndexesFromPatternAndRange(_selectedTileIndex, _playerActions.TacticsGrid.GridShape, _rangeMinMax, _rangePattern);
 
                 if (_rangeLineOfSight)
-                    _rangeIndexes = CombatManager.Instance.RemoveIndexesWithoutLineOfSight(_selectedTileIndex, _rangeIndexes, _rangeLineOfSightHeight);
+                    _rangeIndexes = CombatManager.Instance.RemoveIndexesWithoutLineOfSight(_selectedTileIndex, _rangeIndexes, _rangeLineOfSightHeight, _rangeLineOfSightOffsetDistance);
 
                 _rangeIndexes.ForEach(i => _playerActions.TacticsGrid.AddStateToTile(i, TileState.IsInAbilityRange));
             }
@@ -91,8 +95,10 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             if (_playerActions.TacticsGrid.IsIndexValid(_hoveredTileIndex))
             {
                 _areaOfEffectIndexes = AbilityStatics.GetIndexesFromPatternAndRange(_hoveredTileIndex, _playerActions.TacticsGrid.GridShape, _areaOfEffectRangeMinMax, _areaOfEffectPattern);
+
                 if (_areaOfEffectLineOfSight)
-                    _areaOfEffectIndexes = CombatManager.Instance.RemoveIndexesWithoutLineOfSight(_hoveredTileIndex, _areaOfEffectIndexes, _areaOfEffectLoSHeight);
+                    _areaOfEffectIndexes = CombatManager.Instance.RemoveIndexesWithoutLineOfSight(_hoveredTileIndex, _areaOfEffectIndexes, _areaOfEffectLoSHeight, _areaOfEffectLoSOffsetDistance);
+
                 _areaOfEffectIndexes.ForEach(i => _playerActions.TacticsGrid.AddStateToTile(i, TileState.IsInAoeRange));
             }
         }

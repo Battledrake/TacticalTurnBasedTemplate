@@ -8,7 +8,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
     {
         CurrentHealth,
         MaxHealth,
-        MoveRange
+        MoveRange,
+        Agility
     }
 
     //public struct Attribute
@@ -39,9 +40,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public List<TileType> validTileTypes = new List<TileType> { TileType.Normal, TileType.DoubleCost, TileType.TripleCost };
         public bool canMoveDiagonal = true;
         public float heightAllowance = 2f;
-        public int moveRange = 5;
-        public int currentHealth = 10;
         public int maxHealth = 10;
+        public int moveRange = 5;
+        public int agility = 1;
         public List<Ability> abilities;
     }
 }

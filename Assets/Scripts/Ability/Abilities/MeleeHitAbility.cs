@@ -19,16 +19,13 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             if (_instigator)
             {
                 _instigator.LookAtTarget(_targetIndex);
-            }
 
-            _tacticsGrid.GetTileDataFromIndex(_originIndex, out TileData originData);
-            _tacticsGrid.GetTileDataFromIndex(_targetIndex, out TileData targetData);
-            if (originData.unitOnTile)
-            {
+                _tacticsGrid.GetTileDataFromIndex(_targetIndex, out TileData targetData);
+
                 if (targetData.unitOnTile)
-                    ActionCameraController.Instance.ShowFramingTransposerAction(originData.unitOnTile.transform, targetData.unitOnTile.LookAtTransform);
+                    ActionCameraController.Instance.ShowFramingTransposerAction(_instigator.transform, targetData.unitOnTile.LookAtTransform);
                 else
-                    ActionCameraController.Instance.ShowFramingTransposerAction(originData.unitOnTile.transform, originData.unitOnTile.LookAtTransform);
+                    ActionCameraController.Instance.ShowFramingTransposerAction(_instigator.transform, _instigator.LookAtTransform);
 
                 ActionCameraController.Instance.OnActionCameraInPosition += ActionCameraController_OnCameraInPosition;
             }
@@ -75,7 +72,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             task.OnTaskCompleted -= AbilityTask_OnTaskCompleted;
             AbilityBehaviorComplete(this);
-            ActionCameraController.Instance.HideActionCamera();
+            if (this.Instigator)
+                ActionCameraController.Instance.HideActionCamera();
             EndAbility();
         }
 

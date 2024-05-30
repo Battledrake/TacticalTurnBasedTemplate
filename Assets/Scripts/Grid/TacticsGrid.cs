@@ -39,13 +39,14 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public event Action OnGridDestroyed;
         public event Action OnGridGenerated;
 
+        [Header("Grid Configuration")]
         [SerializeField] private GridShape _gridShapeToggle = GridShape.Square;
         [SerializeField] private GridIndex _gridTileCount;
         [SerializeField] private Vector3 _gridTileSize;
         [SerializeField] private bool _useEnvironment = false;
 
+        [Header("References")]
         [SerializeField] private GridVisual _gridVisual;
-
         [SerializeField] private GridPathfinding _gridPathfinder;
 
         public Dictionary<GridIndex, TileData> GridTiles { get => _gridTiles; }
@@ -65,7 +66,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void Start()
         {
-            SpawnGrid(this.transform.position, _gridTileSize, _gridTileCount, _gridShapeToggle);
+            RespawnGrid();
         }
 
         private void Update()

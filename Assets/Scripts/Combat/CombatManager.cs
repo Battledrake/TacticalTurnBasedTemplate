@@ -2,15 +2,18 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 {
-    public enum CombatTurnMode
+    public enum TurnOrder
     {
         Team,
-        Unit,
-        Stat
+        Stat,
+        Random,
+        FIFO
     }
 
     [Serializable]
@@ -54,11 +57,13 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private List<Unit> _unitsInCombat = new List<Unit>();
         private Dictionary<int, HashSet<Unit>> _unitTeams = new Dictionary<int, HashSet<Unit>>();
+        private Queue<Unit> _queuedUnits = new Queue<Unit>();
 
         private bool _isInCombat = false;
         private bool _showEnemyMoveRange = false;
 
         private Unit _activeUnit;
+        private int _activeTeamIndex;
         private int _actionPointDeduction = 0;
 
         private void Awake()
@@ -98,6 +103,45 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             combatStartParams.canStartCombat = !_isInCombat && _unitTeams.Count(kvp => kvp.Value.Count > 0) >= 2 && _unitsInCombat.Count >= 2;
 
             return combatStartParams;
+        }
+
+        private void QueueUnitsInRandomOrder(List<Unit> unitsToRandomize)
+        {
+            int listCount = unitsToRandomize.Count;
+            for (int i = 0; i < listCount; i++)
+            {
+                int randomIndex = UnityEngine.Random.Range(0, unitsToRandomize.Count);
+                _queuedUnits.Enqueue(unitsToRandomize[randomIndex]);
+                unitsToRandomize.Remove(unitsToRandomize[randomIndex]);
+            }
+        }
+
+        private void QueueUnitsByTeam()
+        {
+            if (_unitTeams.TryGetValue(_activeTeamIndex, out HashSet<Unit> teamUnits))
+            {
+                foreach (var unit in teamUnits)
+                {
+                    _queuedUnits.Enqueue(unit);
+                }
+            }
+        }
+
+        private void QueueUnitsByStat(List<Unit> unitsToSort)
+        {
+            unitsToSort.Sort((unit1, unit2) =>
+            {
+                if (unit1.Agility < unit2.Agility)
+                    return -1;
+                else if (unit1.Agility > unit2.Agility)
+                    return 1;
+                else
+                    return 0;
+            });
+            for (int i = 0; i < unitsToSort.Count; i++)
+            {
+                _queuedUnits.Enqueue(_unitsInCombat[i]);
+            }
         }
 
         public void StartCombat()
@@ -288,7 +332,10 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             OnAbilityBehaviorComplete?.Invoke();
             ability.OnBehaviorComplete -= Ability_OnBehaviorComplete;
-            ability.Instigator.RemoveActionPoints(_actionPointDeduction);
+
+            if (ability.Instigator)
+                ability.Instigator.RemoveActionPoints(_actionPointDeduction);
+
             _actionPointDeduction = 0;
         }
 
@@ -317,12 +364,12 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             return tileTypes != null && tileTypes.Contains(_tacticsGrid.GridTiles[index].tileType);
         }
 
-        public List<GridIndex> RemoveIndexesWithoutLineOfSight(GridIndex origin, List<GridIndex> tiles, float height)
+        public List<GridIndex> RemoveIndexesWithoutLineOfSight(GridIndex origin, List<GridIndex> tiles, float height, float offsetDistance)
         {
             List<GridIndex> returnList = new List<GridIndex>();
             for (int i = 0; i < tiles.Count; i++)
             {
-                if (HasLineOfSight(origin, tiles[i], height))
+                if (HasLineOfSight(origin, tiles[i], height, offsetDistance))
                 {
                     returnList.Add(tiles[i]);
                 }
@@ -341,7 +388,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             return validIndexes;
         }
 
-        public bool HasLineOfSight(GridIndex origin, GridIndex target, float height)
+        public bool HasLineOfSight(GridIndex origin, GridIndex target, float height, float offsetDistance)
         {
             if (!_tacticsGrid.GetTileDataFromIndex(origin, out TileData originData))
             {
@@ -375,30 +422,49 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 }
                 else
                 {
-                    //Allows corner line of sights.
-                    Vector2[] offsets = new Vector2[]
+                    if (offsetDistance > 0)
                     {
-                        new Vector2(-.5f, 0f),
-                        new Vector2(0f, .5f),
-                        new Vector2(.5f, 0f),
-                        new Vector2(0f, -.5f)
-                    };
-                    for(int i = 0; i < offsets.Length; i++)
-                    {
-                        Vector3 startOffset = startPosition + new Vector3(offsets[i].x, 0f, offsets[i].y);
-                        if(!Physics.Raycast(startOffset, direction, out hitInfo, direction.magnitude))
+                        //Offset distances are scaled from 0 to 1, reflecting percentage from center to edge. We math that here.
+                        float relativeDistance = (_tacticsGrid.TileSize.x / 2) * offsetDistance;
+                        Vector2[] offsets = new Vector2[]
                         {
-                            return true;
-                        }
-                        else
+                        new Vector2(-relativeDistance, 0f),
+                        new Vector2(0f, relativeDistance),
+                        new Vector2(relativeDistance, 0f),
+                        new Vector2(0f, -relativeDistance)
+                        };
+                        for (int i = 0; i < offsets.Length; i++)
                         {
-                            if (hitUnit = hitInfo.collider.GetComponent<Unit>())
+                            Vector3 startOffset = startPosition + new Vector3(offsets[i].x, 0f, offsets[i].y);
+
+                            int unitLayer = 0;
+                            if (abilityUnit)
                             {
-                                if (hitUnit != abilityUnit && hitUnit != targetUnit)
-                                    return false;
-                                else
-                                    return true;
+                                unitLayer = abilityUnit.gameObject.layer;
+                                abilityUnit.gameObject.layer = LayerMask.GetMask("Ignore Raycast");
                             }
+
+                            if (!Physics.Raycast(startOffset, direction, out hitInfo, direction.magnitude))
+                            {
+                                if (abilityUnit)
+                                    abilityUnit.gameObject.layer = unitLayer;
+                                return true;
+                            }
+                            else
+                            {
+                                if (hitUnit = hitInfo.collider.GetComponent<Unit>())
+                                {
+                                    if (abilityUnit)
+                                        abilityUnit.gameObject.layer = unitLayer;
+
+                                    if (hitUnit != targetUnit)
+                                        return false;
+                                    else
+                                        return true;
+                                }
+                            }
+                            if (abilityUnit)
+                                abilityUnit.gameObject.layer = unitLayer;
                         }
                     }
                     return false;
@@ -458,7 +524,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
             if (rangeData.lineOfSightData.requireLineOfSight)
             {
-                indexesInRange = RemoveIndexesWithoutLineOfSight(originIndex, indexesInRange, rangeData.lineOfSightData.height);
+                indexesInRange = RemoveIndexesWithoutLineOfSight(originIndex, indexesInRange, rangeData.lineOfSightData.height, rangeData.lineOfSightData.offsetDistance);
             }
             return indexesInRange;
         }

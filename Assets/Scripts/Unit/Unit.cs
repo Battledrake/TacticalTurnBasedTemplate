@@ -45,6 +45,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         }
         public int CurrentHealth { get => _healthComponent.CurrentHealth; }
         public int MaxHealth { get => _healthComponent.MaxHealth; }
+        public int Agility { get => _agility; }
 
         private GameObject _unitVisual;
         private Animator _unitAnimator;
@@ -56,6 +57,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private int _currentHealth;
         private int _maxHealth;
         private int _moveRange;
+        private int _agility;
 
         private TacticsGrid _tacticsGrid;
         private Collider _collider;
@@ -171,8 +173,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 Destroy(_unitVisual);
             _unitVisual = Instantiate(_unitData.assetData.unitVisual, this.transform);
 
-            _currentHealth = _unitData.unitStats.currentHealth;
             _maxHealth = _unitData.unitStats.maxHealth;
+            _currentHealth = _maxHealth;
             _moveRange = _unitData.unitStats.moveRange;
 
             _unitAnimator = _unitVisual.GetComponent<Animator>();

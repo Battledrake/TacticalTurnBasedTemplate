@@ -14,15 +14,12 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private List<TurnOrderUnitDisplay> _unitDisplays = new List<TurnOrderUnitDisplay>();
 
-        private int _activeIndex;
-
         private void Awake()
         {
             for (int i = 0; i < _displayPooledCount; i++)
             {
                 SpawnUnitDisplay();
             }
-
         }
 
         private void Start()
@@ -37,13 +34,11 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private void CombatManager_OnCombatStarted()
         {
             _displayContainer.gameObject.SetActive(true);
-            _activeIndex = 0;
         }
 
         private void CombatManager_OnCombatEnded()
         {
             _displayContainer.gameObject.SetActive(false);
-            _activeIndex = -1;
         }
 
         private void CombatManager_OnUnitTurnEnded(Unit unit)
@@ -64,12 +59,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 for (int i = 0; i < addCount; i++)
                     SpawnUnitDisplay();
             }
-
-            //for (int i = 0; i < _unitDisplays.Count; i++)
-            //{
-            //    Destroy(_unitDisplays[i]);
-            //}
-            //_unitDisplays.Clear();
 
             for(int i = 0; i < _unitDisplays.Count; i++)
             {

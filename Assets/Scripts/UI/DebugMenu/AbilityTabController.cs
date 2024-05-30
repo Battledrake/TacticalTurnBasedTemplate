@@ -23,6 +23,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         [SerializeField] private SliderWidget _abilityRangeSlider;
         [SerializeField] private Toggle _abilityRangeLineOfSightToggle;
         [SerializeField] private SliderWidget _abilityRangeLineOfSightHeightSlider;
+        [SerializeField] private SliderWidget _abilityRangeLoSOffsetDistanceSlider;
 
         [Header("Area of Effect Settings")]
         [SerializeField] private Toggle _areaOfEffectButton;
@@ -30,6 +31,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         [SerializeField] private SliderWidget _areaOfEffectRangeSlider;
         [SerializeField] private Toggle _areaOfEffectLineOfSightToggle;
         [SerializeField] private SliderWidget _areaOfEffectLineOfSightHeightSlider;
+        [SerializeField] private SliderWidget _areaOfEffectLoSOffsetDistanceSlider;
 
         [Header("Dependences")]
         [SerializeField] private PlayerActions _playerActions;
@@ -63,6 +65,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _abilityRangeSlider.OnSliderValueChanged += OnAbilityRangeChanged;
             _abilityRangeLineOfSightToggle.onValueChanged.AddListener(OnAbilityRangeLineOfSightToggled);
             _abilityRangeLineOfSightHeightSlider.OnSliderValueChanged += OnAbilityRangeLineOfSightHeightChanged;
+            _abilityRangeLoSOffsetDistanceSlider.OnSliderValueChanged += OnAbilityRangeLoSOffsetDistanceChanged;
 
             _areaOfEffectButton.onValueChanged.AddListener(OnAreaOfEffectButtonToggled);
 
@@ -72,6 +75,76 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _areaOfEffectRangeSlider.OnSliderValueChanged += OnAreaOfEffectRangeChanged;
             _areaOfEffectLineOfSightToggle.onValueChanged.AddListener(OnAreaOfEffectLineOfSightToggled);
             _areaOfEffectLineOfSightHeightSlider.OnSliderValueChanged += OnAreaOfEffectLineOfSightHeightChanged;
+            _areaOfEffectLoSOffsetDistanceSlider.OnSliderValueChanged += OnAreaOfEffectLoSOffsetDistanceChanged;
+        }
+
+        private void OnShowAbilityRangePatternsButtonToggled(bool isOn)
+        {
+            if (!isOn)
+            {
+                _abilityRangeCombo.SetValueWithoutNotify(0);
+                _abilityRangeLineOfSightHeightSlider.SetSliderValueWithoutNotify(0.5f);
+
+                _areaOfEffectButton.isOn = isOn;
+            }
+        }
+
+        private void OnAbilityRangePatternChanged(int toTargetPattern)
+        {
+            ShowAbilityPatternAction showPatternAction = _playerActions.LeftClickAction?.GetComponent<ShowAbilityPatternAction>();
+            if (showPatternAction && toTargetPattern > 0)
+            {
+                _abilityRangeSlider.SetSliderValueWithoutNotify(showPatternAction.RangeMinMax);
+                showPatternAction.RangePattern = (AbilityRangePattern)toTargetPattern;
+
+                showPatternAction.ShowAbilityRangePattern();
+            }
+        }
+
+        private void OnAbilityRangeChanged(int sliderIndex, float value)
+        {
+            ShowAbilityPatternAction showPatternAction = _playerActions.LeftClickAction?.GetComponent<ShowAbilityPatternAction>();
+            if (showPatternAction)
+            {
+                if (sliderIndex == 0)
+                    showPatternAction.RangeMinMax = new Vector2Int((int)value, showPatternAction.RangeMinMax.y);
+                else if (sliderIndex == 1)
+                    showPatternAction.RangeMinMax = new Vector2Int(showPatternAction.RangeMinMax.x, (int)value);
+
+                showPatternAction.ShowAbilityRangePattern();
+            }
+        }
+
+        private void OnAbilityRangeLineOfSightToggled(bool isOn)
+        {
+            ShowAbilityPatternAction showPatternAction = _playerActions.LeftClickAction?.GetComponent<ShowAbilityPatternAction>();
+            if (showPatternAction)
+            {
+                showPatternAction.RangeLineOfSight = isOn;
+
+                showPatternAction.ShowAbilityRangePattern();
+            }
+        }
+
+        private void OnAbilityRangeLineOfSightHeightChanged(int sliderIndex, float value)
+        {
+            ShowAbilityPatternAction showPatternAction = _playerActions.LeftClickAction?.GetComponent<ShowAbilityPatternAction>();
+            if (showPatternAction)
+            {
+                showPatternAction.RangeLineOfSightHeight = value;
+
+                showPatternAction.ShowAbilityRangePattern();
+            }
+        }
+        private void OnAbilityRangeLoSOffsetDistanceChanged(int sliderIndex, float value)
+        {
+            ShowAbilityPatternAction showPatternAction = _playerActions.LeftClickAction?.GetComponent<ShowAbilityPatternAction>();
+            if (showPatternAction)
+            {
+                showPatternAction.RangeLineOfSightOffsetDistance = value;
+
+                showPatternAction.ShowAbilityRangePattern();
+            }
         }
 
         private void OnAreaOfEffectButtonToggled(bool isOn)
@@ -90,24 +163,13 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             }
         }
 
-        private void OnAreaOfEffectLineOfSightHeightChanged(int sliderIndex, float value)
+        private void OnAreaOfEffectPatternChanged(int onTargetPattern)
         {
             ShowAbilityPatternAction showPatternAction = _playerActions.LeftClickAction?.GetComponent<ShowAbilityPatternAction>();
-            if (showPatternAction)
+            if (showPatternAction && onTargetPattern > 0)
             {
-                showPatternAction.AreaOfEffectLoSHeight = value;
-
-                showPatternAction.ShowAbilityRangePattern();
-            }
-        }
-
-        private void OnAreaOfEffectLineOfSightToggled(bool isOn)
-        {
-            ShowAbilityPatternAction showPatternAction = _playerActions.LeftClickAction?.GetComponent<ShowAbilityPatternAction>();
-            if (showPatternAction)
-            {
-                showPatternAction.AreaOfEffectRequireLoS = isOn;
-
+                _areaOfEffectRangeSlider.SetSliderValueWithoutNotify(showPatternAction.AreaOfEffectRangeMinMax);
+                showPatternAction.AreaOfEffectPattern = (AbilityRangePattern)onTargetPattern;
                 showPatternAction.ShowAbilityRangePattern();
             }
         }
@@ -126,73 +188,36 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             }
         }
 
-        private void OnAreaOfEffectPatternChanged(int onTargetPattern)
-        {
-            ShowAbilityPatternAction showPatternAction = _playerActions.LeftClickAction?.GetComponent<ShowAbilityPatternAction>();
-            if (showPatternAction && onTargetPattern > 0)
-            {
-                _areaOfEffectRangeSlider.SetSliderValueWithoutNotify(showPatternAction.AreaOfEffectRangeMinMax);
-                showPatternAction.AreaOfEffectPattern = (AbilityRangePattern)onTargetPattern;
-                showPatternAction.ShowAbilityRangePattern();
-            }
-        }
-
-        private void OnAbilityRangeLineOfSightHeightChanged(int sliderIndex, float value)
+        private void OnAreaOfEffectLineOfSightToggled(bool isOn)
         {
             ShowAbilityPatternAction showPatternAction = _playerActions.LeftClickAction?.GetComponent<ShowAbilityPatternAction>();
             if (showPatternAction)
             {
-                showPatternAction.RangeLineOfSightHeight = value;
+                showPatternAction.AreaOfEffectRequireLoS = isOn;
 
                 showPatternAction.ShowAbilityRangePattern();
             }
         }
 
-        private void OnAbilityRangeLineOfSightToggled(bool isOn)
+        private void OnAreaOfEffectLineOfSightHeightChanged(int sliderIndex, float value)
         {
             ShowAbilityPatternAction showPatternAction = _playerActions.LeftClickAction?.GetComponent<ShowAbilityPatternAction>();
             if (showPatternAction)
             {
-                showPatternAction.RangeLineOfSight = isOn;
+                showPatternAction.AreaOfEffectLoSHeight = value;
 
                 showPatternAction.ShowAbilityRangePattern();
             }
         }
 
-        private void OnShowAbilityRangePatternsButtonToggled(bool isOn)
-        {
-            if (!isOn)
-            {
-                _abilityRangeCombo.SetValueWithoutNotify(0);
-                _abilityRangeLineOfSightHeightSlider.SetSliderValueWithoutNotify(0.5f);
-
-                _areaOfEffectButton.isOn = isOn;
-            }
-        }
-
-        private void OnAbilityRangeChanged(int sliderIndex, float value)
+        private void OnAreaOfEffectLoSOffsetDistanceChanged(int sliderIndex, float value)
         {
             ShowAbilityPatternAction showPatternAction = _playerActions.LeftClickAction?.GetComponent<ShowAbilityPatternAction>();
             if (showPatternAction)
             {
-                if (sliderIndex == 0)
-                    showPatternAction.RangeMinMax = new Vector2Int((int)value, showPatternAction.RangeMinMax.y);
-                else if (sliderIndex == 1)
-                    showPatternAction.RangeMinMax = new Vector2Int(showPatternAction.RangeMinMax.x, (int)value);
+                showPatternAction.AreaOfEffectLoSOffsetDistance = value;
 
-                showPatternAction.ShowAbilityRangePattern();
-            }
-        }
-
-        private void OnAbilityRangePatternChanged(int toTargetPattern)
-        {
-            ShowAbilityPatternAction showPatternAction = _playerActions.LeftClickAction?.GetComponent<ShowAbilityPatternAction>();
-            if (showPatternAction && toTargetPattern > 0)
-            {
-                _abilityRangeSlider.SetSliderValueWithoutNotify(showPatternAction.RangeMinMax);
-                showPatternAction.RangePattern = (AbilityRangePattern)toTargetPattern;
-
-                showPatternAction.ShowAbilityRangePattern();
+                showPatternAction.ShowAbilityAreaOfEffectPattern();
             }
         }
 

@@ -70,7 +70,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             List<GridIndex> _areaOfEffectIndexes = CombatManager.Instance.GetAbilityRange(_playerActions.HoveredTile, _currentAbility.AreaOfEffectData);
 
             if (_currentAbility.RangeData.lineOfSightData.requireLineOfSight)
-                _areaOfEffectIndexes = CombatManager.Instance.RemoveIndexesWithoutLineOfSight(_playerActions.HoveredTile, _areaOfEffectIndexes, _currentAbility.AreaOfEffectData.lineOfSightData.height);
+                _areaOfEffectIndexes = CombatManager.Instance.RemoveIndexesWithoutLineOfSight(_playerActions.HoveredTile, _areaOfEffectIndexes, _currentAbility.AreaOfEffectData.lineOfSightData.height, _currentAbility.AreaOfEffectData.lineOfSightData.offsetDistance);
 
             for(int i = 0; i < _areaOfEffectIndexes.Count; i++)
             {

@@ -148,7 +148,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             }
 
             AbilityBehaviorComplete(this);
-            ActionCameraController.Instance.HideActionCamera();
+            if (this.Instigator)
+                ActionCameraController.Instance.HideActionCamera();
             if (!_loopAnimation)
             {
                 EndAbility();
