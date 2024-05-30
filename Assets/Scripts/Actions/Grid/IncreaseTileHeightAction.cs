@@ -16,7 +16,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                     tilePosition.y += tileHeight;
                     tileData.tileMatrix = Matrix4x4.TRS(tilePosition, tileData.tileMatrix.rotation, tileData.tileMatrix.lossyScale);
 
-                    _playerActions.TacticsGrid.AddGridTile(tileData);
+                    _playerActions.TacticsGrid.ChangeTileHeight(tileData);
 
                     return true;
                 }

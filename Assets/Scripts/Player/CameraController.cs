@@ -45,6 +45,12 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _targetPosition = this.transform.position;
         }
 
+        public void SetMoveToTarget(Vector3 moveToPosition)
+        {
+            _targetPosition = moveToPosition;
+            _moveToTarget = true;
+        }
+
         private void Update()
         {
             if (Input.GetKeyDown(KeyCode.Tab))
@@ -58,7 +64,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 _targetPosition.y += 1.5f;
                 _moveToTarget = true;
                 _currentTargetIndex++;
-                _playerActions.SetSelectedTileAndUnit(tabSelectedUnit.UnitGridIndex);
+                //_playerActions.SetSelectedTileAndUnit(tabSelectedUnit.UnitGridIndex);
             }
 
             if (_moveToTarget)

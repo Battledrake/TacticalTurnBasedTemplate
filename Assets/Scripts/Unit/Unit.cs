@@ -246,7 +246,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             }
             else
             {
-                _unitOutline.OutlineColor = _hoverColor;
+                _unitOutline.OutlineColor = CombatManager.Instance.GetTeamColor(_teamIndex);
                 _unitOutline.OutlineWidth = _defaultOutlineWidth;
             }
         }

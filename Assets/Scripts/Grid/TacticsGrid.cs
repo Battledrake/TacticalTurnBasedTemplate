@@ -35,6 +35,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
     public class TacticsGrid : MonoBehaviour
     {
         public event Action<GridIndex> OnTileDataUpdated;
+        public event Action<GridIndex> OnTileHeightChanged;
         public event Action OnGridDestroyed;
         public event Action OnGridGenerated;
 
@@ -458,6 +459,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             }
             tileData.unitOnTile = unit;
             unit.UnitGridIndex = index;
+
             if (shouldPosition)
                 unit.transform.position = tileData.tileMatrix.GetPosition();
 
@@ -474,6 +476,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _gridTiles.TryGetValue(index, out TileData tileData);
             if (tileData.unitOnTile)
             {
+                tileData.unitOnTile.UnitGridIndex = GridIndex.Invalid();
+
                 tileData.unitOnTile = null;
                 _gridTiles[index] = tileData;
 
@@ -503,6 +507,18 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _gridVisual.UpdateTileVisual(tileData);
 
             OnTileDataUpdated?.Invoke(tileData.index);
+        }
+
+        public void ChangeTileHeight(TileData tileData)
+        {
+            if (_gridTiles.ContainsKey(tileData.index))
+                _gridTiles[tileData.index] = tileData;
+            else
+                _gridTiles.Add(tileData.index, tileData);
+
+            _gridVisual.UpdateTileVisual(tileData);
+
+            OnTileHeightChanged?.Invoke(tileData.index);
         }
 
         public void RemoveGridTile(GridIndex index)

@@ -73,12 +73,19 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             return _teamColors.FirstOrDefault(d => d.index == teamIndex).color;
         }
 
-        private void Start()
+        private void OnEnable()
         {
             _tacticsGrid.OnGridGenerated += TacticsGrid_OnGridGenerated;
             _tacticsGrid.OnTileDataUpdated += TacticsGrid_OnTileDataUpdated;
+            _tacticsGrid.OnTileHeightChanged += TacticsGrid_OnTileHeightChanged;
         }
 
+        private void OnDisable()
+        {
+            _tacticsGrid.OnGridGenerated -= TacticsGrid_OnGridGenerated;
+            _tacticsGrid.OnTileDataUpdated -= TacticsGrid_OnTileDataUpdated;
+            _tacticsGrid.OnTileHeightChanged -= TacticsGrid_OnTileHeightChanged;
+        }
         public CombatStartParams CanStartCombat()
         {
             CombatStartParams combatStartParams;
@@ -213,7 +220,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
             _unitsInCombat.Remove(unit);
             _tacticsGrid.RemoveUnitFromTile(unit.UnitGridIndex);
-            unit.UnitGridIndex = GridIndex.Invalid();
 
             unit.transform.position = newPosition;
 
@@ -234,10 +240,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             if (shouldDestroy)
             {
                 Destroy(unit.gameObject, 2f);
-            }
-            else
-            {
-                unit.UnitGridIndex = GridIndex.Invalid();
             }
         }
 
@@ -428,13 +430,22 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             {
                 if (IsValidTileForUnit(unit, index))
                 {
-                    _tacticsGrid.GetTileDataFromIndex(index, out TileData tileData);
-                    unit.transform.position = new Vector3(unit.transform.position.x, tileData.tileMatrix.GetPosition().y, unit.transform.position.z);
+                    return;
                 }
                 else
                 {
                     RemoveUnitFromCombat(unit, false);
                 }
+            }
+        }
+
+        private void TacticsGrid_OnTileHeightChanged(GridIndex index)
+        {
+            Unit unit = _unitsInCombat.FirstOrDefault(u => u.UnitGridIndex == index);
+            if (unit)
+            {
+                _tacticsGrid.GetTileDataFromIndex(index, out TileData tileData);
+                unit.transform.position = new Vector3(unit.transform.position.x, tileData.tileMatrix.GetPosition().y, unit.transform.position.z);
             }
         }
 
