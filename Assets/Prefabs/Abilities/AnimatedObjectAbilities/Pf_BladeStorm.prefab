@@ -52,16 +52,18 @@ MonoBehaviour:
     lineOfSightData:
       requireLineOfSight: 1
       height: 0.5
+      offsetDistance: 0
   _areaOfEffectData:
     rangePattern: 5
     rangeMinMax: {x: 1, y: 3}
     lineOfSightData:
       requireLineOfSight: 0
       height: 0
+      offsetDistance: 0
   _effects:
   - attributeType: 0
     minMaxModifier: {x: -10, y: -10}
-  _abilityCost: 0
+  _abilityCost: 2
   _isFriendly: 0
   _objectToAnimate: {fileID: 8548907831371414663, guid: 304aeb8e38f1f394abbba2d47b48a593,
     type: 3}

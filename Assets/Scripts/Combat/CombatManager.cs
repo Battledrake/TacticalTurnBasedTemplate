@@ -410,6 +410,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
             if (Physics.Raycast(startPosition, direction, out RaycastHit hitInfo, direction.magnitude))
             {
+
                 Unit abilityUnit = originData.unitOnTile;
                 Unit targetUnit = targetData.unitOnTile;
                 Unit hitUnit = hitInfo.collider.GetComponent<Unit>();

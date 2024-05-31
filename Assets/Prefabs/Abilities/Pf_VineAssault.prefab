@@ -52,13 +52,16 @@ MonoBehaviour:
     lineOfSightData:
       requireLineOfSight: 1
       height: 0.5
+      offsetDistance: 0
   _areaOfEffectData:
     rangePattern: 0
     rangeMinMax: {x: 0, y: 0}
     lineOfSightData:
       requireLineOfSight: 0
       height: 0
+      offsetDistance: 0
   _effects: []
+  _abilityCost: 2
   _isFriendly: 0
   _vinePrefab: {fileID: 1199601900371724, guid: d67ed860424886e4db64e996b4d85493,
     type: 3}

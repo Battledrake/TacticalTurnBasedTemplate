@@ -52,23 +52,23 @@ MonoBehaviour:
     lineOfSightData:
       requireLineOfSight: 0
       height: 0
+      offsetDistance: 0
   _areaOfEffectData:
     rangePattern: 6
     rangeMinMax: {x: 1, y: 1}
     lineOfSightData:
       requireLineOfSight: 0
       height: 0
+      offsetDistance: 0
   _effects:
   - attributeType: 0
     minMaxModifier: {x: -4, y: -6}
+  _abilityCost: 2
   _isFriendly: 0
   _objectToAnimate: {fileID: 4860463455617263125, guid: 910ff000fadb962498ce900d2ab47a93,
     type: 3}
-  _playAnimationTaskPrefab: {fileID: 8348269496721021093, guid: 88a54db5b90bc9f40b0a7c41c57e3d7c,
-    type: 3}
-  _animateObjectTaskprefab: {fileID: 8862640479722470499, guid: a8b7b17f8fc21544086c91b35cee0944,
-    type: 3}
   _taskData: {fileID: 11400000, guid: c7b993ef7d1296c44b612f0c2e0528c9, type: 2}
   _animationType: 3
+  _animationTime: 1
   _animationSpeed: 1
   _loopAnimation: 0

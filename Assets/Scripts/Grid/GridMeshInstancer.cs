@@ -246,19 +246,19 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _instancedMaterial.color = _instanceColor;
             _instancedMaterial.SetFloat("_IsFilled", 0f);
             _selectedMaterial.color = _selectedColor;
-            _selectedMaterial.SetFloat("_IsFilled", 1f);
+            _selectedMaterial.SetFloat("_IsFilled", 0f);
             _neighborMaterial.color = _neighborColor;
-            _neighborMaterial.SetFloat("_IsFilled", 0.5f);
+            _neighborMaterial.SetFloat("_IsFilled", 0f);
             _moveRangeMaterial.color = _moveRangeColor;
-            _moveRangeMaterial.SetFloat("_IsFilled", 0.25f);
+            _moveRangeMaterial.SetFloat("_IsFilled", 0f);
             _pathMaterial.color = _pathColor;
             _pathMaterial.SetFloat("_IsFilled", 1f);
             _abilityRangeMaterial.color = _abilityRangeColor;
-            _abilityRangeMaterial.SetFloat("_IsFilled", 0.25f);
+            _abilityRangeMaterial.SetFloat("_IsFilled", 0f);
             _abilityAreaOfEffectMaterial.color = _abilityAreaOfEffectColor;
-            _abilityAreaOfEffectMaterial.SetFloat("_IsFilled", 1.0f);
+            _abilityAreaOfEffectMaterial.SetFloat("_IsFilled", 0f);
             _hoveredMaterial.color = _hoveredColor;
-            _hoveredMaterial.SetFloat("_IsFilled", 0.5f);
+            _hoveredMaterial.SetFloat("_IsFilled", 0f);
 
             _renderParams = new RenderParams(_instancedMaterial);
             _selectedParams = new RenderParams(_selectedMaterial);

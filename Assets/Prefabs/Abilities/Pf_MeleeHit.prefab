@@ -52,15 +52,18 @@ MonoBehaviour:
     lineOfSightData:
       requireLineOfSight: 0
       height: 0
+      offsetDistance: 0
   _areaOfEffectData:
     rangePattern: 0
     rangeMinMax: {x: 0, y: 0}
     lineOfSightData:
       requireLineOfSight: 0
       height: 0
+      offsetDistance: 0
   _effects:
   - attributeType: 0
     minMaxModifier: {x: -2, y: -3}
+  _abilityCost: 2
   _isFriendly: 0
   _animationType: 2
   _impactFxPrefab: {fileID: 1489431029902184, guid: 4430919f14c50f84085d287cbcb2c30e,

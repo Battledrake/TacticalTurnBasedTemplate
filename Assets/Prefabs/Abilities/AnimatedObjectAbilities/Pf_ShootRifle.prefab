@@ -63,7 +63,7 @@ MonoBehaviour:
   _effects:
   - attributeType: 0
     minMaxModifier: {x: -2, y: -5}
-  _abilityCost: 0
+  _abilityCost: 2
   _isFriendly: 0
   _objectToAnimate: {fileID: 1747586400421602, guid: e25e3398d4c221347b2af737222daabd,
     type: 3}

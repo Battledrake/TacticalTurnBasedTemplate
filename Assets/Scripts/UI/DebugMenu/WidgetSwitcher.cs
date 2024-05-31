@@ -7,11 +7,11 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
     public class WidgetSwitcher : MonoBehaviour
     {
         [SerializeField] private int _activeIndex = -1;
-        private List<GameObject> _managedWidgets;
+        private List<GameObject> _managedWidgets = new List<GameObject>();
 
         private void OnValidate()
         {
-            _managedWidgets = new List<GameObject>();
+            _managedWidgets.Clear();
 
             for (int i = 0; i < this.transform.childCount; i++)
             {
@@ -21,12 +21,16 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             }
 
             if (_activeIndex > -1 && _activeIndex < _managedWidgets.Count)
-                _managedWidgets[_activeIndex].SetActive(true);
+            {
+                if (_managedWidgets[_activeIndex])
+                    _managedWidgets[_activeIndex].SetActive(true);
+            }
+
         }
 
         private void Start()
         {
-            for(int i = 0; i < _managedWidgets.Count; i++)
+            for (int i = 0; i < _managedWidgets.Count; i++)
             {
                 _managedWidgets[i].SetActive(true);
                 _managedWidgets[i].SetActive(false);

@@ -16,10 +16,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private MeshCollider _meshCollider;
         private GridShapeData _currentShapeData;
 
-        private void Awake()
-        {
-        }
-
         private void OnValidate()
         {
             _meshFilter = GetComponent<MeshFilter>();

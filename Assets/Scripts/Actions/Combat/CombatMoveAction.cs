@@ -78,6 +78,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void GeneratePathForUnit()
         {
+            if (!_playerActions.SelectedUnit)
+                return;
+
             _playerActions.TacticsGrid.ClearAllTilesWithState(TileState.IsInPath);
             _generatedPath.Clear();
 

@@ -1,0 +1,74 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &7212261259449382011
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4280695642568066349}
+  - component: {fileID: 7178079176350786143}
+  m_Layer: 0
+  m_Name: Pf_RainbowWave
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4280695642568066349
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7212261259449382011}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7178079176350786143
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7212261259449382011}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5ec1f05eb76d995429a4a1d5dbe4d949, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _abilityId: 1
+  _icon: {fileID: 21300000, guid: 3b5692edb069368418afc770290c1888, type: 3}
+  _rangeData:
+    rangePattern: 1
+    rangeMinMax: {x: 1, y: 5}
+    lineOfSightData:
+      requireLineOfSight: 1
+      height: 1
+      offsetDistance: 0.75
+  _areaOfEffectData:
+    rangePattern: 0
+    rangeMinMax: {x: 0, y: 0}
+    lineOfSightData:
+      requireLineOfSight: 0
+      height: 0
+      offsetDistance: 0
+  _effects:
+  - attributeType: 0
+    minMaxModifier: {x: -2, y: -3}
+  _abilityCost: 2
+  _isFriendly: 0
+  _objectToAnimate: {fileID: 6050157609116873709, guid: 8253182efb9636a47b2f24bb791b6d61,
+    type: 3}
+  _taskData: {fileID: 11400000, guid: 64e4035c2faac104c83eb46e1a06e33c, type: 2}
+  _animationType: 2
+  _animationTime: 1
+  _animationSpeed: 3
+  _loopAnimation: 0
