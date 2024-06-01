@@ -10,6 +10,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
     {
         [SerializeField] private Transform _abilityInstanceContainer;
 
+        [SerializeField] private int _baseAbilityPoints = 2;
+
         public int BaseAbilityPoints { get => _baseAbilityPoints; }
         public int CurrentAbilityPoints { get => _currentAbilityPoints; }
 
@@ -18,10 +20,10 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private List<AbilityEffectReal> _activeEffects = new List<AbilityEffectReal>();
 
-        private int _baseAbilityPoints;
         private int _currentAbilityPoints;
-        private IAbilitySystem _owner;
+        private Unit _ownerUnit;
 
+        public Unit GetOwningUnit() { return _ownerUnit; }
 
         public void ResetAbilityPoints()
         {
@@ -37,11 +39,11 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _currentAbilityPoints -= amount;
         }
 
-        public void InitAbilitySystem(IAbilitySystem owner, List<Ability> abilities)
+        public void InitAbilitySystem(Unit owner, List<Ability> abilities)
         {
             if (owner != null)
             {
-                _owner = owner;
+                _ownerUnit = owner;
 
                 for (int i = 0; i < abilities.Count; i++)
                 {

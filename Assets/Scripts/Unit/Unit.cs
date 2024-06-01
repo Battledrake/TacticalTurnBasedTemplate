@@ -131,7 +131,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         public void TurnEnded()
         {
-            Debug.Log("Turn Over");
         }
 
         private void OnDisable()

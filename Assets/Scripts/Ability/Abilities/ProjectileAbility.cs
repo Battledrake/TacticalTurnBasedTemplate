@@ -18,45 +18,28 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         [SerializeField] private float _animationTime = 1f;
         [SerializeField] private float _animationSpeed;
 
-        public override bool CanActivateAbility()
-        {
-            //If owner component allows.
-            return true;
-        }
-
-        public override bool TryActivateAbility(AbilityActivationData activateData)
-        {
-            if (!CanActivateAbility())
-                return false;
-
-            ActivateAbility(activateData);
-            return true;
-        }
-        protected override void CommitAbility()
-        {
-        }
-
-        public override void ActivateAbility(AbilityActivationData activateData)
+        public override void ActivateAbility(AbilityActivationData activationData)
         {
             CommitAbility();
 
-            if (_instigator)
+            Unit unit = _owner.GetOwningUnit();
+            if (unit)
             {
-                _instigator.LookAtTarget(activateData.targetIndex);
-                _instigator.GetComponent<IPlayAnimation>().PlayAnimationType(_animationType);
+                unit.LookAtTarget(activationData.targetIndex);
+                unit.GetComponent<IPlayAnimation>().PlayAnimationType(_animationType);
             }
 
 
-            activateData.tacticsGrid.GetTileDataFromIndex(activateData.targetIndex, out TileData initialTargetData);
+            activationData.tacticsGrid.GetTileDataFromIndex(activationData.targetIndex, out TileData initialTargetData);
             Vector3 startPosition = initialTargetData.tileMatrix.GetPosition();
 
-            List<GridIndex> aoeIndexes = CombatManager.Instance.GetAbilityRange(activateData.targetIndex, this.GetAreaOfEffectData());
+            List<GridIndex> aoeIndexes = CombatManager.Instance.GetAbilityRange(activationData.targetIndex, this.GetAreaOfEffectData());
 
             for (int i = 0; i < aoeIndexes.Count; i++)
             {
-                if (aoeIndexes[i] != activateData.targetIndex)
+                if (aoeIndexes[i] != activationData.targetIndex)
                 {
-                    activateData.tacticsGrid.GetTileDataFromIndex(aoeIndexes[i], out TileData targetData);
+                    activationData.tacticsGrid.GetTileDataFromIndex(aoeIndexes[i], out TileData targetData);
 
                     GameObject projectile = Instantiate(_projectilePrefab);
 
@@ -64,7 +47,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                     animateObjectTask.transform.SetParent(this.transform);
                     animateObjectTask.GetComponent<Rigidbody>().useGravity = false;
 
-                    AbilityActivationData modifiedData = activateData;
+                    AbilityActivationData modifiedData = activationData;
                     modifiedData.targetIndex = aoeIndexes[i];
 
                     animateObjectTask.InitTask(projectile, _taskData, modifiedData, _animationTime, UnityEngine.Random.Range(.8f, _animationSpeed), false);
@@ -72,7 +55,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                     animateObjectTask.OnInitialAnimationCompleted += AnimateObjectTask_OnInitialAnimationCompleted;
                     animateObjectTask.OnObjectCollisionWithUnit += AnimateObjectTask_OnObjectCollisionWithUnit;
 
-                    StartCoroutine(animateObjectTask.ExecuteTask(this));
+                    StartCoroutine(animateObjectTask.ExecuteTask());
                 }
             }
         }
@@ -86,7 +69,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
             List<GridIndex> aoeIndexes = CombatManager.Instance.GetAbilityRange(activateData.targetIndex, this.GetAreaOfEffectData());
 
-            if (!aoeIndexes.Contains(receiver.GetComponent<Unit>().UnitGridIndex))
+            if (!aoeIndexes.Contains(receiver.GetOwningUnit().UnitGridIndex))
             {
                 return;
             }
@@ -106,15 +89,14 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 activateData.tacticsGrid.GetTileDataFromIndex(aoeIndexes[i], out TileData tileData);
                 if (tileData.unitOnTile)
                 {
-                    AbilitySystem abilitySystem = tileData.unitOnTile.GetComponent<IAbilitySystem>().GetAbilitySystem();
-                    if (!animateObjectTask.HitUnits.Contains(abilitySystem))
+                    AbilitySystem receiver = tileData.unitOnTile.GetComponent<IAbilitySystem>().GetAbilitySystem();
+                    if (!animateObjectTask.HitUnits.Contains(receiver))
                     {
-                        CombatManager.Instance.ApplyEffectsToTarget(_owner, abilitySystem, _effects);
+                        CombatManager.Instance.ApplyEffectsToTarget(_owner, receiver, _effects);
                     }
                 }
             }
 
-            AbilityBehaviorComplete(this);
             EndAbility();
         }
     }

@@ -68,3 +68,4 @@ MonoBehaviour:
   _animationType: 2
   _impactFxPrefab: {fileID: 1489431029902184, guid: 4430919f14c50f84085d287cbcb2c30e,
     type: 3}
+  _animTaskCancelDelay: 2

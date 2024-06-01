@@ -41,7 +41,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public event Action OnCombatEnded;
         public event Action<Unit> OnUnitTurnStarted;
         public event Action<Unit> OnUnitTurnEnded;
-        public event Action OnAbilityBehaviorComplete;
+        public event Action OnAbilityUseCompleted;
 
         [SerializeField] private List<TeamColorData> _teamColors;
 
@@ -174,7 +174,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             if (_activeUnit)
             {
-                _activeUnit.TurnEnded();
+                //_activeUnit.TurnEnded();
                 OnUnitTurnEnded?.Invoke(_activeUnit);
             }
 
@@ -198,6 +198,10 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
             _abilityPointDeduction = path.Count <= unit.MoveRange ? 1 : 2;
 
+            unit.GetAbilitySystem().RemoveAbilityPoints(_abilityPointDeduction);
+
+            _abilityPointDeduction = 0;
+
             _tacticsGrid.RemoveUnitFromTile(unit.UnitGridIndex);
             _tacticsGrid.AddUnitToTile(path.Last(), unit, false);
             OnUnitGridIndexChanged?.Invoke(unit, path.Last());
@@ -206,8 +210,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private void Unit_OnUnitReachedDestination(Unit unit)
         {
             unit.OnUnitReachedDestination -= Unit_OnUnitReachedDestination;
-            unit.GetAbilitySystem().RemoveAbilityPoints(_abilityPointDeduction);
-            _abilityPointDeduction = 0;
         }
 
         public void AddUnitToCombat(Vector3 worldPosition, Unit unit, int teamIndex = 0)
@@ -298,43 +300,19 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             activationData.tacticsGrid = _tacticsGrid;
             activationData.originIndex = origin;
             activationData.targetIndex = target;
-            if (GetAbilityRange(origin, ability.GetRangeData()).Contains(target))
+
+            if (ability.TryActivateAbility(activationData))
             {
-                //In the future, we'll want to check if there's already an ability object.
-                //Ability abilityObject = Instantiate(ability, _tacticsGrid.GetWorldPositionFromGridIndex(origin), Quaternion.identity);
-
-                List<GridIndex> impactIndexes = new List<GridIndex>();
-                if (ability.GetAreaOfEffectData().rangePattern == AbilityRangePattern.None)
-                {
-                    impactIndexes.Add(target);
-                    //ability.InitializeAbility(_tacticsGrid, instigator, origin, target);
-                }
-                else
-                {
-                    impactIndexes = GetAbilityRange(target, ability.GetAreaOfEffectData());
-                    //abilityObject.InitializeAbility(_tacticsGrid, instigator, origin, target, impactIndexes);
-                }
-
-                if (ability.TryActivateAbility(activationData))
-                {
-                    ability.OnBehaviorComplete += Ability_OnBehaviorComplete;
-                    //TODO: Ability point deduction logic.
-                    _abilityPointDeduction = ability.AbilityCost;
-                    //TODO: Maybe add an OnAbilityActivated or something here for the AbilityBar.
-                    return true;
-                }
+                ability.OnAbilityEnded += Ability_OnAbilityEnded;
+                return true;
             }
             return false;
         }
 
-        private void Ability_OnBehaviorComplete(Ability ability)
+        private void Ability_OnAbilityEnded(Ability ability)
         {
-            OnAbilityBehaviorComplete?.Invoke();
-            ability.OnBehaviorComplete -= Ability_OnBehaviorComplete;
-
-            ability.GetAbilityOwner().RemoveAbilityPoints(_abilityPointDeduction);
-
-            _abilityPointDeduction = 0;
+            ability.OnAbilityEnded -= Ability_OnAbilityEnded;
+            OnAbilityUseCompleted?.Invoke();
         }
 
         public void ApplyEffectsToTarget(AbilitySystem instigator, AbilitySystem receiver, List<AbilityEffect> effectsToApply)
@@ -375,17 +353,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 }
             }
             return returnList;
-        }
-
-        public List<GridIndex> RemoveNotWalkableIndexes(List<GridIndex> targetIndexes)
-        {
-            List<GridIndex> validIndexes = new List<GridIndex>();
-            for (int i = 0; i < targetIndexes.Count; i++)
-            {
-                if (_tacticsGrid.IsTileWalkable(targetIndexes[i]))
-                    validIndexes.Add(targetIndexes[i]);
-            }
-            return validIndexes;
         }
 
         public bool HasLineOfSight(GridIndex origin, GridIndex target, float height, float offsetDistance)
@@ -517,6 +484,17 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 _tacticsGrid.GetTileDataFromIndex(index, out TileData tileData);
                 unit.transform.position = new Vector3(unit.transform.position.x, tileData.tileMatrix.GetPosition().y, unit.transform.position.z);
             }
+        }
+
+        public List<GridIndex> RemoveNotWalkableIndexes(List<GridIndex> targetIndexes)
+        {
+            List<GridIndex> validIndexes = new List<GridIndex>();
+            for (int i = 0; i < targetIndexes.Count; i++)
+            {
+                if (_tacticsGrid.IsTileWalkable(targetIndexes[i]))
+                    validIndexes.Add(targetIndexes[i]);
+            }
+            return validIndexes;
         }
 
         public List<GridIndex> GetAbilityRange(GridIndex originIndex, AbilityRangeData rangeData)

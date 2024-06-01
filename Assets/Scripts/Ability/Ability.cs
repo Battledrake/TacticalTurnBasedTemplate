@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace BattleDrakeCreations.TacticalTurnBasedTemplate
@@ -87,8 +88,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
     public abstract class Ability : MonoBehaviour
     {
-        public event Action OnAbilityEnd;
-        public event Action<Ability> OnBehaviorComplete;
+        public event Action<Ability> OnAbilityEnded;
 
         [Header("Ability")]
 
@@ -117,8 +117,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         }
         public AbilitySystem GetAbilityOwner() { return _owner; }
 
-        public abstract  AbilityRangeData GetRangeData();
-        public abstract  AbilityRangeData GetAreaOfEffectData();
+        public abstract AbilityRangeData GetRangeData();
+        public abstract AbilityRangeData GetAreaOfEffectData();
         public abstract List<AbilityEffect> GetEffects();
 
         public void InitAbility(AbilitySystem abilitySystem)
@@ -126,22 +126,33 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _owner = abilitySystem;
         }
 
-        protected void AbilityBehaviorComplete(Ability ability)
+        public virtual bool CanActivateAbility(AbilityActivationData activateData)
         {
-            //TODO: No apparent use now, but will be used for turn system to allow ability to exist passed a single turn but still notify that it's finished that turn's behavior.
-            OnBehaviorComplete?.Invoke(ability);
+            if (_owner.CurrentAbilityPoints <= 0)
+                return false;
+
+            if (CombatManager.Instance.GetAbilityRange(activateData.originIndex, this.GetRangeData()).Contains(activateData.targetIndex))
+                return true;
+            return false;
         }
 
-        public abstract bool CanActivateAbility();
-
-        protected abstract void CommitAbility();
+        protected virtual void CommitAbility() { _owner.RemoveAbilityPoints(_abilityCost); }
 
         public abstract void ActivateAbility(AbilityActivationData activationData);
 
-        public abstract bool TryActivateAbility(AbilityActivationData activationData);
+        public virtual bool TryActivateAbility(AbilityActivationData activationData)
+        {
+            if (CanActivateAbility(activationData))
+            {
+                ActivateAbility(activationData);
+                return true;
+            }
+            else
+                return false;
+        }
         public virtual void EndAbility()
         {
-            OnAbilityEnd?.Invoke();
+            OnAbilityEnded?.Invoke(this);
         }
     }
 }

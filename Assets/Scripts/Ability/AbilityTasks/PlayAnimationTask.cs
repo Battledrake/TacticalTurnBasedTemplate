@@ -10,12 +10,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public event Action<PlayAnimationTask, AbilityActivationData> OnAnimationCancelled;
 
         private IPlayAnimation _animatee;
-        private Animator _unitAnimator;
         private AnimationType _animationType;
         private AnimationEventHandler _animEventHandler;
-
         private float _timeBeforeCancelling = 5f;
-
         private AbilityActivationData _activationData;
 
         public void InitTask(AbilityActivationData activationData, IPlayAnimation animatee, AnimationType animationType, float timeBeforeCancelling = 5f)
@@ -43,11 +40,11 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             OnAnimationEvent?.Invoke(this, _activationData);
         }
 
-        public override IEnumerator ExecuteTask(Ability owner)
+        public override IEnumerator ExecuteTask()
         {
-            if (!_unitAnimator && !_animEventHandler)
+            if (_animatee == null || !_animEventHandler)
             {
-                Debug.LogWarning("Instigator does not have an Animator or AnimationEventHandler. Cancelling Animation Task");
+                Debug.LogWarning("Instigator does not have an IPlayAnimation and/or AnimationEventHandler. Cancelling Animation Task");
                 OnAnimationCancelled?.Invoke(this, _activationData);
                 EndTask();
                 yield break;
@@ -59,6 +56,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _animEventHandler.OnAnimationCompleted += OnAnimationEvent_OnAnimationCompleted;
 
             yield return new WaitForSeconds(_timeBeforeCancelling);
+            if (this == null)
+                yield break;
             Debug.LogWarning("Instigator did not receive AnimationEvent. Cancelling Animation Task");
             OnAnimationCancelled?.Invoke(this, _activationData);
             EndTask();
@@ -66,7 +65,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void OnDestroy()
         {
-            if(_animatee != null)
+            if(_animEventHandler != null)
             {
                 _animEventHandler.OnAnimationEvent -= OnAnimationEvent_OnAnimationEvent;
                 _animEventHandler.OnAnimationCompleted -= OnAnimationEvent_OnAnimationCompleted;

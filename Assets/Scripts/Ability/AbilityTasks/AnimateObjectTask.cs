@@ -97,7 +97,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             }
         }
 
-        public override IEnumerator ExecuteTask(Ability owner)
+        public override IEnumerator ExecuteTask()
         {
             while (_isRunning)
             {

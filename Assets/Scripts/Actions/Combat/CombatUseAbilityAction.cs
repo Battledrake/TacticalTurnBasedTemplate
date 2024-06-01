@@ -22,27 +22,42 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 _abilityInUse = true;
                 _playerActions.TacticsGrid.ClearAllTilesWithState(TileState.IsInAbilityRange);
                 _playerActions.TacticsGrid.ClearAllTilesWithState(TileState.IsInAoeRange);
-                CombatManager.Instance.OnAbilityBehaviorComplete += CombatManager_OnAbilityBehaviorComplete;
+                CombatManager.Instance.OnAbilityUseCompleted += CombatManager_OnAbilityBehaviorComplete;
             }
             return true;
+        }
+
+        private bool UnitHasAbilityPoints()
+        {
+            if (_playerActions.SelectedUnit)
+            {
+                AbilitySystem abilitySystem = _playerActions.SelectedUnit.GetComponent<IAbilitySystem>().GetAbilitySystem();
+                if (abilitySystem)
+                {
+                    return abilitySystem.CurrentAbilityPoints > 0;
+                }
+            }
+            return false;
         }
 
         private void CombatManager_OnAbilityBehaviorComplete()
         {
             _abilityInUse = false;
-            CombatManager.Instance.OnAbilityBehaviorComplete -= CombatManager_OnAbilityBehaviorComplete;
+            CombatManager.Instance.OnAbilityUseCompleted -= CombatManager_OnAbilityBehaviorComplete;
             _playerActions.PlayerAbilityBar.SetSelectedAbilityFromIndex(-1);
         }
 
         public override void ExecuteHoveredAction(GridIndex hoveredIndex)
         {
+            if (!UnitHasAbilityPoints())
+                return;
             ShowAbilityAreaOfEffectPattern();
         }
 
         public void SetAbility(Ability ability)
         {
             _currentAbility = ability;
-            if(_currentAbility == null)
+            if(_currentAbility == null || !UnitHasAbilityPoints())
             {
                 _playerActions.TacticsGrid.ClearAllTilesWithState(TileState.IsInAbilityRange);
                 _playerActions.TacticsGrid.ClearAllTilesWithState(TileState.IsInAoeRange);

@@ -83,8 +83,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e32b2be94731e244eb916257ee860708, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _baseActionPoints: 2
-  _currentActionPoints: 0
   _unitType: 0
   _lookAtTransform: {fileID: 5103970465332394775}
   _hoverColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
@@ -227,7 +225,7 @@ MonoBehaviour:
   _damageColor: {r: 1, g: 0, b: 0, a: 0.78431374}
   _healColor: {r: 0, g: 1, b: 0.024693727, a: 0.78431374}
   _healthChangeDelay: 0.25
-  _isImmortal: 0
+  _isImmortal: 1
 --- !u!114 &3677761392830542896
 MonoBehaviour:
   m_ObjectHideFlags: 0

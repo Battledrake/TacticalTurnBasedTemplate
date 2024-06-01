@@ -3,9 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using TMPro.EditorUtilities;
+using UnityEditor.Playables;
 using UnityEngine;
 using UnityEngine.Timeline;
 using UnityEngine.UI;
+using static UnityEngine.UI.Image;
 
 namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 {
@@ -30,7 +32,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public override void ActivateAbility(AbilityActivationData activationData)
         {
             CommitAbility();
-            
+
             if (_owner.GetComponent<Unit>())
             {
                 _owner.GetComponent<Unit>().LookAtTarget(activationData.targetIndex);
@@ -43,7 +45,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 animationTask.OnAnimationEvent += PlayAnimationTask_OnAnimationEvent;
                 animationTask.OnAnimationCancelled += AbilityTask_OnAnimationCancelled;
 
-                StartCoroutine(animationTask.ExecuteTask(this));
+                StartCoroutine(animationTask.ExecuteTask());
             }
             else
             {
@@ -82,7 +84,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 GameObject objectToAnimate = Instantiate(_objectToAnimate);
 
                 animateObjectTask.InitTask(objectToAnimate, _taskData, activationData, _animationTime, _animationSpeed, _loopAnimation);
-                StartCoroutine(animateObjectTask.ExecuteTask(this));
+                StartCoroutine(animateObjectTask.ExecuteTask());
             }
         }
 
@@ -125,43 +127,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 }
             }
 
-            AbilityBehaviorComplete(this);
-            if (this.Instigator)
-                ActionCameraController.Instance.HideActionCamera();
-            if (!_loopAnimation)
-            {
-                EndAbility();
-            }
-        }
-
-        /// <summary>
-        /// Process Cooldown checks. Ensure tiles are valid for this ability.
-        /// </summary>
-        /// <returns></returns>
-        public override bool CanActivateAbility()
-        {
-            return true;
-        }
-
-        /// <summary>
-        /// Checks if the ability can be activated before activating
-        /// </summary>
-        /// <returns></returns>
-        public override bool TryActivateAbility(AbilityActivationData activationData)
-        {
-            if (CanActivateAbility())
-            {
-                ActivateAbility(activationData);
-                return true;
-            }
-            return false;
-        }
-
-        /// <summary>
-        /// Use AP, Resources, Item, Etc...
-        /// </summary>
-        protected override void CommitAbility()
-        {
+            EndAbility();
         }
     }
 }

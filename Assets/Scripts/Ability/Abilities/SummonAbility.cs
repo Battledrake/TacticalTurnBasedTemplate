@@ -15,56 +15,40 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private bool _isActive = false;
 
-        public override void ActivateAbility(AbilityActivationData activateData)
+        public override void ActivateAbility(AbilityActivationData activationData)
         {
             CommitAbility();
 
-            _summonedUnit = Instantiate(_unitPrefab, activateData.tacticsGrid.GetWorldPositionFromGridIndex(activateData.targetIndex), Quaternion.identity);
+            _summonedUnit = Instantiate(_unitPrefab, activationData.tacticsGrid.GetWorldPositionFromGridIndex(activationData.targetIndex), Quaternion.identity);
             _summonedUnit.InitUnit(_unitType);
-            CombatManager.Instance.AddUnitToCombat(activateData.targetIndex, _summonedUnit);
+            CombatManager.Instance.AddUnitToCombat(activationData.targetIndex, _summonedUnit);
             _isActive = true;
 
-            AbilityBehaviorComplete(this);
+            EndAbility();
         }
 
-        public override bool CanActivateAbility()
+        public override bool CanActivateAbility(AbilityActivationData activationData)
         {
-            return true;
-        }
-
-        public override void EndAbility()
-        {
-            _isActive = false;
-            if (_summonedUnit != null)
-                _summonedUnit.Die(true);
-
-            base.EndAbility();
-        }
-
-        public override bool TryActivateAbility(AbilityActivationData activateData)
-        {
-            if (CanActivateAbility())
+            if (base.CanActivateAbility(activationData))
             {
-                ActivateAbility(activateData);
-                return true;
+
+                activationData.tacticsGrid.GetTileDataFromIndex(activationData.targetIndex, out TileData targetData);
+
+                if (activationData.tacticsGrid.IsTileWalkable(activationData.targetIndex) && !targetData.unitOnTile)
+                    return true;
             }
+
             return false;
         }
 
-        protected override void CommitAbility()
+        public override bool TryActivateAbility(AbilityActivationData activationData)
         {
-        }
-
-        private void Update()
-        {
-            if (_isActive)
+            if (CanActivateAbility(activationData))
             {
-                _summonDuration -= Time.deltaTime;
-                if (_summonDuration <= 0)
-                {
-                    EndAbility();
-                }
+                ActivateAbility(activationData);
+                return true;
             }
+            return false;
         }
     }
 }

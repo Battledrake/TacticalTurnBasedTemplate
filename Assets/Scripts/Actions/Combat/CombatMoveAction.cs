@@ -13,8 +13,11 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void Start()
         {
-            GenerateTilesInMoveRange(_playerActions.SelectedUnit);
-            GeneratePathForUnit();
+            if (UnitHasAbilityPoints())
+            {
+                GenerateTilesInMoveRange(_playerActions.SelectedUnit);
+                GeneratePathForUnit();
+            }
         }
 
         public override bool ExecuteAction(GridIndex index)
@@ -36,11 +39,12 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         public override void ExecuteHoveredAction(GridIndex hoveredIndex)
         {
-            if (_isUnitMoving)
-                return;
+            if (_isUnitMoving) return;
 
-            if (!_playerActions.SelectedUnit)
-                return;
+            if (!_playerActions.SelectedUnit) return;
+
+            if (!UnitHasAbilityPoints()) return;
+
 
             if (_playerActions.HoveredUnit && CombatManager.Instance.ShowEnemyMoveRange)
             {
@@ -48,13 +52,13 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             }
             else
             {
-                GenerateTilesInMoveRange(_playerActions.SelectedUnit);
                 GeneratePathForUnit();
             }
         }
 
         private void GenerateTilesInMoveRange(Unit unit)
         {
+            Debug.Log("How?");
             if (_currentUnit != unit)
             {
                 _currentUnit = unit;
@@ -97,6 +101,19 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             }
         }
 
+        private bool UnitHasAbilityPoints()
+        {
+            if (_playerActions.SelectedUnit)
+            {
+                AbilitySystem abilitySystem = _playerActions.SelectedUnit.GetComponent<IAbilitySystem>().GetAbilitySystem();
+                if (abilitySystem)
+                {
+                    return abilitySystem.CurrentAbilityPoints > 0;
+                }
+            }
+            return false;
+        }
+
         private void Unit_OnUnitStartedMovement(Unit unit)
         {
             _playerActions.TacticsGrid.ClearAllTilesWithState(TileState.IsInMoveRange);
@@ -112,18 +129,14 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
             unit.OnUnitStartedMovement -= Unit_OnUnitReachedDestination;
 
-            //Do we want this? 
-            GenerateTilesInMoveRange(unit);
+            if (UnitHasAbilityPoints())
+                GenerateTilesInMoveRange(unit);
         }
 
         private void OnDisable()
         {
             _playerActions.TacticsGrid.ClearAllTilesWithState(TileState.IsInMoveRange);
             _playerActions.TacticsGrid.ClearAllTilesWithState(TileState.IsInPath);
-        }
-
-        private void OnDestroy()
-        {
         }
     }
 }

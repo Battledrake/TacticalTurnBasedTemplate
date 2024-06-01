@@ -38,33 +38,21 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             _instigator.OnUnitMovementStopped -= Instigator_OnUnitMovementStopped;
             _instigator.OnUnitReachedDestination -= Instigator_OnUnitReachedDestination;
-            AbilityBehaviorComplete(this);
             EndAbility();
         }
 
         //Check for whatever conditions here.
-        public override bool CanActivateAbility()
+        public override bool CanActivateAbility(AbilityActivationData activateData)
         {
-            if (_instigator == null) return false;
+            if (base.CanActivateAbility(activateData))
+            {
+                GridMovement gridMovement = _owner.GetComponent<GridMovement>();
+                if (gridMovement == null) return false;
 
-            if (_instigator.IsMoving) return false;
+                if (gridMovement.IsMoving) return false;
+            }
 
             return true;
-        }
-
-        public override bool TryActivateAbility(AbilityActivationData activateData)
-        {
-            if (CanActivateAbility())
-            {
-                ActivateAbility(activateData);
-                return true;
-            }
-            return false;
-        }
-
-        //Ap Cost and stuff here
-        protected override void CommitAbility()
-        {
         }
     }
 }

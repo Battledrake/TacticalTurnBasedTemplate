@@ -11,9 +11,10 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         protected bool _isRunning = false;
 
-        public abstract IEnumerator ExecuteTask(Ability owner);
+        public abstract IEnumerator ExecuteTask();
         public virtual void EndTask()
         {
+            StopCoroutine(ExecuteTask());
             _isRunning = false;
             Destroy(this.gameObject);
         }
