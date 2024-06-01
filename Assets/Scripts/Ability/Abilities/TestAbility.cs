@@ -19,12 +19,12 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             return true;
         }
 
-        public override bool TryActivateAbility()
+        public override bool TryActivateAbility(AbilityActivationData activationData)
         {
             if (!CanActivateAbility())
                 return false;
 
-            ActivateAbility();
+            ActivateAbility(activationData);
             return true;
         }
         protected override void CommitAbility()
@@ -32,11 +32,11 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             throw new System.NotImplementedException();
         }
 
-        public override void ActivateAbility()
+        public override void ActivateAbility(AbilityActivationData activationData)
         {
             //ExecuteAbilityTask(Action action);
-            _startPosition = _tacticsGrid.GetWorldPositionFromGridIndex(_originIndex) + Vector3.up;
-            _targetPosition = _tacticsGrid.GetWorldPositionFromGridIndex(_targetIndex);
+            _startPosition = activationData.tacticsGrid.GetWorldPositionFromGridIndex(activationData.originIndex) + Vector3.up;
+            _targetPosition = activationData.tacticsGrid.GetWorldPositionFromGridIndex(activationData.targetIndex);
             Vector3 lookDirection = _targetPosition - _startPosition;
             GameObject projectile = Instantiate(_vinePrefab, _startPosition, Quaternion.LookRotation(lookDirection), this.transform);
             _spawnedObject = projectile;

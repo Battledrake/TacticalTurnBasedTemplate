@@ -15,13 +15,13 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private bool _isActive = false;
 
-        public override void ActivateAbility()
+        public override void ActivateAbility(AbilityActivationData activateData)
         {
             CommitAbility();
 
-            _summonedUnit = Instantiate(_unitPrefab, _tacticsGrid.GetWorldPositionFromGridIndex(_targetIndex), Quaternion.identity);
-            _summonedUnit.InitializeUnit(_unitType);
-            CombatManager.Instance.AddUnitToCombat(_targetIndex, _summonedUnit);
+            _summonedUnit = Instantiate(_unitPrefab, activateData.tacticsGrid.GetWorldPositionFromGridIndex(activateData.targetIndex), Quaternion.identity);
+            _summonedUnit.InitUnit(_unitType);
+            CombatManager.Instance.AddUnitToCombat(activateData.targetIndex, _summonedUnit);
             _isActive = true;
 
             AbilityBehaviorComplete(this);
@@ -29,11 +29,11 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         public override bool CanActivateAbility()
         {
-            if (_tacticsGrid.IsIndexValid(_targetIndex) && _tacticsGrid.IsTileWalkable(_targetIndex) && _tacticsGrid.GridTiles[_targetIndex].unitOnTile == null)
-            {
-                return true;
-            }
-            return false;
+            //if (_tacticsGrid.IsIndexValid(_targetIndex) && _tacticsGrid.IsTileWalkable(_targetIndex) && _tacticsGrid.GridTiles[_targetIndex].unitOnTile == null)
+            //{
+            //    return true;
+            //}
+            return true;
         }
 
         public override void EndAbility()
@@ -45,11 +45,11 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             base.EndAbility();
         }
 
-        public override bool TryActivateAbility()
+        public override bool TryActivateAbility(AbilityActivationData activateData)
         {
             if (CanActivateAbility())
             {
-                ActivateAbility();
+                ActivateAbility(activateData);
                 return true;
             }
             return false;

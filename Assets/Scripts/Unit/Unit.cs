@@ -6,8 +6,8 @@ using UnityEngine;
 
 namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 {
-    [RequireComponent(typeof(GridMovement))]
-    public class Unit : MonoBehaviour, IUnitAnimation
+    [RequireComponent(typeof(GridMovement), typeof(Health), typeof(AbilitySystem))]
+    public class Unit : MonoBehaviour, IPlayAnimation, IHaveAbilitySystem, IHaveHealth
     {
         public static event Action<Unit, GridIndex> OnAnyUnitReachedNewTile;
         public static event Action<Unit> OnAnyUnitDied;
@@ -28,6 +28,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         [SerializeField] private Color _hoverColor;
         [SerializeField] private Color _selectedColor = Color.green;
 
+        public TacticsGrid TacticsGrid { get => _tacticsGrid; }
         public int CurrentActionPoints { get => _currentActionPoints; }
         public Transform LookAtTransform { get => _lookAtTransform; }
         public GridIndex UnitGridIndex { get => _gridIndex; set => _gridIndex = value; }
@@ -49,6 +50,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private GameObject _unitVisual;
         private Animator _unitAnimator;
+        private AnimationEventHandler _animEventHandler;
         private UnitData _unitData;
         private GridIndex _gridIndex = GridIndex.Invalid();
         private int _teamIndex = -1;
@@ -63,6 +65,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private Collider _collider;
         private GridMovement _gridMovement;
         private Health _healthComponent;
+        private AbilitySystem _abilitySystem;
 
         //Outline Stuff
         private Outline _unitOutline;
@@ -76,9 +79,30 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _collider = this.GetComponent<Collider>();
             _gridMovement = this.GetComponent<GridMovement>();
             _healthComponent = this.GetComponent<Health>();
+            _abilitySystem = this.GetComponent<AbilitySystem>();
 
             _healthComponent.OnHealthChanged += HealthComponent_OnHealthChanged;
             _healthComponent.OnHealthReachedZero += HealthComponent_OnHealthReachedZero;
+        }
+
+        public AnimationEventHandler GetAnimationEventHandler()
+        {
+            return _animEventHandler;
+        }
+
+        public AbilitySystem GetAbilitySystem()
+        {
+            return _abilitySystem;
+        }
+
+        public int GetCurrentHealth()
+        {
+            return _currentHealth;
+        }
+
+        public int GetMaxHealth()
+        {
+            return _maxHealth;
         }
 
         private void HealthComponent_OnHealthChanged()
@@ -162,7 +186,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _gridMovement.SetPathingGrid(grid);
         }
 
-        public void InitializeUnit(UnitId unitType)
+        public void InitUnit(UnitId unitType)
         {
             if (_unitVisual != null)
                 Destroy(_unitVisual);
@@ -177,12 +201,20 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _currentHealth = _maxHealth;
             _moveRange = _unitData.unitStats.moveRange;
 
+            InitComponents();
+        }
+
+        private void InitComponents()
+        {
+            _healthComponent.InitHealth(this);
+            _abilitySystem.InitAbilitySystem(this, _unitData.unitStats.abilities);
+
             _unitAnimator = _unitVisual.GetComponent<Animator>();
             _unitOutline = _unitVisual.AddComponent<Outline>();
-            _unitVisual.AddComponent<AnimationEventHandler>();
+            _animEventHandler = _unitVisual.AddComponent<AnimationEventHandler>();
 
             Transform headTransform = FindTransform(_unitVisual, "Head");
-            if(headTransform)
+            if (headTransform)
             {
                 _healthComponent.HealthBar.position = headTransform.position + Vector3.up;
             }
@@ -196,7 +228,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         [ContextMenu("ChangeType")]
         public void ChangeUnitType()
         {
-            InitializeUnit(_unitType);
+            InitUnit(_unitType);
         }
 
         [ContextMenu("ReAddToCombat")]
@@ -208,7 +240,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _unitAnimator.SetTrigger(AnimationType.Respawn.ToString());
             _currentHealth = _maxHealth;
             _collider.enabled = true;
-            _healthComponent.UpdateHealth(_maxHealth);
+            _healthComponent.UpdateHealth(_currentHealth);
         }
 
         public void SetIsHovered(bool isHovered)

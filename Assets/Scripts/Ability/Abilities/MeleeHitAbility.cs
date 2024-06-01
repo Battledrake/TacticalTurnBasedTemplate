@@ -12,34 +12,23 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         [SerializeField] private GameObject _impactFxPrefab;
 
-        public override void ActivateAbility()
+        public override void ActivateAbility(AbilityActivationData activationData)
         {
             CommitAbility();
 
             if (_instigator)
             {
-                _instigator.LookAtTarget(_targetIndex);
-
-                _tacticsGrid.GetTileDataFromIndex(_targetIndex, out TileData targetData);
-
-                if (targetData.unitOnTile)
-                    ActionCameraController.Instance.ShowFramingTransposerAction(_instigator.transform, targetData.unitOnTile.LookAtTransform);
-                else
-                    ActionCameraController.Instance.ShowFramingTransposerAction(_instigator.transform, _instigator.LookAtTransform);
-
-                ActionCameraController.Instance.OnActionCameraInPosition += ActionCameraController_OnCameraInPosition;
+                _instigator.LookAtTarget(activationData.targetIndex);
             }
-            else
-            {
-                SpawnTaskAndExecute();
-            }
+
+            SpawnTaskAndExecute(activationData);
         }
 
-        private void SpawnTaskAndExecute()
+        private void SpawnTaskAndExecute(AbilityActivationData activationData)
         {
             PlayAnimationTask animationTask = new GameObject("PlayAnimationTask", typeof(PlayAnimationTask)).GetComponent<PlayAnimationTask>();
 
-            animationTask.InitTask(_instigator, _animationType, 2f);
+            animationTask.InitTask(activationData, _owner.GetComponent<IPlayAnimation>(), _animationType, 2f);
             animationTask.OnAnimationEvent += PlayAnimationTask_OnAnimationEvent;
             animationTask.OnTaskCompleted += AbilityTask_OnTaskCompleted;
             animationTask.OnAnimationCancelled += AbilityTask_OnAnimationCancelled;
@@ -47,21 +36,14 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             StartCoroutine(animationTask.ExecuteTask(this));
         }
 
-        private void ActionCameraController_OnCameraInPosition()
-        {
-            ActionCameraController.Instance.OnActionCameraInPosition -= ActionCameraController_OnCameraInPosition;
-
-            SpawnTaskAndExecute();
-        }
-
         //Something went wrong with the animation. Still apply Effect.
-        private void AbilityTask_OnAnimationCancelled(PlayAnimationTask task)
+        private void AbilityTask_OnAnimationCancelled(PlayAnimationTask task, AbilityActivationData activationData)
         {
             task.OnAnimationEvent -= PlayAnimationTask_OnAnimationEvent;
             task.OnTaskCompleted -= AbilityTask_OnTaskCompleted;
             task.OnAnimationCancelled -= AbilityTask_OnAnimationCancelled;
 
-            _tacticsGrid.GetTileDataFromIndex(_targetIndex, out TileData targetData);
+            activationData.tacticsGrid.GetTileDataFromIndex(activationData.targetIndex, out TileData targetData);
             CombatManager.Instance.ApplyEffectsToUnit(_instigator, targetData.unitOnTile, _effects);
             AbilityBehaviorComplete(this);
             ActionCameraController.Instance.HideActionCamera();
@@ -77,10 +59,10 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             EndAbility();
         }
 
-        private void PlayAnimationTask_OnAnimationEvent(PlayAnimationTask animationTask)
+        private void PlayAnimationTask_OnAnimationEvent(PlayAnimationTask animationTask, AbilityActivationData activationData)
         {
             animationTask.OnAnimationEvent -= PlayAnimationTask_OnAnimationEvent;
-            _tacticsGrid.GetTileDataFromIndex(_targetIndex, out TileData targetData);
+            activationData.tacticsGrid.GetTileDataFromIndex(activationData.targetIndex, out TileData targetData);
             CombatManager.Instance.ApplyEffectsToUnit(_instigator, targetData.unitOnTile, _effects);
 
             GameObject hitFx = Instantiate(_impactFxPrefab, targetData.tileMatrix.GetPosition() + new Vector3(0f, 1.5f, 0f), Quaternion.identity);
@@ -92,10 +74,10 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             return true;
         }
 
-        public override bool TryActivateAbility()
+        public override bool TryActivateAbility(AbilityActivationData activationData)
         {
             if (CanActivateAbility())
-                ActivateAbility();
+                ActivateAbility(activationData);
 
             return CanActivateAbility();
         }

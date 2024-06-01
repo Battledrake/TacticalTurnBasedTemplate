@@ -292,37 +292,36 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             }
         }
 
-        public bool TryActivateAbility(Ability ability, Unit instigator, GridIndex origin, GridIndex target)
+        public bool TryActivateAbility(Ability ability, GridIndex origin, GridIndex target)
         {
+            AbilityActivationData activationData;
+            activationData.tacticsGrid = _tacticsGrid;
+            activationData.originIndex = origin;
+            activationData.targetIndex = target;
             if (GetAbilityRange(origin, ability.GetRangeData()).Contains(target))
             {
                 //In the future, we'll want to check if there's already an ability object.
-                Ability abilityObject = Instantiate(ability, _tacticsGrid.GetWorldPositionFromGridIndex(origin), Quaternion.identity);
+                //Ability abilityObject = Instantiate(ability, _tacticsGrid.GetWorldPositionFromGridIndex(origin), Quaternion.identity);
 
                 List<GridIndex> impactIndexes = new List<GridIndex>();
                 if (ability.GetAreaOfEffectData().rangePattern == AbilityRangePattern.None)
                 {
                     impactIndexes.Add(target);
-                    abilityObject.InitializeAbility(_tacticsGrid, instigator, origin, target);
+                    //ability.InitializeAbility(_tacticsGrid, instigator, origin, target);
                 }
                 else
                 {
                     impactIndexes = GetAbilityRange(target, ability.GetAreaOfEffectData());
-                    abilityObject.InitializeAbility(_tacticsGrid, instigator, origin, target, impactIndexes);
+                    //abilityObject.InitializeAbility(_tacticsGrid, instigator, origin, target, impactIndexes);
                 }
 
-                if (abilityObject.TryActivateAbility())
+                if (ability.TryActivateAbility(activationData))
                 {
-                    abilityObject.OnBehaviorComplete += Ability_OnBehaviorComplete;
+                    ability.OnBehaviorComplete += Ability_OnBehaviorComplete;
                     //TODO: Ability point deduction logic.
-                    _actionPointDeduction = abilityObject.AbilityCost;
+                    _actionPointDeduction = ability.AbilityCost;
                     //TODO: Maybe add an OnAbilityActivated or something here for the AbilityBar.
                     return true;
-                }
-                else
-                {
-                    //Ability Failed to activate. Check conditions;
-                    abilityObject.EndAbility();
                 }
             }
             return false;
@@ -344,12 +343,14 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             if (receiver == null)
                 return;
 
+            bool didHit = UnityEngine.Random.Range(0f, 1f) <= 0.65f;
+
             List<AbilityEffectReal> effectsRealList = new List<AbilityEffectReal>();
             for (int i = 0; i < effectsToApply.Count; i++)
             {
                 AbilityEffectReal effectReal;
                 effectReal.attributeType = effectsToApply[i].attributeType;
-                effectReal.modifier = StaticUtilities.MinMaxRandom(effectsToApply[i].minMaxModifier);
+                effectReal.modifier = didHit ? StaticUtilities.MinMaxRandom(effectsToApply[i].minMaxModifier) : 0;
                 effectsRealList.Add(effectReal);
             }
             receiver.ApplyEffects(effectsRealList);

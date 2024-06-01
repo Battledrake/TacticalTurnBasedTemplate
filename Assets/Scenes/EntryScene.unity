@@ -16048,8 +16048,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _tacticsGrid: {fileID: 825704801}
-  _heuristicCost: 4
-  _traversalCost: 4
+  _heuristicCost: 1
+  _traversalCost: 1
   _traversalType: 1
 --- !u!114 &825704807
 MonoBehaviour:

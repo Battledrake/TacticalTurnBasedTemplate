@@ -15,17 +15,13 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private List<AbilityEffectReal> _activeEffects = new List<AbilityEffectReal>();
 
-        private Unit _owner;
-
-        public void Start()
+        public void InitAbilitySystem(IHaveAbilitySystem owner, List<Ability> abilities)
         {
-            _owner = this.transform.GetComponent<Unit>();
-            if (_owner)
+            if (owner != null)
             {
-                List<Ability> unitAbilities = _owner.UnitData.unitStats.abilities;
-                for (int i = 0; i < unitAbilities.Count; i++)
+                for (int i = 0; i < abilities.Count; i++)
                 {
-                    GiveAbility(unitAbilities[i].GetAbilityId(), unitAbilities[i]);
+                    GiveAbility(abilities[i].GetAbilityId(), abilities[i]);
                 }
             }
         }
@@ -35,7 +31,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             if (!_abilities.ContainsKey(id))
             {
                 Ability abilityObject = Instantiate(ability, _abilityInstanceContainer);
-                ability.SetAbilityOwner(this);
+                abilityObject.InitAbility(this);
                 _abilities.Add(id, abilityObject);
             }
             else
@@ -44,10 +40,10 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             }
         }
 
-        public bool TryActivateAbility(AbilityId id)
+        public bool TryActivateAbility(AbilityId id, AbilityActivationData activationData)
         {
             _abilities.TryGetValue(id, out Ability ability);
-            return ability.TryActivateAbility();
+            return ability.TryActivateAbility(activationData);
         }
 
         public void UpdateEffectDurations()

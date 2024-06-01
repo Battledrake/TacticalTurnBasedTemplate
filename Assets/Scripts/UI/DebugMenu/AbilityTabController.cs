@@ -8,7 +8,8 @@ using UnityEngine.UI;
 
 namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 {
-    public class AbilityTabController : MonoBehaviour
+    [RequireComponent(typeof(AbilitySystem))]
+    public class AbilityTabController : MonoBehaviour, IHaveAbilitySystem
     {
         [SerializeField] private List<Ability> _debugAbilities;
 
@@ -39,20 +40,24 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public ToggleGroup AbilityButtonsToggleGroup { get => _abilityButtonsToggleGroup; }
         public Ability ActiveAbility { get => _activeAbility; }
 
-        private Dictionary<int, AbilityButton> _abilityButtons = new Dictionary<int, AbilityButton>();
+        private Dictionary<AbilityId, AbilityButton> _abilityButtons = new Dictionary<AbilityId, AbilityButton>();
         private Ability _activeAbility;
         private int _activeButton = -1;
+        private AbilitySystem _abilitySystem;
 
         private void Awake()
         {
+            _abilitySystem = this.GetComponent<AbilitySystem>();
+            _abilitySystem.InitAbilitySystem(this, _debugAbilities);
+
             for (int i = 0; i < _debugAbilities.Count; i++)
             {
                 AbilityButton abilityButton = Instantiate(_abilityButtonPrefab, _abilityButtonContainer);
-                abilityButton.InitializeButton(i, _debugAbilities[i].Icon);
+                abilityButton.InitializeButton(_debugAbilities[i].GetAbilityId(), _debugAbilities[i].Icon);
                 abilityButton.OnAbilityButtonSelected += AbilityButton_OnAbilityButtonSelected;
                 abilityButton.OnAbilityButtonDeselected += AbilityButton_OnAbilityButtonDeselected;
 
-                _abilityButtons.TryAdd(i, abilityButton);
+                _abilityButtons.TryAdd(_debugAbilities[i].GetAbilityId(), abilityButton);
 
                 _abilityButtonsToggleGroup.RegisterToggle(abilityButton.GetComponent<Toggle>());
                 abilityButton.GetComponent<Toggle>().group = _abilityButtonsToggleGroup;
@@ -221,9 +226,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             }
         }
 
-        private void AbilityButton_OnAbilityButtonDeselected(int buttonIndex)
+        private void AbilityButton_OnAbilityButtonDeselected(AbilityId abilityId)
         {
-            if (_activeButton == buttonIndex)
+            if (_activeButton == (int)abilityId)
             {
                 _activeAbility = null;
                 _activeButton = -1;
@@ -231,17 +236,17 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             }
             else
             {
-                _abilityButtons[buttonIndex].DisableButton();
+                _abilityButtons[abilityId].DisableButton();
             }
         }
 
-        private void AbilityButton_OnAbilityButtonSelected(int buttonIndex)
+        private void AbilityButton_OnAbilityButtonSelected(AbilityId abilityId)
         {
             if (_activeButton >= 0)
-                _abilityButtons[_activeButton].DisableButton();
+                _abilityButtons[(AbilityId)_activeButton].DisableButton();
 
-            _activeAbility = _debugAbilities[buttonIndex];
-            _activeButton = buttonIndex;
+            _activeAbility = _abilitySystem.GetAbility(abilityId);
+            _activeButton = (int)abilityId;
 
             _playerActions.CurrentAbility = _activeAbility;
         }
@@ -251,13 +256,19 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             if (isActionActive)
                 return;
 
-            for (int i = 0; i < _abilityButtons.Count; i++)
+            foreach(var buttonPair in _abilityButtons)
             {
-                _abilityButtons[i].DisableButton();
+                buttonPair.Value.DisableButton();
             }
+
             _activeAbility = null;
             _activeButton = -1;
             _playerActions.CurrentAbility = null;
+        }
+
+        public AbilitySystem GetAbilitySystem()
+        {
+            return _abilitySystem;
         }
     }
 }

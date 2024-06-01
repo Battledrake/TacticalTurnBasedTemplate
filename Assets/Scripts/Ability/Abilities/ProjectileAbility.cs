@@ -26,36 +26,39 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             return true;
         }
 
-        public override bool TryActivateAbility()
+        public override bool TryActivateAbility(AbilityActivationData activateData)
         {
             if (!CanActivateAbility())
                 return false;
 
-            ActivateAbility();
+            ActivateAbility(activateData);
             return true;
         }
         protected override void CommitAbility()
         {
         }
 
-        public override void ActivateAbility()
+        public override void ActivateAbility(AbilityActivationData activateData)
         {
             CommitAbility();
 
             if (_instigator)
             {
-                _instigator.LookAtTarget(_targetIndex);
-                _instigator.GetComponent<IUnitAnimation>().PlayAnimationType(_animationType);
+                _instigator.LookAtTarget(activateData.targetIndex);
+                _instigator.GetComponent<IPlayAnimation>().PlayAnimationType(_animationType);
             }
 
 
-            _tacticsGrid.GetTileDataFromIndex(_targetIndex, out TileData initialTargetData);
+            activateData.tacticsGrid.GetTileDataFromIndex(activateData.targetIndex, out TileData initialTargetData);
             Vector3 startPosition = initialTargetData.tileMatrix.GetPosition();
-            for (int i = 0; i < _aoeIndexes.Count; i++)
+
+            List<GridIndex> aoeIndexes = CombatManager.Instance.GetAbilityRange(activateData.targetIndex, this.GetAreaOfEffectData());
+
+            for (int i = 0; i < aoeIndexes.Count; i++)
             {
-                if (_aoeIndexes[i] != _targetIndex)
+                if (aoeIndexes[i] != activateData.targetIndex)
                 {
-                    _tacticsGrid.GetTileDataFromIndex(_aoeIndexes[i], out TileData targetData);
+                    activateData.tacticsGrid.GetTileDataFromIndex(aoeIndexes[i], out TileData targetData);
 
                     GameObject projectile = Instantiate(_projectilePrefab);
 
@@ -63,7 +66,10 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                     animateObjectTask.transform.SetParent(this.transform);
                     animateObjectTask.GetComponent<Rigidbody>().useGravity = false;
 
-                    animateObjectTask.InitTask(projectile, _taskData, startPosition, targetData.tileMatrix.GetPosition(), _animationTime, UnityEngine.Random.Range(.8f, _animationSpeed), false);
+                    AbilityActivationData modifiedData = activateData;
+                    modifiedData.targetIndex = aoeIndexes[i];
+
+                    animateObjectTask.InitTask(projectile, _taskData, modifiedData, _animationTime, UnityEngine.Random.Range(.8f, _animationSpeed), false);
 
                     animateObjectTask.OnInitialAnimationCompleted += AnimateObjectTask_OnInitialAnimationCompleted;
                     animateObjectTask.OnObjectCollisionWithUnit += AnimateObjectTask_OnObjectCollisionWithUnit;
@@ -73,7 +79,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             }
         }
 
-        private void AnimateObjectTask_OnObjectCollisionWithUnit(Unit unit)
+        private void AnimateObjectTask_OnObjectCollisionWithUnit(Unit unit, AbilityActivationData activateData)
         {
             //TODO: Improve on the friendly fire logic
             if (unit == _instigator && !this.IsFriendly)
@@ -82,7 +88,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             if (_hitUnits.Contains(unit))
                 return;
 
-            if (!_aoeIndexes.Contains(unit.UnitGridIndex))
+            List<GridIndex> aoeIndexes = CombatManager.Instance.GetAbilityRange(activateData.targetIndex, this.GetAreaOfEffectData());
+
+            if (!aoeIndexes.Contains(unit.UnitGridIndex))
             {
                 return;
             }
@@ -91,15 +99,16 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             CombatManager.Instance.ApplyEffectsToUnit(_instigator, unit, _effects);
         }
 
-        private void AnimateObjectTask_OnInitialAnimationCompleted(AnimateObjectTask animateObjectTask)
+        private void AnimateObjectTask_OnInitialAnimationCompleted(AnimateObjectTask animateObjectTask, AbilityActivationData activateData)
         {
             animateObjectTask.OnInitialAnimationCompleted -= AnimateObjectTask_OnInitialAnimationCompleted;
             animateObjectTask.OnObjectCollisionWithUnit -= AnimateObjectTask_OnObjectCollisionWithUnit;
 
+            List<GridIndex> aoeIndexes = CombatManager.Instance.GetAbilityRange(activateData.targetIndex, this.GetAreaOfEffectData());
             //HACK: If somehow our object didn't hit a valid unit due to a collision miss or something? hit it here and possibly fix issue that prevented collision in the first place. If Possible.
-            for(int i = 0; i < _aoeIndexes.Count; i++)
+            for (int i = 0; i < aoeIndexes.Count; i++)
             {
-                _tacticsGrid.GetTileDataFromIndex(_aoeIndexes[i], out TileData tileData);
+                activateData.tacticsGrid.GetTileDataFromIndex(aoeIndexes[i], out TileData tileData);
                 if (tileData.unitOnTile)
                 {
                     if (!_hitUnits.Contains(tileData.unitOnTile))

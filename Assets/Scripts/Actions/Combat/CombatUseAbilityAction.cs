@@ -10,10 +10,16 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         AbilityRangeData _rangeData;
         AbilityRangeData _areaOfEffectData;
 
+        private bool _abilityInUse = false;
+
         public override bool ExecuteAction(GridIndex index)
         {
-            if(CombatManager.Instance.TryActivateAbility(_currentAbility, _playerActions.SelectedUnit, _playerActions.SelectedTile, index))
+            if (_abilityInUse)
+                return false;
+
+            if(CombatManager.Instance.TryActivateAbility(_currentAbility, _playerActions.SelectedTile, index))
             {
+                _abilityInUse = true;
                 _playerActions.TacticsGrid.ClearAllTilesWithState(TileState.IsInAbilityRange);
                 _playerActions.TacticsGrid.ClearAllTilesWithState(TileState.IsInAoeRange);
                 CombatManager.Instance.OnAbilityBehaviorComplete += CombatManager_OnAbilityBehaviorComplete;
@@ -23,6 +29,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void CombatManager_OnAbilityBehaviorComplete()
         {
+            _abilityInUse = false;
             CombatManager.Instance.OnAbilityBehaviorComplete -= CombatManager_OnAbilityBehaviorComplete;
             _playerActions.PlayerAbilityBar.SetSelectedAbilityFromIndex(-1);
         }

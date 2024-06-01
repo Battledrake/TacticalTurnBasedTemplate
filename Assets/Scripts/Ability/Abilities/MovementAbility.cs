@@ -9,14 +9,14 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
     public class MovementAbility : DynamicAbility
     {
         //Do Logic Here
-        public override void ActivateAbility()
+        public override void ActivateAbility(AbilityActivationData activateData)
         {
             CommitAbility();
 
             //TODO: Move this to a task. MoveToLocationTask?;
             PathParams pathParams = GridPathfinding.CreatePathParamsFromUnit(_instigator);
 
-            PathfindingResult pathResult = _tacticsGrid.GridPathfinder.FindPath(_instigator.UnitGridIndex, _targetIndex, pathParams);
+            PathfindingResult pathResult = activateData.tacticsGrid.GridPathfinder.FindPath(_instigator.UnitGridIndex, activateData.targetIndex, pathParams);
             if (pathResult.Result == PathResult.SearchSuccess)
             {
                 _instigator.GetComponent<GridMovement>().SetPathAndMove(pathResult.Path);
@@ -52,11 +52,11 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             return true;
         }
 
-        public override bool TryActivateAbility()
+        public override bool TryActivateAbility(AbilityActivationData activateData)
         {
             if (CanActivateAbility())
             {
-                ActivateAbility();
+                ActivateAbility(activateData);
                 return true;
             }
             return false;

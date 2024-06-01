@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using TMPro.EditorUtilities;
 using UnityEngine;
 using UnityEngine.Timeline;
@@ -23,70 +24,52 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         [Tooltip("Idea was to allow ability to run after animation, but will likely move to effects. No use currently.")]
         [SerializeField] private bool _loopAnimation = false;
 
-        private List<Unit> _hitUnits = new List<Unit>();
-
         /// <summary>
         /// Set values for update calls.
         /// </summary>
-        public override void ActivateAbility()
+        public override void ActivateAbility(AbilityActivationData activationData)
         {
             CommitAbility();
-
-            if (_instigator)
+            
+            if (_owner.GetComponent<Unit>())
             {
-                _instigator.LookAtTarget(_targetIndex);
-            }
-            _tacticsGrid.GetTileDataFromIndex(_originIndex, out TileData originData);
-            _tacticsGrid.GetTileDataFromIndex(_targetIndex, out TileData targetData);
+                _owner.GetComponent<Unit>().LookAtTarget(activationData.targetIndex);
 
-            if (originData.unitOnTile)
-            {
-                if (targetData.unitOnTile)
-                    ActionCameraController.Instance.ShowFramingTransposerAction(originData.unitOnTile.transform, targetData.unitOnTile.LookAtTransform);
-                else
-                    ActionCameraController.Instance.ShowFramingTransposerAction(originData.unitOnTile.transform, originData.unitOnTile.LookAtTransform);
 
-                ActionCameraController.Instance.OnActionCameraInPosition += ActionCameraController_OnActionCameraInPosition;
+                PlayAnimationTask animationTask = new GameObject("PlayAnimationTask", typeof(PlayAnimationTask)).GetComponent<PlayAnimationTask>();
+                animationTask.transform.SetParent(this.transform);
+
+                animationTask.InitTask(activationData, _owner.GetComponent<IPlayAnimation>(), _animationType, 2f);
+                animationTask.OnAnimationEvent += PlayAnimationTask_OnAnimationEvent;
+                animationTask.OnAnimationCancelled += AbilityTask_OnAnimationCancelled;
+
+                StartCoroutine(animationTask.ExecuteTask(this));
             }
             else
             {
-                SpawnAnimateObjectTaskAndExecute();
+                SpawnAnimateObjectTaskAndExecute(activationData);
             }
 
         }
 
-        private void ActionCameraController_OnActionCameraInPosition()
-        {
-            ActionCameraController.Instance.OnActionCameraInPosition -= ActionCameraController_OnActionCameraInPosition;
-
-            PlayAnimationTask animationTask = new GameObject("PlayAnimationTask", typeof(PlayAnimationTask)).GetComponent<PlayAnimationTask>();
-            animationTask.transform.SetParent(this.transform);
-
-            animationTask.InitTask(_instigator, _animationType, 2f);
-            animationTask.OnAnimationEvent += PlayAnimationTask_OnAnimationEvent;
-            animationTask.OnAnimationCancelled += AbilityTask_OnAnimationCancelled;
-
-            StartCoroutine(animationTask.ExecuteTask(this));
-        }
-
-        private void AbilityTask_OnAnimationCancelled(PlayAnimationTask animationTask)
+        private void AbilityTask_OnAnimationCancelled(PlayAnimationTask animationTask, AbilityActivationData activationData)
         {
             animationTask.OnAnimationEvent -= PlayAnimationTask_OnAnimationEvent;
             animationTask.OnAnimationCancelled -= AbilityTask_OnAnimationCancelled;
-            SpawnAnimateObjectTaskAndExecute();
+            SpawnAnimateObjectTaskAndExecute(activationData);
         }
 
-        private void PlayAnimationTask_OnAnimationEvent(PlayAnimationTask animationTask)
+        private void PlayAnimationTask_OnAnimationEvent(PlayAnimationTask animationTask, AbilityActivationData activationData)
         {
             animationTask.OnAnimationEvent -= PlayAnimationTask_OnAnimationEvent;
             animationTask.OnAnimationCancelled -= AbilityTask_OnAnimationCancelled;
-            SpawnAnimateObjectTaskAndExecute();
+            SpawnAnimateObjectTaskAndExecute(activationData);
         }
 
-        private void SpawnAnimateObjectTaskAndExecute()
+        private void SpawnAnimateObjectTaskAndExecute(AbilityActivationData activationData)
         {
-            _tacticsGrid.GetTileDataFromIndex(_originIndex, out TileData originData);
-            _tacticsGrid.GetTileDataFromIndex(_targetIndex, out TileData targetData);
+            activationData.tacticsGrid.GetTileDataFromIndex(activationData.originIndex, out TileData originData);
+            activationData.tacticsGrid.GetTileDataFromIndex(activationData.targetIndex, out TileData targetData);
 
             AnimateObjectTask animateObjectTask = new GameObject("AnimateObjectTask", new[] { typeof(AnimateObjectTask), typeof(Rigidbody) }).GetComponent<AnimateObjectTask>();
             animateObjectTask.GetComponent<Rigidbody>().useGravity = false;
@@ -98,12 +81,12 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
                 GameObject objectToAnimate = Instantiate(_objectToAnimate);
 
-                animateObjectTask.InitTask(objectToAnimate, _taskData, originData.tileMatrix.GetPosition(), targetData.tileMatrix.GetPosition(), _animationTime, _animationSpeed, _loopAnimation);
+                animateObjectTask.InitTask(objectToAnimate, _taskData, activationData, _animationTime, _animationSpeed, _loopAnimation);
                 StartCoroutine(animateObjectTask.ExecuteTask(this));
             }
         }
 
-        private void AnimateObjectTask_OnObjectCollisionWithUnit(Unit unit)
+        private void AnimateObjectTask_OnObjectCollisionWithUnit(Unit unit, AbilityActivationData activationData)
         {
             //if(isFriendly and unit.TeamIndex == _instigator.TeamIndex, continue
             //if(unit is _instigator and !isFriendly) return;
@@ -112,34 +95,30 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             if (unit == _instigator && !this.IsFriendly)
                 return;
 
-            if (this.IsFriendly && unit.TeamIndex != _instigator.TeamIndex)
+            if (this.IsFriendly && unit.TeamIndex != _owner.GetComponent<Unit>().TeamIndex)
                 return;
 
-            if (_hitUnits.Contains(unit))
-                return;
-
-
-            if (unit.UnitGridIndex != _targetIndex && !CombatManager.Instance.GetAbilityRange(_targetIndex, this.GetAreaOfEffectData()).Contains(unit.UnitGridIndex))
+            if (unit.UnitGridIndex != activationData.targetIndex && !CombatManager.Instance.GetAbilityRange(activationData.targetIndex, this.GetAreaOfEffectData()).Contains(unit.UnitGridIndex))
             {
                 return;
             }
 
-
-            _hitUnits.Add(unit);
             CombatManager.Instance.ApplyEffectsToUnit(_instigator, unit, _effects);
         }
 
-        private void AnimateObjectTask_OnInitialAnimationComplete(AnimateObjectTask task)
+        private void AnimateObjectTask_OnInitialAnimationComplete(AnimateObjectTask task, AbilityActivationData activationData)
         {
             task.OnInitialAnimationCompleted -= AnimateObjectTask_OnInitialAnimationComplete;
 
+            List<GridIndex> aoeIndexes = CombatManager.Instance.GetAbilityRange(activationData.targetIndex, GetAreaOfEffectData());
+
             //HACK: If somehow our object didn't hit a valid unit due to a collision miss or something? hit it here and possibly fix issue that prevented collision in the first place. If Possible.
-            for (int i = 0; i < _aoeIndexes.Count; i++)
+            for (int i = 0; i < aoeIndexes.Count; i++)
             {
-                _tacticsGrid.GetTileDataFromIndex(_aoeIndexes[i], out TileData tileData);
+                activationData.tacticsGrid.GetTileDataFromIndex(aoeIndexes[i], out TileData tileData);
                 if (tileData.unitOnTile)
                 {
-                    if (!_hitUnits.Contains(tileData.unitOnTile))
+                    if (!task.HitUnits.Contains(tileData.unitOnTile))
                     {
                         Debug.LogWarning($"Unit at {tileData.index} missed by ability collision. Applying late effect");
                         CombatManager.Instance.ApplyEffectsToUnit(_instigator, tileData.unitOnTile, _effects);
@@ -169,11 +148,11 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         /// Checks if the ability can be activated before activating
         /// </summary>
         /// <returns></returns>
-        public override bool TryActivateAbility()
+        public override bool TryActivateAbility(AbilityActivationData activationData)
         {
             if (CanActivateAbility())
             {
-                ActivateAbility();
+                ActivateAbility(activationData);
                 return true;
             }
             return false;

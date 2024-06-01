@@ -26,11 +26,11 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             return _rangeData;
         }
 
-        public abstract override void ActivateAbility();
+        public abstract override void ActivateAbility(AbilityActivationData activationData);
 
         public abstract override bool CanActivateAbility();
 
-        public abstract override bool TryActivateAbility();
+        public abstract override bool TryActivateAbility(AbilityActivationData activationData);
 
         protected abstract override void CommitAbility();
     }

@@ -13,11 +13,12 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         [SerializeField] private Transform _abilityButtonContainer;
         //Use ToggleGroup on AbilityButtonContainer if not using DebugMenu
         [SerializeField] private ToggleGroup _abilityBarToggleGroup;
-
         [SerializeField] private PlayerActions _playerActions;
 
         private Dictionary<int, AbilityButton> _abilityButtons = new Dictionary<int, AbilityButton>();
-        private List<Ability> _abilities = new List<Ability>();
+
+
+        private AbilitySystem _abilitySystem;
 
         private void Start()
         {
@@ -29,9 +30,14 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             ClearBar();
 
-            if (unit != null)
+            if (unit == null)
+                return;
+
+            _abilitySystem = unit.GetAbilitySystem();
+
+            if (_abilitySystem != null)
             {
-                PopulateBar(unit.UnitData.unitStats.abilities);
+                PopulateBar(_abilitySystem.GetAllAbilities());
             }
         }
 
@@ -50,7 +56,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             for (int i = 0; i < abilities.Count; i++)
             {
                 AbilityButton newButton = Instantiate(_abilityButtonPrefab, _abilityButtonContainer);
-                newButton.InitializeButton(i, abilities[i].Icon);
+                newButton.InitializeButton(abilities[i].GetAbilityId(), abilities[i].Icon);
                 _abilityButtons.TryAdd(i, newButton);
 
                 Toggle newButtonToggle = newButton.GetComponent<Toggle>();
@@ -60,16 +66,15 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 newButton.OnAbilityButtonSelected += AbilityButton_OnAbilityButtonSelected;
                 newButton.OnAbilityButtonDeselected += AbilityButton_OnAbilityButtonDeselected;
             }
-            _abilities = abilities;
         }
 
-        private void AbilityButton_OnAbilityButtonSelected(int index)
+        private void AbilityButton_OnAbilityButtonSelected(AbilityId abilityId)
         {
-            OnSelectedAbilityChanged?.Invoke(_abilities[index]);
+            OnSelectedAbilityChanged?.Invoke(_abilitySystem.GetAbility(abilityId));
             //_playerActions.CurrentAbility = _abilities[index];
         }
 
-        private void AbilityButton_OnAbilityButtonDeselected(int index)
+        private void AbilityButton_OnAbilityButtonDeselected(AbilityId abilityId)
         {
             OnSelectedAbilityChanged?.Invoke(null);
             //_playerActions.CurrentAbility = null;

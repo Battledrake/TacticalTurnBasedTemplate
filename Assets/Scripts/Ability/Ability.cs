@@ -32,6 +32,13 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         Square
     }
 
+    public struct AbilityActivationData
+    {
+        public TacticsGrid tacticsGrid;
+        public GridIndex originIndex;
+        public GridIndex targetIndex;
+    }
+
     [Serializable]
     public struct AbilityRangeData
     {
@@ -105,41 +112,18 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         protected AbilitySystem _owner;
 
-        protected GridIndex _originIndex;
-        protected GridIndex _targetIndex;
-        protected List<GridIndex> _aoeIndexes = new List<GridIndex>();
-
-        protected TacticsGrid _tacticsGrid;
-
         public AbilityId GetAbilityId()
         {
             return _abilityId;
-        }
-
-        public void SetAbilityOwner(AbilitySystem abilitySystem)
-        {
-            _owner = abilitySystem;
         }
 
         public abstract  AbilityRangeData GetRangeData();
         public abstract  AbilityRangeData GetAreaOfEffectData();
         public abstract List<AbilityEffect> GetEffects();
 
-        public void InitializeAbility(TacticsGrid tacticsGrid, Unit instigator, GridIndex originIndex, GridIndex targetIndex)
+        public void InitAbility(AbilitySystem abilitySystem)
         {
-            _tacticsGrid = tacticsGrid;
-            _instigator = instigator;
-            _originIndex = originIndex;
-            _targetIndex = targetIndex;
-        }
-
-        public void InitializeAbility(TacticsGrid tacticsGrid, Unit instigator, GridIndex originIndex, GridIndex targetIndex, List<GridIndex> aoeIndexes)
-        {
-            _tacticsGrid = tacticsGrid;
-            _instigator = instigator;
-            _originIndex = originIndex;
-            _targetIndex = targetIndex;
-            _aoeIndexes = aoeIndexes;
+            _owner = abilitySystem;
         }
 
         protected void AbilityBehaviorComplete(Ability ability)
@@ -152,13 +136,12 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         protected abstract void CommitAbility();
 
-        public abstract void ActivateAbility();
+        public abstract void ActivateAbility(AbilityActivationData activationData);
 
-        public abstract bool TryActivateAbility();
+        public abstract bool TryActivateAbility(AbilityActivationData activationData);
         public virtual void EndAbility()
         {
             OnAbilityEnd?.Invoke();
-            Destroy(this.gameObject); 
         }
     }
 }

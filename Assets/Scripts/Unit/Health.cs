@@ -24,7 +24,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public int CurrentHealth { get => _currentHealth; }
         public int MaxHealth { get => _maxHealth; }
 
-        private Unit _owner;
+        private IHaveHealth _owner;
         private List<GameObject> _healthUnits = new List<GameObject>();
         private Dictionary<int, SpriteRenderer> _healthUnitChildren = new Dictionary<int, SpriteRenderer>();
         private int _currentHealth = 0;
@@ -32,12 +32,19 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private int _maxHealth = 0;
         private Color _healthUnitColor = Color.red;
 
-        public void Start()
+        public void InitHealth(IHaveHealth owner)
         {
-            _owner = this.GetComponent<Unit>();
+            _owner = owner;
 
-            _maxHealth = _owner.UnitData.unitStats.maxHealth;
-            _currentHealth = _maxHealth;
+            //TODO: Redo this to a pooling system like timeline visuals.
+            for (int i = 0; i < _healthUnits.Count; i++)
+            {
+                Destroy(_healthUnits[i]);
+            }
+            _healthUnits.Clear();
+
+            _maxHealth = owner.GetMaxHealth();
+            _currentHealth = owner.GetCurrentHealth();
             _displayedHealth = _currentHealth;
 
             OnHealthChanged?.Invoke();
@@ -87,8 +94,16 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             numberAnim.speed = UnityEngine.Random.Range(0.8f, 1.2f);
 
             TextMeshPro textComp = floatingNumber.GetComponentInChildren<TextMeshPro>();
-            textComp.color = amount < 0 ? _damageColor : _healColor;
-            textComp.text = amount.ToString();
+            if (amount == 0)
+            {
+                textComp.color = Color.yellow;
+                textComp.text = "Miss";
+            }
+            else
+            {
+                textComp.color = amount < 0 ? _damageColor : _healColor;
+                textComp.text = amount.ToString();
+            }
 
             Destroy(floatingNumber, 2f);
         }

@@ -7,8 +7,10 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 {
     public class AnimateObjectTask : AbilityTask
     {
-        public event Action<AnimateObjectTask> OnInitialAnimationCompleted;
-        public event Action<Unit> OnObjectCollisionWithUnit;
+        public event Action<AnimateObjectTask, AbilityActivationData> OnInitialAnimationCompleted;
+        public event Action<Unit, AbilityActivationData> OnObjectCollisionWithUnit;
+
+        public List<Unit> HitUnits { get => _hitUnits; }
 
         private GameObject _objectToAnimate;
 
@@ -39,7 +41,10 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private float _timeElapsed = 0f;
         private bool _hasInitiallyLooped = false;
 
-        public void InitTask(GameObject objectToAnimate, AnimateObjectTaskData taskData, Vector3 startPosition, Vector3 targetPosition, float animationTime = 1f, float animationSpeed = 1f, bool loopAnimation = false)
+        private AbilityActivationData _activateData;
+        private List<Unit> _hitUnits = new List<Unit>();
+
+        public void InitTask(GameObject objectToAnimate, AnimateObjectTaskData taskData, AbilityActivationData activateData, float animationTime = 1f, float animationSpeed = 1f, bool loopAnimation = false)
         {
             _objectToAnimate = objectToAnimate;
             _objectToAnimate.transform.parent = this.transform;
@@ -65,8 +70,10 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
             _loopAnimation = loopAnimation;
 
-            _startPosition = startPosition;
-            _targetPosition = targetPosition;
+            _activateData = activateData;
+            _startPosition = _activateData.tacticsGrid.GetWorldPositionFromGridIndex(activateData.originIndex);
+            _targetPosition = _activateData.tacticsGrid.GetWorldPositionFromGridIndex(activateData.targetIndex);
+
             _direction = _targetPosition - _startPosition;
             _direction.Normalize();
 
@@ -81,7 +88,11 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             Unit unit = other.GetComponent<Unit>();
             if (unit)
             {
-                OnObjectCollisionWithUnit?.Invoke(unit);
+                if (!_hitUnits.Contains(unit))
+                {
+                    _hitUnits.Add(unit);
+                    OnObjectCollisionWithUnit?.Invoke(unit, _activateData);
+                }
             }
         }
 
@@ -96,7 +107,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                     if (!_hasInitiallyLooped)
                     {
                         _hasInitiallyLooped = true;
-                        OnInitialAnimationCompleted?.Invoke(this);
+                        OnInitialAnimationCompleted?.Invoke(this, _activateData);
                     }
                     if (_loopAnimation)
                     {
@@ -105,6 +116,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                     else
                     {
                         AbilityTaskCompleted();
+                        EndTask();
                     }
                 }
 
@@ -141,11 +153,11 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 float objectYPosition = _objectToAnimate.transform.localPosition.y;
                 float objectZPosition = _objectToAnimate.transform.localPosition.z;
 
-                if(_objectPosXCurve.length > 0)
+                if (_objectPosXCurve.length > 0)
                 {
                     objectXPosition = _objectPosXCurve.Evaluate(evalSpeed);
                 }
-                if(_objectPosYCurve.length > 0)
+                if (_objectPosYCurve.length > 0)
                 {
                     objectYPosition = _objectPosYCurve.Evaluate(evalSpeed);
                 }
