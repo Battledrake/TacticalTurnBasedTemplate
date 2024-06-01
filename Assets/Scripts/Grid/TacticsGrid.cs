@@ -40,7 +40,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public event Action OnGridGenerated;
 
         [Header("Grid Configuration")]
-        [SerializeField] private GridShape _gridShapeToggle = GridShape.Square;
         [SerializeField] private GridIndex _gridTileCount;
         [SerializeField] private Vector3 _gridTileSize;
         [SerializeField] private bool _useEnvironment = false;
@@ -59,7 +58,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public GridPathfinding GridPathfinder { get => _gridPathfinder; }
 
         private Vector3 _gridPosition = Vector3.zero;
-        private GridShape _gridShape = GridShape.None;
+        private GridShape _gridShape = GridShape.Square;
 
         private Dictionary<GridIndex, TileData> _gridTiles = new Dictionary<GridIndex, TileData>();
         private Dictionary<TileState, HashSet<GridIndex>> _tileStateIndexes = new Dictionary<TileState, HashSet<GridIndex>>();

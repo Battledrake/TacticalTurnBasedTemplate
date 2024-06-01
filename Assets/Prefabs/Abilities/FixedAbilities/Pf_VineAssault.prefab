@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &6235792246886314191
+--- !u!1 &1267419908511502824
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,22 +8,22 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 4604717576693254803}
-  - component: {fileID: 2237031348335038309}
+  - component: {fileID: 7710745936017556063}
+  - component: {fileID: 7802283948518552907}
   m_Layer: 0
-  m_Name: Pf_ShortRangeArrow
+  m_Name: Pf_VineAssault
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &4604717576693254803
+--- !u!4 &7710745936017556063
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6235792246886314191}
+  m_GameObject: {fileID: 1267419908511502824}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -32,23 +32,25 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2237031348335038309
+--- !u!114 &7802283948518552907
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6235792246886314191}
+  m_GameObject: {fileID: 1267419908511502824}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5ec1f05eb76d995429a4a1d5dbe4d949, type: 3}
+  m_Script: {fileID: 11500000, guid: 6d86e668ac114b44baa687cf2a554343, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _abilityId: 10
-  _icon: {fileID: 21300000, guid: 8a8afbd2bf68f054fa55c56786d13458, type: 3}
+  _abilityId: 2
+  _icon: {fileID: 21300000, guid: 384a9982cc7676249932679d732c2b08, type: 3}
+  _abilityCost: 2
+  _isFriendly: 0
   _rangeData:
-    rangePattern: 5
-    rangeMinMax: {x: 3, y: 4}
+    rangePattern: 4
+    rangeMinMax: {x: 0, y: 3}
     lineOfSightData:
       requireLineOfSight: 1
       height: 0.5
@@ -60,15 +62,7 @@ MonoBehaviour:
       requireLineOfSight: 0
       height: 0
       offsetDistance: 0
-  _effects:
-  - attributeType: 0
-    minMaxModifier: {x: -2, y: -5}
-  _abilityCost: 2
-  _isFriendly: 0
-  _objectToAnimate: {fileID: 5532487369551238974, guid: db7d39dc961b49e47bd926265d63e932,
+  _effects: []
+  _vinePrefab: {fileID: 1199601900371724, guid: d67ed860424886e4db64e996b4d85493,
     type: 3}
-  _taskData: {fileID: 11400000, guid: 40d57251649027d4f8b1d3345845acbe, type: 2}
-  _animationType: 2
-  _animationTime: 1
-  _animationSpeed: 1
-  _loopAnimation: 0
+  _playbackSpeed: 0.25

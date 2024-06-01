@@ -8,34 +8,64 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 {
     public class AbilitySystem : MonoBehaviour
     {
+        [SerializeField] private Transform _abilityInstanceContainer;
+
         private Dictionary<AbilityId, Ability> _abilities = new Dictionary<AbilityId, Ability>();
         private Ability _activeAbility;
 
         private List<AbilityEffectReal> _activeEffects = new List<AbilityEffectReal>();
 
-        private void Awake()
+        private Unit _owner;
+
+        public void Start()
         {
-            Unit unit = this.transform.GetComponent<Unit>();
-            if (unit)
+            _owner = this.transform.GetComponent<Unit>();
+            if (_owner)
             {
-                List<Ability> unitAbilities = unit.UnitData.unitStats.abilities;
+                List<Ability> unitAbilities = _owner.UnitData.unitStats.abilities;
                 for (int i = 0; i < unitAbilities.Count; i++)
                 {
-                    AddAbility(unitAbilities[i].GetAbilityId(), unitAbilities[i]);
+                    GiveAbility(unitAbilities[i].GetAbilityId(), unitAbilities[i]);
                 }
             }
-            if (_abilities.Count > 0)
-                SetActiveAbility(0);
         }
 
-        private void AddAbility(AbilityId id, Ability ability)
+        private void GiveAbility(AbilityId id, Ability ability)
         {
-            _abilities.TryAdd(id, ability);
+            if (!_abilities.ContainsKey(id))
+            {
+                Ability abilityObject = Instantiate(ability, _abilityInstanceContainer);
+                ability.SetAbilityOwner(this);
+                _abilities.Add(id, abilityObject);
+            }
+            else
+            {
+                Debug.Log("AbilitySystem already has an instance of that ability");
+            }
         }
 
-        public void RemoveAbility(AbilityId id, Ability ability)
+        public bool TryActivateAbility(AbilityId id)
         {
+            _abilities.TryGetValue(id, out Ability ability);
+            return ability.TryActivateAbility();
+        }
+
+        public void UpdateEffectDurations()
+        {
+            //for(int i = 0; i < _activeEffects.Count; i++)
+            //{
+            //    if(_activeEffects.EffectType == EffectType.Cooldown)
+            //    {
+            //        _activeEffects[i].duration -= 1;
+            //    }
+            //}
+        }
+
+        public void RemoveAbility(AbilityId id)
+        {
+            _abilities.TryGetValue(id, out Ability abilityToRemove);
             _abilities.Remove(id);
+            Destroy(abilityToRemove.gameObject);
         }
 
         public Ability GetAbility(AbilityId id)
@@ -49,16 +79,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public List<Ability> GetAllAbilities()
         {
             return _abilities.Values.ToList();
-        }
-
-        public void SetActiveAbility(AbilityId id)
-        {
-            _activeAbility = _abilities[id];
-        }
-
-        public void DisableActiveAbility()
-        {
-            _activeAbility = null;
-        }
+        } 
     }
 }

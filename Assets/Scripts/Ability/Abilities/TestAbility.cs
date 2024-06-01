@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 {
-    public class TestAbility : Ability
+    public class TestAbility : FixedAbility
     {
         [SerializeField] private GameObject _vinePrefab;
         [SerializeField] private float _playbackSpeed = 0.25f;

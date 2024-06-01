@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 {
-    public class SummonAbility : Ability
+    public class SummonAbility : FixedAbility
     {
         [SerializeField] private Unit _unitPrefab;
         [SerializeField] private UnitId _unitType;

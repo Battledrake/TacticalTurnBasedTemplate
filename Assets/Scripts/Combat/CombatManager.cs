@@ -294,20 +294,20 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         public bool TryActivateAbility(Ability ability, Unit instigator, GridIndex origin, GridIndex target)
         {
-            if (GetAbilityRange(origin, ability.RangeData).Contains(target))
+            if (GetAbilityRange(origin, ability.GetRangeData()).Contains(target))
             {
                 //In the future, we'll want to check if there's already an ability object.
                 Ability abilityObject = Instantiate(ability, _tacticsGrid.GetWorldPositionFromGridIndex(origin), Quaternion.identity);
 
                 List<GridIndex> impactIndexes = new List<GridIndex>();
-                if (ability.AreaOfEffectData.rangePattern == AbilityRangePattern.None)
+                if (ability.GetAreaOfEffectData().rangePattern == AbilityRangePattern.None)
                 {
                     impactIndexes.Add(target);
                     abilityObject.InitializeAbility(_tacticsGrid, instigator, origin, target);
                 }
                 else
                 {
-                    impactIndexes = GetAbilityRange(target, ability.AreaOfEffectData);
+                    impactIndexes = GetAbilityRange(target, ability.GetAreaOfEffectData());
                     abilityObject.InitializeAbility(_tacticsGrid, instigator, origin, target, impactIndexes);
                 }
 

@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 3483377536430794868}
   - component: {fileID: -1119868919808071195}
   m_Layer: 0
-  m_Name: Pf_Heal
+  m_Name: Pf_DarkWave
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -44,30 +44,30 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5ec1f05eb76d995429a4a1d5dbe4d949, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _abilityId: 7
-  _icon: {fileID: 21300000, guid: e5045c4be6e250441ae670dbd004d624, type: 3}
+  _abilityId: 5
+  _icon: {fileID: 21300000, guid: 3f5bd8d221e1bf549914b50d4fa9f88c, type: 3}
+  _abilityCost: 2
+  _isFriendly: 0
   _rangeData:
-    rangePattern: 5
-    rangeMinMax: {x: 0, y: 3}
+    rangePattern: 1
+    rangeMinMax: {x: 0, y: 0}
     lineOfSightData:
-      requireLineOfSight: 1
-      height: 0.5
+      requireLineOfSight: 0
+      height: 0
       offsetDistance: 0
   _areaOfEffectData:
-    rangePattern: 0
-    rangeMinMax: {x: 0, y: 0}
+    rangePattern: 6
+    rangeMinMax: {x: 1, y: 1}
     lineOfSightData:
       requireLineOfSight: 0
       height: 0
       offsetDistance: 0
   _effects:
   - attributeType: 0
-    minMaxModifier: {x: 2, y: 3}
-  _abilityCost: 1
-  _isFriendly: 1
-  _objectToAnimate: {fileID: 2589646638898681473, guid: 7b6c9957a7fd9fc409f49f3228983163,
+    minMaxModifier: {x: -4, y: -6}
+  _objectToAnimate: {fileID: 4860463455617263125, guid: 910ff000fadb962498ce900d2ab47a93,
     type: 3}
-  _taskData: {fileID: 11400000, guid: 8fb034d5e7e38df469c098237dfd409f, type: 2}
+  _taskData: {fileID: 11400000, guid: c7b993ef7d1296c44b612f0c2e0528c9, type: 2}
   _animationType: 3
   _animationTime: 1
   _animationSpeed: 1

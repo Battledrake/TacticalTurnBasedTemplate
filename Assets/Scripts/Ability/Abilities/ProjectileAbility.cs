@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 {
-    public class ProjectileAbility : Ability
+    public class ProjectileAbility : FixedAbility
     {
         [Header("Projectile Ability")]
 

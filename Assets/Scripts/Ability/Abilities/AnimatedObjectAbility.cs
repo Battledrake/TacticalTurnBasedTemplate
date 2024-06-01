@@ -8,7 +8,7 @@ using UnityEngine.UI;
 
 namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 {
-    public class AnimatedObjectAbility : Ability
+    public class AnimatedObjectAbility : FixedAbility
     {
         [Header("Animated Object Ability")]
 
@@ -119,7 +119,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 return;
 
 
-            if (unit.UnitGridIndex != _targetIndex && !CombatManager.Instance.GetAbilityRange(_targetIndex, this.AreaOfEffectData).Contains(unit.UnitGridIndex))
+            if (unit.UnitGridIndex != _targetIndex && !CombatManager.Instance.GetAbilityRange(_targetIndex, this.GetAreaOfEffectData()).Contains(unit.UnitGridIndex))
             {
                 return;
             }

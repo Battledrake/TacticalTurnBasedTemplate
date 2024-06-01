@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &1956691285485333357
+--- !u!1 &5763235699193011834
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,22 +8,22 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 3961447480010029070}
-  - component: {fileID: -7179713428241320167}
+  - component: {fileID: 6317800848723858049}
+  - component: {fileID: 5105680385775076716}
   m_Layer: 0
-  m_Name: Pf_MeleeHit
+  m_Name: Pf_RunChickenRun
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &3961447480010029070
+--- !u!4 &6317800848723858049
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1956691285485333357}
+  m_GameObject: {fileID: 5763235699193011834}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -32,23 +32,25 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &-7179713428241320167
+--- !u!114 &5105680385775076716
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1956691285485333357}
+  m_GameObject: {fileID: 5763235699193011834}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2d380c3b490c9b244b2f516ad1ea7362, type: 3}
+  m_Script: {fileID: 11500000, guid: 5ec1f05eb76d995429a4a1d5dbe4d949, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _abilityId: 1
-  _icon: {fileID: 21300000, guid: e46b31ee3c968d741bec385da46e8410, type: 3}
+  _abilityId: 8
+  _icon: {fileID: 21300000, guid: e2101e051833dcb48bdedf34deb7d1dc, type: 3}
+  _abilityCost: 0
+  _isFriendly: 1
   _rangeData:
-    rangePattern: 5
-    rangeMinMax: {x: 1, y: 1}
+    rangePattern: 0
+    rangeMinMax: {x: 0, y: 0}
     lineOfSightData:
       requireLineOfSight: 0
       height: 0
@@ -61,10 +63,12 @@ MonoBehaviour:
       height: 0
       offsetDistance: 0
   _effects:
-  - attributeType: 0
-    minMaxModifier: {x: -2, y: -3}
-  _abilityCost: 2
-  _isFriendly: 0
-  _animationType: 2
-  _impactFxPrefab: {fileID: 1489431029902184, guid: 4430919f14c50f84085d287cbcb2c30e,
+  - attributeType: 2
+    minMaxModifier: {x: 2, y: 4}
+  _objectToAnimate: {fileID: 1417812492424529394, guid: 6fb08c05a555bb449a54678bcfc17308,
     type: 3}
+  _taskData: {fileID: 11400000, guid: 33c30897419e60741948325ef5d3ed99, type: 2}
+  _animationType: 3
+  _animationTime: 1
+  _animationSpeed: 1
+  _loopAnimation: 0

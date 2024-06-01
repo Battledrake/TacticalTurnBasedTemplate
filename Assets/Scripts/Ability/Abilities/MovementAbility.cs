@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 {
-    public class MovementAbility : Ability
+    public class MovementAbility : DynamicAbility
     {
         //Do Logic Here
         public override void ActivateAbility()

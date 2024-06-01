@@ -42,8 +42,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             }
             else
             {
-                _rangeData = ability.RangeData;
-                _areaOfEffectData = ability.AreaOfEffectData;
+                _rangeData = ability.GetRangeData();
+                _areaOfEffectData = ability.GetAreaOfEffectData();
                 ShowAbilityRangePattern();
             }
         }
@@ -67,10 +67,10 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             if (!CombatManager.Instance.GetAbilityRange(_playerActions.SelectedTile, _rangeData).Contains(_playerActions.HoveredTile))
                 return;
 
-            List<GridIndex> _areaOfEffectIndexes = CombatManager.Instance.GetAbilityRange(_playerActions.HoveredTile, _currentAbility.AreaOfEffectData);
+            List<GridIndex> _areaOfEffectIndexes = CombatManager.Instance.GetAbilityRange(_playerActions.HoveredTile, _currentAbility.GetAreaOfEffectData());
 
-            if (_currentAbility.RangeData.lineOfSightData.requireLineOfSight)
-                _areaOfEffectIndexes = CombatManager.Instance.RemoveIndexesWithoutLineOfSight(_playerActions.HoveredTile, _areaOfEffectIndexes, _currentAbility.AreaOfEffectData.lineOfSightData.height, _currentAbility.AreaOfEffectData.lineOfSightData.offsetDistance);
+            if (_currentAbility.GetRangeData().lineOfSightData.requireLineOfSight)
+                _areaOfEffectIndexes = CombatManager.Instance.RemoveIndexesWithoutLineOfSight(_playerActions.HoveredTile, _areaOfEffectIndexes, _currentAbility.GetAreaOfEffectData().lineOfSightData.height, _currentAbility.GetAreaOfEffectData().lineOfSightData.offsetDistance);
 
             for(int i = 0; i < _areaOfEffectIndexes.Count; i++)
             {

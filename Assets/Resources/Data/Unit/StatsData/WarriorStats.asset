@@ -15,9 +15,9 @@ MonoBehaviour:
   validTileTypes: 010000000200000003000000
   canMoveDiagonal: 0
   heightAllowance: 1
-  moveRange: 3
-  currentHealth: 5
   maxHealth: 5
+  moveRange: 7
+  agility: 1
   abilities:
   - {fileID: -7179713428241320167, guid: 2acbfa7fcca56f942aa9005729504ba2, type: 3}
   - {fileID: 2237031348335038309, guid: d20c80850def3ff49882e1965991eb8e, type: 3}

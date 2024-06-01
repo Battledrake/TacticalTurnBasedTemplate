@@ -7,7 +7,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 {
     public enum AbilityId
     {
-        Movement,
         MeleeHit,
         SummonBat,
         VineAssault,
@@ -91,9 +90,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         [SerializeField] protected Sprite _icon;
 
         [Header("Ability Attributes")]
-        [SerializeField] protected AbilityRangeData _rangeData;
-        [SerializeField] protected AbilityRangeData _areaOfEffectData;
-        [SerializeField] protected List<AbilityEffect> _effects;
         [SerializeField] protected int _abilityCost;
         [SerializeField] protected bool _isFriendly = false;
 
@@ -101,13 +97,13 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         public string Name { get => _abilityId.ToString(); }
         public Sprite Icon { get => _icon; }
-        public AbilityRangeData RangeData { get => _rangeData; }
-        public AbilityRangeData AreaOfEffectData { get => _areaOfEffectData; }
-        public List<AbilityEffect> Effects { get => _effects; }
         public int AbilityCost { get => _abilityCost; }
         public Unit Instigator { get => _instigator; }
+        public AbilitySystem AbilitySystemComponent { get => _owner; }
 
         protected Unit _instigator;
+
+        protected AbilitySystem _owner;
 
         protected GridIndex _originIndex;
         protected GridIndex _targetIndex;
@@ -119,6 +115,15 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             return _abilityId;
         }
+
+        public void SetAbilityOwner(AbilitySystem abilitySystem)
+        {
+            _owner = abilitySystem;
+        }
+
+        public abstract  AbilityRangeData GetRangeData();
+        public abstract  AbilityRangeData GetAreaOfEffectData();
+        public abstract List<AbilityEffect> GetEffects();
 
         public void InitializeAbility(TacticsGrid tacticsGrid, Unit instigator, GridIndex originIndex, GridIndex targetIndex)
         {

@@ -16,7 +16,7 @@ MonoBehaviour:
   canMoveDiagonal: 1
   heightAllowance: 2
   maxHealth: 4
-  moveRange: 5
+  moveRange: 7
   agility: 1
   abilities:
   - {fileID: 7178079176350786143, guid: b56db9fb34c6b52478982580c657c5b0, type: 3}

@@ -44,8 +44,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 97fc42592235a54438299929822099be, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _abilityId: 4
+  _abilityId: 3
   _icon: {fileID: 21300000, guid: 3c7e93125f544564ea234f4f23b39a1e, type: 3}
+  _abilityCost: 2
+  _isFriendly: 0
   _rangeData:
     rangePattern: 6
     rangeMinMax: {x: 3, y: 3}
@@ -63,8 +65,6 @@ MonoBehaviour:
   _effects:
   - attributeType: 0
     minMaxModifier: {x: -3, y: -4}
-  _abilityCost: 2
-  _isFriendly: 0
   _projectilePrefab: {fileID: 8467555195680559298, guid: 500f8dbd9712d644a95ac106c8a00ca5,
     type: 3}
   _taskData: {fileID: 11400000, guid: 5453bef032747ca4eb5acac1930ad5e7, type: 2}

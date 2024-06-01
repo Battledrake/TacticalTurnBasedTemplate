@@ -6,7 +6,7 @@ using UnityEngine.Timeline;
 
 namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 {
-    public class MeleeHitAbility : Ability
+    public class MeleeHitAbility : FixedAbility
     {
         [SerializeField] private AnimationType _animationType;
 
