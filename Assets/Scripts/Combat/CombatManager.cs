@@ -64,7 +64,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private Unit _activeUnit;
         private int _activeTeamIndex;
-        private int _actionPointDeduction = 0;
+        private int _abilityPointDeduction = 0;
 
         private void Awake()
         {
@@ -196,7 +196,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 gridMoveComp.SetPathAndMove(path);
             }
 
-            _actionPointDeduction = path.Count <= unit.MoveRange ? 1 : 2;
+            _abilityPointDeduction = path.Count <= unit.MoveRange ? 1 : 2;
 
             _tacticsGrid.RemoveUnitFromTile(unit.UnitGridIndex);
             _tacticsGrid.AddUnitToTile(path.Last(), unit, false);
@@ -206,8 +206,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private void Unit_OnUnitReachedDestination(Unit unit)
         {
             unit.OnUnitReachedDestination -= Unit_OnUnitReachedDestination;
-            unit.RemoveActionPoints(_actionPointDeduction);
-            _actionPointDeduction = 0;
+            unit.GetAbilitySystem().RemoveAbilityPoints(_abilityPointDeduction);
+            _abilityPointDeduction = 0;
         }
 
         public void AddUnitToCombat(Vector3 worldPosition, Unit unit, int teamIndex = 0)
@@ -319,7 +319,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 {
                     ability.OnBehaviorComplete += Ability_OnBehaviorComplete;
                     //TODO: Ability point deduction logic.
-                    _actionPointDeduction = ability.AbilityCost;
+                    _abilityPointDeduction = ability.AbilityCost;
                     //TODO: Maybe add an OnAbilityActivated or something here for the AbilityBar.
                     return true;
                 }
@@ -332,13 +332,12 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             OnAbilityBehaviorComplete?.Invoke();
             ability.OnBehaviorComplete -= Ability_OnBehaviorComplete;
 
-            if (ability.Instigator)
-                ability.Instigator.RemoveActionPoints(_actionPointDeduction);
+            ability.GetAbilityOwner().RemoveAbilityPoints(_abilityPointDeduction);
 
-            _actionPointDeduction = 0;
+            _abilityPointDeduction = 0;
         }
 
-        public void ApplyEffectsToUnit(Unit instigator, Unit receiver, List<AbilityEffect> effectsToApply)
+        public void ApplyEffectsToTarget(AbilitySystem instigator, AbilitySystem receiver, List<AbilityEffect> effectsToApply)
         {
             if (receiver == null)
                 return;
@@ -353,7 +352,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 effectReal.modifier = didHit ? StaticUtilities.MinMaxRandom(effectsToApply[i].minMaxModifier) : 0;
                 effectsRealList.Add(effectReal);
             }
-            receiver.ApplyEffects(effectsRealList);
+            receiver.GetComponent<Unit>().ApplyEffects(effectsRealList);
         }
 
         public bool IsValidTileForUnit(Unit unit, GridIndex index)

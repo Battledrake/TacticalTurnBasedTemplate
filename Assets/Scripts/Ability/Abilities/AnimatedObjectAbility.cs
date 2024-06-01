@@ -86,24 +86,22 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             }
         }
 
-        private void AnimateObjectTask_OnObjectCollisionWithUnit(Unit unit, AbilityActivationData activationData)
+        private void AnimateObjectTask_OnObjectCollisionWithUnit(AbilitySystem receiver, AbilityActivationData activationData)
         {
-            //if(isFriendly and unit.TeamIndex == _instigator.TeamIndex, continue
-            //if(unit is _instigator and !isFriendly) return;
 
             //TODO: Improve on the friendly fire logic
-            if (unit == _instigator && !this.IsFriendly)
+            if (receiver == _owner && !this.IsFriendly)
                 return;
 
-            if (this.IsFriendly && unit.TeamIndex != _owner.GetComponent<Unit>().TeamIndex)
+            if (this.IsFriendly && receiver.GetComponent<Unit>().TeamIndex != _owner.GetComponent<Unit>().TeamIndex)
                 return;
 
-            if (unit.UnitGridIndex != activationData.targetIndex && !CombatManager.Instance.GetAbilityRange(activationData.targetIndex, this.GetAreaOfEffectData()).Contains(unit.UnitGridIndex))
+            if (receiver.GetComponent<Unit>().UnitGridIndex != activationData.targetIndex && !CombatManager.Instance.GetAbilityRange(activationData.targetIndex, this.GetAreaOfEffectData()).Contains(receiver.GetComponent<Unit>().UnitGridIndex))
             {
                 return;
             }
 
-            CombatManager.Instance.ApplyEffectsToUnit(_instigator, unit, _effects);
+            CombatManager.Instance.ApplyEffectsToTarget(_owner, receiver, _effects);
         }
 
         private void AnimateObjectTask_OnInitialAnimationComplete(AnimateObjectTask task, AbilityActivationData activationData)
@@ -118,10 +116,11 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 activationData.tacticsGrid.GetTileDataFromIndex(aoeIndexes[i], out TileData tileData);
                 if (tileData.unitOnTile)
                 {
-                    if (!task.HitUnits.Contains(tileData.unitOnTile))
+                    AbilitySystem receiver = tileData.unitOnTile.GetComponent<IAbilitySystem>().GetAbilitySystem();
+                    if (!task.HitUnits.Contains(receiver))
                     {
                         Debug.LogWarning($"Unit at {tileData.index} missed by ability collision. Applying late effect");
-                        CombatManager.Instance.ApplyEffectsToUnit(_instigator, tileData.unitOnTile, _effects);
+                        CombatManager.Instance.ApplyEffectsToTarget(_owner, receiver, _effects);
                     }
                 }
             }

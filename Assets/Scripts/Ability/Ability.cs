@@ -106,7 +106,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public Sprite Icon { get => _icon; }
         public int AbilityCost { get => _abilityCost; }
         public Unit Instigator { get => _instigator; }
-        public AbilitySystem AbilitySystemComponent { get => _owner; }
 
         protected Unit _instigator;
 
@@ -116,6 +115,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             return _abilityId;
         }
+        public AbilitySystem GetAbilityOwner() { return _owner; }
 
         public abstract  AbilityRangeData GetRangeData();
         public abstract  AbilityRangeData GetAreaOfEffectData();

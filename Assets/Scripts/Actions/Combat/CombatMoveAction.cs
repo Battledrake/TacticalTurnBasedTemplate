@@ -42,9 +42,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             if (!_playerActions.SelectedUnit)
                 return;
 
-            if (_playerActions.SelectedUnit.CurrentActionPoints <= 0)
-                return;
-
             if (_playerActions.HoveredUnit && CombatManager.Instance.ShowEnemyMoveRange)
             {
                 GenerateTilesInMoveRange(_playerActions.HoveredUnit);
@@ -115,8 +112,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
             unit.OnUnitStartedMovement -= Unit_OnUnitReachedDestination;
 
-            if (unit.CurrentActionPoints > 0)
-                GenerateTilesInMoveRange(unit);
+            //Do we want this? 
+            GenerateTilesInMoveRange(unit);
         }
 
         private void OnDisable()

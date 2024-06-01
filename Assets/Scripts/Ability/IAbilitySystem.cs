@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 {
-    public interface IHaveAbilitySystem
+    public interface IAbilitySystem
     {
         public AbilitySystem GetAbilitySystem();
     }

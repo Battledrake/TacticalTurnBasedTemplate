@@ -29,10 +29,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         public override bool CanActivateAbility()
         {
-            //if (_tacticsGrid.IsIndexValid(_targetIndex) && _tacticsGrid.IsTileWalkable(_targetIndex) && _tacticsGrid.GridTiles[_targetIndex].unitOnTile == null)
-            //{
-            //    return true;
-            //}
             return true;
         }
 

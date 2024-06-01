@@ -18,8 +18,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         [SerializeField] private float _animationTime = 1f;
         [SerializeField] private float _animationSpeed;
 
-        private List<Unit> _hitUnits = new List<Unit>();
-
         public override bool CanActivateAbility()
         {
             //If owner component allows.
@@ -79,24 +77,21 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             }
         }
 
-        private void AnimateObjectTask_OnObjectCollisionWithUnit(Unit unit, AbilityActivationData activateData)
+        private void AnimateObjectTask_OnObjectCollisionWithUnit(AbilitySystem receiver, AbilityActivationData activateData)
         {
             //TODO: Improve on the friendly fire logic
-            if (unit == _instigator && !this.IsFriendly)
+            if (receiver == _owner && !this.IsFriendly)
                 return;
 
-            if (_hitUnits.Contains(unit))
-                return;
 
             List<GridIndex> aoeIndexes = CombatManager.Instance.GetAbilityRange(activateData.targetIndex, this.GetAreaOfEffectData());
 
-            if (!aoeIndexes.Contains(unit.UnitGridIndex))
+            if (!aoeIndexes.Contains(receiver.GetComponent<Unit>().UnitGridIndex))
             {
                 return;
             }
 
-            _hitUnits.Add(unit);
-            CombatManager.Instance.ApplyEffectsToUnit(_instigator, unit, _effects);
+            CombatManager.Instance.ApplyEffectsToTarget(_owner, receiver, _effects);
         }
 
         private void AnimateObjectTask_OnInitialAnimationCompleted(AnimateObjectTask animateObjectTask, AbilityActivationData activateData)
@@ -111,9 +106,10 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 activateData.tacticsGrid.GetTileDataFromIndex(aoeIndexes[i], out TileData tileData);
                 if (tileData.unitOnTile)
                 {
-                    if (!_hitUnits.Contains(tileData.unitOnTile))
+                    AbilitySystem abilitySystem = tileData.unitOnTile.GetComponent<IAbilitySystem>().GetAbilitySystem();
+                    if (!animateObjectTask.HitUnits.Contains(abilitySystem))
                     {
-                        CombatManager.Instance.ApplyEffectsToUnit(_instigator, tileData.unitOnTile, _effects);
+                        CombatManager.Instance.ApplyEffectsToTarget(_owner, abilitySystem, _effects);
                     }
                 }
             }

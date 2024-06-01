@@ -8,9 +8,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
     public class AnimateObjectTask : AbilityTask
     {
         public event Action<AnimateObjectTask, AbilityActivationData> OnInitialAnimationCompleted;
-        public event Action<Unit, AbilityActivationData> OnObjectCollisionWithUnit;
+        public event Action<AbilitySystem, AbilityActivationData> OnObjectCollisionWithUnit;
 
-        public List<Unit> HitUnits { get => _hitUnits; }
+        public List<AbilitySystem> HitUnits { get => _hitUnits; }
 
         private GameObject _objectToAnimate;
 
@@ -42,7 +42,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private bool _hasInitiallyLooped = false;
 
         private AbilityActivationData _activateData;
-        private List<Unit> _hitUnits = new List<Unit>();
+        private List<AbilitySystem> _hitUnits = new List<AbilitySystem>();
 
         public void InitTask(GameObject objectToAnimate, AnimateObjectTaskData taskData, AbilityActivationData activateData, float animationTime = 1f, float animationSpeed = 1f, bool loopAnimation = false)
         {
@@ -50,7 +50,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _objectToAnimate.transform.parent = this.transform;
 
             _animationTime = animationTime;
-            //_animationTime = taskData.animationTime;
             _animationSpeed = animationSpeed;
 
             _positionAlphaCurve = taskData.positionAlphaCurve;
@@ -85,13 +84,15 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void OnTriggerEnter(Collider other)
         {
-            Unit unit = other.GetComponent<Unit>();
-            if (unit)
+            if (other.GetComponent<IAbilitySystem>() == null) return;
+
+            AbilitySystem hitUnit = other.GetComponent<IAbilitySystem>().GetAbilitySystem();
+            if (hitUnit != null)
             {
-                if (!_hitUnits.Contains(unit))
+                if (!_hitUnits.Contains(hitUnit))
                 {
-                    _hitUnits.Add(unit);
-                    OnObjectCollisionWithUnit?.Invoke(unit, _activateData);
+                    _hitUnits.Add(hitUnit);
+                    OnObjectCollisionWithUnit?.Invoke(hitUnit, _activateData);
                 }
             }
         }

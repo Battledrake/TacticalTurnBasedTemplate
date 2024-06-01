@@ -44,7 +44,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             task.OnAnimationCancelled -= AbilityTask_OnAnimationCancelled;
 
             activationData.tacticsGrid.GetTileDataFromIndex(activationData.targetIndex, out TileData targetData);
-            CombatManager.Instance.ApplyEffectsToUnit(_instigator, targetData.unitOnTile, _effects);
+            CombatManager.Instance.ApplyEffectsToTarget(_owner, targetData.unitOnTile.GetComponent<IAbilitySystem>().GetAbilitySystem(), _effects);
             AbilityBehaviorComplete(this);
             ActionCameraController.Instance.HideActionCamera();
             EndAbility();
@@ -63,7 +63,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             animationTask.OnAnimationEvent -= PlayAnimationTask_OnAnimationEvent;
             activationData.tacticsGrid.GetTileDataFromIndex(activationData.targetIndex, out TileData targetData);
-            CombatManager.Instance.ApplyEffectsToUnit(_instigator, targetData.unitOnTile, _effects);
+            CombatManager.Instance.ApplyEffectsToTarget(_owner, targetData.unitOnTile.GetComponent<IAbilitySystem>().GetAbilitySystem(), _effects);
 
             GameObject hitFx = Instantiate(_impactFxPrefab, targetData.tileMatrix.GetPosition() + new Vector3(0f, 1.5f, 0f), Quaternion.identity);
             Destroy(hitFx, 2f);
