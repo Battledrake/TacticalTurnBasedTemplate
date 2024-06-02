@@ -30,7 +30,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         HalfDiagonal,
         Star,
         Diamond,
-        Square
+        Square,
+        Movement
     }
 
     public struct AbilityActivationData
@@ -126,13 +127,14 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _owner = abilitySystem;
         }
 
-        public virtual bool CanActivateAbility(AbilityActivationData activateData)
+        public virtual bool CanActivateAbility(AbilityActivationData activationData)
         {
             if (_owner.CurrentAbilityPoints <= 0)
                 return false;
 
-            if (CombatManager.Instance.GetAbilityRange(activateData.originIndex, this.GetRangeData()).Contains(activateData.targetIndex))
+            if (CombatManager.Instance.GetAbilityRange(activationData.originIndex, this.GetRangeData()).Contains(activationData.targetIndex))
                 return true;
+
             return false;
         }
 
@@ -148,7 +150,10 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 return true;
             }
             else
+            {
                 return false;
+            }
+
         }
         public virtual void EndAbility()
         {

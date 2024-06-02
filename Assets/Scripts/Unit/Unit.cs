@@ -116,12 +116,10 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         public void CombatStarted()
         {
-            Debug.Log("I'm Ready!");
         }
 
         public void CombatEnded()
         {
-            Debug.Log("Whew, that was rough");
         }
 
         public void TurnStarted()

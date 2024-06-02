@@ -129,7 +129,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             return pathParams;
         }
 
-        public static PathParams CreatePathParamsFromUnit(Unit unit, bool allowPartialSolution = false, bool includeStartNode = false)
+        public static PathParams CreatePathParamsFromUnit(Unit unit, float pathLength = 1000f, bool allowPartialSolution = false, bool includeStartNode = false)
         {
             PathParams pathParams;
             pathParams.includeDiagonals = unit.UnitData.unitStats.canMoveDiagonal;
@@ -137,7 +137,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             pathParams.includeStartNode = includeStartNode;
             pathParams.allowPartialSolution = allowPartialSolution;
             pathParams.validTileTypes = unit.UnitData.unitStats.validTileTypes;
-            pathParams.maxPathLength = unit.MoveRange;
+            pathParams.maxPathLength = pathLength;
 
             return pathParams;
         }

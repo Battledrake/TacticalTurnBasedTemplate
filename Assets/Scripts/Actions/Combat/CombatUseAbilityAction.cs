@@ -1,14 +1,13 @@
 using System;
 using System.Collections.Generic;
+using UnityEditor.Playables;
 using UnityEngine;
 
 namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 {
     public class CombatUseAbilityAction : ActionBase
-	{
+    {
         private Ability _currentAbility;
-        AbilityRangeData _rangeData;
-        AbilityRangeData _areaOfEffectData;
 
         private bool _abilityInUse = false;
 
@@ -17,24 +16,26 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             if (_abilityInUse)
                 return false;
 
-            if(CombatManager.Instance.TryActivateAbility(_currentAbility, _playerActions.SelectedTile, index))
+            if (CombatManager.Instance.TryActivateAbility(_currentAbility, _playerActions.SelectedTile, index))
             {
                 _abilityInUse = true;
                 _playerActions.TacticsGrid.ClearAllTilesWithState(TileState.IsInAbilityRange);
                 _playerActions.TacticsGrid.ClearAllTilesWithState(TileState.IsInAoeRange);
+
                 CombatManager.Instance.OnAbilityUseCompleted += CombatManager_OnAbilityBehaviorComplete;
+                return true;
             }
-            return true;
+            return false;
         }
 
-        private bool UnitHasAbilityPoints()
+        private bool UnitHasEnoughAbilityPoints(int amountNeeded = 1)
         {
             if (_playerActions.SelectedUnit)
             {
                 AbilitySystem abilitySystem = _playerActions.SelectedUnit.GetComponent<IAbilitySystem>().GetAbilitySystem();
                 if (abilitySystem)
                 {
-                    return abilitySystem.CurrentAbilityPoints > 0;
+                    return abilitySystem.CurrentAbilityPoints >= amountNeeded;
                 }
             }
             return false;
@@ -49,23 +50,22 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         public override void ExecuteHoveredAction(GridIndex hoveredIndex)
         {
-            if (!UnitHasAbilityPoints())
+            if (!UnitHasEnoughAbilityPoints())
                 return;
+
             ShowAbilityAreaOfEffectPattern();
         }
 
         public void SetAbility(Ability ability)
         {
             _currentAbility = ability;
-            if(_currentAbility == null || !UnitHasAbilityPoints())
+            if (_currentAbility == null || !UnitHasEnoughAbilityPoints())
             {
                 _playerActions.TacticsGrid.ClearAllTilesWithState(TileState.IsInAbilityRange);
                 _playerActions.TacticsGrid.ClearAllTilesWithState(TileState.IsInAoeRange);
             }
             else
             {
-                _rangeData = ability.GetRangeData();
-                _areaOfEffectData = ability.GetAreaOfEffectData();
                 ShowAbilityRangePattern();
             }
         }
@@ -73,8 +73,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private void ShowAbilityRangePattern()
         {
             _playerActions.TacticsGrid.ClearAllTilesWithState(TileState.IsInAbilityRange);
-            List<GridIndex> rangeIndexes = CombatManager.Instance.GetAbilityRange(_playerActions.SelectedTile, _rangeData);
-            for(int i = 0; i < rangeIndexes.Count; i++)
+            List<GridIndex> rangeIndexes = CombatManager.Instance.GetAbilityRange(_playerActions.SelectedTile, _currentAbility.GetRangeData());
+            for (int i = 0; i < rangeIndexes.Count; i++)
             {
                 _playerActions.TacticsGrid.AddStateToTile(rangeIndexes[i], TileState.IsInAbilityRange);
             }
@@ -86,17 +86,17 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             _playerActions.TacticsGrid.ClearAllTilesWithState(TileState.IsInAoeRange);
 
-            if (!CombatManager.Instance.GetAbilityRange(_playerActions.SelectedTile, _rangeData).Contains(_playerActions.HoveredTile))
+            if (!CombatManager.Instance.GetAbilityRange(_playerActions.SelectedTile, _currentAbility.GetRangeData()).Contains(_playerActions.HoveredTile))
                 return;
 
-            List<GridIndex> _areaOfEffectIndexes = CombatManager.Instance.GetAbilityRange(_playerActions.HoveredTile, _currentAbility.GetAreaOfEffectData());
+            List<GridIndex> areaOfEffectIndexes = CombatManager.Instance.GetAbilityRange(_playerActions.HoveredTile, _currentAbility.GetAreaOfEffectData());
 
             if (_currentAbility.GetRangeData().lineOfSightData.requireLineOfSight)
-                _areaOfEffectIndexes = CombatManager.Instance.RemoveIndexesWithoutLineOfSight(_playerActions.HoveredTile, _areaOfEffectIndexes, _currentAbility.GetAreaOfEffectData().lineOfSightData.height, _currentAbility.GetAreaOfEffectData().lineOfSightData.offsetDistance);
+                areaOfEffectIndexes = CombatManager.Instance.RemoveIndexesWithoutLineOfSight(_playerActions.HoveredTile, areaOfEffectIndexes, _currentAbility.GetAreaOfEffectData().lineOfSightData.height, _currentAbility.GetAreaOfEffectData().lineOfSightData.offsetDistance);
 
-            for(int i = 0; i < _areaOfEffectIndexes.Count; i++)
+            for (int i = 0; i < areaOfEffectIndexes.Count; i++)
             {
-                _playerActions.TacticsGrid.AddStateToTile(_areaOfEffectIndexes[i], TileState.IsInAoeRange);
+                _playerActions.TacticsGrid.AddStateToTile(areaOfEffectIndexes[i], TileState.IsInAoeRange);
             }
 
         }

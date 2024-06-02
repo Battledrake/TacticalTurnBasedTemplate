@@ -64,7 +64,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             animationTask.OnAnimationCancelled -= AbilityTask_OnAnimationCancelled;
 
             activationData.tacticsGrid.GetTileDataFromIndex(activationData.targetIndex, out TileData targetData);
-            CombatManager.Instance.ApplyEffectsToTarget(_owner, targetData.unitOnTile.GetComponent<IAbilitySystem>().GetAbilitySystem(), _effects);
+            if (targetData.unitOnTile)
+                CombatManager.Instance.ApplyEffectsToTarget(_owner, targetData.unitOnTile.GetComponent<IAbilitySystem>().GetAbilitySystem(), _effects);
 
             GameObject hitFx = Instantiate(_impactFxPrefab, targetData.tileMatrix.GetPosition() + new Vector3(0f, 1.5f, 0f), Quaternion.identity);
             Destroy(hitFx, 2f);
