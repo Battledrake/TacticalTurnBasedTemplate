@@ -1,20 +1,35 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
+using static UnityEngine.UI.CanvasScaler;
 
 namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 {
     public class CombatMoveAction : ActionBase
     {
-        [SerializeField] private LineRenderer _lineRenderer;
+        [SerializeField] private LineRenderer _pathLine;
         [SerializeField] private Color _moveRangeColor;
         [SerializeField] private Color _sprintRangeColor;
         [SerializeField] private Color _outOfRangeColor;
+        [Range(0.1f, 1f)]
+        [SerializeField] private float _outlineLength = 1f;
+        [Range(0.1f, 1f)]
+        [SerializeField] private float _distanceToEdge = 1f;
 
         private Unit _currentUnit;
+
         private List<GridIndex> _generatedPath = new List<GridIndex>();
+
         private List<GridIndex> _moveRangeIndexes = new List<GridIndex>();
+        private List<EdgeData> _moveRangeEdges = new List<EdgeData>();
+
+        private List<LineRenderer> _borrowedMoveRenders = new List<LineRenderer>();
+        private List<LineRenderer> _borrowedSprintRenders = new List<LineRenderer>();
+
         private bool _isUnitMoving = false;
+        private bool _isSprintRangeShowing = false;
 
         private void Start()
         {
@@ -57,6 +72,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             }
             else
             {
+                ShowSprintRangeTiles();
+
                 GeneratePathForUnit();
             }
         }
@@ -67,18 +84,100 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             {
                 _currentUnit = unit;
 
-                _playerActions.TacticsGrid.ClearAllTilesWithState(TileState.IsInMoveRange);
+                LineRendererPool.Instance.ReturnInstances(_borrowedMoveRenders);
+                LineRendererPool.Instance.ReturnInstances(_borrowedSprintRenders);
+
 
                 PathParams pathParams = GridPathfinding.CreatePathParamsFromUnit(unit, unit.MoveRange);
                 PathfindingResult pathResult = _playerActions.TacticsGrid.GridPathfinder.FindTilesInRange(unit.UnitGridIndex, pathParams);
                 if (pathResult.Result != PathResult.SearchFail)
                 {
                     _moveRangeIndexes = pathResult.Path;
-                    for (int i = 0; i < pathResult.Path.Count; i++)
+                    _moveRangeEdges = pathResult.Edges;
+
+                    _borrowedMoveRenders = LineRendererPool.Instance.BorrowInstances(_moveRangeEdges.Count);
+
+                    for (int i = 0; i < _moveRangeEdges.Count; i++)
                     {
-                        _playerActions.TacticsGrid.AddStateToTile(pathResult.Path[i], TileState.IsInMoveRange);
+                        _borrowedMoveRenders[i].positionCount = 2;
+                        _borrowedMoveRenders[i].startColor = _moveRangeColor;
+                        _borrowedMoveRenders[i].endColor = _moveRangeColor;
+                        _borrowedMoveRenders[i].startWidth = 0.15f;
+                        _borrowedMoveRenders[i].endWidth = 0.15f;
+
+                        Vector3 sourcePosition = _playerActions.TacticsGrid.GetTilePositionFromIndex(_moveRangeEdges[i].source);
+                        GridIndex direction = _moveRangeEdges[i].direction;
+                        _borrowedMoveRenders[i].SetPosition(0, new Vector3(sourcePosition.x + (direction.x * _distanceToEdge) - ((float)direction.z * _outlineLength), sourcePosition.y + 0.5f, sourcePosition.z + (direction.z * _distanceToEdge) - ((float)direction.x * _outlineLength)));
+                        _borrowedMoveRenders[i].SetPosition(1, new Vector3(sourcePosition.x + (direction.x * _distanceToEdge) + ((float)direction.z * _outlineLength), sourcePosition.y + 0.5f, sourcePosition.z + (direction.z * _distanceToEdge) + ((float)direction.x * _outlineLength)));
+                    }
+
+                    ShowSprintRangeTiles();
+                }
+            }
+        }
+
+        private void ShowSprintRangeTiles()
+        {
+            if (!UnitHasEnoughAbilityPoints(2) || _moveRangeIndexes.Contains(_playerActions.HoveredTile))
+            {
+                if (!_isSprintRangeShowing)
+                    return;
+
+                for(int i = 0; i < _borrowedSprintRenders.Count; i++)
+                {
+                    _borrowedSprintRenders[i].gameObject.SetActive(false);
+                }
+                _isSprintRangeShowing = false;
+                return;
+            }
+
+            if (_borrowedSprintRenders.Count > 0)
+            {
+                if (_isSprintRangeShowing)
+                    return;
+
+                for(int i = 0; i < _borrowedSprintRenders.Count; i++)
+                {
+                    _borrowedSprintRenders[i].gameObject.SetActive(true);
+                }
+                _isSprintRangeShowing = true;
+                return;
+            }
+
+            GenerateSprintRangeTiles();
+        }
+
+        private void GenerateSprintRangeTiles()
+        {
+            PathParams pathParams = GridPathfinding.CreatePathParamsFromUnit(_playerActions.SelectedUnit, _playerActions.SelectedUnit.MoveRange * 2);
+            PathfindingResult pathResult = _playerActions.TacticsGrid.GridPathfinder.FindTilesInRange(_playerActions.SelectedTile, pathParams);
+            if (pathResult.Result != PathResult.SearchFail)
+            {
+                List<EdgeData> sprintEdges = new List<EdgeData>(pathResult.Edges);
+                for (int i = 0; i < _moveRangeEdges.Count; i++)
+                {
+                    if (pathResult.Edges.Contains(_moveRangeEdges[i]))
+                    {
+                        sprintEdges.Remove(_moveRangeEdges[i]);
                     }
                 }
+
+                _borrowedSprintRenders = LineRendererPool.Instance.BorrowInstances(sprintEdges.Count);
+
+                for (int i = 0; i < sprintEdges.Count; i++)
+                {
+                    _borrowedSprintRenders[i].positionCount = 2;
+                    _borrowedSprintRenders[i].startColor = _sprintRangeColor;
+                    _borrowedSprintRenders[i].endColor = _sprintRangeColor;
+                    _borrowedSprintRenders[i].startWidth = 0.15f;
+                    _borrowedSprintRenders[i].endWidth = 0.15f;
+
+                    Vector3 sourcePosition = _playerActions.TacticsGrid.GetTilePositionFromIndex(sprintEdges[i].source);
+                    GridIndex direction = sprintEdges[i].direction;
+                    _borrowedSprintRenders[i].SetPosition(0, new Vector3(sourcePosition.x + (direction.x * _distanceToEdge) - ((float)direction.z * _outlineLength), sourcePosition.y + 0.5f, sourcePosition.z + (direction.z * _distanceToEdge) - ((float)direction.x * _outlineLength)));
+                    _borrowedSprintRenders[i].SetPosition(1, new Vector3(sourcePosition.x + (direction.x * _distanceToEdge) + ((float)direction.z * _outlineLength), sourcePosition.y + 0.5f, sourcePosition.z + (direction.z * _distanceToEdge) + ((float)direction.x * _outlineLength)));
+                }
+                _isSprintRangeShowing = true;
             }
         }
 
@@ -101,13 +200,13 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             {
                 _generatedPath = result.Path;
 
-
                 EnableAndInitializePathLine(result.Path.Count);
+
+                List<Vector3> pathPositions = new List<Vector3>();
 
                 for (int i = 0; i < result.Path.Count; i++)
                 {
-                    _playerActions.TacticsGrid.GetTileDataFromIndex(result.Path[i], out TileData tileData);
-                    _lineRenderer.SetPosition(i, tileData.tileMatrix.GetPosition() + new Vector3(0f, 0.5f, 0f));
+                    _pathLine.SetPosition(i, _playerActions.TacticsGrid.GetTilePositionFromIndex(result.Path[i]) + new Vector3(0f, 0.5f, 0f));
                 }
             }
         }
@@ -127,6 +226,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void Unit_OnUnitStartedMovement(Unit unit)
         {
+            LineRendererPool.Instance.ReturnInstances(_borrowedMoveRenders);
+            LineRendererPool.Instance.ReturnInstances(_borrowedSprintRenders);
+
             _playerActions.TacticsGrid.ClearAllTilesWithState(TileState.IsInMoveRange);
             unit.OnUnitStartedMovement -= Unit_OnUnitStartedMovement;
 
@@ -136,7 +238,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private void Unit_OnUnitReachedDestination(Unit unit)
         {
             _isUnitMoving = false;
-            _lineRenderer.enabled = false;
+            if (_pathLine != null)
+                _pathLine.enabled = false;
 
             unit.OnUnitStartedMovement -= Unit_OnUnitReachedDestination;
 
@@ -146,18 +249,21 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void EnableAndInitializePathLine(int count)
         {
-            _lineRenderer.positionCount = count;
-            _lineRenderer.enabled = true;
-            _lineRenderer.startColor = _moveRangeIndexes.Contains(_playerActions.HoveredTile) ? _moveRangeColor : _sprintRangeColor;
-            Color endColor = _lineRenderer.startColor;
+            _pathLine.positionCount = count;
+            _pathLine.enabled = true;
+            _pathLine.startColor = _moveRangeIndexes.Contains(_playerActions.HoveredTile) ? _moveRangeColor : _sprintRangeColor;
+            Color endColor = _pathLine.startColor;
             endColor.a = 0.1f;
-            _lineRenderer.endColor = endColor;
-            _lineRenderer.startWidth = 0.2f;
-            _lineRenderer.endWidth = 0.15f;
+            _pathLine.endColor = endColor;
+            _pathLine.startWidth = 0.15f;
+            _pathLine.endWidth = 0.15f;
         }
 
         private void OnDisable()
         {
+            LineRendererPool.Instance.ReturnInstances(_borrowedMoveRenders);
+            LineRendererPool.Instance.ReturnInstances(_borrowedSprintRenders);
+
             _playerActions.TacticsGrid.ClearAllTilesWithState(TileState.IsInMoveRange);
         }
     }

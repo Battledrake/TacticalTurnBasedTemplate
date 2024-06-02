@@ -30,8 +30,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             }
 
 
-            activationData.tacticsGrid.GetTileDataFromIndex(activationData.targetIndex, out TileData initialTargetData);
-            Vector3 startPosition = initialTargetData.tileMatrix.GetPosition();
+            Vector3 startPosition = activationData.tacticsGrid.GetTilePositionFromIndex(activationData.targetIndex);
 
             List<GridIndex> aoeIndexes = CombatManager.Instance.GetAbilityRange(activationData.targetIndex, this.GetAreaOfEffectData());
 
@@ -39,8 +38,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             {
                 if (aoeIndexes[i] != activationData.targetIndex)
                 {
-                    activationData.tacticsGrid.GetTileDataFromIndex(aoeIndexes[i], out TileData targetData);
-
                     GameObject projectile = Instantiate(_projectilePrefab);
 
                     AnimateObjectTask animateObjectTask = new GameObject("AnimateObjectTask", new[] { typeof(AnimateObjectTask), typeof(Rigidbody) }).GetComponent<AnimateObjectTask>();

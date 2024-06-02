@@ -70,9 +70,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void SpawnAnimateObjectTaskAndExecute(AbilityActivationData activationData)
         {
-            activationData.tacticsGrid.GetTileDataFromIndex(activationData.originIndex, out TileData originData);
-            activationData.tacticsGrid.GetTileDataFromIndex(activationData.targetIndex, out TileData targetData);
-
             AnimateObjectTask animateObjectTask = new GameObject("AnimateObjectTask", new[] { typeof(AnimateObjectTask), typeof(Rigidbody) }).GetComponent<AnimateObjectTask>();
             animateObjectTask.GetComponent<Rigidbody>().useGravity = false;
             animateObjectTask.transform.SetParent(this.transform);
@@ -95,7 +92,10 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             if (receiver == _owner && !this.IsFriendly)
                 return;
 
-            if (this.IsFriendly && receiver.GetComponent<Unit>().TeamIndex != _owner.GetComponent<Unit>().TeamIndex)
+            if (receiver.GetOwningUnit().TeamIndex == _owner.GetOwningUnit().TeamIndex)
+                return;
+
+            if (this.IsFriendly && receiver.GetOwningUnit().TeamIndex != _owner.GetOwningUnit().TeamIndex)
                 return;
 
             if (receiver.GetComponent<Unit>().UnitGridIndex != activationData.targetIndex && !CombatManager.Instance.GetAbilityRange(activationData.targetIndex, this.GetAreaOfEffectData()).Contains(receiver.GetComponent<Unit>().UnitGridIndex))

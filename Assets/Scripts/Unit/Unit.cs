@@ -317,8 +317,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         public void LookAtTarget(GridIndex targetIndex)
         {
-            _tacticsGrid.GetTileDataFromIndex(targetIndex, out TileData tileData);
-            Vector3 lookAtVector = tileData.tileMatrix.GetPosition();
+            Vector3 lookAtVector = _tacticsGrid.GetTilePositionFromIndex(targetIndex);
             lookAtVector.y = this.transform.position.y;
             this.transform.LookAt(lookAtVector);
         }

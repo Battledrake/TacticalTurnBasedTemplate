@@ -69,10 +69,24 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         }
     }
 
+    public struct EdgeData
+    {
+        public GridIndex source;
+        public GridIndex direction;
+
+        public EdgeData(GridIndex index, GridIndex direction)
+        {
+            this.source = index;
+            this.direction = direction;
+        }
+    }
+
     public class PathfindingResult
     {
         public PathResult Result { get; set; }
         public List<GridIndex> Path { get; set; }
+
+        public List<EdgeData> Edges { get; set; }
     }
 
     public class GridPathfinding : MonoBehaviour
@@ -147,6 +161,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             PathfindingResult pathResult = new PathfindingResult();
             pathResult.Path = new List<GridIndex>();
             pathResult.Result = PathResult.SearchSuccess;
+            pathResult.Edges = new List<EdgeData>();
 
             if (!_tacticsGrid.IsIndexValid(startIndex))
             {
@@ -174,13 +189,25 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                     GridIndex neighborIndex = GetNeighborIndexFromArray(currentNode.index, i);
 
                     if (!_tacticsGrid.IsIndexValid(neighborIndex))
+                    {
+                        if (i < 4)
+                            pathResult.Edges.Add(new EdgeData(currentNode.index, GridStatics.SquareNeighbors[i]));
                         continue;
+                    }
+
+
 
                     if (neighborIndex == currentNode.parent || neighborIndex == currentNode.index)
                         continue;
 
                     if (!IsTraversalAllowed(currentNode.index, neighborIndex, pathParams.heightAllowance, pathParams.validTileTypes))
+                    {
+                        if (i < 4)
+                            pathResult.Edges.Add(new EdgeData(currentNode.index, GridStatics.SquareNeighbors[i]));
                         continue;
+                    }
+
+
 
                     PathNode neighborNode = null;
                     if (_pathNodePool.TryGetValue(neighborIndex, out PathNode existingNeighbor))
@@ -193,7 +220,12 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                     float newTraversalCost = currentNode.traversalCost + (GetTraversalCost(currentNode.index, neighborNode.index) * neighborNode.terrainCost);
 
                     if (newTraversalCost > pathParams.maxPathLength)
+                    {
+                        if (i < 4 && neighborNode.traversalCost > pathParams.maxPathLength)
+                            pathResult.Edges.Add(new EdgeData(currentNode.index, GridStatics.SquareNeighbors[i]));
                         continue;
+                    }
+
 
                     if (newTraversalCost >= neighborNode.traversalCost)
                         continue;

@@ -320,7 +320,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             if (receiver == null)
                 return;
 
-            bool didHit = UnityEngine.Random.Range(0f, 1f) <= 0.65f;
+            bool didHit = UnityEngine.Random.Range(0f, 1f) <= 0.85f;
 
             List<AbilityEffectReal> effectsRealList = new List<AbilityEffectReal>();
             for (int i = 0; i < effectsToApply.Count; i++)

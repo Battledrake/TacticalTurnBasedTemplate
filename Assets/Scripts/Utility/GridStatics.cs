@@ -8,7 +8,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 {
     public static class GridStatics
     {
-        private static GridIndex[] SquareNeighbors = new GridIndex[]
+        public static GridIndex[] SquareNeighbors = new GridIndex[]
         {
             new GridIndex(1, 0),
             new GridIndex(0, 1),
@@ -40,7 +40,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             new GridIndex(0, -1)
         };
 
-        private static GridIndex[] TriangleFacingDownNeighbors = new GridIndex[]
+        public static GridIndex[] TriangleFacingDownNeighbors = new GridIndex[]
 {
             new GridIndex(-1, 0),
             new GridIndex(0, 1),
@@ -50,7 +50,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             new GridIndex(2, 1),
 };
 
-        private static GridIndex[] TriangleFacingUpNeighbors = new GridIndex[]
+        public static GridIndex[] TriangleFacingUpNeighbors = new GridIndex[]
         {
             new GridIndex(-1, 0),
             new GridIndex(0, -1),

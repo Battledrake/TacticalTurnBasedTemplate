@@ -96,6 +96,15 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             }
         }
 
+        public Vector3 GetTilePositionFromIndex(GridIndex index)
+        {
+            if (_gridTiles.TryGetValue(index, out TileData tileData))
+            {
+                return tileData.tileMatrix.GetPosition();
+            }
+            return Vector3.zero;
+        }
+
         public GridShapeData GetCurrentShapeData()
         {
             return DataManager.GetGridShapeData(_gridShape);
@@ -261,6 +270,11 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             return GridIndex.RoundToInt((vectorTwoPosition / _gridTileSize) * new Vector2(2f, 1f));
         }
 
+        /// <summary>
+        /// Gets the Vector3 position from a gridindex with y being the grid's base position. Mostly used for Grid Generation. Use GetTilePositionFromGridIndex or GetTileDataFromGridIndex instead if y position is needed.
+        /// </summary>
+        /// <param name="gridIndex"></param>
+        /// <returns></returns>
         public Vector3 GetWorldPositionFromGridIndex(GridIndex gridIndex)
         {
             Vector2 offset = gridIndex * Vector2.one;

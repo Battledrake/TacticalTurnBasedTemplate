@@ -44,7 +44,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private AbilityActivationData _activateData;
         private List<AbilitySystem> _hitUnits = new List<AbilitySystem>();
 
-        public void InitTask(GameObject objectToAnimate, AnimateObjectTaskData taskData, AbilityActivationData activateData, float animationTime = 1f, float animationSpeed = 1f, bool loopAnimation = false)
+        public void InitTask(GameObject objectToAnimate, AnimateObjectTaskData taskData, AbilityActivationData activationData, float animationTime = 1f, float animationSpeed = 1f, bool loopAnimation = false)
         {
             _objectToAnimate = objectToAnimate;
             _objectToAnimate.transform.parent = this.transform;
@@ -69,9 +69,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
             _loopAnimation = loopAnimation;
 
-            _activateData = activateData;
-            _startPosition = _activateData.tacticsGrid.GetWorldPositionFromGridIndex(activateData.originIndex);
-            _targetPosition = _activateData.tacticsGrid.GetWorldPositionFromGridIndex(activateData.targetIndex);
+            _activateData = activationData;
+            _startPosition = _activateData.tacticsGrid.GetTilePositionFromIndex(activationData.originIndex);
+            _targetPosition = _activateData.tacticsGrid.GetTilePositionFromIndex(activationData.targetIndex);
 
             _direction = _targetPosition - _startPosition;
             _direction.Normalize();

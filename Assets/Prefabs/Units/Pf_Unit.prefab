@@ -225,7 +225,7 @@ MonoBehaviour:
   _damageColor: {r: 1, g: 0, b: 0, a: 0.78431374}
   _healColor: {r: 0, g: 1, b: 0.024693727, a: 0.78431374}
   _healthChangeDelay: 0.25
-  _isImmortal: 1
+  _isImmortal: 0
 --- !u!114 &3677761392830542896
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -239,6 +239,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _abilityInstanceContainer: {fileID: 2139374745801973881}
+  _baseAbilityPoints: 2
 --- !u!1 &7310441305717251486
 GameObject:
   m_ObjectHideFlags: 0
