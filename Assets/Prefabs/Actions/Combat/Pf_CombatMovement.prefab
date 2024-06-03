@@ -52,6 +52,9 @@ MonoBehaviour:
   _outOfRangeColor: {r: 0, g: 0, b: 0, a: 0}
   _outlineLength: 1
   _distanceToEdge: 1
+  _outlineHeight: 1
+  _pathLineSize: 0.2
+  _pathLineSpeed: 3
 --- !u!120 &6650969265936182871
 LineRenderer:
   serializedVersion: 2
@@ -73,7 +76,7 @@ LineRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 10301, guid: 0000000000000000f000000000000000, type: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -149,7 +152,7 @@ LineRenderer:
     numCapVertices: 2
     alignment: 0
     textureMode: 1
-    textureScale: {x: 1, y: 1}
+    textureScale: {x: 0.5, y: 0.1}
     shadowBias: 0.5
     generateLightingData: 0
   m_MaskInteraction: 0

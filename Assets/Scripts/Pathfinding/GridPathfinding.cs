@@ -79,22 +79,13 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             this.source = index;
             this.direction = direction;
         }
-
-        public static bool operator ==(EdgeData left, EdgeData right)
-        {
-            return left.source == right.source && left.direction == right.direction;
-        }
-
-        public static bool operator !=(EdgeData left, EdgeData right)
-        {
-            return left.source != right.source && left.direction != right.direction;
-        }
     }
 
     public class PathfindingResult
     {
         public PathResult Result { get; set; }
         public List<GridIndex> Path { get; set; }
+        public float Length { get; set; }
 
         public HashSet<EdgeData> Edges { get; set; }
     }
@@ -298,6 +289,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             if (pathResult.Result == PathResult.SearchSuccess || pathParams.allowPartialSolution)
             {
                 pathResult.Path = ConvertPathNodesToIndexes(startNode, bestNode, pathParams.includeStartNode);
+                pathResult.Length = bestNode.totalCost;
             }
             return pathResult;
         }

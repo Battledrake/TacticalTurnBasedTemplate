@@ -17,10 +17,17 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         [SerializeField] private float _outlineLength = 1f;
         [Range(0.1f, 1f)]
         [SerializeField] private float _distanceToEdge = 1f;
+        [Range(0.5f, 5f)]
+        [SerializeField] private float _outlineHeight = 0.5f;
+        [Range(0.1f, 1f)]
+        [SerializeField] private float _pathLineSize = 0.2f;
+        [Range(0, 10f)]
+        [SerializeField] private float _pathLineSpeed = 3.5f;
 
         private Unit _currentUnit;
 
         private List<GridIndex> _generatedPath = new List<GridIndex>();
+        private float _generatedPathLength = 0f;
 
         private List<GridIndex> _moveRangeIndexes = new List<GridIndex>();
         private HashSet<EdgeData> _moveRangeEdges = new HashSet<EdgeData>();
@@ -47,9 +54,10 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 _playerActions.SelectedUnit.OnUnitStartedMovement += Unit_OnUnitStartedMovement;
                 _playerActions.SelectedUnit.OnUnitReachedDestination += Unit_OnUnitReachedDestination;
 
-                CombatManager.Instance.MoveUnit(_playerActions.SelectedUnit, _generatedPath);
+                CombatManager.Instance.MoveUnit(_playerActions.SelectedUnit, _generatedPath, _generatedPathLength);
 
                 _generatedPath.Clear();
+                _generatedPathLength = 0f;
                 _isUnitMoving = true;
 
                 return true;
@@ -108,14 +116,19 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
                         Vector3 sourcePosition = _playerActions.TacticsGrid.GetTilePositionFromIndex(edgePair.source);
                         GridIndex direction = edgePair.direction;
-                        _borrowedMoveRenders[edgeIndex].SetPosition(0, new Vector3(sourcePosition.x + (direction.x * _distanceToEdge) - ((float)direction.z * _outlineLength), sourcePosition.y + 0.5f, sourcePosition.z + (direction.z * _distanceToEdge) - ((float)direction.x * _outlineLength)));
-                        _borrowedMoveRenders[edgeIndex].SetPosition(1, new Vector3(sourcePosition.x + (direction.x * _distanceToEdge) + ((float)direction.z * _outlineLength), sourcePosition.y + 0.5f, sourcePosition.z + (direction.z * _distanceToEdge) + ((float)direction.x * _outlineLength)));
+                        _borrowedMoveRenders[edgeIndex].SetPosition(0, new Vector3(sourcePosition.x + (direction.x * _distanceToEdge) - ((float)direction.z * _outlineLength), sourcePosition.y + _outlineHeight, sourcePosition.z + (direction.z * _distanceToEdge) - ((float)direction.x * _outlineLength)));
+                        _borrowedMoveRenders[edgeIndex].SetPosition(1, new Vector3(sourcePosition.x + (direction.x * _distanceToEdge) + ((float)direction.z * _outlineLength), sourcePosition.y + _outlineHeight, sourcePosition.z + (direction.z * _distanceToEdge) + ((float)direction.x * _outlineLength)));
                         edgeIndex++;
                     }
 
                     ShowSprintRangeTiles();
                 }
             }
+        }
+
+        private void Update()
+        {
+            _pathLine.material.mainTextureOffset = new Vector2(Time.time * -_pathLineSpeed, 0);
         }
 
         private void ShowSprintRangeTiles()
@@ -176,8 +189,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
                     Vector3 sourcePosition = _playerActions.TacticsGrid.GetTilePositionFromIndex(edgePair.source);
                     GridIndex direction = edgePair.direction;
-                    _borrowedSprintRenders[edgeIndex].SetPosition(0, new Vector3(sourcePosition.x + (direction.x * _distanceToEdge) - ((float)direction.z * _outlineLength), sourcePosition.y + 0.5f, sourcePosition.z + (direction.z * _distanceToEdge) - ((float)direction.x * _outlineLength)));
-                    _borrowedSprintRenders[edgeIndex].SetPosition(1, new Vector3(sourcePosition.x + (direction.x * _distanceToEdge) + ((float)direction.z * _outlineLength), sourcePosition.y + 0.5f, sourcePosition.z + (direction.z * _distanceToEdge) + ((float)direction.x * _outlineLength)));
+                    _borrowedSprintRenders[edgeIndex].SetPosition(0, new Vector3(sourcePosition.x + (direction.x * _distanceToEdge) - ((float)direction.z * _outlineLength), sourcePosition.y + _outlineHeight, sourcePosition.z + (direction.z * _distanceToEdge) - ((float)direction.x * _outlineLength)));
+                    _borrowedSprintRenders[edgeIndex].SetPosition(1, new Vector3(sourcePosition.x + (direction.x * _distanceToEdge) + ((float)direction.z * _outlineLength), sourcePosition.y + _outlineHeight, sourcePosition.z + (direction.z * _distanceToEdge) + ((float)direction.x * _outlineLength)));
                     edgeIndex++;
                 }
                 _isSprintRangeShowing = true;
@@ -202,6 +215,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             if (result.Result == PathResult.SearchSuccess || result.Result == PathResult.GoalUnreachable)
             {
                 _generatedPath = result.Path;
+                _generatedPathLength = result.Length;
 
                 EnableAndInitializePathLine(result.Path.Count);
 
@@ -256,10 +270,10 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _pathLine.enabled = true;
             _pathLine.startColor = _moveRangeIndexes.Contains(_playerActions.HoveredTile) ? _moveRangeColor : _sprintRangeColor;
             Color endColor = _pathLine.startColor;
-            endColor.a = 0.1f;
+            endColor.a = 0.5f;
             _pathLine.endColor = endColor;
-            _pathLine.startWidth = 0.15f;
-            _pathLine.endWidth = 0.15f;
+            _pathLine.startWidth = _pathLineSize;
+            _pathLine.endWidth = _pathLineSize;
         }
 
         private void OnDisable()

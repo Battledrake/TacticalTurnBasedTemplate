@@ -187,7 +187,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             GameObject.Find("[CameraControllers]").GetComponent<CameraController>().SetMoveToTarget(_activeUnit.transform.position);
         }
 
-        public void MoveUnit(Unit unit, List<GridIndex> path)
+        public void MoveUnit(Unit unit, List<GridIndex> path, float pathLength)
         {
             GridMovement gridMoveComp = unit.GetComponent<GridMovement>();
             if (gridMoveComp)
@@ -196,7 +196,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 gridMoveComp.SetPathAndMove(path);
             }
 
-            _abilityPointDeduction = path.Count <= unit.MoveRange ? 1 : 2;
+            _abilityPointDeduction = pathLength <= unit.MoveRange ? 1 : 2;
 
             unit.GetAbilitySystem().RemoveAbilityPoints(_abilityPointDeduction);
 

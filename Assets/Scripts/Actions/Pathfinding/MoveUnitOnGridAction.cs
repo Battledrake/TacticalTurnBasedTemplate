@@ -36,7 +36,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                     {
                         _playerActions.TacticsGrid.AddStateToTile(pathResult.Path[i], TileState.IsInPath);
                     }
-                    CombatManager.Instance.MoveUnit(_currentUnit, pathResult.Path);
+                    CombatManager.Instance.MoveUnit(_currentUnit, pathResult.Path, pathResult.Length);
 
                     _playerActions.TacticsGrid.ClearAllTilesWithState(TileState.IsInMoveRange);
                     _currentUnit.OnUnitReachedDestination += SelectedUnit_OnUnitReachedDestination;

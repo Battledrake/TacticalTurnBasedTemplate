@@ -41,7 +41,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             PathfindingResult pathResult = activationData.tacticsGrid.GridPathfinder.FindPath(activationData.originIndex, activationData.targetIndex, pathParams);
             if (pathResult.Result == PathResult.SearchSuccess)
             {
-                CombatManager.Instance.MoveUnit(_owner.GetOwningUnit(), pathResult.Path);
+                CombatManager.Instance.MoveUnit(_owner.GetOwningUnit(), pathResult.Path, pathResult.Length);
 
                 _owner.GetOwningUnit().OnUnitMovementStopped += Instigator_OnUnitMovementStopped;
                 _owner.GetOwningUnit().OnUnitReachedDestination += Instigator_OnUnitReachedDestination;
