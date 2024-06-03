@@ -42,12 +42,12 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
     public class PathNode : IComparable<PathNode>
     {
-        public GridIndex index = new GridIndex(int.MinValue, int.MinValue);
+        public GridIndex index = GridIndex.Invalid();
         public float terrainCost = 1f;
         public float traversalCost = Mathf.Infinity;
         public float heuristicCost = Mathf.Infinity;
         public float totalCost = Mathf.Infinity;
-        public GridIndex parent = new GridIndex(int.MinValue, int.MinValue);
+        public GridIndex parent = GridIndex.Invalid();
 
         public bool isOpened;
         public bool isClosed;
@@ -79,6 +79,16 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             this.source = index;
             this.direction = direction;
         }
+
+        public static bool operator ==(EdgeData left, EdgeData right)
+        {
+            return left.source == right.source && left.direction == right.direction;
+        }
+
+        public static bool operator !=(EdgeData left, EdgeData right)
+        {
+            return left.source != right.source && left.direction != right.direction;
+        }
     }
 
     public class PathfindingResult
@@ -86,7 +96,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public PathResult Result { get; set; }
         public List<GridIndex> Path { get; set; }
 
-        public List<EdgeData> Edges { get; set; }
+        public HashSet<EdgeData> Edges { get; set; }
     }
 
     public class GridPathfinding : MonoBehaviour
@@ -127,7 +137,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private bool _includeStartNodeInPath = false;
 
         private PriorityQueue<PathNode> _frontierNodes;
-        private Queue<PathNode> _rangeNodes;
+        private PriorityQueue<PathNode> _rangeNodes;
         private Dictionary<GridIndex, PathNode> _pathNodePool = new Dictionary<GridIndex, PathNode>();
 
         public PathParams CreateDefaultPathParams(float pathLength)
@@ -161,7 +171,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             PathfindingResult pathResult = new PathfindingResult();
             pathResult.Path = new List<GridIndex>();
             pathResult.Result = PathResult.SearchSuccess;
-            pathResult.Edges = new List<EdgeData>();
+            pathResult.Edges = new HashSet<EdgeData>();
 
             if (!_tacticsGrid.IsIndexValid(startIndex))
             {
@@ -170,7 +180,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             }
 
             _pathNodePool.Clear();
-            _rangeNodes = new Queue<PathNode>();
+            _rangeNodes = new PriorityQueue<PathNode>();
             List<GridIndex> indexesInRange = new List<GridIndex>();
 
             if (pathParams.includeStartNode)
@@ -178,6 +188,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
             PathNode startNode = CreateAndAddNodeToPool(startIndex);
             startNode.traversalCost = 0;
+            startNode.totalCost = 0;
             _rangeNodes.Enqueue(startNode);
 
             while (_rangeNodes.Count > 0)
@@ -190,28 +201,26 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
                     if (!_tacticsGrid.IsIndexValid(neighborIndex))
                     {
-                        if (i < 4)
+                        if (i < GetNeighborCount(false))
                             pathResult.Edges.Add(new EdgeData(currentNode.index, GridStatics.SquareNeighbors[i]));
                         continue;
                     }
 
-
-
-                    if (neighborIndex == currentNode.parent || neighborIndex == currentNode.index)
+                    if (neighborIndex == currentNode.parent)
                         continue;
 
                     if (!IsTraversalAllowed(currentNode.index, neighborIndex, pathParams.heightAllowance, pathParams.validTileTypes))
                     {
-                        if (i < 4)
+                        if (i < GetNeighborCount(false))
                             pathResult.Edges.Add(new EdgeData(currentNode.index, GridStatics.SquareNeighbors[i]));
                         continue;
                     }
 
-
-
                     PathNode neighborNode = null;
                     if (_pathNodePool.TryGetValue(neighborIndex, out PathNode existingNeighbor))
+                    {
                         neighborNode = existingNeighbor;
+                    }
                     else
                         neighborNode = CreateAndAddNodeToPool(neighborIndex);
 
@@ -219,18 +228,20 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
                     float newTraversalCost = currentNode.traversalCost + (GetTraversalCost(currentNode.index, neighborNode.index) * neighborNode.terrainCost);
 
-                    if (newTraversalCost > pathParams.maxPathLength)
-                    {
-                        if (i < 4 && neighborNode.traversalCost > pathParams.maxPathLength)
-                            pathResult.Edges.Add(new EdgeData(currentNode.index, GridStatics.SquareNeighbors[i]));
-                        continue;
-                    }
-
-
                     if (newTraversalCost >= neighborNode.traversalCost)
                         continue;
 
+                    if (newTraversalCost > pathParams.maxPathLength)
+                    {
+                        if (i < GetNeighborCount(false))
+                        {
+                            pathResult.Edges.Add(new EdgeData(currentNode.index, GridStatics.SquareNeighbors[i]));
+                        }
+                        continue;
+                    }
+
                     neighborNode.traversalCost = newTraversalCost;
+                    neighborNode.totalCost = newTraversalCost; //Our GridIndexes do a comparison on totalCost for A* and that's what our PriorityQueue checks. We set the totalCost so it functions as desired in the queue.
                     neighborNode.parent = currentNode.index;
 
                     if (!neighborNode.isOpened)
@@ -310,7 +321,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 if (!_tacticsGrid.IsIndexValid(neighborIndex))
                     continue;
 
-                if (neighborIndex == currentNode.parent || neighborIndex == currentNode.index || !IsTraversalAllowed(currentNode.index, neighborIndex, pathParams.heightAllowance, pathParams.validTileTypes))
+                if (neighborIndex == currentNode.parent || !IsTraversalAllowed(currentNode.index, neighborIndex, pathParams.heightAllowance, pathParams.validTileTypes))
                     continue;
 
                 PathNode neighborNode = null;
@@ -528,6 +539,14 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
                     if ((isValidOne && !GridStatics.IsTileTypeWalkable(adjacentTileOne.tileType))
                      && (isValidTwo && !GridStatics.IsTileTypeWalkable(adjacentTileTwo.tileType)))
+                    {
+                        return false;
+                    }
+
+                    //If there's a wall, it's likely the tile on top is valid. We do a height check and if there's a valid tile above on one of the adjacent tiles, that means a wall is there. Treat the tile like an obstacle if it's above our allowance.
+                    float heightCheckOne = adjacentTileOne.tileMatrix.GetPosition().y - sourceTile.tileMatrix.GetPosition().y;
+                    float heightCheckTwo = adjacentTileTwo.tileMatrix.GetPosition().y - sourceTile.tileMatrix.GetPosition().y;
+                    if (heightCheckOne > heightAllowance || heightCheckTwo > heightAllowance)
                     {
                         return false;
                     }

@@ -23,7 +23,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private List<GridIndex> _generatedPath = new List<GridIndex>();
 
         private List<GridIndex> _moveRangeIndexes = new List<GridIndex>();
-        private List<EdgeData> _moveRangeEdges = new List<EdgeData>();
+        private HashSet<EdgeData> _moveRangeEdges = new HashSet<EdgeData>();
 
         private List<LineRenderer> _borrowedMoveRenders = new List<LineRenderer>();
         private List<LineRenderer> _borrowedSprintRenders = new List<LineRenderer>();
@@ -88,27 +88,29 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 LineRendererPool.Instance.ReturnInstances(_borrowedSprintRenders);
 
 
-                PathParams pathParams = GridPathfinding.CreatePathParamsFromUnit(unit, unit.MoveRange);
-                PathfindingResult pathResult = _playerActions.TacticsGrid.GridPathfinder.FindTilesInRange(unit.UnitGridIndex, pathParams);
+                PathParams pathParams = GridPathfinding.CreatePathParamsFromUnit(_currentUnit, unit.MoveRange);
+                PathfindingResult pathResult = _playerActions.TacticsGrid.GridPathfinder.FindTilesInRange(_currentUnit.UnitGridIndex, pathParams);
                 if (pathResult.Result != PathResult.SearchFail)
                 {
                     _moveRangeIndexes = pathResult.Path;
                     _moveRangeEdges = pathResult.Edges;
 
                     _borrowedMoveRenders = LineRendererPool.Instance.BorrowInstances(_moveRangeEdges.Count);
+                    int edgeIndex = 0;
 
-                    for (int i = 0; i < _moveRangeEdges.Count; i++)
+                    foreach(var edgePair in _moveRangeEdges)
                     {
-                        _borrowedMoveRenders[i].positionCount = 2;
-                        _borrowedMoveRenders[i].startColor = _moveRangeColor;
-                        _borrowedMoveRenders[i].endColor = _moveRangeColor;
-                        _borrowedMoveRenders[i].startWidth = 0.15f;
-                        _borrowedMoveRenders[i].endWidth = 0.15f;
+                        _borrowedMoveRenders[edgeIndex].positionCount = 2;
+                        _borrowedMoveRenders[edgeIndex].startColor = _moveRangeColor;
+                        _borrowedMoveRenders[edgeIndex].endColor = _moveRangeColor;
+                        _borrowedMoveRenders[edgeIndex].startWidth = 0.15f;
+                        _borrowedMoveRenders[edgeIndex].endWidth = 0.15f;
 
-                        Vector3 sourcePosition = _playerActions.TacticsGrid.GetTilePositionFromIndex(_moveRangeEdges[i].source);
-                        GridIndex direction = _moveRangeEdges[i].direction;
-                        _borrowedMoveRenders[i].SetPosition(0, new Vector3(sourcePosition.x + (direction.x * _distanceToEdge) - ((float)direction.z * _outlineLength), sourcePosition.y + 0.5f, sourcePosition.z + (direction.z * _distanceToEdge) - ((float)direction.x * _outlineLength)));
-                        _borrowedMoveRenders[i].SetPosition(1, new Vector3(sourcePosition.x + (direction.x * _distanceToEdge) + ((float)direction.z * _outlineLength), sourcePosition.y + 0.5f, sourcePosition.z + (direction.z * _distanceToEdge) + ((float)direction.x * _outlineLength)));
+                        Vector3 sourcePosition = _playerActions.TacticsGrid.GetTilePositionFromIndex(edgePair.source);
+                        GridIndex direction = edgePair.direction;
+                        _borrowedMoveRenders[edgeIndex].SetPosition(0, new Vector3(sourcePosition.x + (direction.x * _distanceToEdge) - ((float)direction.z * _outlineLength), sourcePosition.y + 0.5f, sourcePosition.z + (direction.z * _distanceToEdge) - ((float)direction.x * _outlineLength)));
+                        _borrowedMoveRenders[edgeIndex].SetPosition(1, new Vector3(sourcePosition.x + (direction.x * _distanceToEdge) + ((float)direction.z * _outlineLength), sourcePosition.y + 0.5f, sourcePosition.z + (direction.z * _distanceToEdge) + ((float)direction.x * _outlineLength)));
+                        edgeIndex++;
                     }
 
                     ShowSprintRangeTiles();
@@ -149,33 +151,34 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void GenerateSprintRangeTiles()
         {
-            PathParams pathParams = GridPathfinding.CreatePathParamsFromUnit(_playerActions.SelectedUnit, _playerActions.SelectedUnit.MoveRange * 2);
-            PathfindingResult pathResult = _playerActions.TacticsGrid.GridPathfinder.FindTilesInRange(_playerActions.SelectedTile, pathParams);
+            PathParams pathParams = GridPathfinding.CreatePathParamsFromUnit(_currentUnit, _currentUnit.MoveRange * 2);
+            PathfindingResult pathResult = _playerActions.TacticsGrid.GridPathfinder.FindTilesInRange(_currentUnit.UnitGridIndex, pathParams);
             if (pathResult.Result != PathResult.SearchFail)
             {
-                List<EdgeData> sprintEdges = new List<EdgeData>(pathResult.Edges);
-                for (int i = 0; i < _moveRangeEdges.Count; i++)
+                HashSet<EdgeData> sprintEdges = new HashSet<EdgeData>(pathResult.Edges);
+                foreach(var edgePair in _moveRangeEdges)
                 {
-                    if (pathResult.Edges.Contains(_moveRangeEdges[i]))
+                    if (pathResult.Edges.Contains(edgePair))
                     {
-                        sprintEdges.Remove(_moveRangeEdges[i]);
+                        sprintEdges.Remove(edgePair);
                     }
                 }
 
                 _borrowedSprintRenders = LineRendererPool.Instance.BorrowInstances(sprintEdges.Count);
-
-                for (int i = 0; i < sprintEdges.Count; i++)
+                int edgeIndex = 0;
+                foreach(var edgePair in sprintEdges)
                 {
-                    _borrowedSprintRenders[i].positionCount = 2;
-                    _borrowedSprintRenders[i].startColor = _sprintRangeColor;
-                    _borrowedSprintRenders[i].endColor = _sprintRangeColor;
-                    _borrowedSprintRenders[i].startWidth = 0.15f;
-                    _borrowedSprintRenders[i].endWidth = 0.15f;
+                    _borrowedSprintRenders[edgeIndex].positionCount = 2;
+                    _borrowedSprintRenders[edgeIndex].startColor = _sprintRangeColor;
+                    _borrowedSprintRenders[edgeIndex].endColor = _sprintRangeColor;
+                    _borrowedSprintRenders[edgeIndex].startWidth = 0.15f;
+                    _borrowedSprintRenders[edgeIndex].endWidth = 0.15f;
 
-                    Vector3 sourcePosition = _playerActions.TacticsGrid.GetTilePositionFromIndex(sprintEdges[i].source);
-                    GridIndex direction = sprintEdges[i].direction;
-                    _borrowedSprintRenders[i].SetPosition(0, new Vector3(sourcePosition.x + (direction.x * _distanceToEdge) - ((float)direction.z * _outlineLength), sourcePosition.y + 0.5f, sourcePosition.z + (direction.z * _distanceToEdge) - ((float)direction.x * _outlineLength)));
-                    _borrowedSprintRenders[i].SetPosition(1, new Vector3(sourcePosition.x + (direction.x * _distanceToEdge) + ((float)direction.z * _outlineLength), sourcePosition.y + 0.5f, sourcePosition.z + (direction.z * _distanceToEdge) + ((float)direction.x * _outlineLength)));
+                    Vector3 sourcePosition = _playerActions.TacticsGrid.GetTilePositionFromIndex(edgePair.source);
+                    GridIndex direction = edgePair.direction;
+                    _borrowedSprintRenders[edgeIndex].SetPosition(0, new Vector3(sourcePosition.x + (direction.x * _distanceToEdge) - ((float)direction.z * _outlineLength), sourcePosition.y + 0.5f, sourcePosition.z + (direction.z * _distanceToEdge) - ((float)direction.x * _outlineLength)));
+                    _borrowedSprintRenders[edgeIndex].SetPosition(1, new Vector3(sourcePosition.x + (direction.x * _distanceToEdge) + ((float)direction.z * _outlineLength), sourcePosition.y + 0.5f, sourcePosition.z + (direction.z * _distanceToEdge) + ((float)direction.x * _outlineLength)));
+                    edgeIndex++;
                 }
                 _isSprintRangeShowing = true;
             }

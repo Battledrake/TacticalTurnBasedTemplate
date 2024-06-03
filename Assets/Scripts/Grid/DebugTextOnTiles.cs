@@ -161,6 +161,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             }
             else
             {
+                if (this == null)
+                    return null;
+
                 GameObject newTextObject = Instantiate(_textObjectPrefab, Vector3.zero, Quaternion.identity).gameObject;
                 _spawnedTexts.Add(index, newTextObject);
                 return newTextObject;
