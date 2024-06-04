@@ -23,11 +23,17 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private int _currentActionPoints;
         private Unit _ownerUnit;
 
+
         public Unit GetOwningUnit() { return _ownerUnit; }
 
         public void ResetActionPoints()
         {
             _currentActionPoints = _baseActionPoints;
+
+            foreach(var abilityPair in _abilities)
+            {
+                abilityPair.Value.ReduceCooldown(1);
+            }
         }
         public void AddActionPoints(int amount)
         {
@@ -81,6 +87,29 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             //        _activeEffects[i].duration -= 1;
             //    }
             //}
+        }
+
+        public void ApplyEffect(AbilityEffectReal effect)
+        {
+            switch (effect.attributeType)
+            {
+                case AttributeType.CurrentHealth:
+                    _ownerUnit.ModifyCurrentHealth(effect.modifier);
+                    break;
+                case AttributeType.MaxHealth:
+                    break;
+                case AttributeType.MoveRange:
+                    _ownerUnit.MoveRange += effect.modifier;
+                    break;
+            }
+        }
+
+        public void ApplyEffects(List<AbilityEffectReal> effects)
+        {
+            for (int i = 0; i < effects.Count; i++)
+            {
+                ApplyEffect(effects[i]);
+            }
         }
 
         public void RemoveAbility(AbilityId id)

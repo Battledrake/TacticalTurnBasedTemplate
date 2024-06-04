@@ -21,7 +21,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
             _summonedUnit = Instantiate(_unitPrefab, activationData.tacticsGrid.GetWorldPositionFromGridIndex(activationData.targetIndex), Quaternion.identity);
             _summonedUnit.InitUnit(_unitType);
-            CombatManager.Instance.AddUnitToCombat(activationData.targetIndex, _summonedUnit);
+            CombatManager.Instance.AddUnitToCombat(activationData.targetIndex, _summonedUnit, _owner.GetOwningUnit().TeamIndex);
             _isActive = true;
 
             EndAbility();
@@ -31,23 +31,12 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             if (base.CanActivateAbility(activationData))
             {
-
                 activationData.tacticsGrid.GetTileDataFromIndex(activationData.targetIndex, out TileData targetData);
 
                 if (activationData.tacticsGrid.IsTileWalkable(activationData.targetIndex) && !targetData.unitOnTile)
                     return true;
             }
 
-            return false;
-        }
-
-        public override bool TryActivateAbility(AbilityActivationData activationData)
-        {
-            if (CanActivateAbility(activationData))
-            {
-                ActivateAbility(activationData);
-                return true;
-            }
             return false;
         }
     }

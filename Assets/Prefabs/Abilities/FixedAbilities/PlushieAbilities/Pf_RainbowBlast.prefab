@@ -44,9 +44,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5ec1f05eb76d995429a4a1d5dbe4d949, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _abilityId: 0
+  _abilityId: 16
   _icon: {fileID: 21300000, guid: 4fbc224fd641ebe49a14a87d96202ebf, type: 3}
-  _abilityCost: 2
+  _actionCost: 1
   _isFriendly: 0
   _rangeData:
     rangePattern: 0

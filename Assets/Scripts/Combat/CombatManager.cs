@@ -53,9 +53,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         [SerializeField] private TacticsGrid _tacticsGrid;
 
         public TurnOrderType TurnOrderType { get => _turnOrderType; set => _turnOrderType = value; }
-        public List<Unit> OrderedUnits { get => _orderedUnits; }
         public List<Unit> UnitsInCombat { get => _unitsInCombat; }
         public Dictionary<int, HashSet<Unit>> UnitTeams { get => _unitTeams; }
+        public List<Unit> OrderedUnits { get => _orderedUnits; }
         public int NumberOfTeams { get => _teamColors.Count; }
         public bool IsInCombat { get => _isInCombat; }
         public bool ShowEnemyMoveRange { get => _showEnemyMoveRange; set => _showEnemyMoveRange = value; }
@@ -63,8 +63,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private List<Unit> _unitsInCombat = new List<Unit>();
         private Dictionary<int, HashSet<Unit>> _unitTeams = new Dictionary<int, HashSet<Unit>>();
-
         private List<Unit> _orderedUnits = new List<Unit>();
+
         private int _turnsCompleted = 0;
 
         private bool _isInCombat = false;
@@ -120,7 +120,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             if (teamIndexes.Any())
             {
                 _activeTeamIndex = teamIndexes.First();
-                Debug.Log($"TeamIndex: {_activeTeamIndex}, TeamCount: {_unitTeams[_activeTeamIndex].Count}");
             }
             else
             {
@@ -259,6 +258,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 QueueUnitsByTeam();
                 OnActiveTeamChanged?.Invoke();
             }
+            //Temporary as starting next turns too fast is a terrible experience.
             StartCoroutine(WaitToStartTurn());
             IEnumerator WaitToStartTurn()
             {
@@ -392,6 +392,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             unit.TeamIndex = teamIndex;
 
             OnUnitTeamChanged?.Invoke();
+
+            //TODO: Testing addition for summon ability. Should add more to ensure this works as intended.
+            _orderedUnits.Add(unit);
         }
 
         private void Unit_OnUnitDied(Unit unit, bool shouldDestroy = false)
@@ -426,7 +429,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             activationData.tacticsGrid = _tacticsGrid;
             activationData.originIndex = origin;
             activationData.targetIndex = target;
-
             if (ability.TryActivateAbility(activationData))
             {
                 ability.OnAbilityEnded += Ability_OnAbilityEnded;
@@ -460,7 +462,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 effectReal.modifier = didHit ? StaticUtilities.MinMaxRandom(effectsToApply[i].minMaxModifier) : 0;
                 effectsRealList.Add(effectReal);
             }
-            receiver.GetComponent<Unit>().ApplyEffects(effectsRealList);
+            receiver.ApplyEffects(effectsRealList);
         }
 
         public bool IsValidTileForUnit(Unit unit, GridIndex index)

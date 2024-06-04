@@ -46,7 +46,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _abilityId: 11
   _icon: {fileID: 21300000, guid: 181a09c7a0504424c8fff87bcb1f376c, type: 3}
-  _abilityCost: 2
+  _actionCost: 1
   _isFriendly: 0
   _rangeData:
     rangePattern: 5

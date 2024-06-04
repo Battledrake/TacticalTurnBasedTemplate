@@ -20,7 +20,11 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         ShortRangeArrow,
         SlimeBall,
         SwordSlash,
-        SwordThrow
+        SwordThrow,
+        ShootRifle,
+        RainbowWave,
+        RainbowSpin,
+        RainbowBlast
     }
     public enum AbilityRangePattern
     {
@@ -99,6 +103,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         [Header("Ability Attributes")]
         [SerializeField] protected int _actionCost;
+        [SerializeField] protected int _cooldown;
         [SerializeField] protected bool _isFriendly = false;
 
         public bool IsFriendly { get => _isFriendly; }
@@ -106,9 +111,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public string Name { get => _abilityId.ToString(); }
         public Sprite Icon { get => _icon; }
         public int ActionCost { get => _actionCost; }
-        public Unit Instigator { get => _instigator; }
-
-        protected Unit _instigator;
 
         protected AbilitySystem _owner;
 
@@ -125,6 +127,16 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public void InitAbility(AbilitySystem abilitySystem)
         {
             _owner = abilitySystem;
+        }
+
+        public void ReduceCooldown(int amount)
+        {
+            if(_cooldown > 0)
+            {
+                _cooldown -= amount;
+                if (_cooldown < 0)
+                    _cooldown = 0;
+            }
         }
 
         public virtual bool CanActivateAbility(AbilityActivationData activationData)

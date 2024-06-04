@@ -268,31 +268,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             }
         }
 
-        //TODO: Move this logic to ability component
-        public void ApplyEffect(AbilityEffectReal effect)
-        {
-            switch (effect.attributeType)
-            {
-                case AttributeType.CurrentHealth:
-                    ModifyCurrentHealth(effect.modifier);
-                    break;
-                case AttributeType.MaxHealth:
-                    break;
-                case AttributeType.MoveRange:
-                    _moveRange += effect.modifier;
-                    break;
-            }
-        }
-
-        public void ApplyEffects(List<AbilityEffectReal> effects)
-        {
-            for (int i = 0; i < effects.Count; i++)
-            {
-                ApplyEffect(effects[i]);
-            }
-        }
-
-        private void ModifyCurrentHealth(int effectModifier)
+        public void ModifyCurrentHealth(int effectModifier)
         {
             _healthComponent.UpdateHealth(effectModifier);
 
