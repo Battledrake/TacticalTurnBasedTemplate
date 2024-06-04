@@ -124,7 +124,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         public void TurnStarted()
         {
-            _abilitySystem.ResetAbilityPoints();
+            _abilitySystem.ResetActionPoints();
         }
 
         public void TurnEnded()
@@ -181,6 +181,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _maxHealth = _unitData.unitStats.maxHealth;
             _currentHealth = _maxHealth;
             _moveRange = _unitData.unitStats.moveRange;
+            _agility = _unitData.unitStats.agility;
 
             InitComponents();
         }

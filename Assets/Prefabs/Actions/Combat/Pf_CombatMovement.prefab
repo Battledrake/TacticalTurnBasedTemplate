@@ -52,7 +52,7 @@ MonoBehaviour:
   _outOfRangeColor: {r: 0, g: 0, b: 0, a: 0}
   _outlineLength: 1
   _distanceToEdge: 1
-  _outlineHeight: 1
+  _outlineHeight: 0.2
   _pathLineSize: 0.2
   _pathLineSpeed: 3
 --- !u!120 &6650969265936182871

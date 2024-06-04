@@ -17,7 +17,7 @@ MonoBehaviour:
   heightAllowance: 1.5
   maxHealth: 5
   moveRange: 7
-  agility: 1
+  agility: 10
   abilities:
   - {fileID: -7179713428241320167, guid: 2acbfa7fcca56f942aa9005729504ba2, type: 3}
   - {fileID: 2237031348335038309, guid: c3fa27da89508244cafb2c1467f35cdc, type: 3}

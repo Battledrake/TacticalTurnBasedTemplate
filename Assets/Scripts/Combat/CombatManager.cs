@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 {
-    public enum TurnOrder
+    public enum TurnOrderType
     {
         Team,
         Stat,
@@ -42,29 +42,37 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public event Action<Unit> OnUnitTurnStarted;
         public event Action<Unit> OnUnitTurnEnded;
         public event Action OnAbilityUseCompleted;
+        public event Action OnActiveTeamChanged;
+        public event Action<Unit> OnActiveUnitChanged;
 
+        [SerializeField] TurnOrderType _turnOrderType;
         [SerializeField] private List<TeamColorData> _teamColors;
 
         [Header("Dependencies")]
         [SerializeField] private TacticsGrid _tacticsGrid;
 
-
+        public TurnOrderType TurnOrderType { get => _turnOrderType; set => _turnOrderType = value; }
+        public List<Unit> OrderedUnits { get => _orderedUnits; }
         public List<Unit> UnitsInCombat { get => _unitsInCombat; }
         public Dictionary<int, HashSet<Unit>> UnitTeams { get => _unitTeams; }
         public int NumberOfTeams { get => _teamColors.Count; }
         public bool IsInCombat { get => _isInCombat; }
         public bool ShowEnemyMoveRange { get => _showEnemyMoveRange; set => _showEnemyMoveRange = value; }
+        public Unit ActiveUnit { get => _activeUnit; }
 
         private List<Unit> _unitsInCombat = new List<Unit>();
         private Dictionary<int, HashSet<Unit>> _unitTeams = new Dictionary<int, HashSet<Unit>>();
-        private Queue<Unit> _queuedUnits = new Queue<Unit>();
+
+        private List<Unit> _orderedUnits = new List<Unit>();
+        private int _turnsCompleted = 0;
+        private int _roundsCompleted = 0;
 
         private bool _isInCombat = false;
         private bool _showEnemyMoveRange = false;
 
-        private Unit _activeUnit;
-        private int _activeTeamIndex;
-        private int _abilityPointDeduction = 0;
+        private Unit _activeUnit = null;
+        private int _activeTeamIndex = -1;
+        private int _actionPointDeduction = 0;
 
         private void Awake()
         {
@@ -105,14 +113,17 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             return combatStartParams;
         }
 
-        private void QueueUnitsInRandomOrder(List<Unit> unitsToRandomize)
+        private void SetActiveTeamIndex()
         {
-            int listCount = unitsToRandomize.Count;
-            for (int i = 0; i < listCount; i++)
+            var teamIndexes = _unitTeams.Keys.Where(k => k > _activeTeamIndex && _unitTeams[k]?.Count > 0).OrderBy(k => k);
+            if (teamIndexes.Any())
             {
-                int randomIndex = UnityEngine.Random.Range(0, unitsToRandomize.Count);
-                _queuedUnits.Enqueue(unitsToRandomize[randomIndex]);
-                unitsToRandomize.Remove(unitsToRandomize[randomIndex]);
+                _activeTeamIndex = teamIndexes.First();
+                Debug.Log($"TeamIndex: {_activeTeamIndex}, TeamCount: {_unitTeams[_activeTeamIndex].Count}");
+            }
+            else
+            {
+                _activeTeamIndex = _unitTeams.Keys.Min();
             }
         }
 
@@ -120,32 +131,76 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             if (_unitTeams.TryGetValue(_activeTeamIndex, out HashSet<Unit> teamUnits))
             {
-                foreach (var unit in teamUnits)
+                if (teamUnits != null && teamUnits.Count > 0)
                 {
-                    _queuedUnits.Enqueue(unit);
+                    foreach (var unit in teamUnits)
+                    {
+                        _orderedUnits.Add(unit);
+                    }
                 }
             }
         }
 
-        private void QueueUnitsByStat(List<Unit> unitsToSort)
+        private void QueueUnitsByStat()
         {
+            List<Unit> unitsToSort = new List<Unit>(_unitsInCombat);
             unitsToSort.Sort((unit1, unit2) =>
             {
-                if (unit1.Agility < unit2.Agility)
+                if (unit1.Agility > unit2.Agility)
                     return -1;
-                else if (unit1.Agility > unit2.Agility)
+                else if (unit1.Agility < unit2.Agility)
                     return 1;
                 else
                     return 0;
             });
             for (int i = 0; i < unitsToSort.Count; i++)
             {
-                _queuedUnits.Enqueue(_unitsInCombat[i]);
+                _orderedUnits.Add(unitsToSort[i]);
+            }
+        }
+
+        private void QueueUnitsInRandomOrder()
+        {
+            int listCount = _unitsInCombat.Count;
+            List<Unit> unitsToRandomize = new List<Unit>(_unitsInCombat);
+            for (int i = 0; i < listCount; i++)
+            {
+                int randomIndex = UnityEngine.Random.Range(0, unitsToRandomize.Count);
+                _orderedUnits.Add(unitsToRandomize[randomIndex]);
+                unitsToRandomize.Remove(unitsToRandomize[randomIndex]);
+            }
+        }
+
+        private void QueueUnitsFIFO()
+        {
+            for (int i = 0; i < _unitsInCombat.Count; i++)
+            {
+                _orderedUnits.Add(_unitsInCombat[i]);
             }
         }
 
         public void StartCombat()
         {
+            _activeTeamIndex = -1;
+            _orderedUnits.Clear();
+
+            switch (_turnOrderType)
+            {
+                case TurnOrderType.Team:
+                    SetActiveTeamIndex();
+                    QueueUnitsByTeam();
+                    break;
+                case TurnOrderType.Stat:
+                    QueueUnitsByStat();
+                    break;
+                case TurnOrderType.Random:
+                    QueueUnitsInRandomOrder();
+                    break;
+                case TurnOrderType.FIFO:
+                    QueueUnitsFIFO();
+                    break;
+            }
+
             for (int i = 0; i < _unitsInCombat.Count; i++)
             {
                 _unitsInCombat[i].CombatStarted();
@@ -154,8 +209,100 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _isInCombat = true;
             OnCombatStarted?.Invoke();
 
+            _turnsCompleted = 0;
+            _roundsCompleted = 0;
+
             _activeUnit = null;
+
             NextUnit();
+        }
+
+        //If null is passed in, grab next in list. Otherwise, select unit passed in selected.
+        public void CycleUnits(Unit unit = null)
+        {
+            Unit currentUnit = _activeUnit;
+            if (_turnOrderType == TurnOrderType.Team)
+            {
+                if (_orderedUnits.Contains(unit))
+                {
+                    _activeUnit = unit;
+                }
+                else
+                {
+                    int activeIndex = _orderedUnits.IndexOf(_activeUnit);
+                    activeIndex++;
+                    _activeUnit = _orderedUnits[activeIndex % _orderedUnits.Count];
+                }
+                if (currentUnit != _activeUnit)
+                    OnActiveUnitChanged?.Invoke(_activeUnit);
+            }
+        }
+
+        //TODO: Clean this function up. Our desire for different TurnOrder types makes this very sloppy. We can do better.
+        public void NextUnit()
+        {
+            int activeIndex = 0;
+            if (_activeUnit)
+            {
+                OnUnitTurnEnded?.Invoke(_activeUnit);
+
+                _turnsCompleted++;
+
+                if (_turnOrderType == TurnOrderType.Team)
+                {
+                    if (_turnsCompleted >= _unitTeams[_activeTeamIndex].Count)
+                    {
+                        //Do our round completion logic here like reordering units and what not if we need to. Stats may have changed, or next team kinda thing.
+                        _turnsCompleted = 0;
+                        _roundsCompleted++;
+                        if (_turnOrderType == TurnOrderType.Team)
+                        {
+                            _orderedUnits.Clear();
+                            SetActiveTeamIndex();
+                            QueueUnitsByTeam();
+                            OnActiveTeamChanged?.Invoke();
+                        }
+                    }
+                    else
+                    {
+                        Unit turnEndedUnit = _activeUnit;
+                        CycleUnits();
+                        _orderedUnits.Remove(turnEndedUnit);
+                        return;
+                    }
+                }
+                else
+                {
+                    if (_turnsCompleted >= _orderedUnits.Count)
+                    {
+                        _turnsCompleted = 0;
+                        _roundsCompleted++;
+                    }
+                    else
+                    {
+                        activeIndex = _orderedUnits.IndexOf(_activeUnit);
+                        activeIndex++;
+                    }
+                }
+            }
+
+            if (_turnOrderType == TurnOrderType.Team)
+            {
+                for (int i = 0; i < _orderedUnits.Count; i++)
+                {
+                    _orderedUnits[i].TurnStarted();
+                }
+                _activeUnit = _orderedUnits[0];
+                OnActiveUnitChanged?.Invoke(_activeUnit);
+                return;
+            }
+            _activeUnit = _orderedUnits[activeIndex % _orderedUnits.Count];
+            _activeUnit.TurnStarted();
+
+            OnUnitTurnStarted?.Invoke(_activeUnit);
+
+            //TODO: Make controller a singleton? Or different way of handling.
+            GameObject.Find("[Cameras]").GetComponent<CameraController>().SetMoveToTarget(_activeUnit.transform.position);
         }
 
         public void EndCombat()
@@ -170,23 +317,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             OnCombatEnded?.Invoke();
         }
 
-        public void NextUnit()
-        {
-            if (_activeUnit)
-            {
-                //_activeUnit.TurnEnded();
-                OnUnitTurnEnded?.Invoke(_activeUnit);
-            }
-
-            int _currentIndex = _unitsInCombat.IndexOf(_activeUnit);
-            _currentIndex++;
-            _activeUnit = _unitsInCombat[_currentIndex % _unitsInCombat.Count];
-            _activeUnit.TurnStarted();
-            OnUnitTurnStarted?.Invoke(_activeUnit);
-
-            GameObject.Find("[CameraControllers]").GetComponent<CameraController>().SetMoveToTarget(_activeUnit.transform.position);
-        }
-
         public void MoveUnit(Unit unit, List<GridIndex> path, float pathLength)
         {
             GridMovement gridMoveComp = unit.GetComponent<GridMovement>();
@@ -196,11 +326,11 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 gridMoveComp.SetPathAndMove(path);
             }
 
-            _abilityPointDeduction = pathLength <= unit.MoveRange ? 1 : 2;
+            _actionPointDeduction = pathLength <= unit.MoveRange ? 1 : 2;
 
-            unit.GetAbilitySystem().RemoveAbilityPoints(_abilityPointDeduction);
+            unit.GetAbilitySystem().RemoveActionPoints(_actionPointDeduction);
 
-            _abilityPointDeduction = 0;
+            _actionPointDeduction = 0;
 
             _tacticsGrid.RemoveUnitFromTile(unit.UnitGridIndex);
             _tacticsGrid.AddUnitToTile(path.Last(), unit, false);
@@ -257,24 +387,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void Unit_OnUnitDied(Unit unit, bool shouldDestroy = false)
         {
-            RemoveUnitFromCombat(unit, shouldDestroy);
-        }
-
-        /// <summary>
-        /// Remove unit from combat and place at a desired position. Removes unit from grid.
-        /// </summary>
-        /// <param name="unit"></param>
-        /// <param name="newPosition"></param>
-        public void RemoveUnitFromCombat(Unit unit, Vector3 newPosition)
-        {
             unit.OnUnitDied -= Unit_OnUnitDied;
 
-            _unitsInCombat.Remove(unit);
-            _tacticsGrid.RemoveUnitFromTile(unit.UnitGridIndex);
-
-            unit.transform.position = newPosition;
-
-            SetUnitTeamIndex(unit, -1);
+            RemoveUnitFromCombat(unit, shouldDestroy);
         }
 
         /// <summary>
@@ -282,15 +397,17 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         /// </summary>
         /// <param name="unit"></param>
         /// <param name="shouldDestroy"></param>
-        public void RemoveUnitFromCombat(Unit unit, bool shouldDestroy = true)
+        public void RemoveUnitFromCombat(Unit unit, bool shouldDestroy = false)
         {
             _unitsInCombat.Remove(unit);
+            _orderedUnits.Remove(unit);
+
             _tacticsGrid.RemoveUnitFromTile(unit.UnitGridIndex);
             SetUnitTeamIndex(unit, -1);
 
             if (shouldDestroy)
             {
-                Destroy(unit.gameObject, 2f);
+                Destroy(unit.gameObject);
             }
         }
 

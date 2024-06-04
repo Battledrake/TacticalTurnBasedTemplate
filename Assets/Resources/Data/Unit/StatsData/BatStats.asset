@@ -14,10 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   validTileTypes: 01000000020000000300000004000000
   canMoveDiagonal: 1
-  heightAllowance: 3
+  heightAllowance: 10
   maxHealth: 2
   moveRange: 7
-  agility: 1
+  agility: 5
   abilities:
   - {fileID: -7179713428241320167, guid: 2acbfa7fcca56f942aa9005729504ba2, type: 3}
   - {fileID: -1119868919808071195, guid: 1c014012a3c73d8448a0970f5713bec4, type: 3}

@@ -73,6 +73,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             CombatManager.Instance.OnCombatEnded += CombatManager_OnCombatEnded;
             CombatManager.Instance.OnUnitTurnStarted += CombatManager_OnUnitTurnStarted;
             CombatManager.Instance.OnUnitTurnEnded += CombatManager_OnUnitTurnEnded;
+            CombatManager.Instance.OnActiveUnitChanged += CombatManager_OnActiveUnitChanged;
             _abilityBarController.OnSelectedAbilityChanged += AbilityBar_OnSelectedAbilityChanged;
         }
 
@@ -135,6 +136,13 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             if (_selectedUnit == unit)
                 SetSelectedTileAndUnit(index);
+        }
+
+        private void CombatManager_OnActiveUnitChanged(Unit unit)
+        {
+            _endTurnButton.gameObject.SetActive(true);
+            SetSelectedTileAndUnit(unit.UnitGridIndex);
+            SetSelectedActions(_combatMoveActionPrefab, null);
         }
 
         private void OnHoveredTileChanged_UpdateActions(GridIndex gridIndex)

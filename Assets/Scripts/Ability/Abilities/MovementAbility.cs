@@ -31,7 +31,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         //Do Logic Here
         public override void ActivateAbility(AbilityActivationData activationData)
         {
-            _abilityCost = CombatManager.Instance.GetAbilityRange(activationData.originIndex, this.GetRangeData()).Contains(activationData.targetIndex) ? 1 : 2;
+            _actionCost = CombatManager.Instance.GetAbilityRange(activationData.originIndex, this.GetRangeData()).Contains(activationData.targetIndex) ? 1 : 2;
 
             CommitAbility();
 
@@ -67,10 +67,10 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         //Check for whatever conditions here.
         public override bool CanActivateAbility(AbilityActivationData activationData)
         {
-            if (_owner.CurrentAbilityPoints <= 0)
+            if (_owner.CurrentActionPoints <= 0)
                 return false;
 
-            if (_owner.CurrentAbilityPoints == 1 && !CombatManager.Instance.GetAbilityRange(activationData.originIndex, this.GetRangeData()).Contains(activationData.targetIndex))
+            if (_owner.CurrentActionPoints == 1 && !CombatManager.Instance.GetAbilityRange(activationData.originIndex, this.GetRangeData()).Contains(activationData.targetIndex))
                 return false;
 
             if (CombatManager.Instance.GetAbilityRange(activationData.originIndex, this.GetAreaOfEffectData()).Contains(activationData.targetIndex))

@@ -98,14 +98,14 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         [SerializeField] protected Sprite _icon;
 
         [Header("Ability Attributes")]
-        [SerializeField] protected int _abilityCost;
+        [SerializeField] protected int _actionCost;
         [SerializeField] protected bool _isFriendly = false;
 
         public bool IsFriendly { get => _isFriendly; }
 
         public string Name { get => _abilityId.ToString(); }
         public Sprite Icon { get => _icon; }
-        public int AbilityCost { get => _abilityCost; }
+        public int ActionCost { get => _actionCost; }
         public Unit Instigator { get => _instigator; }
 
         protected Unit _instigator;
@@ -129,7 +129,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         public virtual bool CanActivateAbility(AbilityActivationData activationData)
         {
-            if (_owner.CurrentAbilityPoints <= 0)
+            if (_owner.CurrentActionPoints <= 0)
                 return false;
 
             if (CombatManager.Instance.GetAbilityRange(activationData.originIndex, this.GetRangeData()).Contains(activationData.targetIndex))
@@ -138,7 +138,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             return false;
         }
 
-        protected virtual void CommitAbility() { _owner.RemoveAbilityPoints(_abilityCost); }
+        protected virtual void CommitAbility() { _owner.RemoveActionPoints(_actionCost); }
 
         public abstract void ActivateAbility(AbilityActivationData activationData);
 

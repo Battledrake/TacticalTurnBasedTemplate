@@ -21,6 +21,7 @@ public class CombatTabController : MonoBehaviour
     [SerializeField] private List<Transform> _teamIndexes;
 
     [Header("Combat")]
+    [SerializeField] private TMP_Dropdown _turnOrderTypeCombo;
     [SerializeField] private Button _startCombatButton;
     [SerializeField] private TextMeshProUGUI _requirementTextHeader;
     [SerializeField] private TextMeshProUGUI _requirementTextUnits;
@@ -62,7 +63,9 @@ public class CombatTabController : MonoBehaviour
                 _teamIndexes[i].GetChild(j).GetComponent<TextMeshProUGUI>().color = CombatManager.Instance.GetTeamColor(i * _teamIndexes[i].childCount + j);
             }
         }
-
+        _turnOrderTypeCombo.AddOptions(Enum.GetValues(typeof(TurnOrderType)).Cast<TurnOrderType>().Select(type => type.ToString()).ToList());
+        _turnOrderTypeCombo.SetValueWithoutNotify((int)CombatManager.Instance.TurnOrderType);
+        _turnOrderTypeCombo.onValueChanged.AddListener(OnTurnOrderTypeChanged);
         _startCombatButton.onClick.AddListener(OnStartCombatClicked);
 
         CombatManager.Instance.OnUnitTeamChanged += CombatManager_OnUnitTeamChanged;
@@ -71,13 +74,20 @@ public class CombatTabController : MonoBehaviour
         UpdateButtonAndTexts();
     }
 
+    private void OnTurnOrderTypeChanged(int value)
+    {
+        CombatManager.Instance.TurnOrderType = (TurnOrderType)value;
+    }
+
     private void CombatManager_OnCombatEnded()
     {
         UpdateButtonAndTexts();
+        _turnOrderTypeCombo.interactable = true;
     }
 
     private void CombatManager_OnCombatStarted()
     {
+        _turnOrderTypeCombo.interactable = false;
     }
 
     private void CombatManager_OnUnitTeamChanged()

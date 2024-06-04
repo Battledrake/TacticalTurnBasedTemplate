@@ -37,8 +37,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private float _traversalStep = 0f;
         private float _timeElapsed = 0f;
 
-        private bool _isClimbingUp = false;
-        private bool _isClimbingDown = false;
+        private bool _isAscending = false;
+        private bool _isDescending = false;
 
         public void SetPathingGrid(TacticsGrid tacticsGrid)
         {
@@ -73,10 +73,20 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                     {
                         Vector3 direction = nextTransform.GetPosition() - this.transform.position;
                         if (direction.y > 0)
-                            _isClimbingUp = true;
+                            _isAscending = true;
                         else
-                            _isClimbingDown = true;
+                            _isDescending = true;
                     }
+                }
+
+                //For testing purposes only. Remove later.
+                if (GetComponent<Unit>().UnitData.unitStats.validTileTypes.Contains(TileType.FlyingOnly))
+                {
+                    Vector3 direction = nextTransform.GetPosition() - this.transform.position;
+                    if (direction.y > 0)
+                        _isAscending = true;
+                    else
+                        _isDescending = true;
                 }
             }
             else
@@ -120,9 +130,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 //    jumpVector.y = _jumpCurve.Evaluate(_traversalStep);
 
                 Vector3 targetDestination = _nextTileTransform.GetPosition();
-                if (_isClimbingUp)
+                if (_isAscending)
                     targetDestination = new Vector3(this.transform.position.x, targetDestination.y, this.transform.position.z);
-                if (_isClimbingDown)
+                if (_isDescending)
                     targetDestination = new Vector3(targetDestination.x, this.transform.position.y, targetDestination.z);
                 
 
@@ -131,10 +141,10 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
                 if (Vector3.Distance(this.transform.position, targetDestination) < 0.1f)
                 {
-                    if (_isClimbingUp || _isClimbingDown)
+                    if (_isAscending || _isDescending)
                     {
-                        _isClimbingUp = false;
-                        _isClimbingDown = false;
+                        _isAscending = false;
+                        _isDescending = false;
                         return;
                     }
 

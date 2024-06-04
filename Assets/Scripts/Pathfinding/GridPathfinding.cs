@@ -86,7 +86,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public PathResult Result { get; set; }
         public List<GridIndex> Path { get; set; }
         public float Length { get; set; }
-
         public HashSet<EdgeData> Edges { get; set; }
     }
 

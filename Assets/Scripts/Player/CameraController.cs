@@ -55,16 +55,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             if (Input.GetKeyDown(KeyCode.Tab))
             {
-                if (CombatManager.Instance.UnitsInCombat.Count <= 0)
-                    return;
-
-                _currentTargetIndex = _currentTargetIndex % CombatManager.Instance.UnitsInCombat.Count;
-                Unit tabSelectedUnit = CombatManager.Instance.UnitsInCombat[_currentTargetIndex];
-                _targetPosition = tabSelectedUnit.transform.position;
-                _targetPosition.y += 1.5f;
-                _moveToTarget = true;
-                _currentTargetIndex++;
-                //_playerActions.SetSelectedTileAndUnit(tabSelectedUnit.UnitGridIndex);
+                CombatManager.Instance.CycleUnits();
             }
 
             if (_moveToTarget)

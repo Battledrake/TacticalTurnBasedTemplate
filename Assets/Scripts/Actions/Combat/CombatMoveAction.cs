@@ -17,7 +17,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         [SerializeField] private float _outlineLength = 1f;
         [Range(0.1f, 1f)]
         [SerializeField] private float _distanceToEdge = 1f;
-        [Range(0.5f, 5f)]
+        [Range(0.1f, 5f)]
         [SerializeField] private float _outlineHeight = 0.5f;
         [Range(0.1f, 1f)]
         [SerializeField] private float _pathLineSize = 0.2f;
@@ -40,7 +40,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void Start()
         {
-            if (UnitHasEnoughAbilityPoints())
+            if (UnitHasEnoughActionPoints())
             {
                 GenerateTilesInMoveRange(_playerActions.SelectedUnit);
                 GeneratePathForUnit();
@@ -71,7 +71,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
             if (!_playerActions.SelectedUnit) return;
 
-            if (!UnitHasEnoughAbilityPoints()) return;
+            if (!UnitHasEnoughActionPoints()) return;
 
 
             if (_playerActions.HoveredUnit && CombatManager.Instance.ShowEnemyMoveRange)
@@ -109,8 +109,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                     foreach(var edgePair in _moveRangeEdges)
                     {
                         _borrowedMoveRenders[edgeIndex].positionCount = 2;
-                        _borrowedMoveRenders[edgeIndex].startColor = _moveRangeColor;
-                        _borrowedMoveRenders[edgeIndex].endColor = _moveRangeColor;
+                        _borrowedMoveRenders[edgeIndex].startColor = UnitHasEnoughActionPoints(2) ? _moveRangeColor : _sprintRangeColor;
+                        _borrowedMoveRenders[edgeIndex].endColor = UnitHasEnoughActionPoints(2) ? _moveRangeColor : _sprintRangeColor; ;
                         _borrowedMoveRenders[edgeIndex].startWidth = 0.15f;
                         _borrowedMoveRenders[edgeIndex].endWidth = 0.15f;
 
@@ -133,7 +133,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void ShowSprintRangeTiles()
         {
-            if (!UnitHasEnoughAbilityPoints(2) || _moveRangeIndexes.Contains(_playerActions.HoveredTile))
+            if (!UnitHasEnoughActionPoints(2) || _moveRangeIndexes.Contains(_playerActions.HoveredTile))
             {
                 if (!_isSprintRangeShowing)
                     return;
@@ -202,12 +202,12 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             if (!_playerActions.SelectedUnit)
                 return;
 
-            if (!UnitHasEnoughAbilityPoints())
+            if (!UnitHasEnoughActionPoints())
                 return;
 
             _generatedPath.Clear();
             int unitMoveRange = _playerActions.SelectedUnit.MoveRange;
-            float pathLength = UnitHasEnoughAbilityPoints(2) ? unitMoveRange * 2 : unitMoveRange;
+            float pathLength = UnitHasEnoughActionPoints(2) ? unitMoveRange * 2 : unitMoveRange;
 
             PathParams pathParams = GridPathfinding.CreatePathParamsFromUnit(_playerActions.SelectedUnit, pathLength, true);
             PathfindingResult result = _playerActions.TacticsGrid.GridPathfinder.FindPath(_playerActions.SelectedTile, _playerActions.HoveredTile, pathParams);
@@ -228,14 +228,14 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             }
         }
 
-        private bool UnitHasEnoughAbilityPoints(int amountNeeded = 1)
+        private bool UnitHasEnoughActionPoints(int amountNeeded = 1)
         {
             if (_playerActions.SelectedUnit)
             {
                 AbilitySystem abilitySystem = _playerActions.SelectedUnit.GetComponent<IAbilitySystem>().GetAbilitySystem();
                 if (abilitySystem)
                 {
-                    return abilitySystem.CurrentAbilityPoints >= amountNeeded;
+                    return abilitySystem.CurrentActionPoints >= amountNeeded;
                 }
             }
             return false;
@@ -260,7 +260,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
             unit.OnUnitStartedMovement -= Unit_OnUnitReachedDestination;
 
-            if (UnitHasEnoughAbilityPoints())
+            if (UnitHasEnoughActionPoints())
                 GenerateTilesInMoveRange(unit);
         }
 

@@ -4,9 +4,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ActionCameraController : MonoBehaviour
+public class ActionCameraManager : MonoBehaviour
 {
-    public static ActionCameraController Instance;
+    public static ActionCameraManager Instance;
 
     public event Action OnActionCameraInPosition;
 

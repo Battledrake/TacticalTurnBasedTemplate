@@ -28,14 +28,14 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             return false;
         }
 
-        private bool UnitHasEnoughAbilityPoints(int amountNeeded = 1)
+        private bool UnitHasEnoughActionPoints(int amountNeeded = 1)
         {
             if (_playerActions.SelectedUnit)
             {
                 AbilitySystem abilitySystem = _playerActions.SelectedUnit.GetComponent<IAbilitySystem>().GetAbilitySystem();
                 if (abilitySystem)
                 {
-                    return abilitySystem.CurrentAbilityPoints >= amountNeeded;
+                    return abilitySystem.CurrentActionPoints >= amountNeeded;
                 }
             }
             return false;
@@ -50,7 +50,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         public override void ExecuteHoveredAction(GridIndex hoveredIndex)
         {
-            if (!UnitHasEnoughAbilityPoints())
+            if (!UnitHasEnoughActionPoints())
                 return;
 
             ShowAbilityAreaOfEffectPattern();
@@ -59,7 +59,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public void SetAbility(Ability ability)
         {
             _currentAbility = ability;
-            if (_currentAbility == null || !UnitHasEnoughAbilityPoints())
+            if (_currentAbility == null || !UnitHasEnoughActionPoints())
             {
                 _playerActions.TacticsGrid.ClearAllTilesWithState(TileState.IsInAbilityRange);
                 _playerActions.TacticsGrid.ClearAllTilesWithState(TileState.IsInAoeRange);
