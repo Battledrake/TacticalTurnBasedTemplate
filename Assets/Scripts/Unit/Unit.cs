@@ -129,6 +129,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         public void TurnEnded()
         {
+            //What we doing here eh?
         }
 
         private void OnDisable()

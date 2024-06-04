@@ -29,7 +29,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             //CombatManager.Instance.OnUnitTeamChanged += CombatManager_OnUnitTeamChanged;
             CombatManager.Instance.OnCombatStarted += CombatManager_OnCombatStarted;
             CombatManager.Instance.OnCombatEnded += CombatManager_OnCombatEnded;
-            CombatManager.Instance.OnUnitTurnStarted += CombatManager_OnUnitTurnStarted;
+            CombatManager.Instance.OnActiveUnitChanged += CombatManager_OnActiveUnitChanged;
             CombatManager.Instance.OnActiveTeamChanged += PopulateTimelineBar;
             Unit.OnAnyUnitDied += Unit_OnAnyUnitDied;
         }
@@ -39,7 +39,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             //CombatManager.Instance.OnUnitTeamChanged += CombatManager_OnUnitTeamChanged;
             CombatManager.Instance.OnCombatStarted -= CombatManager_OnCombatStarted;
             CombatManager.Instance.OnCombatEnded -= CombatManager_OnCombatEnded;
-            CombatManager.Instance.OnUnitTurnStarted -= CombatManager_OnUnitTurnStarted;
+            CombatManager.Instance.OnActiveUnitChanged -= CombatManager_OnActiveUnitChanged;
             CombatManager.Instance.OnActiveTeamChanged -= PopulateTimelineBar;
             Unit.OnAnyUnitDied -= Unit_OnAnyUnitDied;
         }
@@ -64,7 +64,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _displayContainer.gameObject.SetActive(false);
         }
 
-        private void CombatManager_OnUnitTurnStarted(Unit unit)
+        private void CombatManager_OnActiveUnitChanged(Unit unit)
         {
             if(CombatManager.Instance.TurnOrderType != TurnOrderType.Team)
             {

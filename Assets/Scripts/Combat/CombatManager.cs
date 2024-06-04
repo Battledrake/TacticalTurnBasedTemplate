@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEditor.Experimental.GraphView;
@@ -65,7 +66,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private List<Unit> _orderedUnits = new List<Unit>();
         private int _turnsCompleted = 0;
-        private int _roundsCompleted = 0;
 
         private bool _isInCombat = false;
         private bool _showEnemyMoveRange = false;
@@ -73,6 +73,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private Unit _activeUnit = null;
         private int _activeTeamIndex = -1;
         private int _actionPointDeduction = 0;
+        private int _playerControlledIndex = 100;
 
         private void Awake()
         {
@@ -210,11 +211,83 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             OnCombatStarted?.Invoke();
 
             _turnsCompleted = 0;
-            _roundsCompleted = 0;
 
             _activeUnit = null;
 
-            NextUnit();
+            StartTurn();
+        }
+
+        private void StartTurn()
+        {
+            if (_turnOrderType == TurnOrderType.Team)
+            {
+                if (_activeTeamIndex == _playerControlledIndex)
+                {
+                    //AI LOGIC IN HUR
+                }
+                else
+                {
+                    _activeUnit = _orderedUnits[0];
+
+                    for (int i = 0; i < _orderedUnits.Count; i++)
+                    {
+                        _orderedUnits[i].TurnStarted();
+                    }
+                }
+            }
+            else
+            {
+                int activeIndex = _orderedUnits.IndexOf(_activeUnit);
+                activeIndex++;
+                _activeUnit = _orderedUnits[activeIndex % _orderedUnits.Count];
+                _activeUnit.TurnStarted();
+            }
+
+            OnActiveUnitChanged?.Invoke(_activeUnit);
+
+            //TODO: Make controller a singleton? Or different way of handling.
+            GameObject.Find("[Cameras]").GetComponent<CameraController>().SetMoveToTarget(_activeUnit.transform.position);
+        }
+
+        private void NextTurn()
+        {
+            if (_turnOrderType == TurnOrderType.Team)
+            {
+                _turnsCompleted = 0;
+                _orderedUnits.Clear();
+                SetActiveTeamIndex();
+                QueueUnitsByTeam();
+                OnActiveTeamChanged?.Invoke();
+            }
+            StartCoroutine(WaitToStartTurn());
+            IEnumerator WaitToStartTurn()
+            {
+                yield return new WaitForSeconds(1f);
+                StartTurn();
+            }
+        }
+
+        public void EndUnitTurn()
+        {
+            OnUnitTurnEnded?.Invoke(_activeUnit);
+            _turnsCompleted++;
+            if (_turnOrderType == TurnOrderType.Team)
+            {
+                if (_turnsCompleted >= _unitTeams[_activeTeamIndex].Count)
+                {
+                    NextTurn();
+                }
+                else
+                {
+                    Unit turnEndedUnit = _activeUnit;
+                    CycleUnits();
+                    _orderedUnits.Remove(turnEndedUnit);
+                }
+            }
+            else
+            {
+                NextTurn();
+            }
         }
 
         //If null is passed in, grab next in list. Otherwise, select unit passed in selected.
@@ -236,73 +309,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 if (currentUnit != _activeUnit)
                     OnActiveUnitChanged?.Invoke(_activeUnit);
             }
-        }
-
-        //TODO: Clean this function up. Our desire for different TurnOrder types makes this very sloppy. We can do better.
-        public void NextUnit()
-        {
-            int activeIndex = 0;
-            if (_activeUnit)
-            {
-                OnUnitTurnEnded?.Invoke(_activeUnit);
-
-                _turnsCompleted++;
-
-                if (_turnOrderType == TurnOrderType.Team)
-                {
-                    if (_turnsCompleted >= _unitTeams[_activeTeamIndex].Count)
-                    {
-                        //Do our round completion logic here like reordering units and what not if we need to. Stats may have changed, or next team kinda thing.
-                        _turnsCompleted = 0;
-                        _roundsCompleted++;
-                        if (_turnOrderType == TurnOrderType.Team)
-                        {
-                            _orderedUnits.Clear();
-                            SetActiveTeamIndex();
-                            QueueUnitsByTeam();
-                            OnActiveTeamChanged?.Invoke();
-                        }
-                    }
-                    else
-                    {
-                        Unit turnEndedUnit = _activeUnit;
-                        CycleUnits();
-                        _orderedUnits.Remove(turnEndedUnit);
-                        return;
-                    }
-                }
-                else
-                {
-                    if (_turnsCompleted >= _orderedUnits.Count)
-                    {
-                        _turnsCompleted = 0;
-                        _roundsCompleted++;
-                    }
-                    else
-                    {
-                        activeIndex = _orderedUnits.IndexOf(_activeUnit);
-                        activeIndex++;
-                    }
-                }
-            }
-
-            if (_turnOrderType == TurnOrderType.Team)
-            {
-                for (int i = 0; i < _orderedUnits.Count; i++)
-                {
-                    _orderedUnits[i].TurnStarted();
-                }
-                _activeUnit = _orderedUnits[0];
-                OnActiveUnitChanged?.Invoke(_activeUnit);
-                return;
-            }
-            _activeUnit = _orderedUnits[activeIndex % _orderedUnits.Count];
-            _activeUnit.TurnStarted();
-
-            OnUnitTurnStarted?.Invoke(_activeUnit);
-
-            //TODO: Make controller a singleton? Or different way of handling.
-            GameObject.Find("[Cameras]").GetComponent<CameraController>().SetMoveToTarget(_activeUnit.transform.position);
         }
 
         public void EndCombat()
@@ -335,6 +341,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _tacticsGrid.RemoveUnitFromTile(unit.UnitGridIndex);
             _tacticsGrid.AddUnitToTile(path.Last(), unit, false);
             OnUnitGridIndexChanged?.Invoke(unit, path.Last());
+
+            if (unit.GetAbilitySystem().CurrentActionPoints <= 0)
+                EndUnitTurn();
         }
 
         private void Unit_OnUnitReachedDestination(Unit unit)
@@ -430,6 +439,10 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             ability.OnAbilityEnded -= Ability_OnAbilityEnded;
             OnAbilityUseCompleted?.Invoke();
+            if(_activeUnit.GetAbilitySystem().CurrentActionPoints <= 0)
+            {
+                EndUnitTurn();
+            }
         }
 
         public void ApplyEffectsToTarget(AbilitySystem instigator, AbilitySystem receiver, List<AbilityEffect> effectsToApply)
