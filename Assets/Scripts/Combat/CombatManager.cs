@@ -46,6 +46,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public event Action OnActiveTeamChanged;
         public event Action<Unit> OnActiveUnitChanged;
         public event Action<Unit> OnUnitAddedDuringCombat;
+        public event Action<int> OnCombatFinishing;
 
         [SerializeField] TurnOrderType _turnOrderType;
         [SerializeField] private List<TeamColorData> _teamColors;
@@ -69,6 +70,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private int _turnsCompleted = 0;
 
         private bool _isInCombat = false;
+        private bool _isCombatFinishing = false;
         private bool _showEnemyMoveRange = false;
 
         private Unit _activeUnit = null;
@@ -213,6 +215,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             }
 
             _isInCombat = true;
+            _isCombatFinishing = false;
             OnCombatStarted?.Invoke();
 
             _turnsCompleted = 0;
@@ -336,6 +339,12 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             OnCombatEnded?.Invoke();
         }
 
+        private void FinishCombat(int winTeamIndex)
+        {
+            _isCombatFinishing = true;
+            OnCombatFinishing?.Invoke(winTeamIndex);
+        }
+
         public void MoveUnit(Unit unit, List<GridIndex> path, float pathLength)
         {
             GridMovement gridMoveComp = unit.GetComponent<GridMovement>();
@@ -428,7 +437,24 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             unit.OnUnitDied -= Unit_OnUnitDied;
 
+            //TODO: fix this when we fix the SetUnitTeamIndex stuff
+            int unitTeam = unit.TeamIndex;
             RemoveUnitFromCombat(unit, shouldDestroy);
+
+            int aliveTeams = 0;
+            int winIndex = -1;
+            foreach (var unitTeamPair in _unitTeams)
+            {
+                if (unitTeamPair.Value.Count > 0)
+                {
+                    aliveTeams++;
+                    winIndex = unitTeamPair.Key;
+                }
+            }
+            if (aliveTeams <= 1)
+            {
+                FinishCombat(winIndex);
+            }
         }
 
         /// <summary>
@@ -442,6 +468,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _orderedUnits.Remove(unit);
 
             _tacticsGrid.RemoveUnitFromTile(unit.UnitGridIndex);
+
             SetUnitTeamIndex(unit, -1);
 
             if (shouldDestroy)
@@ -469,8 +496,10 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void Ability_OnAbilityEnded(Ability ability)
         {
-            Debug.Log("Is this being called. Why isn't the ability deactivating?");
             ability.OnAbilityEnded -= Ability_OnAbilityEnded;
+
+            if (_isCombatFinishing) return;
+
             OnAbilityUseCompleted?.Invoke();
             if (ability.GetAbilityOwner().CurrentActionPoints <= 0)
             {

@@ -1,4 +1,5 @@
 using System;
+using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -16,6 +17,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         [SerializeField] private Button _endCombatButton;
         [SerializeField] private Button _endTurnButton;
+        [SerializeField] private GameObject _combatFinishedPanel;
 
         [Header("Actions")]
         [SerializeField] private CombatMoveAction _combatMoveActionPrefab;
@@ -74,7 +76,20 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             CombatManager.Instance.OnUnitTurnStarted += CombatManager_OnUnitTurnStarted;
             CombatManager.Instance.OnUnitTurnEnded += CombatManager_OnUnitTurnEnded;
             CombatManager.Instance.OnActiveUnitChanged += CombatManager_OnActiveUnitChanged;
+            CombatManager.Instance.OnCombatFinishing += CombatManager_OnCombatFinishing;
             _abilityBarController.OnSelectedAbilityChanged += AbilityBar_OnSelectedAbilityChanged;
+        }
+
+        private void CombatManager_OnCombatFinishing(int winTeamIndex)
+        {
+            _endCombatButton.gameObject.SetActive(false);
+            _endTurnButton.gameObject.SetActive(false);
+            ClearSelectedActions();
+            SetSelectedTileAndUnit(GridIndex.Invalid());
+
+            _combatFinishedPanel.gameObject.SetActive(true);
+            _combatFinishedPanel.GetComponentInChildren<TextMeshProUGUI>().SetText($"Team {winTeamIndex} Won!");
+            _combatFinishedPanel.GetComponentInChildren<TextMeshProUGUI>().color = CombatManager.Instance.GetTeamColor(winTeamIndex);
         }
 
         private void AbilityBar_OnSelectedAbilityChanged(Ability ability)
