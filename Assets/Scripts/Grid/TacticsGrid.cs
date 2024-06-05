@@ -179,7 +179,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             Vector3 gridCenter = GetGridCenterPosition();
             //gridCenter.y += _gridTileSize.y / 2; //Do we want this here? Will this cause confusion later? *Prevents bounds being underneathe grid plane.
             float gridWidth = _gridTileCount.x * _gridTileSize.x;
-            float gridHeight = _gridTileCount.z * _gridTileSize.y;
+            float gridHeight = _gridTileCount.z * _gridTileSize.z;
 
             return new Bounds(gridCenter, new Vector3(gridWidth, _gridTileSize.y, gridHeight));
         }

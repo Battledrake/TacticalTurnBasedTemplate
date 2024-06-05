@@ -116,16 +116,24 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
                         Vector3 sourcePosition = _playerActions.TacticsGrid.GetTilePositionFromIndex(edgePair.source);
                         GridIndex direction = edgePair.direction;
+
                         switch (_playerActions.TacticsGrid.GridShape)
                         {
                             case GridShape.Square:
-                                _borrowedMoveRenders[edgeIndex].SetPosition(0, new Vector3(sourcePosition.x + (direction.x * _distanceToEdge) - ((float)direction.z * _outlineLength), sourcePosition.y + _outlineHeight, sourcePosition.z + (direction.z * _distanceToEdge) - ((float)direction.x * _outlineLength)));
-                                _borrowedMoveRenders[edgeIndex].SetPosition(1, new Vector3(sourcePosition.x + (direction.x * _distanceToEdge) + ((float)direction.z * _outlineLength), sourcePosition.y + _outlineHeight, sourcePosition.z + (direction.z * _distanceToEdge) + ((float)direction.x * _outlineLength)));
+                                float vertexX0 = CalculateSquareVertex(sourcePosition.x, direction.x, direction.z, 0);
+                                float vertexX1 = CalculateSquareVertex(sourcePosition.x, direction.x, direction.z, 1);
+                                float vertexZ0 = CalculateSquareVertex(sourcePosition.z, direction.z, direction.x, 0);
+                                float vertexZ1 = CalculateSquareVertex(sourcePosition.z, direction.z, direction.x, 1);
+
+                                _borrowedMoveRenders[edgeIndex].SetPosition(0, new Vector3(vertexX0, sourcePosition.y + _outlineHeight, vertexZ0));
+                                _borrowedMoveRenders[edgeIndex].SetPosition(1, new Vector3(vertexX1, sourcePosition.y + _outlineHeight, vertexZ1));
                                 break;
+
                             case GridShape.Hexagon:
                                 _borrowedMoveRenders[edgeIndex].SetPosition(0, sourcePosition);
                                 _borrowedMoveRenders[edgeIndex].SetPosition(1, sourcePosition);
                                 break;
+
                             case GridShape.Triangle:
                                 _borrowedMoveRenders[edgeIndex].SetPosition(0, sourcePosition);
                                 _borrowedMoveRenders[edgeIndex].SetPosition(1, sourcePosition);
@@ -137,6 +145,14 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                     ShowSprintRangeTiles();
                 }
             }
+        }
+
+        private float CalculateSquareVertex(float source, float directionToEdge, float directionAlongEdge, int vertexIndex)
+        {
+            float gridTileSize = _playerActions.TacticsGrid.TileSize.x;
+            float toEdge = source + (directionToEdge * (gridTileSize * 0.5f) * _distanceToEdge);
+            float toVertex = (float)directionAlongEdge * (gridTileSize * 0.5f) * _outlineLength;
+            return toEdge + (vertexIndex == 0 ? -toVertex : toVertex);
         }
 
         private void Update()
@@ -202,16 +218,24 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
                     Vector3 sourcePosition = _playerActions.TacticsGrid.GetTilePositionFromIndex(edgePair.source);
                     GridIndex direction = edgePair.direction;
+
                     switch (_playerActions.TacticsGrid.GridShape)
                     {
                         case GridShape.Square:
-                            _borrowedSprintRenders[edgeIndex].SetPosition(0, new Vector3(sourcePosition.x + (direction.x * _distanceToEdge) - ((float)direction.z * _outlineLength), sourcePosition.y + _outlineHeight, sourcePosition.z + (direction.z * _distanceToEdge) - ((float)direction.x * _outlineLength)));
-                            _borrowedSprintRenders[edgeIndex].SetPosition(1, new Vector3(sourcePosition.x + (direction.x * _distanceToEdge) + ((float)direction.z * _outlineLength), sourcePosition.y + _outlineHeight, sourcePosition.z + (direction.z * _distanceToEdge) + ((float)direction.x * _outlineLength)));
+                            float vertexX0 = CalculateSquareVertex(sourcePosition.x, direction.x, direction.z, 0);
+                            float vertexX1 = CalculateSquareVertex(sourcePosition.x, direction.x, direction.z, 1);
+                            float vertexZ0 = CalculateSquareVertex(sourcePosition.z, direction.z, direction.x, 0);
+                            float vertexZ1 = CalculateSquareVertex(sourcePosition.z, direction.z, direction.x, 1);
+
+                            _borrowedSprintRenders[edgeIndex].SetPosition(0, new Vector3(vertexX0, sourcePosition.y + _outlineHeight, vertexZ0));
+                            _borrowedSprintRenders[edgeIndex].SetPosition(1, new Vector3(vertexX1, sourcePosition.y + _outlineHeight, vertexZ1));
                             break;
+
                         case GridShape.Hexagon:
                             _borrowedSprintRenders[edgeIndex].SetPosition(0, sourcePosition);
                             _borrowedSprintRenders[edgeIndex].SetPosition(1, sourcePosition);
                             break;
+
                         case GridShape.Triangle:
                             _borrowedSprintRenders[edgeIndex].SetPosition(0, sourcePosition);
                             _borrowedSprintRenders[edgeIndex].SetPosition(1, sourcePosition);
