@@ -77,7 +77,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _direction.Normalize();
 
             this.transform.position = _startPosition;
-            this.transform.LookAt(_targetPosition);
+            if (activationData.originIndex != activationData.targetIndex)
+                this.transform.LookAt(_targetPosition);
 
             _isRunning = true;
         }

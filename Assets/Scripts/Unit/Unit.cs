@@ -19,6 +19,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public event Action<Unit> OnUnitMovementStopped;
         public event Action<Unit, bool> OnUnitDied;
         public event Action<Unit> OnUnitRespawn;
+        public event Action OnTeamIndexChanged;
 
         [SerializeField] private UnitId _unitType = UnitId.Ranger;
         [SerializeField] private Transform _lookAtTransform;
@@ -30,6 +31,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public GridIndex UnitGridIndex { get => _gridIndex; set => _gridIndex = value; }
         public UnitData UnitData { get => _unitData; }
         public bool IsMoving { get => _gridMovement.IsMoving; }
+        public bool IsAlive { get => _isAlive; }
         public int MoveRange { get => _moveRange; set => _moveRange = value; } 
         public int TeamIndex
         {
@@ -37,6 +39,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             set
             {
                 _teamIndex = value;
+                OnTeamIndexChanged?.Invoke();
                 _healthComponent.SetHealthUnitColor(CombatManager.Instance.GetTeamColor(value));
             }
         }
@@ -50,8 +53,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private UnitData _unitData;
         private GridIndex _gridIndex = GridIndex.Invalid();
         private int _teamIndex = -1;
+        private bool _isAlive = true;
 
-        //TODO: Should we have a component for attributes?
+        //TODO: Should we move these to a set or somewhere?
         private int _currentHealth;
         private int _maxHealth;
         private int _moveRange;
@@ -245,27 +249,29 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             if (!_unitOutline)
                 return;
 
-            if (!_isSelected && !_isHovered)
+            if (!_isHovered)
             {
                 _unitOutline.enabled = false;
                 return;
             }
             _unitOutline.enabled = true;
 
-            if (_isSelected)
-            {
-                _unitOutline.OutlineColor = _selectedColor;
+            //if (_isSelected)
+            //{
+            //    _unitOutline.OutlineColor = _selectedColor;
 
-                if (_isHovered)
-                    _unitOutline.OutlineWidth = _hoverSelectedWidth;
-                else
-                    _unitOutline.OutlineWidth = _defaultOutlineWidth;
-            }
-            else
-            {
-                _unitOutline.OutlineColor = CombatManager.Instance.GetTeamColor(_teamIndex);
-                _unitOutline.OutlineWidth = _defaultOutlineWidth;
-            }
+            //    if (_isHovered)
+            //        _unitOutline.OutlineWidth = _hoverSelectedWidth;
+            //    else
+            //        _unitOutline.OutlineWidth = _defaultOutlineWidth;
+            //}
+            //else
+            //{
+            //    _unitOutline.OutlineColor = CombatManager.Instance.GetTeamColor(_teamIndex);
+            //    _unitOutline.OutlineWidth = _defaultOutlineWidth;
+            //}
+            _unitOutline.OutlineColor = CombatManager.Instance.GetTeamColor(_teamIndex);
+            _unitOutline.OutlineWidth = _defaultOutlineWidth;
         }
 
         public void ModifyCurrentHealth(int effectModifier)
@@ -286,6 +292,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         public void Die(bool shouldDestroy = false)
         {
+            _isAlive = false;
             _gridMovement.Stop();
             _collider.enabled = false;
             PlayAnimationType(AnimationType.Death);

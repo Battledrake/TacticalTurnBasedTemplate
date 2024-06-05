@@ -45,6 +45,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public event Action OnAbilityUseCompleted;
         public event Action OnActiveTeamChanged;
         public event Action<Unit> OnActiveUnitChanged;
+        public event Action<Unit> OnUnitAddedDuringCombat;
 
         [SerializeField] TurnOrderType _turnOrderType;
         [SerializeField] private List<TeamColorData> _teamColors;
@@ -127,7 +128,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             }
         }
 
-        private void QueueUnitsByTeam()
+        private void OrderUnitsByTeam()
         {
             if (_unitTeams.TryGetValue(_activeTeamIndex, out HashSet<Unit> teamUnits))
             {
@@ -141,7 +142,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             }
         }
 
-        private void QueueUnitsByStat()
+        private void OrderUnitsByStat()
         {
             List<Unit> unitsToSort = new List<Unit>(_unitsInCombat);
             unitsToSort.Sort((unit1, unit2) =>
@@ -159,7 +160,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             }
         }
 
-        private void QueueUnitsInRandomOrder()
+        private void OrderUnitsRandomly()
         {
             int listCount = _unitsInCombat.Count;
             List<Unit> unitsToRandomize = new List<Unit>(_unitsInCombat);
@@ -171,11 +172,31 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             }
         }
 
-        private void QueueUnitsFIFO()
+        private void OrderUnitsByFIFO()
         {
             for (int i = 0; i < _unitsInCombat.Count; i++)
             {
                 _orderedUnits.Add(_unitsInCombat[i]);
+            }
+        }
+
+        private void OrderUnitsByTurnOrderType()
+        {
+            switch (_turnOrderType)
+            {
+                case TurnOrderType.Team:
+                    SetActiveTeamIndex();
+                    OrderUnitsByTeam();
+                    break;
+                case TurnOrderType.Stat:
+                    OrderUnitsByStat();
+                    break;
+                case TurnOrderType.Random:
+                    OrderUnitsRandomly();
+                    break;
+                case TurnOrderType.FIFO:
+                    OrderUnitsByFIFO();
+                    break;
             }
         }
 
@@ -184,22 +205,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _activeTeamIndex = -1;
             _orderedUnits.Clear();
 
-            switch (_turnOrderType)
-            {
-                case TurnOrderType.Team:
-                    SetActiveTeamIndex();
-                    QueueUnitsByTeam();
-                    break;
-                case TurnOrderType.Stat:
-                    QueueUnitsByStat();
-                    break;
-                case TurnOrderType.Random:
-                    QueueUnitsInRandomOrder();
-                    break;
-                case TurnOrderType.FIFO:
-                    QueueUnitsFIFO();
-                    break;
-            }
+            OrderUnitsByTurnOrderType();
 
             for (int i = 0; i < _unitsInCombat.Count; i++)
             {
@@ -226,7 +232,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 }
                 else
                 {
-                    _activeUnit = _orderedUnits[0];
+                    AdvanceToNextAliveUnit();
 
                     for (int i = 0; i < _orderedUnits.Count; i++)
                     {
@@ -236,9 +242,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             }
             else
             {
-                int activeIndex = _orderedUnits.IndexOf(_activeUnit);
-                activeIndex++;
-                _activeUnit = _orderedUnits[activeIndex % _orderedUnits.Count];
+                AdvanceToNextAliveUnit();
                 _activeUnit.TurnStarted();
             }
 
@@ -248,6 +252,17 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             GameObject.Find("[Cameras]").GetComponent<CameraController>().SetMoveToTarget(_activeUnit.transform.position);
         }
 
+        private void AdvanceToNextAliveUnit()
+        {
+            int activeIndex = _orderedUnits.IndexOf(_activeUnit);
+            do
+            {
+                activeIndex = (activeIndex + 1) % _orderedUnits.Count;
+                _activeUnit = _orderedUnits[activeIndex];
+            }
+            while (!_activeUnit.IsAlive);
+        }
+
         private void NextTurn()
         {
             if (_turnOrderType == TurnOrderType.Team)
@@ -255,7 +270,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 _turnsCompleted = 0;
                 _orderedUnits.Clear();
                 SetActiveTeamIndex();
-                QueueUnitsByTeam();
+                OrderUnitsByTeam();
                 OnActiveTeamChanged?.Invoke();
             }
             //Temporary as starting next turns too fast is a terrible experience.
@@ -302,9 +317,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 }
                 else
                 {
-                    int activeIndex = _orderedUnits.IndexOf(_activeUnit);
-                    activeIndex++;
-                    _activeUnit = _orderedUnits[activeIndex % _orderedUnits.Count];
+                    AdvanceToNextAliveUnit();
                 }
                 if (currentUnit != _activeUnit)
                     OnActiveUnitChanged?.Invoke(_activeUnit);
@@ -369,6 +382,23 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 Debug.LogWarning("Unable to add unit to tile. Invalid index or unit already exists at GridIndex");
             }
             SetUnitTeamIndex(unit, teamIndex);
+
+            if (_isInCombat)
+            {
+                if (_turnOrderType == TurnOrderType.Team)
+                {
+                    if (teamIndex == _activeTeamIndex)
+                        _orderedUnits.Add(unit);
+                    else
+                        return;
+                }
+                else
+                {
+                    int activeIndex = _orderedUnits.IndexOf(_activeUnit);
+                    _orderedUnits.Insert(++activeIndex, unit);
+                }
+                OnUnitAddedDuringCombat?.Invoke(unit);
+            }
         }
 
         public void SetUnitTeamIndex(Unit unit, int teamIndex)
@@ -392,9 +422,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             unit.TeamIndex = teamIndex;
 
             OnUnitTeamChanged?.Invoke();
-
-            //TODO: Testing addition for summon ability. Should add more to ensure this works as intended.
-            _orderedUnits.Add(unit);
         }
 
         private void Unit_OnUnitDied(Unit unit, bool shouldDestroy = false)
@@ -429,19 +456,23 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             activationData.tacticsGrid = _tacticsGrid;
             activationData.originIndex = origin;
             activationData.targetIndex = target;
-            if (ability.TryActivateAbility(activationData))
+
+            ability.OnAbilityEnded += Ability_OnAbilityEnded;
+
+            if (!ability.TryActivateAbility(activationData))
             {
-                ability.OnAbilityEnded += Ability_OnAbilityEnded;
-                return true;
+                ability.OnAbilityEnded -= Ability_OnAbilityEnded;
+                return false;
             }
-            return false;
+            return true;
         }
 
         private void Ability_OnAbilityEnded(Ability ability)
         {
+            Debug.Log("Is this being called. Why isn't the ability deactivating?");
             ability.OnAbilityEnded -= Ability_OnAbilityEnded;
             OnAbilityUseCompleted?.Invoke();
-            if(_activeUnit.GetAbilitySystem().CurrentActionPoints <= 0)
+            if (ability.GetAbilityOwner().CurrentActionPoints <= 0)
             {
                 EndUnitTurn();
             }

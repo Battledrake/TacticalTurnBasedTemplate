@@ -1,4 +1,5 @@
 using BattleDrakeCreations.TacticalTurnBasedTemplate;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,12 +9,14 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 {
     public class AbilitySystem : MonoBehaviour
     {
-        [SerializeField] private Transform _abilityInstanceContainer;
-
+        [SerializeField] private int _teamIndex = 8;
         [SerializeField] private int _baseActionPoints = 2;
+        [SerializeField] private Transform _abilityInstanceContainer;
 
         public int BaseActionPoints { get => _baseActionPoints; }
         public int CurrentActionPoints { get => _currentActionPoints; }
+
+        public int TeamIndex { get => _teamIndex; set => _teamIndex = value; }
 
         private Dictionary<AbilityId, Ability> _abilities = new Dictionary<AbilityId, Ability>();
         private Ability _activeAbility;
@@ -22,15 +25,26 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private int _currentActionPoints;
         private Unit _ownerUnit;
+        private GridIndex _gridIndex = new GridIndex(0, 0);
 
 
         public Unit GetOwningUnit() { return _ownerUnit; }
+
+        public GridIndex GetGridIndex()
+        {
+            return _ownerUnit ? _ownerUnit.UnitGridIndex : _gridIndex;
+        }
+
+        private void Unit_OnTeamIndexChanged()
+        {
+            _teamIndex = _ownerUnit.TeamIndex;
+        }
 
         public void ResetActionPoints()
         {
             _currentActionPoints = _baseActionPoints;
 
-            foreach(var abilityPair in _abilities)
+            foreach (var abilityPair in _abilities)
             {
                 abilityPair.Value.ReduceCooldown(1);
             }
@@ -47,14 +61,19 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         public void InitAbilitySystem(Unit owner, List<Ability> abilities)
         {
+            //TODO: Continue work to separate Unit logic away from this system entirely. IAbilitySystem interface or something.
             if (owner != null)
             {
                 _ownerUnit = owner;
+                _ownerUnit.OnTeamIndexChanged += Unit_OnTeamIndexChanged;
+            }
 
-                for (int i = 0; i < abilities.Count; i++)
-                {
-                    GiveAbility(abilities[i].GetAbilityId(), abilities[i]);
-                }
+
+            _currentActionPoints = _baseActionPoints;
+
+            for (int i = 0; i < abilities.Count; i++)
+            {
+                GiveAbility(abilities[i].GetAbilityId(), abilities[i]);
             }
         }
 
@@ -130,6 +149,14 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public List<Ability> GetAllAbilities()
         {
             return _abilities.Values.ToList();
-        } 
+        }
+
+        public void OnDisable()
+        {
+            if(_ownerUnit != null)
+            {
+                _ownerUnit.OnTeamIndexChanged -= Unit_OnTeamIndexChanged;
+            }
+        }
     }
 }

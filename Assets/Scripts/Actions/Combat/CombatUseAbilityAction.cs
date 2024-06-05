@@ -16,16 +16,19 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             if (_abilityInUse)
                 return false;
 
-            if (CombatManager.Instance.TryActivateAbility(_currentAbility, _playerActions.SelectedTile, index))
-            {
-                _abilityInUse = true;
-                _playerActions.TacticsGrid.ClearAllTilesWithState(TileState.IsInAbilityRange);
-                _playerActions.TacticsGrid.ClearAllTilesWithState(TileState.IsInAoeRange);
+            _abilityInUse = true;
+            _playerActions.TacticsGrid.ClearAllTilesWithState(TileState.IsInAbilityRange);
+            _playerActions.TacticsGrid.ClearAllTilesWithState(TileState.IsInAoeRange);
 
-                CombatManager.Instance.OnAbilityUseCompleted += CombatManager_OnAbilityBehaviorComplete;
-                return true;
+            CombatManager.Instance.OnAbilityUseCompleted += CombatManager_OnAbilityBehaviorComplete;
+
+            if (!CombatManager.Instance.TryActivateAbility(_currentAbility, _playerActions.SelectedTile, index))
+            {
+                CombatManager.Instance.OnAbilityUseCompleted -= CombatManager_OnAbilityBehaviorComplete;
+                _abilityInUse = false;
+                return false;
             }
-            return false;
+            return true;
         }
 
         private bool UnitHasEnoughActionPoints(int amountNeeded = 1)
@@ -43,9 +46,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void CombatManager_OnAbilityBehaviorComplete()
         {
-            _abilityInUse = false;
-            CombatManager.Instance.OnAbilityUseCompleted -= CombatManager_OnAbilityBehaviorComplete;
             _playerActions.PlayerAbilityBar.SetSelectedAbilityFromIndex(-1);
+            CombatManager.Instance.OnAbilityUseCompleted -= CombatManager_OnAbilityBehaviorComplete;
+            _abilityInUse = false;
         }
 
         public override void ExecuteHoveredAction(GridIndex hoveredIndex)

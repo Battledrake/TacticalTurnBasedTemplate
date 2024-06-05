@@ -31,6 +31,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             CombatManager.Instance.OnCombatEnded += CombatManager_OnCombatEnded;
             CombatManager.Instance.OnActiveUnitChanged += CombatManager_OnActiveUnitChanged;
             CombatManager.Instance.OnActiveTeamChanged += PopulateTimelineBar;
+            CombatManager.Instance.OnUnitAddedDuringCombat += CombatManager_OnUnitAddedDuringCombat;
             Unit.OnAnyUnitDied += Unit_OnAnyUnitDied;
         }
 
@@ -41,6 +42,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             CombatManager.Instance.OnCombatEnded -= CombatManager_OnCombatEnded;
             CombatManager.Instance.OnActiveUnitChanged -= CombatManager_OnActiveUnitChanged;
             CombatManager.Instance.OnActiveTeamChanged -= PopulateTimelineBar;
+            CombatManager.Instance.OnUnitAddedDuringCombat -= CombatManager_OnUnitAddedDuringCombat;
             Unit.OnAnyUnitDied -= Unit_OnAnyUnitDied;
         }
 
@@ -76,10 +78,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             }
         }
 
-        private void CombatManager_OnUnitTeamChanged()
-        {
-        }
-
         private void PopulateTimelineBar()
         {
             List<Unit> orderedUnits = CombatManager.Instance.OrderedUnits;
@@ -109,6 +107,23 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             {
                 unitDisplayPair.Value.UpdateIcon(unitDisplayPair.Key);
                 unitDisplayPair.Value.gameObject.SetActive(true);
+            }
+        }
+
+        private void CombatManager_OnUnitAddedDuringCombat(Unit unit)
+        {
+            if(_pooledDisplays.Count < _unitDisplays.Count + 1)
+            {
+                SpawnUnitDisplay();
+            }
+
+            _unitDisplays.TryAdd(unit, _pooledDisplays.Find(c => !c.gameObject.activeInHierarchy));
+            _unitDisplays[unit].UpdateIcon(unit);
+            _unitDisplays[unit].gameObject.SetActive(true);
+
+            if (CombatManager.Instance.TurnOrderType != TurnOrderType.Team)
+            {
+                _unitDisplays[unit].transform.SetSiblingIndex(1);
             }
         }
 
