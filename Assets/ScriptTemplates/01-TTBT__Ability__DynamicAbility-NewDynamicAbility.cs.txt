@@ -1,0 +1,34 @@
+using System.Collections.Generic;
+using UnityEngine;
+
+namespace BattleDrakeCreations.TacticalTurnBasedTemplate
+{
+    public class #SCRIPTNAME# : Ability
+	{
+        
+        public override AbilityRangeData GetRangeData()
+        {
+            return new AbilityRangeData();
+        }
+
+        public override AbilityRangeData GetAreaOfEffectData()
+        {
+            return new AbilityRangeData();
+
+        }
+
+        public override List<AbilityEffect> GetEffects()
+        {
+            return new List<AbilityEffect>();
+        }
+
+        public override void ActivateAbility(AbilityActivationData activationData)
+        {
+            CommitAbility();
+
+            // Logic Here
+
+            EndAbility();
+        }
+    }
+}

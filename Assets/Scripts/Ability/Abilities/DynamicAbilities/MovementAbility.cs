@@ -10,7 +10,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
     /// This is not a functioning ability. It's original purpose was to merge movement into the ability system, but that design required a lot of tweaks and checks. A new range pattern for movement and custom logic in the ability use action.
     /// Easier to keep movement separate. This is kept in the event that movement ability reimplementation is desired.
     /// </summary>
-    public class MovementAbility : DynamicAbility
+    public class MovementAbility : Ability
     {
         public override AbilityRangeData GetRangeData()
         {
@@ -26,6 +26,11 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             sprintRangeData.rangePattern = AbilityRangePattern.Movement;
             sprintRangeData.rangeMinMax = new Vector2Int(0, GetRangeData().rangeMinMax.y * 2);
             return sprintRangeData;
+        }
+
+        public override List<AbilityEffect> GetEffects()
+        {
+            return new List<AbilityEffect>();
         }
 
         //Do Logic Here
