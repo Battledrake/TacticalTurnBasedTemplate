@@ -192,7 +192,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                     if (!_tacticsGrid.IsIndexValid(neighborIndex))
                     {
                         if (i < GetNeighborCount(false))
-                            pathResult.Edges.Add(new EdgeData(currentNode.index, GridStatics.SquareNeighbors[i]));
+                            pathResult.Edges.Add(new EdgeData(currentNode.index, GridStatics.GetNeighborDirectionAtIndexFromShape(currentNode.index, i, _tacticsGrid.GridShape)));
                         continue;
                     }
 
@@ -202,7 +202,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                     if (!IsTraversalAllowed(currentNode.index, neighborIndex, pathParams.heightAllowance, pathParams.validTileTypes))
                     {
                         if (i < GetNeighborCount(false))
-                            pathResult.Edges.Add(new EdgeData(currentNode.index, GridStatics.SquareNeighbors[i]));
+                            pathResult.Edges.Add(new EdgeData(currentNode.index, GridStatics.GetNeighborDirectionAtIndexFromShape(currentNode.index, i, _tacticsGrid.GridShape)));
                         continue;
                     }
 
@@ -225,7 +225,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                     {
                         if (i < GetNeighborCount(false))
                         {
-                            pathResult.Edges.Add(new EdgeData(currentNode.index, GridStatics.SquareNeighbors[i]));
+                            pathResult.Edges.Add(new EdgeData(currentNode.index, GridStatics.GetNeighborDirectionAtIndexFromShape(currentNode.index, i, _tacticsGrid.GridShape)));
                         }
                         continue;
                     }

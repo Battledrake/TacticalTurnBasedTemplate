@@ -84,8 +84,26 @@ public class CombatTabController : MonoBehaviour
     {
         UpdateButtonAndTexts();
         _turnOrderTypeCombo.interactable = true;
+        ResetCombatUnits();
+    }
 
-        for(int i = 0; i < _activeUnitsPreCombat.Count; i++)
+    private void ResetCombatUnits()
+    {
+        List<Unit> unitsToCleanup = new List<Unit>();
+        foreach (var unit in CombatManager.Instance.UnitsInCombat)
+        {
+            if (!_activeUnitsPreCombat.Contains(unit))
+            {
+                unitsToCleanup.Add(unit);
+            }
+        }
+
+        for (int i = 0; i < unitsToCleanup.Count; i++)
+        {
+            CombatManager.Instance.RemoveUnitFromCombat(unitsToCleanup[i], true);
+        }
+
+        for (int i = 0; i < _activeUnitsPreCombat.Count; i++)
         {
             _activeUnitsPreCombat[i].ResetUnit();
         }

@@ -106,7 +106,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                     _borrowedMoveRenders = LineRendererPool.Instance.BorrowInstances(_moveRangeEdges.Count);
                     int edgeIndex = 0;
 
-                    foreach(var edgePair in _moveRangeEdges)
+                    foreach (var edgePair in _moveRangeEdges)
                     {
                         _borrowedMoveRenders[edgeIndex].positionCount = 2;
                         _borrowedMoveRenders[edgeIndex].startColor = UnitHasEnoughActionPoints(2) ? _moveRangeColor : _sprintRangeColor;
@@ -116,8 +116,21 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
                         Vector3 sourcePosition = _playerActions.TacticsGrid.GetTilePositionFromIndex(edgePair.source);
                         GridIndex direction = edgePair.direction;
-                        _borrowedMoveRenders[edgeIndex].SetPosition(0, new Vector3(sourcePosition.x + (direction.x * _distanceToEdge) - ((float)direction.z * _outlineLength), sourcePosition.y + _outlineHeight, sourcePosition.z + (direction.z * _distanceToEdge) - ((float)direction.x * _outlineLength)));
-                        _borrowedMoveRenders[edgeIndex].SetPosition(1, new Vector3(sourcePosition.x + (direction.x * _distanceToEdge) + ((float)direction.z * _outlineLength), sourcePosition.y + _outlineHeight, sourcePosition.z + (direction.z * _distanceToEdge) + ((float)direction.x * _outlineLength)));
+                        switch (_playerActions.TacticsGrid.GridShape)
+                        {
+                            case GridShape.Square:
+                                _borrowedMoveRenders[edgeIndex].SetPosition(0, new Vector3(sourcePosition.x + (direction.x * _distanceToEdge) - ((float)direction.z * _outlineLength), sourcePosition.y + _outlineHeight, sourcePosition.z + (direction.z * _distanceToEdge) - ((float)direction.x * _outlineLength)));
+                                _borrowedMoveRenders[edgeIndex].SetPosition(1, new Vector3(sourcePosition.x + (direction.x * _distanceToEdge) + ((float)direction.z * _outlineLength), sourcePosition.y + _outlineHeight, sourcePosition.z + (direction.z * _distanceToEdge) + ((float)direction.x * _outlineLength)));
+                                break;
+                            case GridShape.Hexagon:
+                                _borrowedMoveRenders[edgeIndex].SetPosition(0, sourcePosition);
+                                _borrowedMoveRenders[edgeIndex].SetPosition(1, sourcePosition);
+                                break;
+                            case GridShape.Triangle:
+                                _borrowedMoveRenders[edgeIndex].SetPosition(0, sourcePosition);
+                                _borrowedMoveRenders[edgeIndex].SetPosition(1, sourcePosition);
+                                break;
+                        }
                         edgeIndex++;
                     }
 
@@ -138,7 +151,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 if (!_isSprintRangeShowing)
                     return;
 
-                for(int i = 0; i < _borrowedSprintRenders.Count; i++)
+                for (int i = 0; i < _borrowedSprintRenders.Count; i++)
                 {
                     _borrowedSprintRenders[i].gameObject.SetActive(false);
                 }
@@ -151,7 +164,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 if (_isSprintRangeShowing)
                     return;
 
-                for(int i = 0; i < _borrowedSprintRenders.Count; i++)
+                for (int i = 0; i < _borrowedSprintRenders.Count; i++)
                 {
                     _borrowedSprintRenders[i].gameObject.SetActive(true);
                 }
@@ -169,7 +182,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             if (pathResult.Result != PathResult.SearchFail)
             {
                 HashSet<EdgeData> sprintEdges = new HashSet<EdgeData>(pathResult.Edges);
-                foreach(var edgePair in _moveRangeEdges)
+                foreach (var edgePair in _moveRangeEdges)
                 {
                     if (pathResult.Edges.Contains(edgePair))
                     {
@@ -179,7 +192,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
                 _borrowedSprintRenders = LineRendererPool.Instance.BorrowInstances(sprintEdges.Count);
                 int edgeIndex = 0;
-                foreach(var edgePair in sprintEdges)
+                foreach (var edgePair in sprintEdges)
                 {
                     _borrowedSprintRenders[edgeIndex].positionCount = 2;
                     _borrowedSprintRenders[edgeIndex].startColor = _sprintRangeColor;
@@ -189,8 +202,21 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
                     Vector3 sourcePosition = _playerActions.TacticsGrid.GetTilePositionFromIndex(edgePair.source);
                     GridIndex direction = edgePair.direction;
-                    _borrowedSprintRenders[edgeIndex].SetPosition(0, new Vector3(sourcePosition.x + (direction.x * _distanceToEdge) - ((float)direction.z * _outlineLength), sourcePosition.y + _outlineHeight, sourcePosition.z + (direction.z * _distanceToEdge) - ((float)direction.x * _outlineLength)));
-                    _borrowedSprintRenders[edgeIndex].SetPosition(1, new Vector3(sourcePosition.x + (direction.x * _distanceToEdge) + ((float)direction.z * _outlineLength), sourcePosition.y + _outlineHeight, sourcePosition.z + (direction.z * _distanceToEdge) + ((float)direction.x * _outlineLength)));
+                    switch (_playerActions.TacticsGrid.GridShape)
+                    {
+                        case GridShape.Square:
+                            _borrowedSprintRenders[edgeIndex].SetPosition(0, new Vector3(sourcePosition.x + (direction.x * _distanceToEdge) - ((float)direction.z * _outlineLength), sourcePosition.y + _outlineHeight, sourcePosition.z + (direction.z * _distanceToEdge) - ((float)direction.x * _outlineLength)));
+                            _borrowedSprintRenders[edgeIndex].SetPosition(1, new Vector3(sourcePosition.x + (direction.x * _distanceToEdge) + ((float)direction.z * _outlineLength), sourcePosition.y + _outlineHeight, sourcePosition.z + (direction.z * _distanceToEdge) + ((float)direction.x * _outlineLength)));
+                            break;
+                        case GridShape.Hexagon:
+                            _borrowedSprintRenders[edgeIndex].SetPosition(0, sourcePosition);
+                            _borrowedSprintRenders[edgeIndex].SetPosition(1, sourcePosition);
+                            break;
+                        case GridShape.Triangle:
+                            _borrowedSprintRenders[edgeIndex].SetPosition(0, sourcePosition);
+                            _borrowedSprintRenders[edgeIndex].SetPosition(1, sourcePosition);
+                            break;
+                    }
                     edgeIndex++;
                 }
                 _isSprintRangeShowing = true;

@@ -82,6 +82,31 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 return gridIndex + TriangleFacingDownNeighbors[neighborIndex];
         }
 
+        public static GridIndex GetNeighborDirectionAtIndexFromShape(GridIndex gridIndex, int neighborIndex, GridShape gridShape)
+        {
+            switch (gridShape)
+            {
+                case GridShape.Square:
+                    return SquareNeighbors[neighborIndex];
+
+                case GridShape.Hexagon:
+                    if (gridIndex.z % 2 == 1)
+                        return HexagonOddRowNeighbors[neighborIndex];
+                    else
+                        return HexagonEvenRowNeighbors[neighborIndex];
+
+                case GridShape.Triangle:
+                    if (IsTriangleTileFacingUp(gridIndex))
+                        return TriangleFacingUpNeighbors[neighborIndex];
+                    else
+                        return TriangleFacingDownNeighbors[neighborIndex];
+
+                default:
+                    break;
+            }
+            return GridIndex.Invalid();
+        }
+
         public static GridIndex GetNeighborAtIndexFromShape(GridIndex gridIndex, int neighborIndex, GridShape gridShape)
         {
             switch(gridShape)
