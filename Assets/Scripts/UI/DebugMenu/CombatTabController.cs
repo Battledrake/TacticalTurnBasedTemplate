@@ -35,7 +35,7 @@ public class CombatTabController : MonoBehaviour
 
 
     private int _activeButton = -1;
-    private List<Unit> _activeUnitsPreCombat = new List<Unit>();
+    private Dictionary<Unit, GridIndex> _activeUnitsPreCombat = new Dictionary<Unit, GridIndex>();
 
 
     private void Awake()
@@ -92,7 +92,7 @@ public class CombatTabController : MonoBehaviour
         List<Unit> unitsToCleanup = new List<Unit>();
         foreach (var unit in CombatManager.Instance.UnitsInCombat)
         {
-            if (!_activeUnitsPreCombat.Contains(unit))
+            if (!_activeUnitsPreCombat.ContainsKey(unit))
             {
                 unitsToCleanup.Add(unit);
             }
@@ -103,15 +103,26 @@ public class CombatTabController : MonoBehaviour
             CombatManager.Instance.RemoveUnitFromCombat(unitsToCleanup[i], true);
         }
 
-        for (int i = 0; i < _activeUnitsPreCombat.Count; i++)
+        foreach(var unitPreCombatPair in _activeUnitsPreCombat)
         {
-            _activeUnitsPreCombat[i].ResetUnit();
+            unitPreCombatPair.Key.ResetUnit();
+            CombatManager.Instance.TeleportUnit(unitPreCombatPair.Key, GridIndex.Invalid());
+        }
+        foreach (var unitPreCombatPair in _activeUnitsPreCombat)
+        {
+            CombatManager.Instance.TeleportUnit(unitPreCombatPair.Key, unitPreCombatPair.Value);
         }
     }
 
     private void CombatManager_OnCombatStarted()
     {
-        _activeUnitsPreCombat = new List<Unit>(CombatManager.Instance.UnitsInCombat);
+        List<Unit> unitsInCombat = new List<Unit>(CombatManager.Instance.UnitsInCombat);
+
+        for(int i = 0; i < unitsInCombat.Count; i++)
+        {
+            _activeUnitsPreCombat.TryAdd(unitsInCombat[i], unitsInCombat[i].UnitGridIndex);
+        }
+
         _turnOrderTypeCombo.interactable = false;
     }
 

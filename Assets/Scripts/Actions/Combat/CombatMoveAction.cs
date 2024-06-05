@@ -310,7 +310,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
             unit.OnUnitStartedMovement -= Unit_OnUnitReachedDestination;
 
-            if (UnitHasEnoughActionPoints())
+            if (this != null && UnitHasEnoughActionPoints())
                 GenerateTilesInMoveRange(unit);
         }
 

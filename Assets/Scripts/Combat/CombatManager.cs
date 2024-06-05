@@ -235,7 +235,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 }
                 else
                 {
-                    AdvanceToNextAliveUnit();
+                    AdvanceToNextUnit();
 
                     for (int i = 0; i < _orderedUnits.Count; i++)
                     {
@@ -245,7 +245,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             }
             else
             {
-                AdvanceToNextAliveUnit();
+                AdvanceToNextUnit();
                 _activeUnit.TurnStarted();
             }
 
@@ -255,17 +255,10 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             GameObject.Find("[Cameras]").GetComponent<CameraController>().SetMoveToTarget(_activeUnit.transform.position);
         }
 
-        private void AdvanceToNextAliveUnit()
+        private void AdvanceToNextUnit()
         {
             int activeIndex = _orderedUnits.IndexOf(_activeUnit);
-            int unitCount = 0;
-            do
-            {
-                activeIndex = (activeIndex + 1) % _orderedUnits.Count;
-                _activeUnit = _orderedUnits[activeIndex];
-                unitCount++;
-            }
-            while (!_activeUnit.IsAlive || unitCount < _orderedUnits.Count);
+            _activeUnit = _orderedUnits[++activeIndex % _orderedUnits.Count];
         }
 
         private void NextTurn()
@@ -322,7 +315,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 }
                 else
                 {
-                    AdvanceToNextAliveUnit();
+                    AdvanceToNextUnit();
                 }
                 if (currentUnit != _activeUnit)
                     OnActiveUnitChanged?.Invoke(_activeUnit);
@@ -368,6 +361,12 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
             if (unit.GetAbilitySystem().CurrentActionPoints <= 0)
                 EndUnitTurn();
+        }
+
+        public void TeleportUnit(Unit unit, GridIndex targetIndex)
+        {
+            _tacticsGrid.RemoveUnitFromTile(unit.UnitGridIndex);
+            _tacticsGrid.AddUnitToTile(targetIndex, unit, true, true);
         }
 
         private void Unit_OnUnitReachedDestination(Unit unit)
@@ -464,7 +463,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         /// </summary>
         /// <param name="unit"></param>
         /// <param name="shouldDestroy"></param>
-        public void RemoveUnitFromCombat(Unit unit, bool shouldDestroy = false)
+        public void RemoveUnitFromCombat(Unit unit, bool shouldDestroy = false, float delayBeforeDestroy = 2f)
         {
             _unitsInCombat.Remove(unit);
             _orderedUnits.Remove(unit);
@@ -475,7 +474,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
             if (shouldDestroy)
             {
-                Destroy(unit.gameObject);
+                Destroy(unit.gameObject, delayBeforeDestroy);
             }
         }
 
