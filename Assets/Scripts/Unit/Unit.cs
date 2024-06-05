@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using static UnityEngine.Rendering.DebugUI;
 
 namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 {
@@ -32,17 +33,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public UnitData UnitData { get => _unitData; }
         public bool IsMoving { get => _gridMovement.IsMoving; }
         public bool IsAlive { get => _isAlive; }
-        public int MoveRange { get => _moveRange; set => _moveRange = value; } 
-        public int TeamIndex
-        {
-            get => _teamIndex;
-            set
-            {
-                _teamIndex = value;
-                OnTeamIndexChanged?.Invoke();
-                _healthComponent.SetHealthUnitColor(CombatManager.Instance.GetTeamColor(value));
-            }
-        }
+        public int MoveRange { get => _moveRange; set => _moveRange = value; }
+        public int TeamIndex { get => _teamIndex; }
+        public int PreviousTeamIndex { get => _prevTeamIndex; }
         public int CurrentHealth { get => _healthComponent.CurrentHealth; }
         public int MaxHealth { get => _healthComponent.MaxHealth; }
         public int Agility { get => _agility; }
@@ -53,6 +46,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private UnitData _unitData;
         private GridIndex _gridIndex = GridIndex.Invalid();
         private int _teamIndex = -1;
+        private int _prevTeamIndex = -1;
         private bool _isAlive = true;
 
         //TODO: Should we move these to a set or somewhere?
@@ -83,6 +77,22 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
             _healthComponent.OnHealthChanged += HealthComponent_OnHealthChanged;
             _healthComponent.OnHealthReachedZero += HealthComponent_OnHealthReachedZero;
+        }
+
+        //Used for initial team setting or permanent team changes.
+        public void SetTeamIndex(int index)
+        {
+            _prevTeamIndex = _teamIndex;
+            _teamIndex = index;
+            OnTeamIndexChanged?.Invoke();
+            _healthComponent.SetHealthUnitColor(CombatManager.Instance.GetTeamColor(index));
+        }
+
+        //Used for team swaps due to abilities and allow prevTeamIndex to be grabbed later.
+        public void ChangeTeam(int teamIndex)
+        {
+            _teamIndex = teamIndex;
+            OnTeamIndexChanged?.Invoke();
         }
 
         public AnimationEventHandler GetAnimationEventHandler()
@@ -188,6 +198,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _moveRange = _unitData.unitStats.moveRange;
             _agility = _unitData.unitStats.agility;
 
+            _isAlive = true;
+
             InitComponents();
         }
 
@@ -218,15 +230,20 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             InitUnit(_unitType);
         }
 
-        [ContextMenu("ReAddToCombat")]
-        public void AddUnitToCombat()
+        [ContextMenu("ResetUnit")]
+        public void ResetUnit()
         {
-            CombatManager.Instance.AddUnitToCombat(this.transform.position, this);
+            if (!_isAlive)
+            {
+                _isAlive = true;
 
-            _unitAnimator.ResetTrigger(AnimationType.Hit.ToString());
-            _unitAnimator.SetTrigger(AnimationType.Respawn.ToString());
+                CombatManager.Instance.AddUnitToCombat(this.transform.position, this, _prevTeamIndex);
+
+                _unitAnimator.ResetTrigger(AnimationType.Hit.ToString());
+                _unitAnimator.SetTrigger(AnimationType.Respawn.ToString());
+                _collider.enabled = true;
+            }
             _currentHealth = _maxHealth;
-            _collider.enabled = true;
             _healthComponent.UpdateHealth(_currentHealth);
         }
 

@@ -24,7 +24,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         ShootRifle,
         RainbowWave,
         RainbowSpin,
-        RainbowBlast
+        RainbowBlast,
+        KillUnit
     }
     public enum AbilityRangePattern
     {

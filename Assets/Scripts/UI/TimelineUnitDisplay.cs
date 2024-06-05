@@ -13,7 +13,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         [SerializeField] private Image _selectedBackground;
         [SerializeField] private Image _defaultBackground;
         [SerializeField] private Image _iconImage;
-        [SerializeField] private Image _iconDeath;
         [SerializeField] private TextMeshProUGUI _healthText;
         [SerializeField] private Slider _healthSlider;
 
@@ -138,12 +137,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _healthText.text = currentHealth + " / " + maxHealth;
             _healthSlider.maxValue = maxHealth;
             _healthSlider.value = currentHealth;
-
-
-            if (currentHealth <= 0)
-                _iconDeath.enabled = true;
-            else
-                _iconDeath.enabled = false;
         }
 
         public void OnPointerEnter(PointerEventData eventData)

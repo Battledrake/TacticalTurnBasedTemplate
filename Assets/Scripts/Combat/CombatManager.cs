@@ -258,12 +258,14 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private void AdvanceToNextAliveUnit()
         {
             int activeIndex = _orderedUnits.IndexOf(_activeUnit);
+            int unitCount = 0;
             do
             {
                 activeIndex = (activeIndex + 1) % _orderedUnits.Count;
                 _activeUnit = _orderedUnits[activeIndex];
+                unitCount++;
             }
-            while (!_activeUnit.IsAlive);
+            while (!_activeUnit.IsAlive || unitCount < _orderedUnits.Count);
         }
 
         private void NextTurn()
@@ -428,7 +430,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 _unitTeams[teamIndex] = newTeam;
             }
 
-            unit.TeamIndex = teamIndex;
+            unit.SetTeamIndex(teamIndex);
 
             OnUnitTeamChanged?.Invoke();
         }

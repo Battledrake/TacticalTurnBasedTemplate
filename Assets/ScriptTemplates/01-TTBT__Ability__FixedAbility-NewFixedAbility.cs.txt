@@ -1,0 +1,16 @@
+using UnityEngine;
+
+namespace BattleDrakeCreations.TacticalTurnBasedTemplate
+{
+    public class #SCRIPTNAME# : FixedAbility
+	{
+        public override void ActivateAbility(AbilityActivationData activationData)
+        {
+            CommitAbility();
+
+            // Logic Here
+
+            EndAbility();
+        }
+    }
+}

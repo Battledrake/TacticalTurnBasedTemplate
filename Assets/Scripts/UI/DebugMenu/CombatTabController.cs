@@ -35,6 +35,7 @@ public class CombatTabController : MonoBehaviour
 
 
     private int _activeButton = -1;
+    private List<Unit> _activeUnitsPreCombat = new List<Unit>();
 
 
     private void Awake()
@@ -83,10 +84,16 @@ public class CombatTabController : MonoBehaviour
     {
         UpdateButtonAndTexts();
         _turnOrderTypeCombo.interactable = true;
+
+        for(int i = 0; i < _activeUnitsPreCombat.Count; i++)
+        {
+            _activeUnitsPreCombat[i].ResetUnit();
+        }
     }
 
     private void CombatManager_OnCombatStarted()
     {
+        _activeUnitsPreCombat = new List<Unit>(CombatManager.Instance.UnitsInCombat);
         _turnOrderTypeCombo.interactable = false;
     }
 
