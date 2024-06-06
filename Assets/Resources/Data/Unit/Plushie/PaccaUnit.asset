@@ -13,5 +13,18 @@ MonoBehaviour:
   m_Name: PaccaUnit
   m_EditorClassIdentifier: 
   unitId: 8
-  assetData: {fileID: 11400000, guid: c701ef806985b9245a5ffed1ebe0ffd2, type: 2}
-  unitStats: {fileID: 11400000, guid: f569d8d2777fc254782da634226b2714, type: 2}
+  assetData:
+    unitIcon: {fileID: 21300000, guid: 8ad65891d7142bd469fcae5bc692cbf7, type: 3}
+    unitVisual: {fileID: 5781387356911850160, guid: cdc8763e5ba090e4b884e5e9e5d0203e,
+      type: 3}
+  unitStats:
+    validTileTypes: 010000000200000003000000
+    canMoveDiagonal: 1
+    heightAllowance: 2
+    maxHealth: 10
+    moveRange: 5
+    agility: 1
+    abilities:
+    - {fileID: 7178079176350786143, guid: b56db9fb34c6b52478982580c657c5b0, type: 3}
+    - {fileID: 7178079176350786143, guid: 51c5526442aeafe46a822d70b13169fd, type: 3}
+    - {fileID: 7178079176350786143, guid: 674821355342d2b4ba85acdf7a344bb9, type: 3}

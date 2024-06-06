@@ -13,5 +13,19 @@ MonoBehaviour:
   m_Name: BatUnit
   m_EditorClassIdentifier: 
   unitId: 5
-  assetData: {fileID: 11400000, guid: 46196dc6526dc9e45b27ffae56e37803, type: 2}
-  unitStats: {fileID: 11400000, guid: ac11f7c2fbabae741ad95b0dfecc3956, type: 2}
+  assetData:
+    unitIcon: {fileID: 21300000, guid: 3868bb9369da0634e991c0adc2e1ebc5, type: 3}
+    unitVisual: {fileID: 1522199433267968, guid: 2e4ab17be462ca346983757421a25d62,
+      type: 3}
+  unitStats:
+    validTileTypes: 01000000020000000300000004000000
+    canMoveDiagonal: 1
+    heightAllowance: 10
+    maxHealth: 2
+    moveRange: 10
+    agility: 6
+    abilities:
+    - {fileID: -7179713428241320167, guid: 2acbfa7fcca56f942aa9005729504ba2, type: 3}
+    - {fileID: -784145419434139987, guid: 57ef533fce0ab5647a86bfb40e02d124, type: 3}
+    - {fileID: -5293755295592201625, guid: d1321cbc8fd29cb489824b02302d1433, type: 3}
+    - {fileID: -1119868919808071195, guid: 1c014012a3c73d8448a0970f5713bec4, type: 3}

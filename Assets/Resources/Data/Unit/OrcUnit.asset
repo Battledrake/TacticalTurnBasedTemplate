@@ -13,5 +13,19 @@ MonoBehaviour:
   m_Name: OrcUnit
   m_EditorClassIdentifier: 
   unitId: 3
-  assetData: {fileID: 11400000, guid: 77a3a04fbe8f91a4cace4f8efdcbebb4, type: 2}
-  unitStats: {fileID: 11400000, guid: 291fcb99a5085c7428cb264cea4abd23, type: 2}
+  assetData:
+    unitIcon: {fileID: 21300000, guid: 5caac83ccebff4b48b7e042497c9b2c3, type: 3}
+    unitVisual: {fileID: 1091293637548798, guid: b603af86ac880d246a16780f2c468564,
+      type: 3}
+  unitStats:
+    validTileTypes: 010000000200000003000000
+    canMoveDiagonal: 1
+    heightAllowance: 2
+    maxHealth: 4
+    moveRange: 5
+    agility: 3
+    abilities:
+    - {fileID: -7179713428241320167, guid: 2acbfa7fcca56f942aa9005729504ba2, type: 3}
+    - {fileID: 3920824669508158258, guid: 3fb6ad63d343ee142a636fda5c9149de, type: 3}
+    - {fileID: 2237031348335038309, guid: 901365b8399f51e4e8ad07abd22b9ec8, type: 3}
+    - {fileID: -1119868919808071195, guid: fc9756e6d2f151b488c887ad06cfd3b2, type: 3}

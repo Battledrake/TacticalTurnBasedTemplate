@@ -20,7 +20,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         Rhino2
     }
 
-    [CreateAssetMenu(fileName = "UnitData", menuName = "TTBT/Unit/UnitData")]
+    [CreateAssetMenu(fileName = "UnitData", menuName = "TTBT/Unit/NewUnit")]
     public class UnitData : ScriptableObject
     {
         public UnitId unitId;

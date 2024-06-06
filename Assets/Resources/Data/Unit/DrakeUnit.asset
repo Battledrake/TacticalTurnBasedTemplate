@@ -13,5 +13,20 @@ MonoBehaviour:
   m_Name: DrakeUnit
   m_EditorClassIdentifier: 
   unitId: 6
-  assetData: {fileID: 11400000, guid: 1c46f308b069ebf40a5c7566d79cebc3, type: 2}
-  unitStats: {fileID: 11400000, guid: a36f33922e75acd4e90f2c39e70049df, type: 2}
+  assetData:
+    unitIcon: {fileID: 21300000, guid: e3734272b01693945921fe1d2f658313, type: 3}
+    unitVisual: {fileID: 220595971867796478, guid: d31d8701a4251a7499343b8053a813cc,
+      type: 3}
+  unitStats:
+    validTileTypes: 010000000200000003000000
+    canMoveDiagonal: 1
+    heightAllowance: 2
+    maxHealth: 6
+    moveRange: 10
+    agility: 5
+    abilities:
+    - {fileID: -7179713428241320167, guid: 2acbfa7fcca56f942aa9005729504ba2, type: 3}
+    - {fileID: 2237031348335038309, guid: d20c80850def3ff49882e1965991eb8e, type: 3}
+    - {fileID: 2237031348335038309, guid: 901365b8399f51e4e8ad07abd22b9ec8, type: 3}
+    - {fileID: 5105680385775076716, guid: f8dc6b0c00966464eb5e9418f993a77f, type: 3}
+    - {fileID: 1285110422479875218, guid: 49fb33c6e6ced6749a6775071485d4d3, type: 3}

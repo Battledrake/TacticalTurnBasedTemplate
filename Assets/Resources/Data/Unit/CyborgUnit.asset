@@ -13,5 +13,19 @@ MonoBehaviour:
   m_Name: CyborgUnit
   m_EditorClassIdentifier: 
   unitId: 7
-  assetData: {fileID: 11400000, guid: cc1fecf5ecf37104b9fa8de241cd55aa, type: 2}
-  unitStats: {fileID: 11400000, guid: d9f66c52ae2dafc4da7e72f575d65c6f, type: 2}
+  assetData:
+    unitIcon: {fileID: 21300000, guid: 1ce21b4528a0cbc44a6eccd1fbdc38f5, type: 3}
+    unitVisual: {fileID: 4270189354595690261, guid: b38f7ce82b9d1374d9a0e4b205c7ebe9,
+      type: 3}
+  unitStats:
+    validTileTypes: 010000000200000003000000
+    canMoveDiagonal: 1
+    heightAllowance: 2
+    maxHealth: 4
+    moveRange: 7
+    agility: 4
+    abilities:
+    - {fileID: -7179713428241320167, guid: 2acbfa7fcca56f942aa9005729504ba2, type: 3}
+    - {fileID: -1633690136786718192, guid: 4e9d46c9e76f6ac4a95c8e862474ccc4, type: 3}
+    - {fileID: 3920824669508158258, guid: 3fb6ad63d343ee142a636fda5c9149de, type: 3}
+    - {fileID: -1119868919808071195, guid: fc9756e6d2f151b488c887ad06cfd3b2, type: 3}

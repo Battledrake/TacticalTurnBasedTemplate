@@ -13,5 +13,19 @@ MonoBehaviour:
   m_Name: Mech6Unit
   m_EditorClassIdentifier: 
   unitId: 4
-  assetData: {fileID: 11400000, guid: 28ab3797ef370fd458185b67342e8f42, type: 2}
-  unitStats: {fileID: 11400000, guid: d092cbf0755072b4e819f6513f8405b4, type: 2}
+  assetData:
+    unitIcon: {fileID: 21300000, guid: 9bd947dd94a8daa41a9380b75fadedc3, type: 3}
+    unitVisual: {fileID: 6708709142029202861, guid: b96d8789d9e5e75478af687d20930f31,
+      type: 3}
+  unitStats:
+    validTileTypes: 010000000200000003000000
+    canMoveDiagonal: 1
+    heightAllowance: 2
+    maxHealth: 10
+    moveRange: 5
+    agility: 2
+    abilities:
+    - {fileID: -7179713428241320167, guid: 2acbfa7fcca56f942aa9005729504ba2, type: 3}
+    - {fileID: 2237031348335038309, guid: c3fa27da89508244cafb2c1467f35cdc, type: 3}
+    - {fileID: -1633690136786718192, guid: 4e9d46c9e76f6ac4a95c8e862474ccc4, type: 3}
+    - {fileID: -1119868919808071195, guid: fc9756e6d2f151b488c887ad06cfd3b2, type: 3}

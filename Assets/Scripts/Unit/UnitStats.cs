@@ -1,4 +1,4 @@
-using System.Collections;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -34,8 +34,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
     //    };
     //}
 
-    [CreateAssetMenu(fileName = "Stats", menuName = "TTBT/Unit/UnitStats")]
-    public class UnitStats : ScriptableObject
+    [Serializable]
+    public class UnitStats
     {
         public List<TileType> validTileTypes = new List<TileType> { TileType.Normal, TileType.DoubleCost, TileType.TripleCost };
         public bool canMoveDiagonal = true;
