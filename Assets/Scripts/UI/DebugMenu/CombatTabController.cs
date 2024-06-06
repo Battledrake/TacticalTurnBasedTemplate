@@ -100,7 +100,7 @@ public class CombatTabController : MonoBehaviour
 
         for (int i = 0; i < unitsToCleanup.Count; i++)
         {
-            CombatManager.Instance.RemoveUnitFromCombat(unitsToCleanup[i], true);
+            CombatManager.Instance.RemoveUnitFromCombat(unitsToCleanup[i], true, 0f);
         }
 
         foreach(var unitPreCombatPair in _activeUnitsPreCombat)

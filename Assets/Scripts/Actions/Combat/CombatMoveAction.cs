@@ -318,7 +318,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             _pathLine.positionCount = count;
             _pathLine.enabled = true;
-            _pathLine.startColor = _moveRangeIndexes.Contains(_playerActions.HoveredTile) ? _moveRangeColor : _sprintRangeColor;
+            _pathLine.startColor = _moveRangeIndexes.Contains(_playerActions.HoveredTile) && UnitHasEnoughActionPoints(2) ? _moveRangeColor : _sprintRangeColor;
             Color endColor = _pathLine.startColor;
             endColor.a = 0.5f;
             _pathLine.endColor = endColor;

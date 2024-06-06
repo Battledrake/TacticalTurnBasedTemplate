@@ -105,7 +105,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             }
             else
             {
-                if (_leftClickAction.GetType() != typeof(CombatMoveAction))
+                if (_leftClickAction == null || _leftClickAction.GetType() != typeof(CombatMoveAction))
                     SetSelectedActions(_combatMoveActionPrefab, null);
             }
         }
