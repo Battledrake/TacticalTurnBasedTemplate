@@ -34,10 +34,10 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public override List<AbilityEffect> GetEffects()
         {
             AbilityEffect randomEffect;
-            AttributeType[] attributeTypes = Enum.GetValues(typeof(AttributeType)).Cast<AttributeType>().ToArray();
-            int randomNumber = UnityEngine.Random.Range(0, attributeTypes.Length);
+            AttributeId[] attributes = Enum.GetValues(typeof(AttributeId)).Cast<AttributeId>().ToArray();
+            int randomNumber = UnityEngine.Random.Range(0, attributes.Length);
 
-            randomEffect.attributeType = attributeTypes[randomNumber];
+            randomEffect.attribute = attributes[randomNumber];
             randomEffect.minMaxModifier = new Vector2Int(1, 11);
 
             return new List<AbilityEffect> { randomEffect };

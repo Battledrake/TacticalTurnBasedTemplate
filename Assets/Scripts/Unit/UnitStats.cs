@@ -4,35 +4,24 @@ using UnityEngine;
 
 namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 {
-    public enum AttributeType
+    public enum AttributeId
     {
-        CurrentHealth,
+        Health,
         MaxHealth,
         MoveRange,
         Agility
     }
 
-    //public struct Attribute
-    //{
-    //    public AttributeType type;
-    //    public int attributeValue;
+    [Serializable]
+    public struct AttributeData
+    {
+        public AttributeId id;
+        public int baseValue;
+        private int _currentValue;
 
-    //    public Attribute(AttributeType type, int attributeValue)
-    //    {
-    //        this.type = type;
-    //        this.attributeValue = attributeValue;
-    //    }
-    //}
-
-    //public class AttributeSet
-    //{
-    //    HashSet<Attribute> _attributes = new HashSet<Attribute>
-    //    {
-    //        new Attribute(AttributeType.CurrentHealth, 0),
-    //        new Attribute(AttributeType.MaxHealth, 0),
-    //        new Attribute(AttributeType.MoveRange, 0)
-    //    };
-    //}
+        public int GetCurrentValue() { return _currentValue; }
+        public void SetCurrentValue(int newValue) { _currentValue = newValue; }
+    }
 
     [Serializable]
     public class UnitStats
@@ -44,5 +33,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public int moveRange = 5;
         public int agility = 1;
         public List<Ability> abilities;
+
+        public List<AttributeData> attributes;
     }
 }

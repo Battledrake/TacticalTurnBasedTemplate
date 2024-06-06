@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 {
-    public class Health : MonoBehaviour
+    public class HealthVisual : MonoBehaviour
     {
         public event Action OnHealthChanged;
         public event Action OnHealthReachedZero;
@@ -21,10 +21,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         [SerializeField] private bool _isImmortal = false;
 
         public Transform HealthBar { get => _healthBar; }
-        public int CurrentHealth { get => _currentHealth; }
-        public int MaxHealth { get => _maxHealth; }
 
-        private IHaveHealth _owner;
+        private IHealthVisual _owner;
         private List<GameObject> _healthUnits = new List<GameObject>();
         private Dictionary<int, SpriteRenderer> _healthUnitChildren = new Dictionary<int, SpriteRenderer>();
         private int _currentHealth = 0;
@@ -32,7 +30,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private int _maxHealth = 0;
         private Color _healthUnitColor = Color.red;
 
-        public void InitHealth(IHaveHealth owner)
+        public void InitHealthVisual(IHealthVisual owner)
         {
             _owner = owner;
 
@@ -44,7 +42,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _healthUnits.Clear();
 
             _maxHealth = owner.GetMaxHealth();
-            _currentHealth = owner.GetCurrentHealth();
+            _currentHealth = owner.GetHealth();
             _displayedHealth = _currentHealth;
 
             OnHealthChanged?.Invoke();
@@ -74,7 +72,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _healthBar.gameObject.SetActive(shouldDisplay);
         }
 
-        public void UpdateHealth(int amount)
+        public void UpdateHealthVisual(int amount)
         {
             if (!_isImmortal)
             {

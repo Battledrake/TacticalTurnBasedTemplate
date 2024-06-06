@@ -43,8 +43,8 @@ GameObject:
   - component: {fileID: 8295871943332446403}
   - component: {fileID: 4921305674626554649}
   - component: {fileID: 7408838157358110679}
-  - component: {fileID: 5281935239032978898}
   - component: {fileID: 3677761392830542896}
+  - component: {fileID: 3690205509015829080}
   m_Layer: 6
   m_Name: Pf_Unit
   m_TagString: Untagged
@@ -205,27 +205,6 @@ MonoBehaviour:
     m_RotationOrder: 4
   _traversalSpeed: 3
   _heightBeforeJump: 0.2
---- !u!114 &5281935239032978898
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6967783269456588456}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3bc3cbdea2f0ae54480c4823eaaee647, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _healthBar: {fileID: 4346540276523303900}
-  _healthUnitPrefab: {fileID: 1031883965029406708, guid: aba49173a357cb84f941df19e9e77d90,
-    type: 3}
-  _floatingNumberPrefab: {fileID: 2420382985826304068, guid: 7e45195551bf3c449a11695100dc3436,
-    type: 3}
-  _damageColor: {r: 1, g: 0, b: 0, a: 0.78431374}
-  _healColor: {r: 0, g: 1, b: 0.024693727, a: 0.78431374}
-  _healthChangeDelay: 0.25
-  _isImmortal: 0
 --- !u!114 &3677761392830542896
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -238,8 +217,30 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a400875770b5bc34fb580a7b4e11e181, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _teamIndex: 8
+  _baseActionPoints: 2
   _abilityInstanceContainer: {fileID: 2139374745801973881}
-  _baseAbilityPoints: 2
+--- !u!114 &3690205509015829080
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6967783269456588456}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 83756f8c708961146944301018449b37, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _healthBar: {fileID: 4346540276523303900}
+  _healthUnitPrefab: {fileID: 1031883965029406708, guid: aba49173a357cb84f941df19e9e77d90,
+    type: 3}
+  _floatingNumberPrefab: {fileID: 2420382985826304068, guid: 7e45195551bf3c449a11695100dc3436,
+    type: 3}
+  _damageColor: {r: 1, g: 0, b: 0, a: 1}
+  _healColor: {r: 0.05271268, g: 1, b: 0, a: 1}
+  _healthChangeDelay: 0.2
+  _isImmortal: 0
 --- !u!1 &7310441305717251486
 GameObject:
   m_ObjectHideFlags: 0

@@ -149,9 +149,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             List<Unit> unitsToSort = new List<Unit>(_unitsInCombat);
             unitsToSort.Sort((unit1, unit2) =>
             {
-                if (unit1.Agility > unit2.Agility)
+                if (unit1.GetAgility() > unit2.GetAgility())
                     return -1;
-                else if (unit1.Agility < unit2.Agility)
+                else if (unit1.GetAgility() < unit2.GetAgility())
                     return 1;
                 else
                     return 0;
@@ -349,7 +349,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 gridMoveComp.SetPathAndMove(path);
             }
 
-            _actionPointDeduction = pathLength <= unit.MoveRange ? 1 : 2;
+            _actionPointDeduction = pathLength <= unit.GetMoveRange() ? 1 : 2;
 
             unit.GetAbilitySystem().RemoveActionPoints(_actionPointDeduction);
 
@@ -519,7 +519,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             for (int i = 0; i < effectsToApply.Count; i++)
             {
                 AbilityEffectReal effectReal;
-                effectReal.attributeType = effectsToApply[i].attributeType;
+                effectReal.attribute = effectsToApply[i].attribute;
                 effectReal.modifier = didHit ? StaticUtilities.MinMaxRandom(effectsToApply[i].minMaxModifier) : 0;
                 effectsRealList.Add(effectReal);
             }

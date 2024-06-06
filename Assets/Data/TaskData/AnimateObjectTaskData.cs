@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "NewTaskData", menuName = "TTBT/Data/AnimateObjectData")]
+[CreateAssetMenu(fileName = "NewAnimateObjectTaskData", menuName = "TTBT/Ability/TaskData/AnimateObject")]
 public class AnimateObjectTaskData : ScriptableObject
 {
     //public float animationTime = 1f;

@@ -16,7 +16,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             AbilityRangeData moveRangeData = new AbilityRangeData();
             moveRangeData.rangePattern = AbilityRangePattern.Movement;
-            moveRangeData.rangeMinMax = new Vector2Int(1, _owner.GetOwningUnit().MoveRange);
+            moveRangeData.rangeMinMax = new Vector2Int(1, _owner.GetOwningUnit().GetMoveRange());
             return moveRangeData;
         }
 

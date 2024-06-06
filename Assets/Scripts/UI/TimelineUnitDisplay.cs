@@ -48,7 +48,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _iconImage.sprite = unit.UnitData.assetData.unitIcon;
             _iconImage.GetComponent<RectTransform>().sizeDelta = _defaultIconSize;
 
-            UpdateIconHealth(_unit.CurrentHealth, _unit.MaxHealth);
+            UpdateIconHealth(_unit.GetHealth(), _unit.GetMaxHealth());
 
             Unit.OnAnyUnitHealthChanged += Unit_OnAnyUnitHealthChanged;
             _unit.OnUnitHoveredChanged += Unit_OnUnitHoveredChanged;
@@ -129,7 +129,13 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private void Unit_OnAnyUnitHealthChanged(Unit unit)
         {
             if (_unit == unit)
-                UpdateIconHealth(_unit.CurrentHealth, _unit.MaxHealth);
+                UpdateIconHealth(_unit.GetHealth(), _unit.GetMaxHealth());
+        }
+
+        private void AbilitySystem_OnAttributeCurrentChanged(AttributeId id, int newValue)
+        {
+            if (id == AttributeId.Health)
+                UpdateIconHealth(_unit.GetHealth(), _unit.GetMaxHealth());
         }
 
         public void UpdateIconHealth(int currentHealth, int maxHealth)

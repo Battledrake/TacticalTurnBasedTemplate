@@ -72,7 +72,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public float offsetDistance;
     }
 
-    public enum EffectType
+    public enum EffectDurationPolicy
     {
         Instant,
         Duration,
@@ -80,15 +80,24 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
     }
 
     [Serializable]
+    public struct EffectDurationData
+    {
+        public EffectDurationPolicy durationType;
+        public float magnitude;
+    }
+
+    [Serializable]
     public struct AbilityEffect
     {
-        public AttributeType attributeType;
+        //public EffectDuration duration;
+        public AttributeId attribute;
         public Vector2Int minMaxModifier;
     }
 
     public struct AbilityEffectReal
     {
-        public AttributeType attributeType;
+        //public EffectDuration duration;
+        public AttributeId attribute;
         public int modifier;
     }
 

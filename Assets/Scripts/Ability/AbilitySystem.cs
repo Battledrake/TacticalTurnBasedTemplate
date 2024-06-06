@@ -9,6 +9,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 {
     public class AbilitySystem : MonoBehaviour
     {
+        public event Action<AttributeId, int, int> OnAttributeBaseChanged;
+        public event Action<AttributeId, int, int> OnAttributeCurrentChanged;
+
         [SerializeField] private int _teamIndex = 8;
         [SerializeField] private int _baseActionPoints = 2;
         [SerializeField] private Transform _abilityInstanceContainer;
@@ -18,10 +21,11 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         public int TeamIndex { get => _teamIndex; set => _teamIndex = value; }
 
+
+        private Dictionary<AttributeId, AttributeData> _attributes = new Dictionary<AttributeId, AttributeData>();
         private Dictionary<AbilityId, Ability> _abilities = new Dictionary<AbilityId, Ability>();
         private Ability _activeAbility;
 
-        private List<AbilityEffectReal> _activeEffects = new List<AbilityEffectReal>();
 
         private int _currentActionPoints;
         private Unit _ownerUnit;
@@ -68,13 +72,62 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 _ownerUnit.OnTeamIndexChanged += Unit_OnTeamIndexChanged;
             }
 
-
             _currentActionPoints = _baseActionPoints;
 
             for (int i = 0; i < abilities.Count; i++)
             {
                 GiveAbility(abilities[i].GetAbilityId(), abilities[i]);
             }
+        }
+
+        public void SetAttributeDefaults(List<AttributeData> attributeData)
+        {
+            _attributes.Clear();
+            for(int i = 0; i < attributeData.Count; i++)
+            {
+                AttributeData newAttribute = attributeData[i];
+                int oldCurrent = newAttribute.GetCurrentValue();
+                newAttribute.SetCurrentValue(newAttribute.baseValue);
+                _attributes.TryAdd(newAttribute.id, newAttribute);
+                OnAttributeCurrentChanged?.Invoke(newAttribute.id, oldCurrent, newAttribute.GetCurrentValue());
+            }
+        }
+
+        public int GetAttributeBaseValue(AttributeId id)
+        {
+            return _attributes[id].baseValue;
+        }
+
+        public int GetAttributeCurrentValue(AttributeId id)
+        {
+            return _attributes[id].GetCurrentValue();
+        }
+
+        private void SetAttributeBaseValue(AttributeId id, int newValue)
+        {
+            AttributeData modifiedData = _attributes[id];
+            int oldBase = modifiedData.baseValue;
+            modifiedData.baseValue = newValue;
+            _attributes[id] = modifiedData;
+            OnAttributeBaseChanged?.Invoke(id, oldBase, newValue);
+
+            //TODO: if(_durationEffects.Contains(effect.attribute == id), get that value, add to base.
+            SetAttributeCurrentValue(id, newValue);
+        }
+
+        private void ApplyModToAttribute(AttributeId id, int modifier)
+        {
+            int newBase = _attributes[id].baseValue + modifier;
+            SetAttributeBaseValue(id, newBase);
+        }
+
+        private void SetAttributeCurrentValue(AttributeId id, int newValue)
+        {
+            AttributeData modifiedData = _attributes[id];
+            int oldCurrent = modifiedData.GetCurrentValue();
+            modifiedData.SetCurrentValue(modifiedData.baseValue);
+            _attributes[id] = modifiedData;
+            OnAttributeCurrentChanged?.Invoke(id, oldCurrent, newValue);
         }
 
         private void GiveAbility(AbilityId id, Ability ability)
@@ -97,30 +150,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             return ability.TryActivateAbility(activationData);
         }
 
-        public void UpdateEffectDurations()
-        {
-            //for(int i = 0; i < _activeEffects.Count; i++)
-            //{
-            //    if(_activeEffects.EffectType == EffectType.Cooldown)
-            //    {
-            //        _activeEffects[i].duration -= 1;
-            //    }
-            //}
-        }
-
         public void ApplyEffect(AbilityEffectReal effect)
         {
-            switch (effect.attributeType)
-            {
-                case AttributeType.CurrentHealth:
-                    _ownerUnit.ModifyCurrentHealth(effect.modifier);
-                    break;
-                case AttributeType.MaxHealth:
-                    break;
-                case AttributeType.MoveRange:
-                    _ownerUnit.MoveRange += effect.modifier;
-                    break;
-            }
+            ApplyModToAttribute(effect.attribute, effect.modifier);
         }
 
         public void ApplyEffects(List<AbilityEffectReal> effects)

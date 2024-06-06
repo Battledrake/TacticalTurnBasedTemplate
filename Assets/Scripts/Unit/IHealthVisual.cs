@@ -4,9 +4,9 @@ using UnityEngine;
 
 namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 {
-    public interface IHaveHealth
+    public interface IHealthVisual
     {
-        public int GetCurrentHealth();
+        public int GetHealth();
         public int GetMaxHealth();
     }
 }

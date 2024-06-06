@@ -7,8 +7,8 @@ using static UnityEngine.Rendering.DebugUI;
 
 namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 {
-    [RequireComponent(typeof(GridMovement), typeof(Health), typeof(AbilitySystem))]
-    public class Unit : MonoBehaviour, IPlayAnimation, IAbilitySystem, IHaveHealth
+    [RequireComponent(typeof(GridMovement), typeof(HealthVisual), typeof(AbilitySystem))]
+    public class Unit : MonoBehaviour, IPlayAnimation, IAbilitySystem, IHealthVisual
     {
         public static event Action<Unit, GridIndex> OnAnyUnitReachedNewTile;
         public static event Action<Unit> OnAnyUnitDied;
@@ -33,12 +33,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public UnitData UnitData { get => _unitData; }
         public bool IsMoving { get => _gridMovement.IsMoving; }
         public bool IsAlive { get => _isAlive; }
-        public int MoveRange { get => _moveRange; set => _moveRange = value; }
         public int TeamIndex { get => _teamIndex; }
         public int PreviousTeamIndex { get => _prevTeamIndex; }
-        public int CurrentHealth { get => _healthComponent.CurrentHealth; }
-        public int MaxHealth { get => _healthComponent.MaxHealth; }
-        public int Agility { get => _agility; }
 
         private GameObject _unitVisual;
         private Animator _unitAnimator;
@@ -49,16 +45,11 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private int _prevTeamIndex = -1;
         private bool _isAlive = true;
 
-        //TODO: Should we move these to a set or somewhere?
-        private int _currentHealth;
-        private int _maxHealth;
-        private int _moveRange;
-        private int _agility;
-
+        //Components
         private TacticsGrid _tacticsGrid;
         private Collider _collider;
         private GridMovement _gridMovement;
-        private Health _healthComponent;
+        private HealthVisual _healthVisual;
         private AbilitySystem _abilitySystem;
 
         //Outline Stuff
@@ -72,11 +63,31 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             _collider = this.GetComponent<Collider>();
             _gridMovement = this.GetComponent<GridMovement>();
-            _healthComponent = this.GetComponent<Health>();
+            _healthVisual = this.GetComponent<HealthVisual>();
             _abilitySystem = this.GetComponent<AbilitySystem>();
 
-            _healthComponent.OnHealthChanged += HealthComponent_OnHealthChanged;
-            _healthComponent.OnHealthReachedZero += HealthComponent_OnHealthReachedZero;
+            _healthVisual.OnHealthChanged += HealthComponent_OnHealthChanged;
+            _healthVisual.OnHealthReachedZero += HealthComponent_OnHealthReachedZero;
+        }
+
+        public int GetHealth()
+        {
+            //return _healthComponent.CurrentHealth;
+            return _abilitySystem.GetAttributeCurrentValue(AttributeId.Health);
+        }
+        public int GetMaxHealth() 
+        {
+            return _abilitySystem.GetAttributeCurrentValue(AttributeId.MaxHealth);
+            //return _healthComponent.MaxHealth; 
+        }
+
+        public int GetMoveRange() 
+        { 
+            return _abilitySystem.GetAttributeCurrentValue(AttributeId.MoveRange);
+        }
+        public int GetAgility() 
+        { 
+            return _abilitySystem.GetAttributeCurrentValue(AttributeId.Agility); 
         }
 
         //Used for initial team setting or permanent team changes.
@@ -85,7 +96,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _prevTeamIndex = _teamIndex;
             _teamIndex = index;
             OnTeamIndexChanged?.Invoke();
-            _healthComponent.SetHealthUnitColor(CombatManager.Instance.GetTeamColor(index));
+            _healthVisual.SetHealthUnitColor(CombatManager.Instance.GetTeamColor(index));
         }
 
         //Used for team swaps due to abilities and allow prevTeamIndex to be grabbed later.
@@ -103,16 +114,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public AbilitySystem GetAbilitySystem()
         {
             return _abilitySystem;
-        }
-
-        public int GetCurrentHealth()
-        {
-            return _currentHealth;
-        }
-
-        public int GetMaxHealth()
-        {
-            return _maxHealth;
         }
 
         private void HealthComponent_OnHealthChanged()
@@ -189,14 +190,11 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
             _unitType = unitType;
             _unitData = DataManager.GetUnitDataFromType(_unitType);
+
             if (_unitVisual != null)
                 Destroy(_unitVisual);
-            _unitVisual = Instantiate(_unitData.assetData.unitVisual, this.transform);
 
-            _maxHealth = _unitData.unitStats.maxHealth;
-            _currentHealth = _maxHealth;
-            _moveRange = _unitData.unitStats.moveRange;
-            _agility = _unitData.unitStats.agility;
+            _unitVisual = Instantiate(_unitData.assetData.unitVisual, this.transform);
 
             _isAlive = true;
 
@@ -205,8 +203,11 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void InitComponents()
         {
-            _healthComponent.InitHealth(this);
             _abilitySystem.InitAbilitySystem(this, _unitData.unitStats.abilities);
+            _abilitySystem.SetAttributeDefaults(_unitData.unitStats.attributes);
+            _healthVisual.InitHealthVisual(this);
+            _abilitySystem.OnAttributeBaseChanged += AbilitySystem_OnAttributeBaseChanged;
+            _abilitySystem.OnAttributeCurrentChanged += AbilitySystem_OnAttributeCurrentChanged;
 
             _unitAnimator = _unitVisual.GetComponent<Animator>();
             _unitOutline = _unitVisual.AddComponent<Outline>();
@@ -215,8 +216,21 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             Transform headTransform = FindTransform(_unitVisual, "Head");
             if (headTransform)
             {
-                _healthComponent.HealthBar.position = headTransform.position + Vector3.up;
+                _healthVisual.HealthBar.position = headTransform.position + Vector3.up;
             }
+        }
+
+        private void AbilitySystem_OnAttributeCurrentChanged(AttributeId id, int oldValue, int newValue)
+        {
+            if(id == AttributeId.Health)
+            {
+                OnAnyUnitHealthChanged?.Invoke(this);
+                _healthVisual.UpdateHealthVisual(newValue - oldValue);
+            }
+        }
+
+        private void AbilitySystem_OnAttributeBaseChanged(AttributeId id, int oldValue, int newValue)
+        {
         }
 
         private Transform FindTransform(GameObject parentObject, string transformName)
@@ -243,8 +257,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 _unitAnimator.SetTrigger(AnimationType.Respawn.ToString());
                 _collider.enabled = true;
             }
-            _currentHealth = _maxHealth;
-            _healthComponent.UpdateHealth(_currentHealth);
+            _abilitySystem.SetAttributeDefaults(_unitData.unitStats.attributes);
+
+            _healthVisual.UpdateHealthVisual(_abilitySystem.GetAttributeBaseValue(AttributeId.MaxHealth));
         }
 
         public void SetIsHovered(bool isHovered)
@@ -293,7 +308,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         public void ModifyCurrentHealth(int effectModifier)
         {
-            _healthComponent.UpdateHealth(effectModifier);
+            _healthVisual.UpdateHealthVisual(effectModifier);
 
             if (effectModifier < 0)
                 PlayAnimationType(AnimationType.Hit);
