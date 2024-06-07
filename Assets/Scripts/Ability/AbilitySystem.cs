@@ -31,12 +31,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private GridIndex _gridIndex = new GridIndex(0, 0);
 
 
-        public Unit GetOwningUnit() { return _ownerUnit; }
-
-        public GridIndex GetGridIndex()
-        {
-            return _ownerUnit ? _ownerUnit.UnitGridIndex : _gridIndex;
-        }
+        public Unit GetOwningUnit() => _ownerUnit;
+        public GridIndex GetGridIndex() => _ownerUnit ? _ownerUnit.UnitGridIndex : _gridIndex;
 
         private void Unit_OnTeamIndexChanged()
         {
@@ -47,7 +43,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             _currentActionPoints = _baseActionPoints;
 
-            UpdateActiveEffectDurations();
+            UpdateActiveEffectDurationsAndPeriodics();
 
             foreach (var abilityPair in _abilities)
             {
@@ -83,7 +79,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public void SetAttributeDefaults(List<AttributeData> attributeData)
         {
             _attributes.Clear();
-            for(int i = 0; i < attributeData.Count; i++)
+            for (int i = 0; i < attributeData.Count; i++)
             {
                 _attributes.TryAdd(attributeData[i].id, attributeData[i]);
                 SetAttributeCurrentValue(attributeData[i].id, attributeData[i].baseValue);
@@ -117,7 +113,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         /// <param name="newValue"></param>
         private void SetAttributeBaseValue(AttributeId id, int newValue)
         {
-            if(_attributes.TryGetValue(id, out AttributeData attributeData))
+            if (_attributes.TryGetValue(id, out AttributeData attributeData))
             {
                 int oldBase = attributeData.baseValue;
                 attributeData.baseValue = newValue;
@@ -147,7 +143,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         /// <param name="newValue"></param>
         private void SetAttributeCurrentValue(AttributeId id, int newValue)
         {
-            if(_attributes.TryGetValue(id, out AttributeData attributeData))
+            if (_attributes.TryGetValue(id, out AttributeData attributeData))
             {
                 int oldCurrent = attributeData.GetCurrentValue();
                 attributeData.SetCurrentValue(newValue);
@@ -161,35 +157,48 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             }
         }
 
-        private void ApplyPeriodicEffects()
-        {
-            //We'll use this for effects with periodic applications like dots/hots. Iterate over active effects, check their period policy, check if expired, apply modifier.
-            //Need to decide if we want this to occur at turn start before effect removals? After? Turn ends? Decisions decisions.
-        }
-
-        //We're going to want to bind this to an on TurnStarted call.
-        public void UpdateActiveEffectDurations()
+        //Currently called when action points are reset. Might want to refactor so actionpoints are part of attribute system and we just add the effect and apply permanently.
+        //Bind to TurnStart on Unit in that case. ApplyEffect through combat manager mebbe?
+        private void UpdateActiveEffectDurationsAndPeriodics()
         {
             List<ActiveEffect> effectsToRemove = new List<ActiveEffect>();
-            foreach(var activeEffectPair in _activeEffects)
+            //Go through all our active effects
+            foreach (var activeEffectPair in _activeEffects)
             {
-                for(int i = 0; i < activeEffectPair.Value.Count; i++)
+                //Go through the list of effects on each attribute.
+                for (int i = 0; i < activeEffectPair.Value.Count; i++)
                 {
+                    //Check that the effect has a duration and is not permanent.
                     if (activeEffectPair.Value[i].DurationPolicy == EffectDurationPolicy.Duration)
                     {
+                        //Removes 1 as this is called every turn start.
                         activeEffectPair.Value[i].UpdateDuration(-1);
                         if (activeEffectPair.Value[i].Duration <= 0)
                         {
+                            //Add to list for removal after iteration
                             effectsToRemove.Add(activeEffectPair.Value[i]);
+                        }
+                    }
+                    //We don't want to apply a periodic effect to an effect we're removing. Design decision. Contains check could be removed to allow one last periodic effect on removal.
+                    if (!effectsToRemove.Contains(activeEffectPair.Value[i]) && activeEffectPair.Value[i].HasPeriodic)
+                    {
+                        //Update the interval counter. Once it reaches 0 we apply the modifier and reset.
+                        activeEffectPair.Value[i].UpdateInterval(-1);
+                        if (activeEffectPair.Value[i].CurrentInterval <= 0)
+                        {
+                            ExecuteEffect(activeEffectPair.Key, activeEffectPair.Value[i].Modifier);
+                            activeEffectPair.Value[i].ResetInterval();
                         }
                     }
                 }
             }
 
-            for(int i = 0; i < effectsToRemove.Count; i++)
+            for (int i = 0; i < effectsToRemove.Count; i++)
             {
                 _activeEffects[effectsToRemove[i].Attribute].Remove(effectsToRemove[i]);
-                UpdateAttributeCurrentValue(effectsToRemove[i].Attribute);
+
+                if (!effectsToRemove[i].HasPeriodic)
+                    UpdateAttributeCurrentValue(effectsToRemove[i].Attribute);
             }
         }
 
@@ -201,11 +210,13 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             int baseValue = _attributes[id].baseValue;
             int effectModifierSum = 0;
-            if(_activeEffects.TryGetValue(id, out List<ActiveEffect> attributeEffects))
+            if (_activeEffects.TryGetValue(id, out List<ActiveEffect> attributeEffects))
             {
                 for (int i = 0; i < attributeEffects.Count; i++)
                 {
-                    effectModifierSum += attributeEffects[i].Modifier;
+                    //We don't want periodic effect modifiers to be added to current values. These are applied to base values on intervals.
+                    if (!attributeEffects[i].HasPeriodic)
+                        effectModifierSum += attributeEffects[i].Modifier;
                 }
             }
             int effectSum = baseValue + effectModifierSum;
@@ -213,7 +224,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         }
 
         /// <summary>
-        /// Executions are called from instant effects. They modify the base value of an attribute.
+        /// Executions are called from instant and periodic effects. They modify the base value of an attribute. Permanent stat changes, damage, healing, etc...
         /// </summary>
         /// <param name="id"></param>
         /// <param name="effect"></param>
@@ -240,8 +251,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void AddEffectToActiveEffects(AttributeId attribute, AbilityEffectReal effect)
         {
-            ActiveEffect newEffect = new ActiveEffect(effect.duration.durationPolicy, attribute, effect.modifier, effect.duration.modifier);
-            if(_activeEffects.TryGetValue(attribute, out List<ActiveEffect> attributeEffects))
+            ActiveEffect newEffect = new ActiveEffect(effect.durationData.durationPolicy, attribute, effect.modifier, effect.durationData.duration, effect.durationData.period.interval);
+            if (_activeEffects.TryGetValue(attribute, out List<ActiveEffect> attributeEffects))
             {
                 attributeEffects.Add(newEffect);
             }
@@ -249,6 +260,18 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             {
                 List<ActiveEffect> newEffectList = new List<ActiveEffect>() { newEffect };
                 _activeEffects.Add(attribute, newEffectList);
+            }
+
+            if (newEffect.HasPeriodic)
+            {
+                if (effect.durationData.period.executeImmediately)
+                {
+                    ExecuteEffect(attribute, effect.modifier);
+                }
+            }
+            else
+            {
+                UpdateAttributeCurrentValue(effect.attribute);
             }
         }
 
@@ -269,15 +292,13 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public void ApplyEffect(AbilityEffectReal effect)
         {
             //If it's an instant effect, we modify the base value of the attribute.
-            if(effect.duration.durationPolicy == EffectDurationPolicy.Instant)
+            if (effect.durationData.durationPolicy == EffectDurationPolicy.Instant)
             {
                 ExecuteEffect(effect.attribute, effect.modifier);
             }
             else
             {
-                //Here we want to apply the effect. This will modify the current value and add the effect to an activeEffects container.
                 AddEffectToActiveEffects(effect.attribute, effect);
-                UpdateAttributeCurrentValue(effect.attribute);
             }
         }
 
@@ -303,7 +324,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         public void OnDisable()
         {
-            if(_ownerUnit != null)
+            if (_ownerUnit != null)
             {
                 _ownerUnit.OnTeamIndexChanged -= Unit_OnTeamIndexChanged;
             }

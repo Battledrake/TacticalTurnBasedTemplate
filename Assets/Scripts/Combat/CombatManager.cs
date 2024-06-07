@@ -513,13 +513,14 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             if (receiver == null)
                 return;
 
-            bool didHit = UnityEngine.Random.Range(0f, 1f) <= 0.85f;
+            //bool didHit = UnityEngine.Random.Range(0f, 1f) <= 0.85f;
+            bool didHit = true;
 
             List<AbilityEffectReal> effectsRealList = new List<AbilityEffectReal>();
             for (int i = 0; i < effectsToApply.Count; i++)
             {
                 AbilityEffectReal effectReal;
-                effectReal.duration = effectsToApply[i].duration;
+                effectReal.durationData = effectsToApply[i].durationData;
                 effectReal.attribute = effectsToApply[i].attribute;
                 effectReal.modifier = didHit ? StaticUtilities.MinMaxRandom(effectsToApply[i].minMaxModifier) : 0;
                 effectsRealList.Add(effectReal);

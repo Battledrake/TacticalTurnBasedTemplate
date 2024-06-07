@@ -203,6 +203,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void AbilitySystem_OnAttributeBaseChanged(AttributeId id, int oldValue, int newValue)
         {
+            Debug.Log($"Attribute Changed: {id}, oldValue: {oldValue}, newValue: {newValue}");
         }
 
         private Transform FindTransform(GameObject parentObject, string transformName)

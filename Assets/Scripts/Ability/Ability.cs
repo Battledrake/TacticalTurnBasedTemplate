@@ -78,17 +78,40 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public AttributeId Attribute { get; private set; }
         public int Modifier { get; private set; }
         public int Duration { get; private set; }
+        public int BaseInterval { get; private set; }
+        public int CurrentInterval { get; private set; }
+        /// <summary>
+        /// This is set based on whether we assign a period value in the inspector. If 0, we set to false. Used for effect application checks.
+        /// </summary>
+        public bool HasPeriodic { get; private set; }
 
-        public ActiveEffect(EffectDurationPolicy durationPolicy, AttributeId attribute, int modifier, int duration)
+        public ActiveEffect(EffectDurationPolicy durationPolicy, AttributeId attribute, int modifier, int duration, int interval)
         {
             DurationPolicy = durationPolicy;
             Attribute = attribute;
             Modifier = modifier;
             Duration = duration;
+            if (interval == 0)
+                HasPeriodic = false;
+            else
+                HasPeriodic = true;
+
+            BaseInterval = interval;
+            CurrentInterval = BaseInterval;
         }
         public void UpdateDuration(int modifier)
         {
             Duration += modifier;
+        }
+
+        public void UpdateInterval(int modifier)
+        {
+            CurrentInterval += modifier;
+        }
+
+        public void ResetInterval()
+        {
+            CurrentInterval = BaseInterval;
         }
     }
 
@@ -103,20 +126,30 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
     public struct EffectDurationData
     {
         public EffectDurationPolicy durationPolicy;
-        public int modifier;
+        public int duration;
+        public EffectPeriodData period;
+    }
+
+    [Serializable]
+    public struct EffectPeriodData
+    {
+        [Tooltip("Application Interval (in turns). 0 applies effect modifier to current value until duration expires.")]
+        public int interval;
+        [Tooltip("Apply effect modifier immediately or first on turn start")]
+        public bool executeImmediately;
     }
 
     [Serializable]
     public struct AbilityEffect
     {
-        public EffectDurationData duration;
+        public EffectDurationData durationData;
         public AttributeId attribute;
         public Vector2Int minMaxModifier;
     }
 
     public struct AbilityEffectReal
     {
-        public EffectDurationData duration;
+        public EffectDurationData durationData;
         public AttributeId attribute;
         public int modifier;
     }

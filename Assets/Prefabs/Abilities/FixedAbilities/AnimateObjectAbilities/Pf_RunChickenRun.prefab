@@ -64,11 +64,22 @@ MonoBehaviour:
       height: 0
       offsetDistance: 0
   _effects:
-  - duration:
-      durationPolicy: 1
-      modifier: 2
+  - durationData:
+      durationPolicy: 0
+      duration: 0
+      period:
+        interval: 0
+        executeImmediately: 0
     attribute: 2
     minMaxModifier: {x: 1, y: 1}
+  - durationData:
+      durationPolicy: 1
+      duration: 3
+      period:
+        interval: 1
+        executeImmediately: 0
+    attribute: 0
+    minMaxModifier: {x: 1, y: 2}
   _objectToAnimate: {fileID: 1417812492424529394, guid: 6fb08c05a555bb449a54678bcfc17308,
     type: 3}
   _taskData: {fileID: 11400000, guid: 33c30897419e60741948325ef5d3ed99, type: 2}
