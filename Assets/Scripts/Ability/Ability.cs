@@ -74,44 +74,44 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
     public class ActiveEffect
     {
-        public EffectDurationPolicy DurationPolicy { get; private set; }
-        public AttributeId Attribute { get; private set; }
-        public int Modifier { get; private set; }
-        public int Duration { get; private set; }
-        public int BaseInterval { get; private set; }
-        public int CurrentInterval { get; private set; }
+        public EffectDurationPolicy durationPolicy { get; private set; }
+        public AttributeId attribute { get; private set; }
+        public int modifier { get; private set; }
+        public int duration { get; private set; }
+        public int baseInterval { get; private set; }
+        public int currentInterval { get; private set; }
         /// <summary>
-        /// This is set based on whether we assign a period value in the inspector. If 0, we set to false. Used for effect application checks.
+        /// This is set based on whether we assign a period interval value in the inspector. If 0, we set to false. Used for effect application checks.
         /// </summary>
-        public bool IsPeriodic { get; private set; }
+        public bool isPeriodic { get; private set; }
 
         public ActiveEffect(EffectDurationPolicy durationPolicy, AttributeId attribute, int modifier, int duration, int interval)
         {
-            DurationPolicy = durationPolicy;
-            Attribute = attribute;
-            Modifier = modifier;
-            Duration = duration;
+            this.durationPolicy = durationPolicy;
+            this.attribute = attribute;
+            this.modifier = modifier;
+            this.duration = duration;
             if (interval == 0)
-                IsPeriodic = false;
+                isPeriodic = false;
             else
-                IsPeriodic = true;
+                isPeriodic = true;
 
-            BaseInterval = interval;
-            CurrentInterval = BaseInterval;
+            baseInterval = interval;
+            currentInterval = baseInterval;
         }
         public void UpdateDuration(int modifier)
         {
-            Duration += modifier;
+            duration += modifier;
         }
 
         public void UpdateInterval(int modifier)
         {
-            CurrentInterval += modifier;
+            currentInterval += modifier;
         }
 
         public void ResetInterval()
         {
-            CurrentInterval = BaseInterval;
+            currentInterval = baseInterval;
         }
     }
 

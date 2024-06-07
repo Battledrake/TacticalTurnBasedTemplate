@@ -97,8 +97,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _attributes.Clear();
             for (int i = 0; i < attributeData.Count; i++)
             {
-                _attributes.TryAdd(attributeData[i].id, attributeData[i]);
-                SetAttributeCurrentValue(attributeData[i].id, attributeData[i].baseValue);
+                _attributes.TryAdd(attributeData[i].attribute, attributeData[i]);
+                SetAttributeCurrentValue(attributeData[i].attribute, attributeData[i].baseValue);
             }
         }
 
@@ -245,24 +245,24 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 for (int i = 0; i < activeEffectPair.Value.Count; i++)
                 {
                     //Check that the effect has a duration and is not permanent.
-                    if (activeEffectPair.Value[i].DurationPolicy == EffectDurationPolicy.Duration)
+                    if (activeEffectPair.Value[i].durationPolicy == EffectDurationPolicy.Duration)
                     {
                         //Removes 1 as this is called every turn start.
                         activeEffectPair.Value[i].UpdateDuration(-1);
-                        if (activeEffectPair.Value[i].Duration <= 0)
+                        if (activeEffectPair.Value[i].duration <= 0)
                         {
                             //Add to list for removal after iteration
                             effectsToRemove.Add(activeEffectPair.Value[i]);
                         }
                     }
                     //We don't want to apply a periodic effect to an effect we're removing. Design decision. Contains check could be removed to allow one last periodic effect on removal.
-                    if (!effectsToRemove.Contains(activeEffectPair.Value[i]) && activeEffectPair.Value[i].IsPeriodic)
+                    if (!effectsToRemove.Contains(activeEffectPair.Value[i]) && activeEffectPair.Value[i].isPeriodic)
                     {
                         //Update the interval counter. Once it reaches 0 we apply the modifier and reset.
                         activeEffectPair.Value[i].UpdateInterval(-1);
-                        if (activeEffectPair.Value[i].CurrentInterval <= 0)
+                        if (activeEffectPair.Value[i].currentInterval <= 0)
                         {
-                            ExecuteEffect(activeEffectPair.Key, activeEffectPair.Value[i].Modifier);
+                            ExecuteEffect(activeEffectPair.Key, activeEffectPair.Value[i].modifier);
                             activeEffectPair.Value[i].ResetInterval();
                         }
                     }
@@ -271,10 +271,10 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
             for (int i = 0; i < effectsToRemove.Count; i++)
             {
-                _activeEffects[effectsToRemove[i].Attribute].Remove(effectsToRemove[i]);
+                _activeEffects[effectsToRemove[i].attribute].Remove(effectsToRemove[i]);
 
-                if (!effectsToRemove[i].IsPeriodic)
-                    UpdateAttributeCurrentValue(effectsToRemove[i].Attribute);
+                if (!effectsToRemove[i].isPeriodic)
+                    UpdateAttributeCurrentValue(effectsToRemove[i].attribute);
             }
         }
 
@@ -291,8 +291,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 for (int i = 0; i < attributeEffects.Count; i++)
                 {
                     //We don't want periodic effect modifiers to be added to current values. These are applied to base values at intervals.
-                    if (!attributeEffects[i].IsPeriodic)
-                        effectModifierSum += attributeEffects[i].Modifier;
+                    if (!attributeEffects[i].isPeriodic)
+                        effectModifierSum += attributeEffects[i].modifier;
                 }
             }
             int effectSum = baseValue + effectModifierSum;
@@ -344,7 +344,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 _activeEffects.Add(attribute, newEffectList);
             }
 
-            if (newEffect.IsPeriodic)
+            if (newEffect.isPeriodic)
             {
                 if (effect.durationData.period.executeImmediately)
                 {
@@ -385,16 +385,16 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         public bool RemoveEffect(ActiveEffect effectToRemove)
         {
-            if (_activeEffects.TryGetValue(effectToRemove.Attribute, out List<ActiveEffect> activeEffects))
+            if (_activeEffects.TryGetValue(effectToRemove.attribute, out List<ActiveEffect> activeEffects))
             {
                 if (activeEffects != null)
                 {
                     if (activeEffects.Contains(effectToRemove))
                     {
                         //If it's not a periodic interval application, our current value needs to update to the effect removal.
-                        if (!effectToRemove.IsPeriodic)
+                        if (!effectToRemove.isPeriodic)
                         {
-                            UpdateAttributeCurrentValue(effectToRemove.Attribute);
+                            UpdateAttributeCurrentValue(effectToRemove.attribute);
                         }
                         activeEffects.Remove(effectToRemove);
                         return true;

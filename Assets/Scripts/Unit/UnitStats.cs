@@ -15,8 +15,11 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
     [Serializable]
     public struct AttributeData
     {
-        public AttributeId id;
+        public AttributeId attribute;
         public int baseValue;
+        /// <summary>
+        /// We keep the currentValue private as its value is always set based on the base value + effect modifiers.
+        /// </summary>
         private int _currentValue;
 
         public int GetCurrentValue() { return _currentValue; }

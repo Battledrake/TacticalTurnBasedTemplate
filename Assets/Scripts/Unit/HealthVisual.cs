@@ -47,11 +47,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                     SpawnHealthUnitVisual(currentCount + i);
                 }
             }
-            int count = 0;
+
             foreach (var healthUnitPair in _healthUnitChildren)
             {
-                Debug.Log(count);
-                count++;
                 healthUnitPair.Value.transform.parent.gameObject.SetActive(false);
             }
 

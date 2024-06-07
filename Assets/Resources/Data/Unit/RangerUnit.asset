@@ -22,13 +22,13 @@ MonoBehaviour:
     heightAllowance: 2
     validTileTypes: 010000000200000003000000
     attributes:
-    - id: 0
+    - attribute: 0
       baseValue: 10
-    - id: 1
+    - attribute: 1
       baseValue: 10
-    - id: 2
+    - attribute: 2
       baseValue: 10
-    - id: 3
+    - attribute: 3
       baseValue: 5
     abilities:
     - {fileID: 2237031348335038309, guid: ade4dd7a8f127fb41be4aaf84701beee, type: 3}
