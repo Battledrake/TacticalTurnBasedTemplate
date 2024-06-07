@@ -47,9 +47,10 @@ MonoBehaviour:
   _abilityId: 0
   _icon: {fileID: 21300000, guid: e46b31ee3c968d741bec385da46e8410, type: 3}
   _actionCost: 1
-  _isFriendly: 0
+  _cooldown: 0
+  _affectsFriendly: 0
   _rangeData:
-    rangePattern: 5
+    rangePattern: 6
     rangeMinMax: {x: 1, y: 1}
     lineOfSightData:
       requireLineOfSight: 0
@@ -63,7 +64,13 @@ MonoBehaviour:
       height: 0
       offsetDistance: 0
   _effects:
-  - attributeType: 0
+  - durationData:
+      durationPolicy: 0
+      duration: 0
+      period:
+        interval: 0
+        executeImmediately: 0
+    attribute: 0
     minMaxModifier: {x: -2, y: -3}
   _animationType: 2
   _impactFxPrefab: {fileID: 1489431029902184, guid: 4430919f14c50f84085d287cbcb2c30e,

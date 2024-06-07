@@ -14,42 +14,57 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         [SerializeField] private Color _damageColor;
         [SerializeField] private Color _healColor;
-        [SerializeField] private float _healthChangeDelay = 0.5f;
-        [SerializeField] private bool _isImmortal = false;
+        [SerializeField] private float _healthChangeDelay = 0.2f;
 
         public Transform HealthBar { get => _healthBar; }
 
         private IHealthVisual _owner;
-        private List<GameObject> _healthUnits = new List<GameObject>();
         private Dictionary<int, SpriteRenderer> _healthUnitChildren = new Dictionary<int, SpriteRenderer>();
-        private int _currentHealth = 0;
         private int _displayedHealth = 0;
-        private int _maxHealth = 0;
         private Color _healthUnitColor = Color.red;
 
         public void InitHealthVisual(IHealthVisual owner)
         {
             _owner = owner;
+        }
 
-            //TODO: Redo this to a pooling system like timeline visuals.
-            for (int i = 0; i < _healthUnits.Count; i++)
+        private void SpawnHealthUnitVisual(int healthValue)
+        {
+            GameObject healthUnit = Instantiate(_healthUnitPrefab, _healthBar);
+            SpriteRenderer healthUnitRenderer = healthUnit.transform.GetChild(0).GetComponent<SpriteRenderer>();
+            healthUnitRenderer.color = _healthUnitColor;
+            _healthUnitChildren.TryAdd(healthValue, healthUnitRenderer);
+        }
+
+        public void UpdateHealthVisual()
+        {
+            if (_healthUnitChildren.Count < _owner.GetMaxHealth())
             {
-                Destroy(_healthUnits[i]);
+                int currentCount = _healthUnitChildren.Count;
+                int healthDiff = _owner.GetMaxHealth() - currentCount;
+                for(int i = 1; i <= healthDiff; i++)
+                {
+                    SpawnHealthUnitVisual(currentCount + i);
+                }
             }
-            _healthUnits.Clear();
-
-            _maxHealth = owner.GetMaxHealth();
-            _currentHealth = owner.GetHealth();
-            _displayedHealth = _currentHealth;
-
-            for (int i = 0; i < _maxHealth; i++)
+            else
             {
-                GameObject healthUnit = Instantiate(_healthUnitPrefab, _healthBar);
-                _healthUnits.Add(healthUnit);
-                SpriteRenderer healthUnitRenderer = healthUnit.transform.GetChild(0).GetComponent<SpriteRenderer>();
-                healthUnitRenderer.color = _healthUnitColor;
-                _healthUnitChildren.TryAdd(i + 1, healthUnitRenderer);
+                foreach(var healthUnitPair in _healthUnitChildren)
+                {
+                    healthUnitPair.Value.gameObject.gameObject.SetActive(false);
+                }
             }
+
+            for (int i = 1; i <= _owner.GetMaxHealth(); i++)
+            {
+                _healthUnitChildren[i].gameObject.gameObject.SetActive(true);
+                if (_owner.GetHealth() >= i)
+                    _healthUnitChildren[i].enabled = true;
+                else
+                    _healthUnitChildren[i].enabled = false;
+            }
+
+            _displayedHealth = _owner.GetHealth();
         }
 
         public void SetHealthUnitColor(Color color)
@@ -67,15 +82,10 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _healthBar.gameObject.SetActive(shouldDisplay);
         }
 
-        public void UpdateHealthVisual(int amount)
+        public void DisplayHealthChange(int amount)
         {
-            if (!_isImmortal)
-            {
-                _currentHealth = _owner.GetHealth();
-
-                StopCoroutine(UpdateHealthBar());
-                StartCoroutine(UpdateHealthBar());
-            }
+            StopCoroutine(UpdateHealthBar());
+            StartCoroutine(UpdateHealthBar());
 
             GameObject floatingNumber = Instantiate(_floatingNumberPrefab, _healthBar.position + _healthBar.forward, Quaternion.identity);
             Animator numberAnim = floatingNumber.GetComponentInChildren<Animator>();
@@ -105,14 +115,14 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private IEnumerator UpdateHealthBar()
         {
 
-            while (_displayedHealth != _currentHealth)
+            while (_displayedHealth != _owner.GetHealth())
             {
-                int step = _displayedHealth > _currentHealth ? -1 : 1;
-                int targetHealth = _currentHealth;
+                int step = _displayedHealth > _owner.GetHealth() ? -1 : 1;
+                int targetHealth = _owner.GetHealth();
 
                 yield return new WaitForSeconds(_healthChangeDelay);
 
-                int indexStep = _displayedHealth > _currentHealth ? 0 : 1;
+                int indexStep = _displayedHealth > _owner.GetHealth() ? 0 : 1;
 
                 for (int i = _displayedHealth + indexStep; i != targetHealth + indexStep; i += step)
                 {

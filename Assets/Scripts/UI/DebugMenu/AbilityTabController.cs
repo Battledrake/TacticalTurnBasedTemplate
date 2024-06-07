@@ -48,7 +48,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private void Awake()
         {
             _abilitySystem = this.GetComponent<AbilitySystem>();
-            _abilitySystem.InitAbilitySystem(null, _debugAbilities);
+            _abilitySystem.InitAbilitySystem(null, null, _debugAbilities);
 
             for (int i = 0; i < _debugAbilities.Count; i++)
             {

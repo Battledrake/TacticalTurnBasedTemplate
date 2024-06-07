@@ -167,11 +167,10 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void InitComponents()
         {
-            _abilitySystem.InitAbilitySystem(this, _unitData.unitStats.abilities);
-            _abilitySystem.SetAttributeDefaults(_unitData.unitStats.attributes);
             _healthVisual.InitHealthVisual(this);
             _abilitySystem.OnAttributeBaseChanged += AbilitySystem_OnAttributeBaseChanged;
             _abilitySystem.OnAttributeCurrentChanged += AbilitySystem_OnAttributeCurrentChanged;
+            _abilitySystem.InitAbilitySystem(this, _unitData.unitStats.attributes, _unitData.unitStats.abilities);
 
             _unitAnimator = _unitVisual.GetComponent<Animator>();
             _unitOutline = _unitVisual.AddComponent<Outline>();
@@ -191,7 +190,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             if (id == AttributeId.Health)
             {
                 OnAnyUnitHealthChanged?.Invoke(this);
-                _healthVisual.UpdateHealthVisual(newValue - oldValue);
+                _healthVisual.DisplayHealthChange(newValue - oldValue);
 
                 if(newValue <= 0)
                 {
@@ -204,6 +203,11 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                         PlayAnimationType(AnimationType.Hit);
                     }
                 }
+            }
+
+            if (id == AttributeId.MaxHealth)
+            {
+                _healthVisual.UpdateHealthVisual();
             }
         }
 
@@ -236,9 +240,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 _unitAnimator.SetTrigger(AnimationType.Respawn.ToString());
                 _collider.enabled = true;
             }
-            _abilitySystem.SetAttributeDefaults(_unitData.unitStats.attributes);
-
-            _healthVisual.UpdateHealthVisual(_abilitySystem.GetAttributeBaseValue(AttributeId.MaxHealth));
+            _abilitySystem.InitAbilitySystem(this, _unitData.unitStats.attributes, _unitData.unitStats.abilities);
+            //_healthVisual.InitHealthVisual(this);
+            //_healthVisual.UpdateHealthVisual(_abilitySystem.GetAttributeBaseValue(AttributeId.MaxHealth));
         }
 
         public void SetIsHovered(bool isHovered)

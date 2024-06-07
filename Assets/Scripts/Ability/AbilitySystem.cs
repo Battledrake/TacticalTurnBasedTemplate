@@ -60,23 +60,38 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _currentActionPoints -= amount;
         }
 
-        public void InitAbilitySystem(Unit owner, List<Ability> abilities)
+        public void InitAbilitySystem(Unit owner, List<AttributeData> attributeSet,  List<Ability> startingAbilities)
         {
+            _currentActionPoints = _baseActionPoints;
+
             if (owner != null)
             {
                 _ownerUnit = owner;
                 _ownerUnit.OnTeamIndexChanged += Unit_OnTeamIndexChanged;
             }
 
-            _currentActionPoints = _baseActionPoints;
+            if (attributeSet != null)
+                SetAttributeDefaults(attributeSet);
 
-            for (int i = 0; i < abilities.Count; i++)
+            if(_abilities.Count > 0)
             {
-                GiveAbility(abilities[i].GetAbilityId(), abilities[i]);
+                foreach(var abilityPair in _abilities)
+                {
+                    Destroy(abilityPair.Value.gameObject);
+                }
+                _abilities.Clear();
+            }
+
+            if (startingAbilities != null)
+            {
+                for (int i = 0; i < startingAbilities.Count; i++)
+                {
+                    GiveAbility(startingAbilities[i].GetAbilityId(), startingAbilities[i]);
+                }
             }
         }
 
-        public void SetAttributeDefaults(List<AttributeData> attributeData)
+        private void SetAttributeDefaults(List<AttributeData> attributeData)
         {
             _attributes.Clear();
             for (int i = 0; i < attributeData.Count; i++)
@@ -87,7 +102,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         }
 
         /// <summary>
-        /// Returns the base value of an attribute. This value infrequently changes unless Health.
+        /// Returns the base value of an attribute. This is the value before any effects are applied to it.
         /// </summary>
         /// <param name="attribute"></param>
         /// <returns></returns>
@@ -114,7 +129,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         /// <param name="newValue"></param>
         private void PreAttributeBaseChanged(AttributeId attribute, ref int newValue)
         {
-            if(attribute == AttributeId.Health)
+            if (attribute == AttributeId.Health)
             {
                 newValue = Mathf.Clamp(newValue, 0, GetAttributeCurrentValue(AttributeId.MaxHealth));
             }
@@ -131,41 +146,67 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         }
 
         /// <summary>
-        /// This sets the attributes base value from instant effects. Permanent changes. Current value is set to new value or updated if effects are active.
+        /// This is called after the new base is set. You can use this to apply changes to other attributes based on this change.
         /// </summary>
-        /// <param name="id"></param>
+        /// <param name="attribute"></param>
+        /// <param name="oldBase"></param>
         /// <param name="newValue"></param>
-        private void SetAttributeBaseValue(AttributeId id, int newValue)
+        private void PostAttributeBaseChanged(AttributeId attribute, int oldBase, int newValue)
         {
-            if (_attributes.TryGetValue(id, out AttributeData attributeData))
+        }
+
+        /// <summary>
+        /// This is called after the new current is set. You can use this to apply changes to other attributes based on this change like setting health to new max or changing other attributes on a level up.
+        /// </summary>
+        /// <param name="attribute"></param>
+        /// <param name="oldCurrent"></param>
+        /// <param name="newValue"></param>
+        private void PostAttributeCurrentChanged(AttributeId attribute, int oldCurrent, int newValue)
+        {
+            if(attribute == AttributeId.MaxHealth)
             {
-                int oldBase = attributeData.baseValue;
-
-                PreAttributeBaseChanged(id, ref newValue);
-
-                attributeData.baseValue = newValue;
-                _attributes[id] = attributeData;
-
-                if (_activeEffects.ContainsKey(id) && _activeEffects[id].Count > 0)
-                {
-                    UpdateAttributeCurrentValue(id);
-                }
-                else
-                {
-                    SetAttributeCurrentValue(id, newValue);
-                }
-
-                //Do we want to keep this callback? We have the new method thing.
-                OnAttributeBaseChanged?.Invoke(id, oldBase, newValue);
-            }
-            else
-            {
-                Debug.LogWarning($"Attribute {id.ToString()} was not found. Ensure SetAttributeDefaults() is being called and correctly populating the attribute dictionary.");
+                SetAttributeBaseValue(AttributeId.Health, newValue);
             }
         }
 
         /// <summary>
-        /// This sets the current value. Any existing duration effects should have been accounted for by the caller.
+        /// This sets the attributes base value from instant and periodic effects. Permanent changes. Current value is also set to new value or updated if effects are active.
+        /// </summary>
+        /// <param name="attribute"></param>
+        /// <param name="newValue"></param>
+        private void SetAttributeBaseValue(AttributeId attribute, int newValue)
+        {
+            if (_attributes.TryGetValue(attribute, out AttributeData attributeData))
+            {
+                int oldBase = attributeData.baseValue;
+
+                PreAttributeBaseChanged(attribute, ref newValue);
+
+                attributeData.baseValue = newValue;
+                _attributes[attribute] = attributeData;
+
+                if (_activeEffects.ContainsKey(attribute) && _activeEffects[attribute].Count > 0)
+                {
+                    UpdateAttributeCurrentValue(attribute);
+                }
+                else
+                {
+                    SetAttributeCurrentValue(attribute, newValue);
+                }
+
+                //Do we want to keep this callback? We have the new method thing.
+                OnAttributeBaseChanged?.Invoke(attribute, oldBase, newValue);
+
+                PostAttributeBaseChanged(attribute, oldBase, newValue);
+            }
+            else
+            {
+                Debug.LogWarning($"Attribute {attribute.ToString()} was not found. Ensure SetAttributeDefaults() is being called and correctly populating the attribute dictionary.");
+            }
+        }
+
+        /// <summary>
+        /// This sets the current value. Any existing effect modifiers should have been accounted for by the caller.
         /// </summary>
         /// <param name="attribute"></param>
         /// <param name="newValue"></param>
@@ -181,6 +222,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 _attributes[attribute] = attributeData;
 
                 OnAttributeCurrentChanged?.Invoke(attribute, oldCurrent, newValue);
+
+                PostAttributeCurrentChanged(attribute, oldCurrent, newValue);
             }
             else
             {
@@ -188,7 +231,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             }
         }
 
-        //Called on every Action Point reset. Happens on Turn Start.
+        /// <summary>
+        /// Cycles through all active effects on every turn start. Durations are checked and updated. Expired effects removed. Periodic effects are executed.
+        /// </summary>
         private void UpdateActiveEffectDurationsAndPeriodics()
         {
             List<ActiveEffect> effectsToRemove = new List<ActiveEffect>();
@@ -346,7 +391,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                     if (activeEffects.Contains(effectToRemove))
                     {
                         //If it's not a periodic interval application, our current value needs to update to the effect removal.
-                        if(!effectToRemove.IsPeriodic)
+                        if (!effectToRemove.IsPeriodic)
                         {
                             UpdateAttributeCurrentValue(effectToRemove.Attribute);
                         }
