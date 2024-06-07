@@ -64,9 +64,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _gridMovement = this.GetComponent<GridMovement>();
             _healthVisual = this.GetComponent<HealthVisual>();
             _abilitySystem = this.GetComponent<AbilitySystem>();
-
-            _healthVisual.OnHealthChanged += HealthComponent_OnHealthChanged;
-            _healthVisual.OnHealthReachedZero += HealthComponent_OnHealthReachedZero;
         }
 
         private void OnEnable()
@@ -107,11 +104,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             _teamIndex = teamIndex;
             OnTeamIndexChanged?.Invoke();
-        }
-
-        private void HealthComponent_OnHealthChanged()
-        {
-            OnAnyUnitHealthChanged?.Invoke(this);
         }
 
         public void CombatStarted()
@@ -194,16 +186,30 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void AbilitySystem_OnAttributeCurrentChanged(AttributeId id, int oldValue, int newValue)
         {
+            Debug.Log($"Attribute Current Changed: {id}, Old: {oldValue}, New: {newValue}");
+
             if (id == AttributeId.Health)
             {
                 OnAnyUnitHealthChanged?.Invoke(this);
                 _healthVisual.UpdateHealthVisual(newValue - oldValue);
+
+                if(newValue <= 0)
+                {
+                    Die();
+                }
+                else
+                {
+                    if(newValue - oldValue < 0)
+                    {
+                        PlayAnimationType(AnimationType.Hit);
+                    }
+                }
             }
         }
 
         private void AbilitySystem_OnAttributeBaseChanged(AttributeId id, int oldValue, int newValue)
         {
-            Debug.Log($"Attribute Changed: {id}, oldValue: {oldValue}, newValue: {newValue}");
+            Debug.Log($"Attribute Base Changed: {id}, Old: {oldValue}, New: {newValue}");
         }
 
         private Transform FindTransform(GameObject parentObject, string transformName)
@@ -263,22 +269,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
             _unitOutline.OutlineColor = CombatManager.Instance.GetTeamColor(_teamIndex);
             _unitOutline.OutlineWidth = _defaultOutlineWidth;
-        }
-
-        public void ModifyCurrentHealth(int effectModifier)
-        {
-            _healthVisual.UpdateHealthVisual(effectModifier);
-
-            if (effectModifier < 0)
-                PlayAnimationType(AnimationType.Hit);
-        }
-
-        private void HealthComponent_OnHealthReachedZero()
-        {
-            //TODO: we'll want to run a check to see if we want to destroy.
-            //If it's a summoned unit, can check future effectTypes or something.
-            //Game Design choices as well.
-            Die();
         }
 
         public void Die(bool shouldDestroy = false)

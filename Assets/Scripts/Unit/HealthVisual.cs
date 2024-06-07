@@ -8,9 +8,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 {
     public class HealthVisual : MonoBehaviour
     {
-        public event Action OnHealthChanged;
-        public event Action OnHealthReachedZero;
-
         [SerializeField] private Transform _healthBar;
         [SerializeField] private GameObject _healthUnitPrefab;
         [SerializeField] private GameObject _floatingNumberPrefab;
@@ -45,8 +42,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _currentHealth = owner.GetHealth();
             _displayedHealth = _currentHealth;
 
-            OnHealthChanged?.Invoke();
-
             for (int i = 0; i < _maxHealth; i++)
             {
                 GameObject healthUnit = Instantiate(_healthUnitPrefab, _healthBar);
@@ -76,14 +71,10 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             if (!_isImmortal)
             {
-                _currentHealth = Mathf.Clamp(_currentHealth + amount, 0, _maxHealth);
-                OnHealthChanged?.Invoke();
-                if (_currentHealth == 0)
-                {
-                    OnHealthReachedZero?.Invoke();
-                }
-                StopCoroutine(UpdateHealthVisual());
-                StartCoroutine(UpdateHealthVisual());
+                _currentHealth = _owner.GetHealth();
+
+                StopCoroutine(UpdateHealthBar());
+                StartCoroutine(UpdateHealthBar());
             }
 
             GameObject floatingNumber = Instantiate(_floatingNumberPrefab, _healthBar.position + _healthBar.forward, Quaternion.identity);
@@ -95,7 +86,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             if (amount == 0)
             {
                 textComp.color = Color.yellow;
-                textComp.text = "Miss";
+                textComp.text = "No Damage";
             }
             else
             {
@@ -111,7 +102,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _healthBar.LookAt(Camera.main.transform);
         }
 
-        private IEnumerator UpdateHealthVisual()
+        private IEnumerator UpdateHealthBar()
         {
 
             while (_displayedHealth != _currentHealth)
@@ -130,7 +121,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
                     yield return new WaitForSeconds(_healthChangeDelay);
                 }
-                _displayedHealth = Mathf.Clamp(targetHealth, 0, _maxHealth);
+                _displayedHealth = Mathf.Clamp(targetHealth, 0, _owner.GetMaxHealth());
             }
         }
     }
