@@ -83,7 +83,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         /// <summary>
         /// This is set based on whether we assign a period value in the inspector. If 0, we set to false. Used for effect application checks.
         /// </summary>
-        public bool HasPeriodic { get; private set; }
+        public bool IsPeriodic { get; private set; }
 
         public ActiveEffect(EffectDurationPolicy durationPolicy, AttributeId attribute, int modifier, int duration, int interval)
         {
@@ -92,9 +92,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             Modifier = modifier;
             Duration = duration;
             if (interval == 0)
-                HasPeriodic = false;
+                IsPeriodic = false;
             else
-                HasPeriodic = true;
+                IsPeriodic = true;
 
             BaseInterval = interval;
             CurrentInterval = BaseInterval;
