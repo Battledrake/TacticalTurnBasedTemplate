@@ -36,7 +36,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             AbilityEffect randomEffect;
             AttributeId[] attributes = Enum.GetValues(typeof(AttributeId)).Cast<AttributeId>().ToArray();
             int randomNumber = UnityEngine.Random.Range(0, attributes.Length);
-
+            randomEffect.duration = new EffectDurationData() { durationPolicy = EffectDurationPolicy.Permanent };
             randomEffect.attribute = attributes[randomNumber];
             randomEffect.minMaxModifier = new Vector2Int(1, 11);
 

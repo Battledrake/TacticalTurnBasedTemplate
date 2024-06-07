@@ -72,6 +72,27 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public float offsetDistance;
     }
 
+    [Serializable]
+    public class ActiveEffect
+    {
+        public EffectDurationPolicy DurationPolicy { get; private set; }
+        public AttributeId Attribute { get; private set; }
+        public int Modifier { get; private set; }
+        public int Duration { get; private set; }
+
+        public ActiveEffect(EffectDurationPolicy durationPolicy, AttributeId attribute, int modifier, int duration)
+        {
+            DurationPolicy = durationPolicy;
+            Attribute = attribute;
+            Modifier = modifier;
+            Duration = duration;
+        }
+        public void UpdateDuration(int modifier)
+        {
+            Duration += modifier;
+        }
+    }
+
     public enum EffectDurationPolicy
     {
         Instant,
@@ -82,21 +103,21 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
     [Serializable]
     public struct EffectDurationData
     {
-        public EffectDurationPolicy durationType;
-        public float magnitude;
+        public EffectDurationPolicy durationPolicy;
+        public int modifier;
     }
 
     [Serializable]
     public struct AbilityEffect
     {
-        //public EffectDuration duration;
+        public EffectDurationData duration;
         public AttributeId attribute;
         public Vector2Int minMaxModifier;
     }
 
     public struct AbilityEffectReal
     {
-        //public EffectDuration duration;
+        public EffectDurationData duration;
         public AttributeId attribute;
         public int modifier;
     }
@@ -114,10 +135,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         [Header("Ability Attributes")]
         [SerializeField] protected int _actionCost;
         [SerializeField] protected int _cooldown;
-        [SerializeField] protected bool _isFriendly = false;
+        [SerializeField] protected bool _affectsFriendly = false;
 
-        public bool IsFriendly { get => _isFriendly; }
-
+        public bool AffectsFriendly { get => _affectsFriendly; }
         public string Name { get => _abilityId.ToString(); }
         public Sprite Icon { get => _icon; }
         public int ActionCost { get => _actionCost; }
@@ -141,7 +161,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         public void ReduceCooldown(int amount)
         {
-            if(_cooldown > 0)
+            if (_cooldown > 0)
             {
                 _cooldown -= amount;
                 if (_cooldown < 0)

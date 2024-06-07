@@ -519,6 +519,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             for (int i = 0; i < effectsToApply.Count; i++)
             {
                 AbilityEffectReal effectReal;
+                effectReal.duration = effectsToApply[i].duration;
                 effectReal.attribute = effectsToApply[i].attribute;
                 effectReal.modifier = didHit ? StaticUtilities.MinMaxRandom(effectsToApply[i].minMaxModifier) : 0;
                 effectsRealList.Add(effectReal);

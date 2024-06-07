@@ -18,12 +18,18 @@ MonoBehaviour:
     unitVisual: {fileID: 6949118535988852184, guid: 1c02d136738637748b410f69dee6e175,
       type: 3}
   unitStats:
-    validTileTypes: 010000000200000003000000
     canMoveDiagonal: 1
     heightAllowance: 2
-    maxHealth: 4
-    moveRange: 5
-    agility: 4
+    validTileTypes: 010000000200000003000000
+    attributes:
+    - id: 0
+      baseValue: 10
+    - id: 1
+      baseValue: 10
+    - id: 2
+      baseValue: 10
+    - id: 3
+      baseValue: 5
     abilities:
     - {fileID: -7179713428241320167, guid: 2acbfa7fcca56f942aa9005729504ba2, type: 3}
     - {fileID: 2237031348335038309, guid: c3fa27da89508244cafb2c1467f35cdc, type: 3}

@@ -24,6 +24,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private Dictionary<AttributeId, AttributeData> _attributes = new Dictionary<AttributeId, AttributeData>();
         private Dictionary<AbilityId, Ability> _abilities = new Dictionary<AbilityId, Ability>();
+        private Dictionary<AttributeId, List<ActiveEffect>> _activeEffects = new Dictionary<AttributeId, List<ActiveEffect>>();
+        public List<ActiveEffect> InspectorEffectViewer = new List<ActiveEffect>();
 
 
         private int _currentActionPoints;
@@ -46,6 +48,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public void ResetActionPoints()
         {
             _currentActionPoints = _baseActionPoints;
+
+            UpdateActiveEffectDurations();
 
             foreach (var abilityPair in _abilities)
             {
@@ -83,49 +87,143 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _attributes.Clear();
             for(int i = 0; i < attributeData.Count; i++)
             {
-                AttributeData newAttribute = attributeData[i];
-                int oldCurrent = newAttribute.GetCurrentValue();
-                newAttribute.SetCurrentValue(newAttribute.baseValue);
-                _attributes.TryAdd(newAttribute.id, newAttribute);
-                OnAttributeCurrentChanged?.Invoke(newAttribute.id, oldCurrent, newAttribute.GetCurrentValue());
+                _attributes.TryAdd(attributeData[i].id, attributeData[i]);
+                SetAttributeCurrentValue(attributeData[i].id, attributeData[i].baseValue);
             }
         }
 
+        /// <summary>
+        /// Returns the base value of an attribute. This value infrequently changes unless Health.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public int GetAttributeBaseValue(AttributeId id)
         {
             return _attributes[id].baseValue;
         }
 
+        /// <summary>
+        /// Return the current value of an attribute. Includes temporary effects like buffs/debuffs.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public int GetAttributeCurrentValue(AttributeId id)
         {
             return _attributes[id].GetCurrentValue();
         }
 
+        /// <summary>
+        /// This sets the attributes base value from instant effects. Permanent changes. Current value is set to new value or updated if effects are active.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="newValue"></param>
         private void SetAttributeBaseValue(AttributeId id, int newValue)
         {
-            AttributeData modifiedData = _attributes[id];
-            int oldBase = modifiedData.baseValue;
-            modifiedData.baseValue = newValue;
-            _attributes[id] = modifiedData;
-            OnAttributeBaseChanged?.Invoke(id, oldBase, newValue);
+            if(_attributes.TryGetValue(id, out AttributeData attributeData))
+            {
+                int oldBase = attributeData.baseValue;
+                attributeData.baseValue = newValue;
+                _attributes[id] = attributeData;
 
-            //TODO: if(_durationEffects.Contains(effect.attribute == id), get that value, add to base.
-            SetAttributeCurrentValue(id, newValue);
+                if (_activeEffects.ContainsKey(id) && _activeEffects[id].Count > 0)
+                {
+                    UpdateAttributeCurrentValue(id);
+                }
+                else
+                {
+                    SetAttributeCurrentValue(id, newValue);
+                }
+
+                OnAttributeBaseChanged?.Invoke(id, oldBase, newValue);
+            }
+            else
+            {
+                Debug.LogWarning($"Attribute {id.ToString()} was not found. Ensure SetAttributeDefaults() is being called and correctly populating the attribute dictionary.");
+            }
         }
 
-        private void ApplyModToAttribute(AttributeId id, int modifier)
-        {
-            int newBase = _attributes[id].baseValue + modifier;
-            SetAttributeBaseValue(id, newBase);
-        }
-
+        /// <summary>
+        /// This sets the current value. Any existing duration effects should have been accounted for by the caller.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="newValue"></param>
         private void SetAttributeCurrentValue(AttributeId id, int newValue)
         {
-            AttributeData modifiedData = _attributes[id];
-            int oldCurrent = modifiedData.GetCurrentValue();
-            modifiedData.SetCurrentValue(modifiedData.baseValue);
-            _attributes[id] = modifiedData;
-            OnAttributeCurrentChanged?.Invoke(id, oldCurrent, newValue);
+            if(_attributes.TryGetValue(id, out AttributeData attributeData))
+            {
+                int oldCurrent = attributeData.GetCurrentValue();
+                attributeData.SetCurrentValue(newValue);
+                _attributes[id] = attributeData;
+
+                OnAttributeCurrentChanged?.Invoke(id, oldCurrent, newValue);
+            }
+            else
+            {
+                Debug.LogWarning($"Attribute {id.ToString()} was not found. Ensure SetAttributeDefaults() is being called and correctly populating the attribute dictionary.");
+            }
+        }
+
+        private void ApplyPeriodicEffects()
+        {
+            //We'll use this for effects with periodic applications like dots/hots. Iterate over active effects, check their period policy, check if expired, apply modifier.
+            //Need to decide if we want this to occur at turn start before effect removals? After? Turn ends? Decisions decisions.
+        }
+
+        //We're going to want to bind this to an on TurnStarted call.
+        public void UpdateActiveEffectDurations()
+        {
+            List<ActiveEffect> effectsToRemove = new List<ActiveEffect>();
+            foreach(var activeEffectPair in _activeEffects)
+            {
+                for(int i = 0; i < activeEffectPair.Value.Count; i++)
+                {
+                    if (activeEffectPair.Value[i].DurationPolicy == EffectDurationPolicy.Duration)
+                    {
+                        activeEffectPair.Value[i].UpdateDuration(-1);
+                        if (activeEffectPair.Value[i].Duration <= 0)
+                        {
+                            effectsToRemove.Add(activeEffectPair.Value[i]);
+                        }
+                    }
+                }
+            }
+
+            for(int i = 0; i < effectsToRemove.Count; i++)
+            {
+                _activeEffects[effectsToRemove[i].Attribute].Remove(effectsToRemove[i]);
+                InspectorEffectViewer.Remove(effectsToRemove[i]);
+            }
+        }
+
+        /// <summary>
+        /// We use this to calculate the current attribute value based on the base value + any duration effects
+        /// </summary>
+        /// <param name="id"></param>
+        private void UpdateAttributeCurrentValue(AttributeId id)
+        {
+            int baseValue = _attributes[id].baseValue;
+            int effectModifierSum = 0;
+            if(_activeEffects.TryGetValue(id, out List<ActiveEffect> attributeEffects))
+            {
+                for (int i = 0; i < attributeEffects.Count; i++)
+                {
+                    effectModifierSum += attributeEffects[i].Modifier;
+                }
+            }
+            int effectSum = baseValue + effectModifierSum;
+            SetAttributeCurrentValue(id, effectSum);
+        }
+
+        /// <summary>
+        /// Executions are called from instant effects. They modify the base value of an attribute.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="effect"></param>
+        private void ExecuteEffect(AttributeId id, int modifier)
+        {
+            int baseValue = _attributes[id].baseValue;
+            int newValue = baseValue + modifier;
+            SetAttributeBaseValue(id, newValue);
         }
 
         private void GiveAbility(AbilityId id, Ability ability)
@@ -142,15 +240,26 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             }
         }
 
+        private void AddEffectToActiveEffects(AttributeId attribute, AbilityEffectReal effect)
+        {
+            ActiveEffect newEffect = new ActiveEffect(effect.duration.durationPolicy, attribute, effect.modifier, effect.duration.modifier);
+            if(_activeEffects.TryGetValue(attribute, out List<ActiveEffect> attributeEffects))
+            {
+                attributeEffects.Add(newEffect);
+                InspectorEffectViewer.Add(newEffect);
+            }
+            else
+            {
+                List<ActiveEffect> newEffectList = new List<ActiveEffect>() { newEffect };
+                _activeEffects.Add(attribute, newEffectList);
+                InspectorEffectViewer.Add(newEffect);
+            }
+        }
+
         public bool TryActivateAbility(AbilityId id, AbilityActivationData activationData)
         {
             _abilities.TryGetValue(id, out Ability ability);
             return ability.TryActivateAbility(activationData);
-        }
-
-        public void ApplyEffect(AbilityEffectReal effect)
-        {
-            ApplyModToAttribute(effect.attribute, effect.modifier);
         }
 
         public void ApplyEffects(List<AbilityEffectReal> effects)
@@ -158,6 +267,21 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             for (int i = 0; i < effects.Count; i++)
             {
                 ApplyEffect(effects[i]);
+            }
+        }
+
+        public void ApplyEffect(AbilityEffectReal effect)
+        {
+            //If it's an instant effect, we modify the base value of the attribute.
+            if(effect.duration.durationPolicy == EffectDurationPolicy.Instant)
+            {
+                ExecuteEffect(effect.attribute, effect.modifier);
+            }
+            else
+            {
+                //Here we want to apply the effect. This will modify the current value and add the effect to an activeEffects container.
+                AddEffectToActiveEffects(effect.attribute, effect);
+                UpdateAttributeCurrentValue(effect.attribute);
             }
         }
 

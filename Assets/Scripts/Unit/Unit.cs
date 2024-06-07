@@ -85,35 +85,13 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _gridMovement.OnReachedDestination -= GridMovement_OnReachedDestination;
         }
 
-        public int GetHealth()
-        {
-            //return _healthComponent.CurrentHealth;
-            return _abilitySystem.GetAttributeCurrentValue(AttributeId.Health);
-        }
-        public int GetMaxHealth()
-        {
-            return _abilitySystem.GetAttributeCurrentValue(AttributeId.MaxHealth);
-            //return _healthComponent.MaxHealth; 
-        }
+        public int GetHealth() => _abilitySystem.GetAttributeCurrentValue(AttributeId.Health);
+        public int GetMaxHealth() => _abilitySystem.GetAttributeCurrentValue(AttributeId.MaxHealth);
 
-        public int GetMoveRange()
-        {
-            return _abilitySystem.GetAttributeCurrentValue(AttributeId.MoveRange);
-        }
-        public int GetAgility()
-        {
-            return _abilitySystem.GetAttributeCurrentValue(AttributeId.Agility);
-        }
-
-        public AnimationEventHandler GetAnimationEventHandler()
-        {
-            return _animEventHandler;
-        }
-
-        public AbilitySystem GetAbilitySystem()
-        {
-            return _abilitySystem;
-        }
+        public int GetMoveRange() => _abilitySystem.GetAttributeCurrentValue(AttributeId.MoveRange);
+        public int GetAgility() => _abilitySystem.GetAttributeCurrentValue(AttributeId.Agility);
+        public AnimationEventHandler GetAnimationEventHandler() => _animEventHandler;
+        public AbilitySystem GetAbilitySystem() => _abilitySystem;
 
         //Used for initial team setting or permanent team changes.
         public void SetTeamIndex(int index)

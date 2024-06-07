@@ -60,7 +60,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private void AnimateObjectTask_OnObjectCollisionWithUnit(AbilitySystem receiver, AbilityActivationData activateData)
         {
             //TODO: Improve on the friendly fire logic
-            if (receiver == _owner && !this.IsFriendly)
+            if (receiver == _owner && !this.AffectsFriendly)
                 return;
 
 
