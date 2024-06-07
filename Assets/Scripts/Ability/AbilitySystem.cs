@@ -24,7 +24,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private Dictionary<AttributeId, AttributeData> _attributes = new Dictionary<AttributeId, AttributeData>();
         private Dictionary<AbilityId, Ability> _abilities = new Dictionary<AbilityId, Ability>();
-        private Ability _activeAbility;
 
 
         private int _currentActionPoints;
@@ -65,7 +64,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         public void InitAbilitySystem(Unit owner, List<Ability> abilities)
         {
-            //TODO: Continue work to separate Unit logic away from this system entirely. IAbilitySystem interface or something.
             if (owner != null)
             {
                 _ownerUnit = owner;

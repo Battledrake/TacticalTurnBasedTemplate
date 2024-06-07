@@ -3,7 +3,6 @@ using UnityEngine;
 
 namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 {
-    //Temporary for building out system.
     public enum UnitId
     {
         Warrior,

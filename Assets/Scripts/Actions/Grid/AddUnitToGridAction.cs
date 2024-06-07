@@ -21,7 +21,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 _playerActions.TacticsGrid.GridTiles.TryGetValue(index, out TileData tileData);
                 if (!tileData.unitOnTile)
                 {
-                    List<TileType> validTileTypes = DataManager.GetUnitDataFromType((UnitId)actionValue).unitStats.validTileTypes;
+                    List<TileType> validTileTypes = DataManager.GetUnitDataFromId((UnitId)actionValue).unitStats.validTileTypes;
 
                     if (validTileTypes != null || validTileTypes.Count > 0 || validTileTypes.Contains(tileData.tileType))
                     {

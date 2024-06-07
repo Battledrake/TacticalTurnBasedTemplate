@@ -19,7 +19,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 }
                 else
                 {
-                    if (_currentUnit.IsMoving)
+                    if (_currentUnit.GetComponent<GridMovement>().IsMoving)
                         return false;
                 }
             }

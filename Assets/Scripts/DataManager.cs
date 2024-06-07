@@ -12,10 +12,10 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             return _gridData.FirstOrDefault<GridShapeData>(data => data.gridShape == gridShape);
         }
 
-        public static UnitData GetUnitDataFromType(UnitId unitType)
+        public static UnitData GetUnitDataFromId(UnitId unitId)
         {
             UnitData[] unitData = GetAllUnitData();
-            return unitData.FirstOrDefault<UnitData>(data => data.unitId == unitType);
+            return unitData.FirstOrDefault<UnitData>(data => data.unitId == unitId);
         }
 
         public static UnitData[] GetAllUnitData()

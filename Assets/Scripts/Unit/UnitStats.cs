@@ -26,14 +26,10 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
     [Serializable]
     public class UnitStats
     {
-        public List<TileType> validTileTypes = new List<TileType> { TileType.Normal, TileType.DoubleCost, TileType.TripleCost };
         public bool canMoveDiagonal = true;
         public float heightAllowance = 2f;
-        public int maxHealth = 10;
-        public int moveRange = 5;
-        public int agility = 1;
-        public List<Ability> abilities;
-
+        public List<TileType> validTileTypes = new List<TileType> { TileType.Normal, TileType.DoubleCost, TileType.TripleCost };
         public List<AttributeData> attributes;
+        public List<Ability> abilities;
     }
 }

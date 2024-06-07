@@ -22,7 +22,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public event Action<Unit> OnUnitRespawn;
         public event Action OnTeamIndexChanged;
 
-        [SerializeField] private UnitId _unitType = UnitId.Ranger;
+        [SerializeField] private UnitId _unitDataId = UnitId.Ranger;
         [SerializeField] private Transform _lookAtTransform;
         [SerializeField] private Color _hoverColor;
         [SerializeField] private Color _selectedColor = Color.green;
@@ -31,14 +31,11 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public Transform LookAtTransform { get => _lookAtTransform; }
         public GridIndex UnitGridIndex { get => _gridIndex; set => _gridIndex = value; }
         public UnitData UnitData { get => _unitData; }
-        public bool IsMoving { get => _gridMovement.IsMoving; }
         public bool IsAlive { get => _isAlive; }
         public int TeamIndex { get => _teamIndex; }
         public int PreviousTeamIndex { get => _prevTeamIndex; }
 
         private GameObject _unitVisual;
-        private Animator _unitAnimator;
-        private AnimationEventHandler _animEventHandler;
         private UnitData _unitData;
         private GridIndex _gridIndex = GridIndex.Invalid();
         private int _teamIndex = -1;
@@ -46,6 +43,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private bool _isAlive = true;
 
         //Components
+        private Animator _unitAnimator;
+        private AnimationEventHandler _animEventHandler;
         private TacticsGrid _tacticsGrid;
         private Collider _collider;
         private GridMovement _gridMovement;
@@ -70,24 +69,50 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _healthVisual.OnHealthReachedZero += HealthComponent_OnHealthReachedZero;
         }
 
+        private void OnEnable()
+        {
+            _gridMovement.OnMovementStarted += GridMovement_OnMovementStarted;
+            _gridMovement.OnMovementStopped += GridMovement_OnMovementStopped;
+            _gridMovement.OnReachedNewTile += GridMovement_OnReachedNewTile;
+            _gridMovement.OnReachedDestination += GridMovement_OnReachedDestination;
+        }
+
+        private void OnDisable()
+        {
+            _gridMovement.OnMovementStarted -= GridMovement_OnMovementStarted;
+            _gridMovement.OnMovementStopped -= GridMovement_OnMovementStopped;
+            _gridMovement.OnReachedNewTile -= GridMovement_OnReachedNewTile;
+            _gridMovement.OnReachedDestination -= GridMovement_OnReachedDestination;
+        }
+
         public int GetHealth()
         {
             //return _healthComponent.CurrentHealth;
             return _abilitySystem.GetAttributeCurrentValue(AttributeId.Health);
         }
-        public int GetMaxHealth() 
+        public int GetMaxHealth()
         {
             return _abilitySystem.GetAttributeCurrentValue(AttributeId.MaxHealth);
             //return _healthComponent.MaxHealth; 
         }
 
-        public int GetMoveRange() 
-        { 
+        public int GetMoveRange()
+        {
             return _abilitySystem.GetAttributeCurrentValue(AttributeId.MoveRange);
         }
-        public int GetAgility() 
-        { 
-            return _abilitySystem.GetAttributeCurrentValue(AttributeId.Agility); 
+        public int GetAgility()
+        {
+            return _abilitySystem.GetAttributeCurrentValue(AttributeId.Agility);
+        }
+
+        public AnimationEventHandler GetAnimationEventHandler()
+        {
+            return _animEventHandler;
+        }
+
+        public AbilitySystem GetAbilitySystem()
+        {
+            return _abilitySystem;
         }
 
         //Used for initial team setting or permanent team changes.
@@ -106,27 +131,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             OnTeamIndexChanged?.Invoke();
         }
 
-        public AnimationEventHandler GetAnimationEventHandler()
-        {
-            return _animEventHandler;
-        }
-
-        public AbilitySystem GetAbilitySystem()
-        {
-            return _abilitySystem;
-        }
-
         private void HealthComponent_OnHealthChanged()
         {
             OnAnyUnitHealthChanged?.Invoke(this);
-        }
-
-        private void OnEnable()
-        {
-            _gridMovement.OnMovementStarted += GridMovement_OnMovementStarted;
-            _gridMovement.OnMovementStopped += GridMovement_OnMovementStopped;
-            _gridMovement.OnReachedNewTile += GridMovement_OnReachedNewTile;
-            _gridMovement.OnReachedDestination += GridMovement_OnReachedDestination;
         }
 
         public void CombatStarted()
@@ -145,14 +152,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public void TurnEnded()
         {
             //What we doing here eh?
-        }
-
-        private void OnDisable()
-        {
-            _gridMovement.OnMovementStarted -= GridMovement_OnMovementStarted;
-            _gridMovement.OnMovementStopped -= GridMovement_OnMovementStopped;
-            _gridMovement.OnReachedNewTile -= GridMovement_OnReachedNewTile;
-            _gridMovement.OnReachedDestination -= GridMovement_OnReachedDestination;
         }
 
         private void GridMovement_OnMovementStarted()
@@ -183,18 +182,13 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _gridMovement.SetPathingGrid(grid);
         }
 
-        public void InitUnit(UnitId unitType)
+        public void InitUnit(UnitId dataId)
         {
-            if (_unitVisual != null)
-                Destroy(_unitVisual);
+            _unitDataId = dataId;
+            _unitData = DataManager.GetUnitDataFromId(_unitDataId);
 
-            _unitType = unitType;
-            _unitData = DataManager.GetUnitDataFromType(_unitType);
-
-            if (_unitVisual != null)
-                Destroy(_unitVisual);
-
-            _unitVisual = Instantiate(_unitData.assetData.unitVisual, this.transform);
+            if (_unitVisual == null)
+                _unitVisual = Instantiate(_unitData.assetData.unitVisual, this.transform);
 
             _isAlive = true;
 
@@ -222,7 +216,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void AbilitySystem_OnAttributeCurrentChanged(AttributeId id, int oldValue, int newValue)
         {
-            if(id == AttributeId.Health)
+            if (id == AttributeId.Health)
             {
                 OnAnyUnitHealthChanged?.Invoke(this);
                 _healthVisual.UpdateHealthVisual(newValue - oldValue);
@@ -238,10 +232,10 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             return parentObject.GetComponentsInChildren<Transform>().FirstOrDefault(t => t.name == transformName);
         }
 
-        [ContextMenu("ChangeType")]
-        public void ChangeUnitType()
+        [ContextMenu("ChangeUnit")]
+        public void ChangeUnitId()
         {
-            InitUnit(_unitType);
+            InitUnit(_unitDataId);
         }
 
         [ContextMenu("ResetUnit")]
@@ -288,20 +282,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             }
             _unitOutline.enabled = true;
 
-            //if (_isSelected)
-            //{
-            //    _unitOutline.OutlineColor = _selectedColor;
-
-            //    if (_isHovered)
-            //        _unitOutline.OutlineWidth = _hoverSelectedWidth;
-            //    else
-            //        _unitOutline.OutlineWidth = _defaultOutlineWidth;
-            //}
-            //else
-            //{
-            //    _unitOutline.OutlineColor = CombatManager.Instance.GetTeamColor(_teamIndex);
-            //    _unitOutline.OutlineWidth = _defaultOutlineWidth;
-            //}
             _unitOutline.OutlineColor = CombatManager.Instance.GetTeamColor(_teamIndex);
             _unitOutline.OutlineWidth = _defaultOutlineWidth;
         }
