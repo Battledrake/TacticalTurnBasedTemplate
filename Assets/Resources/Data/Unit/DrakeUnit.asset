@@ -18,18 +18,9 @@ MonoBehaviour:
     unitVisual: {fileID: 220595971867796478, guid: d31d8701a4251a7499343b8053a813cc,
       type: 3}
   unitStats:
-    validTileTypes: 010000000200000003000000
     canMoveDiagonal: 1
     heightAllowance: 2
-    maxHealth: 6
-    moveRange: 10
-    agility: 5
-    abilities:
-    - {fileID: -7179713428241320167, guid: 2acbfa7fcca56f942aa9005729504ba2, type: 3}
-    - {fileID: 2237031348335038309, guid: d20c80850def3ff49882e1965991eb8e, type: 3}
-    - {fileID: 2237031348335038309, guid: 901365b8399f51e4e8ad07abd22b9ec8, type: 3}
-    - {fileID: 5105680385775076716, guid: f8dc6b0c00966464eb5e9418f993a77f, type: 3}
-    - {fileID: 1285110422479875218, guid: 49fb33c6e6ced6749a6775071485d4d3, type: 3}
+    validTileTypes: 010000000200000003000000
     attributes:
     - id: 0
       baseValue: 10
@@ -39,3 +30,10 @@ MonoBehaviour:
       baseValue: 10
     - id: 3
       baseValue: 5
+    abilities:
+    - {fileID: -7179713428241320167, guid: 2acbfa7fcca56f942aa9005729504ba2, type: 3}
+    - {fileID: 2237031348335038309, guid: d20c80850def3ff49882e1965991eb8e, type: 3}
+    - {fileID: 2237031348335038309, guid: 901365b8399f51e4e8ad07abd22b9ec8, type: 3}
+    - {fileID: 5105680385775076716, guid: f8dc6b0c00966464eb5e9418f993a77f, type: 3}
+    - {fileID: -1119868919808071195, guid: fc9756e6d2f151b488c887ad06cfd3b2, type: 3}
+    - {fileID: 1285110422479875218, guid: 49fb33c6e6ced6749a6775071485d4d3, type: 3}

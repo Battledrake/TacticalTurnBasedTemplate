@@ -86,7 +86,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             if (amount == 0)
             {
                 textComp.color = Color.yellow;
-                textComp.text = "No Damage";
+                textComp.text = "No Effect";
             }
             else
             {

@@ -257,8 +257,11 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void AdvanceToNextUnit()
         {
-            int activeIndex = _orderedUnits.IndexOf(_activeUnit);
-            _activeUnit = _orderedUnits[++activeIndex % _orderedUnits.Count];
+            if(_orderedUnits.Count > 0)
+            {
+                int activeIndex = _orderedUnits.IndexOf(_activeUnit);
+                _activeUnit = _orderedUnits[++activeIndex % _orderedUnits.Count];
+            }
         }
 
         private void NextTurn()

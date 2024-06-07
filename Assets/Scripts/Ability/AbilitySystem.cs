@@ -89,21 +89,45 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         /// <summary>
         /// Returns the base value of an attribute. This value infrequently changes unless Health.
         /// </summary>
-        /// <param name="id"></param>
+        /// <param name="attribute"></param>
         /// <returns></returns>
-        public int GetAttributeBaseValue(AttributeId id)
+        public int GetAttributeBaseValue(AttributeId attribute)
         {
-            return _attributes[id].baseValue;
+            return _attributes[attribute].baseValue;
         }
 
         /// <summary>
         /// Return the current value of an attribute. Includes temporary effects like buffs/debuffs.
         /// </summary>
-        /// <param name="id"></param>
+        /// <param name="attribute"></param>
         /// <returns></returns>
-        public int GetAttributeCurrentValue(AttributeId id)
+        public int GetAttributeCurrentValue(AttributeId attribute)
         {
-            return _attributes[id].GetCurrentValue();
+            return _attributes[attribute].GetCurrentValue();
+        }
+
+
+        /// <summary>
+        /// This is called right before the new base value is set. Use this to clamp or make any needed modifications to an attribute's base value before it's set.
+        /// </summary>
+        /// <param name="attribute"></param>
+        /// <param name="newValue"></param>
+        private void PreAttributeBaseChanged(AttributeId attribute, ref int newValue)
+        {
+            if(attribute == AttributeId.Health)
+            {
+                newValue = Mathf.Clamp(newValue, 0, GetAttributeBaseValue(AttributeId.MaxHealth));
+            }
+        }
+
+        /// <summary>
+        /// This is called right before the new current value is set. Use this to clamp or make any needed modifications to an attribute's current value before it's set.
+        /// </summary>
+        /// <param name="attribute"></param>
+        /// <param name="newValue"></param>
+        private void PreAttributeCurrentChanged(AttributeId attribute, ref int newValue)
+        {
+
         }
 
         /// <summary>
@@ -116,6 +140,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             if (_attributes.TryGetValue(id, out AttributeData attributeData))
             {
                 int oldBase = attributeData.baseValue;
+
+                PreAttributeBaseChanged(id, ref newValue);
+
                 attributeData.baseValue = newValue;
                 _attributes[id] = attributeData;
 
@@ -128,6 +155,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                     SetAttributeCurrentValue(id, newValue);
                 }
 
+                //Do we want to keep this callback? We have the new method thing.
                 OnAttributeBaseChanged?.Invoke(id, oldBase, newValue);
             }
             else
@@ -146,6 +174,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             if (_attributes.TryGetValue(id, out AttributeData attributeData))
             {
                 int oldCurrent = attributeData.GetCurrentValue();
+
+                PreAttributeCurrentChanged(id, ref newValue);
+
                 attributeData.SetCurrentValue(newValue);
                 _attributes[id] = attributeData;
 
