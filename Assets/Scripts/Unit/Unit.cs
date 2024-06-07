@@ -241,8 +241,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 _collider.enabled = true;
             }
             _abilitySystem.InitAbilitySystem(this, _unitData.unitStats.attributes, _unitData.unitStats.abilities);
-            //_healthVisual.InitHealthVisual(this);
-            //_healthVisual.UpdateHealthVisual(_abilitySystem.GetAttributeBaseValue(AttributeId.MaxHealth));
         }
 
         public void SetIsHovered(bool isHovered)

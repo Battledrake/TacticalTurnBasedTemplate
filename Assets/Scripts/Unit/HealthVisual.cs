@@ -42,22 +42,22 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             {
                 int currentCount = _healthUnitChildren.Count;
                 int healthDiff = _owner.GetMaxHealth() - currentCount;
-                for(int i = 1; i <= healthDiff; i++)
+                for (int i = 1; i <= healthDiff; i++)
                 {
                     SpawnHealthUnitVisual(currentCount + i);
                 }
             }
-            else
+            int count = 0;
+            foreach (var healthUnitPair in _healthUnitChildren)
             {
-                foreach(var healthUnitPair in _healthUnitChildren)
-                {
-                    healthUnitPair.Value.gameObject.gameObject.SetActive(false);
-                }
+                Debug.Log(count);
+                count++;
+                healthUnitPair.Value.transform.parent.gameObject.SetActive(false);
             }
 
             for (int i = 1; i <= _owner.GetMaxHealth(); i++)
             {
-                _healthUnitChildren[i].gameObject.gameObject.SetActive(true);
+                _healthUnitChildren[i].transform.parent.gameObject.SetActive(true);
                 if (_owner.GetHealth() >= i)
                     _healthUnitChildren[i].enabled = true;
                 else

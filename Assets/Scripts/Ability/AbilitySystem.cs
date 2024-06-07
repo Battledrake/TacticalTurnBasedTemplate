@@ -21,7 +21,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         public int TeamIndex { get => _teamIndex; set => _teamIndex = value; }
 
-
         private Dictionary<AttributeId, AttributeData> _attributes = new Dictionary<AttributeId, AttributeData>();
         private Dictionary<AbilityId, Ability> _abilities = new Dictionary<AbilityId, Ability>();
         private Dictionary<AttributeId, List<ActiveEffect>> _activeEffects = new Dictionary<AttributeId, List<ActiveEffect>>();
@@ -69,6 +68,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 _ownerUnit = owner;
                 _ownerUnit.OnTeamIndexChanged += Unit_OnTeamIndexChanged;
             }
+
+            _activeEffects.Clear();
 
             if (attributeSet != null)
                 SetAttributeDefaults(attributeSet);

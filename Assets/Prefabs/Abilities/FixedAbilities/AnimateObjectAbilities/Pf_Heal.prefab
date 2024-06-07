@@ -72,14 +72,6 @@ MonoBehaviour:
         executeImmediately: 0
     attribute: 0
     minMaxModifier: {x: 2, y: 3}
-  - durationData:
-      durationPolicy: 0
-      duration: 0
-      period:
-        interval: 0
-        executeImmediately: 0
-    attribute: 1
-    minMaxModifier: {x: 1, y: 5}
   _objectToAnimate: {fileID: 2589646638898681473, guid: 7b6c9957a7fd9fc409f49f3228983163,
     type: 3}
   _taskData: {fileID: 11400000, guid: 8fb034d5e7e38df469c098237dfd409f, type: 2}
