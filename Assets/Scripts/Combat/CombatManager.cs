@@ -525,7 +525,10 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 effectReal.modifier = didHit ? StaticUtilities.MinMaxRandom(effectsToApply[i].minMaxModifier) : 0;
                 effectsRealList.Add(effectReal);
             }
-            receiver.ApplyEffects(effectsRealList);
+            for (int i = 0; i < effectsRealList.Count; i++)
+            {
+                receiver.ApplyEffect(effectsRealList[i]);
+            }
         }
 
         public bool IsValidTileForUnit(Unit unit, GridIndex index)

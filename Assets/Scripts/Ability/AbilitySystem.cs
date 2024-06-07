@@ -157,8 +157,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             }
         }
 
-        //Currently called when action points are reset. Might want to refactor so actionpoints are part of attribute system and we just add the effect and apply permanently.
-        //Bind to TurnStart on Unit in that case. ApplyEffect through combat manager mebbe?
+        //Called on every Action Point reset. Happens on Turn Start.
         private void UpdateActiveEffectDurationsAndPeriodics()
         {
             List<ActiveEffect> effectsToRemove = new List<ActiveEffect>();
@@ -249,7 +248,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             }
         }
 
-        private void AddEffectToActiveEffects(AttributeId attribute, AbilityEffectReal effect)
+        private ActiveEffect CreateActiveEffectAndApply(AttributeId attribute, AbilityEffectReal effect)
         {
             ActiveEffect newEffect = new ActiveEffect(effect.durationData.durationPolicy, attribute, effect.modifier, effect.durationData.duration, effect.durationData.period.interval);
             if (_activeEffects.TryGetValue(attribute, out List<ActiveEffect> attributeEffects))
@@ -273,6 +272,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             {
                 UpdateAttributeCurrentValue(effect.attribute);
             }
+
+            return newEffect;
         }
 
         public bool TryActivateAbility(AbilityId id, AbilityActivationData activationData)
@@ -281,25 +282,39 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             return ability.TryActivateAbility(activationData);
         }
 
-        public void ApplyEffects(List<AbilityEffectReal> effects)
+        public ActiveEffect ApplyEffect(AbilityEffectReal effect)
         {
-            for (int i = 0; i < effects.Count; i++)
-            {
-                ApplyEffect(effects[i]);
-            }
-        }
-
-        public void ApplyEffect(AbilityEffectReal effect)
-        {
-            //If it's an instant effect, we modify the base value of the attribute.
+            //If it's an instant effect, we modify the base value of the attribute and stop logic. No ActiveEffect is created.
             if (effect.durationData.durationPolicy == EffectDurationPolicy.Instant)
             {
                 ExecuteEffect(effect.attribute, effect.modifier);
             }
             else
             {
-                AddEffectToActiveEffects(effect.attribute, effect);
+                return CreateActiveEffectAndApply(effect.attribute, effect);
             }
+            return null;
+        }
+
+        public bool RemoveEffect(ActiveEffect effectToRemove)
+        {
+            if (_activeEffects.TryGetValue(effectToRemove.Attribute, out List<ActiveEffect> activeEffects))
+            {
+                if (activeEffects != null)
+                {
+                    if (activeEffects.Contains(effectToRemove))
+                    {
+                        //If it's not a periodic interval application, our current value needs to update to the effect removal.
+                        if(!effectToRemove.HasPeriodic)
+                        {
+                            UpdateAttributeCurrentValue(effectToRemove.Attribute);
+                        }
+                        activeEffects.Remove(effectToRemove);
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
 
         public void RemoveAbility(AbilityId id)
