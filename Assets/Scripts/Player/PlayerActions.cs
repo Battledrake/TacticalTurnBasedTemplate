@@ -55,17 +55,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private void Awake()
         {
             OnHoveredTileChanged += OnHoveredTileChanged_UpdateActions;
-            //OnSelectedUnitChanged += This_OnSelectedUnitChanged;
         }
-
-        //private void This_OnSelectedUnitChanged(Unit unit)
-        //{
-        //    if (!_abilityTabController.ActiveAbility)
-        //    {
-        //        _currentAbility = null;
-        //        OnCurrentAbilityChanged?.Invoke(null);
-        //    }
-        //}
 
         private void Start()
         {

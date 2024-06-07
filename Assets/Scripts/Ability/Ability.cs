@@ -72,7 +72,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public float offsetDistance;
     }
 
-    [Serializable]
     public class ActiveEffect
     {
         public EffectDurationPolicy DurationPolicy { get; private set; }
@@ -144,11 +143,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         protected AbilitySystem _owner;
 
-        public AbilityId GetAbilityId()
-        {
-            return _abilityId;
-        }
-        public AbilitySystem GetAbilityOwner() { return _owner; }
+        public AbilityId GetAbilityId() => _abilityId;
+        public AbilitySystem GetAbilityOwner() => _owner;
 
         public abstract AbilityRangeData GetRangeData();
         public abstract AbilityRangeData GetAreaOfEffectData();

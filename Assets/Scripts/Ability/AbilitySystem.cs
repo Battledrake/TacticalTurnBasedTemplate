@@ -25,8 +25,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private Dictionary<AttributeId, AttributeData> _attributes = new Dictionary<AttributeId, AttributeData>();
         private Dictionary<AbilityId, Ability> _abilities = new Dictionary<AbilityId, Ability>();
         private Dictionary<AttributeId, List<ActiveEffect>> _activeEffects = new Dictionary<AttributeId, List<ActiveEffect>>();
-        public List<ActiveEffect> InspectorEffectViewer = new List<ActiveEffect>();
-
 
         private int _currentActionPoints;
         private Unit _ownerUnit;
@@ -191,7 +189,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             for(int i = 0; i < effectsToRemove.Count; i++)
             {
                 _activeEffects[effectsToRemove[i].Attribute].Remove(effectsToRemove[i]);
-                InspectorEffectViewer.Remove(effectsToRemove[i]);
+                UpdateAttributeCurrentValue(effectsToRemove[i].Attribute);
             }
         }
 
@@ -246,13 +244,11 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             if(_activeEffects.TryGetValue(attribute, out List<ActiveEffect> attributeEffects))
             {
                 attributeEffects.Add(newEffect);
-                InspectorEffectViewer.Add(newEffect);
             }
             else
             {
                 List<ActiveEffect> newEffectList = new List<ActiveEffect>() { newEffect };
                 _activeEffects.Add(attribute, newEffectList);
-                InspectorEffectViewer.Add(newEffect);
             }
         }
 
