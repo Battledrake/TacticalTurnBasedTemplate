@@ -83,7 +83,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e32b2be94731e244eb916257ee860708, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _unitType: 0
+  _unitDataId: 1
   _lookAtTransform: {fileID: 5103970465332394775}
   _hoverColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
   _selectedColor: {r: 0, g: 1, b: 0, a: 1}
@@ -218,8 +218,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _teamIndex: 8
-  _baseActionPoints: 2
   _abilityInstanceContainer: {fileID: 2139374745801973881}
+  _actionPointEffect: {fileID: 11400000, guid: a2ea42c1a2757d14fb76cb64b725312d, type: 2}
 --- !u!114 &3690205509015829080
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -240,7 +240,6 @@ MonoBehaviour:
   _damageColor: {r: 1, g: 0, b: 0, a: 1}
   _healColor: {r: 0.05271268, g: 1, b: 0, a: 1}
   _healthChangeDelay: 0.2
-  _isImmortal: 0
 --- !u!1 &7310441305717251486
 GameObject:
   m_ObjectHideFlags: 0

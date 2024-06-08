@@ -23,13 +23,15 @@ MonoBehaviour:
     validTileTypes: 010000000200000003000000
     attributes:
     - attribute: 0
-      baseValue: 10
+      baseValue: 0
     - attribute: 1
-      baseValue: 10
-    - attribute: 2
-      baseValue: 10
-    - attribute: 3
       baseValue: 5
+    - attribute: 2
+      baseValue: 5
+    - attribute: 3
+      baseValue: 8
+    - attribute: 4
+      baseValue: 6
     abilities:
     - {fileID: -7179713428241320167, guid: 2acbfa7fcca56f942aa9005729504ba2, type: 3}
     - {fileID: 2237031348335038309, guid: d20c80850def3ff49882e1965991eb8e, type: 3}

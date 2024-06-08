@@ -46,6 +46,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _abilityId: 8
   _icon: {fileID: 21300000, guid: e2101e051833dcb48bdedf34deb7d1dc, type: 3}
+  _costEffect: {fileID: 11400000, guid: f0f82bc81a223c54488e2f999b768557, type: 2}
   _actionCost: 1
   _cooldown: 0
   _affectsFriendly: 1
@@ -70,7 +71,7 @@ MonoBehaviour:
       period:
         interval: 0
         executeImmediately: 0
-    attribute: 2
+    attribute: 3
     minMaxModifier: {x: 3, y: 5}
   _objectToAnimate: {fileID: 1417812492424529394, guid: 6fb08c05a555bb449a54678bcfc17308,
     type: 3}

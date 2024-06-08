@@ -23,7 +23,7 @@ MonoBehaviour:
     validTileTypes: 01000000020000000300000004000000
     attributes:
     - attribute: 0
-      baseValue: 10
+      baseValue: 0
     - attribute: 1
       baseValue: 10
     - attribute: 2

@@ -12,12 +12,11 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public event Action<AttributeId, int, int> OnAttributeBaseChanged;
         public event Action<AttributeId, int, int> OnAttributeCurrentChanged;
 
+        [SerializeField] private int _maxBaseActionPoints = 2;
         [SerializeField] private int _teamIndex = 8;
-        [SerializeField] private int _baseActionPoints = 2;
         [SerializeField] private Transform _abilityInstanceContainer;
 
-        public int BaseActionPoints { get => _baseActionPoints; }
-        public int CurrentActionPoints { get => _currentActionPoints; }
+        [SerializeField] private AbilityEffectScriptable _actionPointEffect;
 
         public int TeamIndex { get => _teamIndex; set => _teamIndex = value; }
 
@@ -25,7 +24,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private Dictionary<AbilityId, Ability> _abilities = new Dictionary<AbilityId, Ability>();
         private Dictionary<AttributeId, List<ActiveEffect>> _activeEffects = new Dictionary<AttributeId, List<ActiveEffect>>();
 
-        private int _currentActionPoints;
         private Unit _ownerUnit;
         private GridIndex _gridIndex = new GridIndex(0, 0);
 
@@ -40,7 +38,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         public void ResetActionPoints()
         {
-            _currentActionPoints = _baseActionPoints;
+            SetAttributeBaseValue(AttributeId.ActionPoints, 0);
 
             UpdateActiveEffectDurationsAndPeriodics();
 
@@ -49,20 +47,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 abilityPair.Value.ReduceCooldown(1);
             }
         }
-        public void AddActionPoints(int amount)
-        {
-            _currentActionPoints += amount;
-        }
 
-        public void RemoveActionPoints(int amount)
+        public void InitAbilitySystem(Unit owner, List<AttributeData> attributeSet, List<Ability> startingAbilities)
         {
-            _currentActionPoints -= amount;
-        }
-
-        public void InitAbilitySystem(Unit owner, List<AttributeData> attributeSet,  List<Ability> startingAbilities)
-        {
-            _currentActionPoints = _baseActionPoints;
-
             if (owner != null)
             {
                 _ownerUnit = owner;
@@ -74,9 +61,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             if (attributeSet != null)
                 SetAttributeDefaults(attributeSet);
 
-            if(_abilities.Count > 0)
+            if (_abilities.Count > 0)
             {
-                foreach(var abilityPair in _abilities)
+                foreach (var abilityPair in _abilities)
                 {
                     Destroy(abilityPair.Value.gameObject);
                 }
@@ -90,16 +77,25 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                     GiveAbility(startingAbilities[i].GetAbilityId(), startingAbilities[i]);
                 }
             }
+
+            if (_actionPointEffect != null)
+                ApplyEffect(_actionPointEffect.effect);
         }
 
         private void SetAttributeDefaults(List<AttributeData> attributeData)
         {
             _attributes.Clear();
+            //First we populate the dictionary with attributes and base values.
             for (int i = 0; i < attributeData.Count; i++)
             {
                 _attributes.TryAdd(attributeData[i].attribute, attributeData[i]);
+            }
+            //We then set current values in a separate loop. This is done separately to ensure dictionary is populated for any attribute checks on PreAttributeCurrentChanges.
+            for(int i = 0; i < _attributes.Count; i++)
+            {
                 SetAttributeCurrentValue(attributeData[i].attribute, attributeData[i].baseValue);
             }
+
         }
 
         /// <summary>
@@ -164,7 +160,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         /// <param name="newValue"></param>
         private void PostAttributeCurrentChanged(AttributeId attribute, int oldCurrent, int newValue)
         {
-            if(attribute == AttributeId.MaxHealth)
+            if (attribute == AttributeId.MaxHealth)
             {
                 SetAttributeBaseValue(AttributeId.Health, newValue);
             }

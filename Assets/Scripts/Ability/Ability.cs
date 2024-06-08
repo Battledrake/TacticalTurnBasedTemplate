@@ -147,6 +147,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public Vector2Int minMaxModifier;
     }
 
+    [Serializable]
     public struct AbilityEffectReal
     {
         public EffectDurationData durationData;
@@ -165,14 +166,13 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         [SerializeField] protected Sprite _icon;
 
         [Header("Ability Attributes")]
-        [SerializeField] protected int _actionCost;
+        [SerializeField] protected AbilityEffectScriptable _costEffect;
         [SerializeField] protected int _cooldown;
         [SerializeField] protected bool _affectsFriendly = false;
 
         public bool AffectsFriendly { get => _affectsFriendly; }
         public string Name { get => _abilityId.ToString(); }
         public Sprite Icon { get => _icon; }
-        public int ActionCost { get => _actionCost; }
 
         protected AbilitySystem _owner;
 
@@ -200,7 +200,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         public virtual bool CanActivateAbility(AbilityActivationData activationData)
         {
-            if (_owner.CurrentActionPoints <= 0)
+            if (_owner.GetAttributeCurrentValue(AttributeId.ActionPoints) <= 0)
                 return false;
 
             if (CombatManager.Instance.GetAbilityRange(activationData.originIndex, this.GetRangeData()).Contains(activationData.targetIndex))
@@ -209,7 +209,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             return false;
         }
 
-        protected virtual void CommitAbility() { _owner.RemoveActionPoints(_actionCost); }
+        protected virtual void CommitAbility() { _owner.ApplyEffect(_costEffect.effect); }
 
         public abstract void ActivateAbility(AbilityActivationData activationData);
 

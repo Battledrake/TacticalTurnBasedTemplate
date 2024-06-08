@@ -46,5 +46,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _abilityId: 13
   _icon: {fileID: 21300000, guid: e3e1fda3ce21a644dac5ab1939dcde6e, type: 3}
-  _abilityCost: 0
-  _isFriendly: 0
+  _costEffect: {fileID: 11400000, guid: f0f82bc81a223c54488e2f999b768557, type: 2}
+  _actionCost: 0
+  _cooldown: 0
+  _affectsFriendly: 0

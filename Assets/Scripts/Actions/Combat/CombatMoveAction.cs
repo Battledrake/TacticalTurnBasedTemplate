@@ -285,7 +285,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 AbilitySystem abilitySystem = _playerActions.SelectedUnit.GetComponent<IAbilitySystem>().GetAbilitySystem();
                 if (abilitySystem)
                 {
-                    return abilitySystem.CurrentActionPoints >= amountNeeded;
+                    return abilitySystem.GetAttributeCurrentValue(AttributeId.ActionPoints) >= amountNeeded;
                 }
             }
             return false;

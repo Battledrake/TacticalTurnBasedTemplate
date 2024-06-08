@@ -46,9 +46,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _abilityId: 5
   _icon: {fileID: 21300000, guid: 3f5bd8d221e1bf549914b50d4fa9f88c, type: 3}
+  _costEffect: {fileID: 11400000, guid: 6a24367ecd336df4b9a19351c380cb63, type: 2}
   _actionCost: 1
   _cooldown: 0
-  _isFriendly: 0
+  _affectsFriendly: 0
   _rangeData:
     rangePattern: 1
     rangeMinMax: {x: 0, y: 0}
@@ -64,7 +65,13 @@ MonoBehaviour:
       height: 0
       offsetDistance: 0
   _effects:
-  - attributeType: 0
+  - durationData:
+      durationPolicy: 0
+      duration: 0
+      period:
+        interval: 0
+        executeImmediately: 0
+    attribute: 1
     minMaxModifier: {x: -4, y: -6}
   _objectToAnimate: {fileID: 4860463455617263125, guid: 910ff000fadb962498ce900d2ab47a93,
     type: 3}

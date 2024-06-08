@@ -6,6 +6,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 {
     public enum AttributeId
     {
+        ActionPoints,
         Health,
         MaxHealth,
         MoveRange,

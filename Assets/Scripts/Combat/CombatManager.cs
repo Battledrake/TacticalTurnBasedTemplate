@@ -354,7 +354,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
             _actionPointDeduction = pathLength <= unit.GetMoveRange() ? 1 : 2;
 
-            unit.GetAbilitySystem().RemoveActionPoints(_actionPointDeduction);
+            //TODO: ActionPointCost implementation
+            //unit.GetAbilitySystem().RemoveActionPoints(_actionPointDeduction);
 
             _actionPointDeduction = 0;
 
@@ -362,7 +363,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _tacticsGrid.AddUnitToTile(path.Last(), unit, false);
             OnUnitGridIndexChanged?.Invoke(unit, path.Last());
 
-            if (unit.GetAbilitySystem().CurrentActionPoints <= 0)
+            if (unit.GetAbilitySystem().GetAttributeCurrentValue(AttributeId.ActionPoints) <= 0)
                 EndUnitTurn();
         }
 
@@ -505,7 +506,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             if (_isCombatFinishing) return;
 
             OnAbilityUseCompleted?.Invoke();
-            if (ability.GetAbilityOwner().CurrentActionPoints <= 0)
+            if (ability.GetAbilityOwner().GetAttributeCurrentValue(AttributeId.ActionPoints) <= 0)
             {
                 EndUnitTurn();
             }

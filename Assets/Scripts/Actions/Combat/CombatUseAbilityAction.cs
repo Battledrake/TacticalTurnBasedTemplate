@@ -28,7 +28,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 _abilityInUse = false;
                 return false;
             }
-            _playerActions.PlayerAbilityBar.SetSelectedAbilityFromIndex(-1);
             return true;
         }
 
@@ -39,7 +38,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 AbilitySystem abilitySystem = _playerActions.SelectedUnit.GetComponent<IAbilitySystem>().GetAbilitySystem();
                 if (abilitySystem)
                 {
-                    return abilitySystem.CurrentActionPoints >= amountNeeded;
+                    return abilitySystem.GetAttributeCurrentValue(AttributeId.ActionPoints) >= amountNeeded;
                 }
             }
             return false;
@@ -48,6 +47,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private void CombatManager_OnAbilityBehaviorComplete()
         {
             CombatManager.Instance.OnAbilityUseCompleted -= CombatManager_OnAbilityBehaviorComplete;
+            _playerActions.PlayerAbilityBar.SetSelectedAbilityFromIndex(-1);
             _abilityInUse = false;
         }
 

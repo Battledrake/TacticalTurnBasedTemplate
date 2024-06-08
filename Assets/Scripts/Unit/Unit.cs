@@ -26,6 +26,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         [SerializeField] private Transform _lookAtTransform;
         [SerializeField] private Color _hoverColor;
         [SerializeField] private Color _selectedColor = Color.green;
+        [SerializeField] private bool _isImmortal = false;
 
         public TacticsGrid TacticsGrid { get => _tacticsGrid; }
         public Transform LookAtTransform { get => _lookAtTransform; }
@@ -189,10 +190,11 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
             if (id == AttributeId.Health)
             {
+
                 OnAnyUnitHealthChanged?.Invoke(this);
                 _healthVisual.DisplayHealthChange(newValue - oldValue);
 
-                if(newValue <= 0)
+                if(newValue <= 0 && !_isImmortal)
                 {
                     Die();
                 }
