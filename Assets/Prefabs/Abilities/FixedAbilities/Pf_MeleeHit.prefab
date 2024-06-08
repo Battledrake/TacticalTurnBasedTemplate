@@ -71,7 +71,7 @@ MonoBehaviour:
         interval: 0
         executeImmediately: 0
     attribute: 1
-    magnitudeRange: {x: 2, y: 4}
+    magnitudeRange: {x: -2, y: -4}
   _animationType: 2
   _impactFxPrefab: {fileID: 1489431029902184, guid: 4430919f14c50f84085d287cbcb2c30e,
     type: 3}

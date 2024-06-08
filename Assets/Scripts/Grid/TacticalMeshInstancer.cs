@@ -75,7 +75,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 {
                     if (tileRenderPair.Value.Count > 0)
                     {
-                        Graphics.RenderMeshInstanced(_renderParams[(TileType)tileRenderPair.Key], _instancedMesh, 0, tileRenderPair.Value);
+                        Graphics.RenderMeshInstanced(_renderParams[tileRenderPair.Key], _instancedMesh, 0, tileRenderPair.Value);
                     }
                 }
             }

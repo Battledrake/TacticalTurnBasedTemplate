@@ -88,6 +88,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             DontDestroyOnLoad(this.gameObject);
         }
 
+        public bool IsCombatFinishing() => _isCombatFinishing;
+
         public Color GetTeamColor(int teamIndex)
         {
             return _teamColors.FirstOrDefault(d => d.index == teamIndex).color;
@@ -329,6 +331,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         public void SetActiveTeamUnit(Unit unit)
         {
+            if (_activeUnit == unit) return;
+
             if (_orderedUnits.Contains(unit))
             {
                 _activeUnit = unit;

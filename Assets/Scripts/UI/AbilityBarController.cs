@@ -9,14 +9,20 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
     {
         public event Action<Ability> OnSelectedAbilityChanged;
 
+        [Header("Ability Buttons")]
         [SerializeField] private AbilityButton _abilityButtonPrefab;
         [SerializeField] private Transform _abilityButtonContainer;
         //Use ToggleGroup on AbilityButtonContainer if not using DebugMenu
         [SerializeField] private ToggleGroup _abilityBarToggleGroup;
+
+        [Header("Action Point")]
+        [SerializeField] private Transform _actionPointContainer;
+        [SerializeField] private List<Image> _actionPointDisplays;
+
+        [Header("Dependencies")]
         [SerializeField] private PlayerActions _playerActions;
 
         private Dictionary<int, AbilityButton> _abilityButtons = new Dictionary<int, AbilityButton>();
-
 
         private AbilitySystem _abilitySystem;
 
@@ -28,16 +34,22 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private void OnDisable()
         {
             _playerActions.OnSelectedUnitChanged -= PlayerActions_OnSelectedUnitChanged;
+            if (_abilitySystem)
+            {
+                _abilitySystem.OnAttributeCurrentChanged -= AbilitySystem_OnAttributeCurrentChanged;
+            }
         }
 
         public void HideBar()
         {
             _abilityBarToggleGroup.SetAllTogglesOff();
             _abilityButtonContainer.gameObject.SetActive(false);
+            _actionPointContainer.gameObject.SetActive(false);
         }
         public void ShowBar()
         {
             _abilityButtonContainer.gameObject.SetActive(true);
+            _actionPointContainer.gameObject.SetActive(true);
         }
 
         private void PlayerActions_OnSelectedUnitChanged(Unit unit)
@@ -47,13 +59,42 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             if (unit == null)
                 return;
 
+            if (_abilitySystem)
+            {
+                _abilitySystem.OnAttributeCurrentChanged -= AbilitySystem_OnAttributeCurrentChanged;
+            }
+
             _abilitySystem = unit.GetAbilitySystem();
 
             if (_abilitySystem != null)
             {
+                _abilitySystem.OnAttributeCurrentChanged += AbilitySystem_OnAttributeCurrentChanged;
+
                 PopulateBar(_abilitySystem.GetAllAbilities());
+
+                ShowBar();
+
+                //TODO: Refactor this. Very hacky way of getting this to work. Will revisit later.
+                for (int i = 0; i < 2; i++)
+                {
+                    _actionPointDisplays[i].enabled = true;
+                }
+                int currentAP = _abilitySystem.GetAttributeCurrentValue(AttributeId.ActionPoints);
+                if (currentAP == 0) return;
+                for(int i = 2; i > currentAP; i--)
+                {
+                    _actionPointDisplays[i - 1].enabled = false;
+                }
             }
-            ShowBar();
+        }
+
+        private void AbilitySystem_OnAttributeCurrentChanged(AttributeId attribute, int oldValue, int newValue)
+        {
+            if (attribute == AttributeId.ActionPoints)
+            {
+                for (int i = oldValue; i > newValue; i--)
+                    _actionPointDisplays[i - 1].enabled = false;
+            }
         }
 
         public void ClearBar()
@@ -95,7 +136,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         public void SetSelectedAbilityFromIndex(int index)
         {
-            if(_abilityButtons.TryGetValue(index, out AbilityButton abilityButton))
+            if (_abilityButtons.TryGetValue(index, out AbilityButton abilityButton))
             {
                 Toggle abilityButtonToggle = abilityButton.GetComponent<Toggle>();
                 if (abilityButtonToggle.isOn)

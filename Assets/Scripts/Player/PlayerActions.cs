@@ -165,6 +165,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void CombatManager_OnActionEnded()
         {
+            if (CombatManager.Instance.IsCombatFinishing()) return;
+
             _inputDisabled = false;
             _abilityBarController.ShowBar();
         }
