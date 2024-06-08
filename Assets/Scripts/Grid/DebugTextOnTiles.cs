@@ -66,7 +66,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             if (!ShowAnyDebug())
                 return;
 
-            foreach (var gridTilePair in _tacticsGrid.GridTiles)
+            foreach (KeyValuePair<GridIndex, TileData> gridTilePair in _tacticsGrid.GridTiles)
             {
                 UpdateTextOnTile(gridTilePair.Key);
             }
@@ -178,7 +178,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             }
             else
             {
-                foreach (var gridTilePair in _tacticsGrid.GridTiles)
+                foreach (KeyValuePair<GridIndex, TileData> gridTilePair in _tacticsGrid.GridTiles)
                 {
                     UpdateTextOnTile(gridTilePair.Key);
                 }
@@ -196,7 +196,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         public void ClearAllTextGameObjects()
         {
-            foreach (var spawnedTextsPair in _spawnedTexts)
+            foreach (KeyValuePair<GridIndex, GameObject> spawnedTextsPair in _spawnedTexts)
             {
                 Destroy(spawnedTextsPair.Value);
             }

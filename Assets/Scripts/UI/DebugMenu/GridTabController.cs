@@ -248,10 +248,10 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
                 if (_useEnvToggle.isOn)
                 {
-                    foreach (var obj in _environmentObjects)
+                    foreach (GameObject obj in _environmentObjects)
                     {
                         MeshRenderer[] renderers = obj.GetComponentsInChildren<MeshRenderer>(false);
-                        foreach (var render in renderers)
+                        foreach (MeshRenderer render in renderers)
                             render.enabled = false;
                     }
                 }
@@ -269,10 +269,10 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 //if (_sceneSelected > 0)
                 //    _sceneLoader.LoadScene(_sceneCombo.options[_sceneSelected].text);
 
-                foreach (var obj in _environmentObjects)
+                foreach (GameObject obj in _environmentObjects)
                 {
                     MeshRenderer[] renderers = obj.GetComponentsInChildren<MeshRenderer>(true);
-                    foreach (var render in renderers)
+                    foreach (MeshRenderer render in renderers)
                         render.enabled = true;
                 }
                 _environmentObjects.ForEach(o => o.SetActive(true));
@@ -287,20 +287,20 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             {
                 _modifierObjects = GameObject.FindGameObjectsWithTag("GridModifier").ToList();
 
-                foreach (var obj in _modifierObjects)
+                foreach (GameObject obj in _modifierObjects)
                 {
                     MeshRenderer[] renderers = obj.GetComponentsInChildren<MeshRenderer>(false);
-                    foreach (var render in renderers)
+                    foreach (MeshRenderer render in renderers)
                         render.enabled = false;
                 }
             }
             else
             {
 
-                foreach (var obj in _modifierObjects)
+                foreach (GameObject obj in _modifierObjects)
                 {
                     MeshRenderer[] renderers = obj.GetComponentsInChildren<MeshRenderer>(true);
-                    foreach (var render in renderers)
+                    foreach (MeshRenderer render in renderers)
                         render.enabled = true;
                 }
             }

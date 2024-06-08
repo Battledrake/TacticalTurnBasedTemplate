@@ -113,7 +113,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                     _borrowedMoveRenders = LineRendererPool.Instance.BorrowInstances(_moveRangeEdges.Count);
                     int edgeIndex = 0;
 
-                    foreach (var edgePair in _moveRangeEdges)
+                    foreach (EdgeData edge in _moveRangeEdges)
                     {
                         _borrowedMoveRenders[edgeIndex].positionCount = 2;
                         _borrowedMoveRenders[edgeIndex].startColor = UnitHasEnoughActionPoints(2) ? _moveRangeColor : _sprintRangeColor;
@@ -121,8 +121,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                         _borrowedMoveRenders[edgeIndex].startWidth = 0.15f;
                         _borrowedMoveRenders[edgeIndex].endWidth = 0.15f;
 
-                        Vector3 sourcePosition = _playerActions.TacticsGrid.GetTilePositionFromIndex(edgePair.source);
-                        GridIndex direction = edgePair.direction;
+                        Vector3 sourcePosition = _playerActions.TacticsGrid.GetTilePositionFromIndex(edge.source);
+                        GridIndex direction = edge.direction;
 
                         switch (_playerActions.TacticsGrid.GridShape)
                         {
@@ -205,17 +205,17 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             if (pathResult.Result != PathResult.SearchFail)
             {
                 HashSet<EdgeData> sprintEdges = new HashSet<EdgeData>(pathResult.Edges);
-                foreach (var edgePair in _moveRangeEdges)
+                foreach (EdgeData edge in _moveRangeEdges)
                 {
-                    if (pathResult.Edges.Contains(edgePair))
+                    if (pathResult.Edges.Contains(edge))
                     {
-                        sprintEdges.Remove(edgePair);
+                        sprintEdges.Remove(edge);
                     }
                 }
 
                 _borrowedSprintRenders = LineRendererPool.Instance.BorrowInstances(sprintEdges.Count);
                 int edgeIndex = 0;
-                foreach (var edgePair in sprintEdges)
+                foreach (EdgeData edge in sprintEdges)
                 {
                     _borrowedSprintRenders[edgeIndex].positionCount = 2;
                     _borrowedSprintRenders[edgeIndex].startColor = _sprintRangeColor;
@@ -223,8 +223,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                     _borrowedSprintRenders[edgeIndex].startWidth = 0.15f;
                     _borrowedSprintRenders[edgeIndex].endWidth = 0.15f;
 
-                    Vector3 sourcePosition = _playerActions.TacticsGrid.GetTilePositionFromIndex(edgePair.source);
-                    GridIndex direction = edgePair.direction;
+                    Vector3 sourcePosition = _playerActions.TacticsGrid.GetTilePositionFromIndex(edge.source);
+                    GridIndex direction = edge.direction;
 
                     switch (_playerActions.TacticsGrid.GridShape)
                     {

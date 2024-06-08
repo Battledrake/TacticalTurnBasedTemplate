@@ -48,7 +48,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 }
             }
 
-            foreach (var healthUnitPair in _healthUnitChildren)
+            foreach (KeyValuePair<int, SpriteRenderer> healthUnitPair in _healthUnitChildren)
             {
                 healthUnitPair.Value.transform.parent.gameObject.SetActive(false);
             }
@@ -69,7 +69,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             _healthUnitColor = color;
 
-            foreach (var healthUnit in _healthUnitChildren.Values)
+            foreach (SpriteRenderer healthUnit in _healthUnitChildren.Values)
             {
                 healthUnit.color = _healthUnitColor;
             }

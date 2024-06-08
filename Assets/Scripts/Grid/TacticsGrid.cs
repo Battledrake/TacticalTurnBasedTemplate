@@ -150,7 +150,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             if (_tileStateIndexes.TryGetValue(stateToClear, out HashSet<GridIndex> indexesWithState))
             {
-                foreach (var index in indexesWithState)
+                foreach (GridIndex index in indexesWithState)
                 {
                     RemoveStateFromTile(index, stateToClear);
                 }
@@ -544,7 +544,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
                 if (tileData.tileStates != null)
                 {
-                    foreach (var tileState in tileData.tileStates)
+                    foreach (TileState tileState in tileData.tileStates)
                     {
 
                         _tileStateIndexes.TryGetValue(tileState, out HashSet<GridIndex> stateIndexes);

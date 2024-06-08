@@ -124,7 +124,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             {
                 if (teamUnits != null && teamUnits.Count > 0)
                 {
-                    foreach (var unit in teamUnits)
+                    foreach (Unit unit in teamUnits)
                     {
                         _orderedUnits.Add(unit);
                     }
@@ -482,7 +482,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
             int aliveTeams = 0;
             int winIndex = -1;
-            foreach (var unitTeamPair in _unitTeams)
+            foreach (KeyValuePair<int, HashSet<Unit>> unitTeamPair in _unitTeams)
             {
                 if (unitTeamPair.Value.Count > 0)
                 {

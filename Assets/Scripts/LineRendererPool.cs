@@ -14,7 +14,7 @@ public class LineRendererPool : MonoBehaviour
 
     private void Awake()
     {
-        if(Instance != null && Instance != this)
+        if (Instance != null && Instance != this)
         {
             Destroy(this);
         }
@@ -24,7 +24,7 @@ public class LineRendererPool : MonoBehaviour
         }
         DontDestroyOnLoad(this.gameObject);
 
-        for(int i = 0; i < _baseInstanceCount; i++)
+        for (int i = 0; i < _baseInstanceCount; i++)
         {
             LineRenderer lineRenderer = Instantiate(_lineRendererPrefab, _instanceContainer);
             lineRenderer.gameObject.SetActive(false);
@@ -37,9 +37,9 @@ public class LineRendererPool : MonoBehaviour
         List<LineRenderer> objectsToLend = new List<LineRenderer>();
 
         int objectCount = 0;
-        if(_pooledLineRenderers.Count > amount)
+        if (_pooledLineRenderers.Count > amount)
         {
-            foreach(var pooledPair in _pooledLineRenderers)
+            foreach (KeyValuePair<int, LineRenderer> pooledPair in _pooledLineRenderers)
             {
                 if (objectCount == amount)
                     return objectsToLend;
@@ -59,7 +59,7 @@ public class LineRendererPool : MonoBehaviour
         if (this == null)
             return;
 
-        for(int i = 0; i < returnList.Count; i++)
+        for (int i = 0; i < returnList.Count; i++)
         {
             returnList[i].gameObject.SetActive(false);
         }

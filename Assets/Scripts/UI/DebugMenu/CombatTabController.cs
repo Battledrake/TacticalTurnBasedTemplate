@@ -90,7 +90,7 @@ public class CombatTabController : MonoBehaviour
     private void ResetCombatUnits()
     {
         List<Unit> unitsToCleanup = new List<Unit>();
-        foreach (var unit in CombatManager.Instance.UnitsInCombat)
+        foreach (Unit unit in CombatManager.Instance.UnitsInCombat)
         {
             if (!_activeUnitsPreCombat.ContainsKey(unit))
             {
@@ -103,12 +103,12 @@ public class CombatTabController : MonoBehaviour
             CombatManager.Instance.RemoveUnitFromCombat(unitsToCleanup[i], true, 0f);
         }
 
-        foreach(var unitPreCombatPair in _activeUnitsPreCombat)
+        foreach (KeyValuePair<Unit, GridIndex> unitPreCombatPair in _activeUnitsPreCombat)
         {
             unitPreCombatPair.Key.ResetUnit();
             CombatManager.Instance.TeleportUnit(unitPreCombatPair.Key, GridIndex.Invalid());
         }
-        foreach (var unitPreCombatPair in _activeUnitsPreCombat)
+        foreach (KeyValuePair<Unit, GridIndex> unitPreCombatPair in _activeUnitsPreCombat)
         {
             CombatManager.Instance.TeleportUnit(unitPreCombatPair.Key, unitPreCombatPair.Value);
         }
@@ -119,7 +119,7 @@ public class CombatTabController : MonoBehaviour
         _activeUnitsPreCombat.Clear();
         List<Unit> unitsInCombat = new List<Unit>(CombatManager.Instance.UnitsInCombat);
 
-        for(int i = 0; i < unitsInCombat.Count; i++)
+        for (int i = 0; i < unitsInCombat.Count; i++)
         {
             _activeUnitsPreCombat.TryAdd(unitsInCombat[i], unitsInCombat[i].UnitGridIndex);
         }
@@ -137,9 +137,9 @@ public class CombatTabController : MonoBehaviour
             }
         }
         var unitTeams = CombatManager.Instance.UnitTeams;
-        foreach (var unitTeam in unitTeams)
+        foreach (KeyValuePair<int, HashSet<Unit>> unitTeam in unitTeams)
         {
-            foreach (var unit in unitTeam.Value)
+            foreach (Unit unit in unitTeam.Value)
             {
                 GameObject unitDisplay = Instantiate(_unitDisplayPrefab, _teamPanels[unitTeam.Key]);
                 unitDisplay.GetComponent<Image>().color = CombatManager.Instance.GetTeamColor(unitTeam.Key);
@@ -194,7 +194,7 @@ public class CombatTabController : MonoBehaviour
             return;
         }
 
-        foreach(var iconButtonPair in _iconButtons)
+        foreach (KeyValuePair<UnitId, UnitButton> iconButtonPair in _iconButtons)
         {
             iconButtonPair.Value.DisableButton();
         }

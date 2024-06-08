@@ -66,9 +66,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void CombatManager_OnActiveUnitChanged(Unit unit)
         {
-            if(CombatManager.Instance.TurnOrderType != TurnOrderType.Team)
+            if (CombatManager.Instance.TurnOrderType != TurnOrderType.Team)
             {
-                if(_unitDisplays.TryGetValue(unit, out TimelineUnitDisplay unitDisplay))
+                if (_unitDisplays.TryGetValue(unit, out TimelineUnitDisplay unitDisplay))
                 {
                     _displayContainer.GetChild(0).SetAsLastSibling();
                     unitDisplay.transform.SetAsFirstSibling();
@@ -88,7 +88,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                     SpawnUnitDisplay();
             }
 
-            for(int i = 0; i < _pooledDisplays.Count; i++)
+            for (int i = 0; i < _pooledDisplays.Count; i++)
             {
                 _pooledDisplays[i].gameObject.SetActive(false);
             }
@@ -101,7 +101,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 _unitDisplays.TryAdd(orderedUnits[i], _pooledDisplays[i]);
             }
 
-            foreach(var unitDisplayPair in _unitDisplays)
+            foreach (KeyValuePair<Unit, TimelineUnitDisplay> unitDisplayPair in _unitDisplays)
             {
                 unitDisplayPair.Value.UpdateIcon(unitDisplayPair.Key);
                 unitDisplayPair.Value.gameObject.SetActive(true);
@@ -110,7 +110,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void CombatManager_OnUnitAddedDuringCombat(Unit unit)
         {
-            if(_pooledDisplays.Count < _unitDisplays.Count + 1)
+            if (_pooledDisplays.Count < _unitDisplays.Count + 1)
             {
                 SpawnUnitDisplay();
             }

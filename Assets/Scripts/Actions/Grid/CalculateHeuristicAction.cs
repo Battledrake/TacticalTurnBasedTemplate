@@ -1,10 +1,11 @@
 using System.Linq;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 {
     public class CalculateHeuristicAction : SelectTileAndUnitAction
-	{
+    {
         public override bool ExecuteAction(GridIndex index)
         {
             base.ExecuteAction(index);
@@ -18,7 +19,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             if (!_playerActions.TacticsGrid.IsIndexValid(index))
                 return false;
 
-            foreach(var gridTilePair in _playerActions.TacticsGrid.GridTiles)
+            foreach (KeyValuePair<GridIndex, TileData> gridTilePair in _playerActions.TacticsGrid.GridTiles)
             {
                 GridIndex gridIndex = gridTilePair.Key;
                 PathNode gridNode = _playerActions.TacticsGrid.GridPathfinder.CreateAndAddNodeToPool(gridIndex);

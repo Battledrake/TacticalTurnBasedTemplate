@@ -50,12 +50,12 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         public void UpdateGroundOffset(float offset)
         {
-            foreach (var tileRenderPair in _tileTypeRenders)
+            foreach (KeyValuePair<TileType, List<Matrix4x4>> tileRenderPair in _tileTypeRenders)
             {
                 tileRenderPair.Value.Clear();
             }
 
-            foreach (var instancedTilePair in _instancedTiles)
+            foreach (KeyValuePair<GridIndex, TileData> instancedTilePair in _instancedTiles)
             {
                 TileData tileData = instancedTilePair.Value;
                 Vector3 newPos = tileData.tileMatrix.GetPosition();
@@ -71,7 +71,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             if (_tileTypeRenders.Count > 0)
             {
-                foreach (var tileRenderPair in _tileTypeRenders)
+                foreach (KeyValuePair<TileType, List<Matrix4x4>> tileRenderPair in _tileTypeRenders)
                 {
                     if (tileRenderPair.Value.Count > 0)
                     {
@@ -84,7 +84,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public void ClearInstances()
         {
             _instancedTiles.Clear();
-            foreach (var tileRenderPair in _tileTypeRenders)
+            foreach (KeyValuePair<TileType, List<Matrix4x4>> tileRenderPair in _tileTypeRenders)
             {
                 tileRenderPair.Value.Clear();
             }

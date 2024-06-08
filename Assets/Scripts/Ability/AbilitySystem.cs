@@ -41,7 +41,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
             UpdateActiveEffectDurationsAndPeriodics();
 
-            foreach (var abilityPair in _abilities)
+            foreach (KeyValuePair<AbilityId, Ability> abilityPair in _abilities)
             {
                 abilityPair.Value.ReduceCooldown(1);
             }
@@ -62,7 +62,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
             if (_abilities.Count > 0)
             {
-                foreach (var abilityPair in _abilities)
+                foreach (KeyValuePair<AbilityId, Ability> abilityPair in _abilities)
                 {
                     Destroy(abilityPair.Value.gameObject);
                 }
@@ -234,7 +234,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             List<ActiveEffect> effectsToRemove = new List<ActiveEffect>();
             //Go through all our active effects
-            foreach (var activeEffectPair in _activeEffects)
+            foreach (KeyValuePair<AttributeId, List<ActiveEffect>> activeEffectPair in _activeEffects)
             {
                 //Go through the list of effects on each attribute.
                 for (int i = 0; i < activeEffectPair.Value.Count; i++)

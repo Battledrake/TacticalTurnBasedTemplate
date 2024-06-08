@@ -256,7 +256,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             if (isActionActive)
                 return;
 
-            foreach(var buttonPair in _abilityButtons)
+            foreach (KeyValuePair<AbilityId, AbilityButton> buttonPair in _abilityButtons)
             {
                 buttonPair.Value.DisableButton();
             }

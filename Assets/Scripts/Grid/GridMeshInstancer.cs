@@ -175,7 +175,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                     if (_currentDefaultCount != _instancedTiles.Count)
                     {
                         _defaultRenders.Clear();
-                        foreach(var instancedTilePair in _instancedTiles)
+                        foreach(KeyValuePair<GridIndex, TileData> instancedTilePair in _instancedTiles)
                         {
                             Matrix4x4 instanceMatrix = instancedTilePair.Value.tileMatrix;
                             _defaultRenders.Add(instanceMatrix);
