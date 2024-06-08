@@ -186,7 +186,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void AbilitySystem_OnAttributeCurrentChanged(AttributeId id, int oldValue, int newValue)
         {
-            Debug.Log($"Attribute Current Changed: {id}, Old: {oldValue}, New: {newValue}");
+            Debug.Log($"Unit : {this.transform.name}, Attribute Current Changed: {id}, Old: {oldValue}, New: {newValue}");
 
             if (id == AttributeId.Health)
             {
@@ -215,7 +215,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void AbilitySystem_OnAttributeBaseChanged(AttributeId id, int oldValue, int newValue)
         {
-            Debug.Log($"Attribute Base Changed: {id}, Old: {oldValue}, New: {newValue}");
+            Debug.Log($"Unit : {this.transform.name} Attribute Base Changed: {id}, Old: {oldValue}, New: {newValue}");
         }
 
         private Transform FindTransform(GameObject parentObject, string transformName)

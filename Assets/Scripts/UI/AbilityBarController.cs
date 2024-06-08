@@ -23,7 +23,21 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private void Start()
         {
             _playerActions.OnSelectedUnitChanged += PlayerActions_OnSelectedUnitChanged;
+        }
 
+        private void OnDisable()
+        {
+            _playerActions.OnSelectedUnitChanged -= PlayerActions_OnSelectedUnitChanged;
+        }
+
+        public void HideBar()
+        {
+            _abilityBarToggleGroup.SetAllTogglesOff();
+            _abilityButtonContainer.gameObject.SetActive(false);
+        }
+        public void ShowBar()
+        {
+            _abilityButtonContainer.gameObject.SetActive(true);
         }
 
         private void PlayerActions_OnSelectedUnitChanged(Unit unit)
@@ -39,6 +53,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             {
                 PopulateBar(_abilitySystem.GetAllAbilities());
             }
+            ShowBar();
         }
 
         public void ClearBar()
@@ -71,13 +86,11 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private void AbilityButton_OnAbilityButtonSelected(AbilityId abilityId)
         {
             OnSelectedAbilityChanged?.Invoke(_abilitySystem.GetAbility(abilityId));
-            //_playerActions.CurrentAbility = _abilities[index];
         }
 
         private void AbilityButton_OnAbilityButtonDeselected(AbilityId abilityId)
         {
             OnSelectedAbilityChanged?.Invoke(null);
-            //_playerActions.CurrentAbility = null;
         }
 
         public void SetSelectedAbilityFromIndex(int index)

@@ -51,6 +51,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private bool _isLeftClickDown = false;
         private bool _isRightClickDown = false;
 
+        private bool _inputDisabled = false;
+
+        public bool IsInputDisabled() => _inputDisabled;
 
         private void Awake()
         {
@@ -68,6 +71,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             CombatManager.Instance.OnActiveUnitChanged += CombatManager_OnActiveUnitChanged;
             CombatManager.Instance.OnCombatFinishing += CombatManager_OnCombatFinishing;
             _abilityBarController.OnSelectedAbilityChanged += AbilityBar_OnSelectedAbilityChanged;
+            CombatManager.Instance.OnActionStarted += CombatManager_OnActionStarted;
+            CombatManager.Instance.OnActionEnded += CombatManager_OnActionEnded;
         }
 
         private void CombatManager_OnCombatFinishing(int winTeamIndex)
@@ -113,6 +118,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _endTurnButton.gameObject.SetActive(false);
             ClearSelectedActions();
             SetSelectedTileAndUnit(GridIndex.Invalid());
+            _inputDisabled = false;
         }
 
         private void CombatManager_OnUnitTurnStarted(Unit unit)
@@ -150,6 +156,18 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             SetSelectedActions(_combatMoveActionPrefab, null);
         }
 
+        private void CombatManager_OnActionEnded()
+        {
+            _inputDisabled = false;
+            _abilityBarController.ShowBar();
+        }
+
+        private void CombatManager_OnActionStarted()
+        {
+            _inputDisabled = true;
+            _abilityBarController.HideBar();
+        }
+
         private void OnHoveredTileChanged_UpdateActions(GridIndex gridIndex)
         {
             if (_leftClickAction != null)
@@ -169,6 +187,13 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void Update()
         {
+            if (_inputDisabled)
+            {
+                _isLeftClickDown = false;
+                _isRightClickDown = false;
+                return;
+            }
+
             UpdatedHoveredTileAndUnit();
 
             if (Input.GetMouseButtonDown(0))

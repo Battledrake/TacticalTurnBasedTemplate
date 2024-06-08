@@ -47,6 +47,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public event Action<Unit> OnActiveUnitChanged;
         public event Action<Unit> OnUnitAddedDuringCombat;
         public event Action<int> OnCombatFinishing;
+        public event Action OnActionStarted;
+        public event Action OnActionEnded;
 
         [SerializeField] TurnOrderType _turnOrderType;
         [SerializeField] private List<TeamColorData> _teamColors;
@@ -365,6 +367,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
             if (unit.GetAbilitySystem().GetAttributeCurrentValue(AttributeId.ActionPoints) <= 0)
                 EndUnitTurn();
+
+            OnActionStarted?.Invoke();
         }
 
         public void TeleportUnit(Unit unit, GridIndex targetIndex)
@@ -376,6 +380,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private void Unit_OnUnitReachedDestination(Unit unit)
         {
             unit.OnUnitReachedDestination -= Unit_OnUnitReachedDestination;
+            OnActionEnded?.Invoke();
         }
 
         public void AddUnitToCombat(Vector3 worldPosition, Unit unit, int teamIndex = 0)
@@ -490,10 +495,12 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             activationData.targetIndex = target;
 
             ability.OnAbilityEnded += Ability_OnAbilityEnded;
+            OnActionStarted?.Invoke();
 
             if (!ability.TryActivateAbility(activationData))
             {
                 ability.OnAbilityEnded -= Ability_OnAbilityEnded;
+                OnActionEnded?.Invoke();
                 return false;
             }
             return true;
@@ -510,6 +517,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             {
                 EndUnitTurn();
             }
+            OnActionEnded?.Invoke();
         }
 
         public void ApplyEffectsToTarget(AbilitySystem instigator, AbilitySystem receiver, List<AbilityEffect> effectsToApply)

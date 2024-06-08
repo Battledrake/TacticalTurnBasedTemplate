@@ -49,4 +49,3 @@ MonoBehaviour:
   _costEffect: {fileID: 11400000, guid: f0f82bc81a223c54488e2f999b768557, type: 2}
   _cooldown: 0
   _affectsFriendly: 0
-  _doubleCostEffect: {fileID: 11400000, guid: e6e6398a769f7f54da62d48c88deeb29, type: 2}
