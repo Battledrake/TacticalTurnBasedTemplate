@@ -77,7 +77,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private Unit _activeUnit = null;
         private int _activeTeamIndex = -1;
-        private int _actionPointDeduction = 0;
         private int _playerControlledIndex = 100;
 
         private void Awake()
@@ -354,12 +353,14 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 gridMoveComp.SetPathAndMove(path);
             }
 
-            _actionPointDeduction = pathLength <= unit.GetMoveRange() ? 1 : 2;
+            int costModifier = pathLength <= unit.GetMoveRange() ? -1 : -2;
 
-            //TODO: ActionPointCost implementation
-            //unit.GetAbilitySystem().RemoveActionPoints(_actionPointDeduction);
+            AbilityEffectReal costEffect = new AbilityEffectReal();
+            costEffect.durationData.durationPolicy = EffectDurationPolicy.Instant;
+            costEffect.attribute = AttributeId.ActionPoints;
+            costEffect.modifier = costModifier;
 
-            _actionPointDeduction = 0;
+            unit.GetComponent<IAbilitySystem>().GetAbilitySystem().ApplyEffect(costEffect);
 
             _tacticsGrid.RemoveUnitFromTile(unit.UnitGridIndex);
             _tacticsGrid.AddUnitToTile(path.Last(), unit, false);
