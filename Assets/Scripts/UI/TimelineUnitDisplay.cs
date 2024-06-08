@@ -53,7 +53,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             Unit.OnAnyUnitHealthChanged += Unit_OnAnyUnitHealthChanged;
             _unit.OnUnitHoveredChanged += Unit_OnUnitHoveredChanged;
             _unit.OnUnitSelectedChanged += Unit_OnUnitSelectedChanged;
-            CombatManager.Instance.OnUnitTurnEnded += CombatManager_OnUnitTurnEnded;
+            _unit.OnTurnEnded += Unit_OnTurnEnded;
 
             _isActive = true;
         }
@@ -66,14 +66,11 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             Unit.OnAnyUnitHealthChanged -= Unit_OnAnyUnitHealthChanged;
             _unit.OnUnitHoveredChanged -= Unit_OnUnitHoveredChanged;
             _unit.OnUnitSelectedChanged -= Unit_OnUnitSelectedChanged;
-            CombatManager.Instance.OnUnitTurnEnded -= CombatManager_OnUnitTurnEnded;
+            _unit.OnTurnEnded -= Unit_OnTurnEnded;
         }
 
-        private void CombatManager_OnUnitTurnEnded(Unit unit)
+        private void Unit_OnTurnEnded()
         {
-            if (_unit == null) return;
-            if (_unit != unit) return;
-
             if (CombatManager.Instance.TurnOrderType == TurnOrderType.Team)
             {
                 Color greyed = Color.grey;
@@ -164,7 +161,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 //TODO: Fixed one. We'll fix cameras one day. All these camera GameObject.Finds have got to go.
                 GameObject.Find("[Cameras]").GetComponent<CameraController>().SetMoveToTarget(_unit.transform.position + new Vector3(0f, 1.5f, 0f));
 
-                CombatManager.Instance.CycleUnits(_unit);
+                CombatManager.Instance.SetActiveTeamUnit(_unit);
             }
         }
     }

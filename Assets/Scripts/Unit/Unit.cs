@@ -18,6 +18,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public event Action<Unit> OnUnitReachedDestination;
         public event Action<Unit> OnUnitStartedMovement;
         public event Action<Unit> OnUnitMovementStopped;
+        public event Action OnTurnStarted;
+        public event Action OnTurnEnded;
         public event Action<Unit, bool> OnUnitDied;
         public event Action<Unit> OnUnitRespawn;
         public event Action OnTeamIndexChanged;
@@ -118,11 +120,12 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public void TurnStarted()
         {
             _abilitySystem.ResetActionPoints();
+            OnTurnStarted?.Invoke();
         }
 
         public void TurnEnded()
         {
-            //What we doing here eh?
+            OnTurnEnded?.Invoke();
         }
 
         private void GridMovement_OnMovementStarted()

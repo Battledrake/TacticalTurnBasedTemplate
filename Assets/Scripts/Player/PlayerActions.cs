@@ -66,8 +66,10 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             Unit.OnAnyUnitDied += Unit_OnAnyUnitDied;
             CombatManager.Instance.OnCombatStarted += CombatManager_OnCombatStarted;
             CombatManager.Instance.OnCombatEnded += CombatManager_OnCombatEnded;
-            CombatManager.Instance.OnUnitTurnStarted += CombatManager_OnUnitTurnStarted;
-            CombatManager.Instance.OnUnitTurnEnded += CombatManager_OnUnitTurnEnded;
+
+            CombatManager.Instance.OnPlayerTurnStarted += CombatManager_OnPlayerTurnStarted;
+            CombatManager.Instance.OnPlayerTurnEnded -= CombatManager_OnPlayerTurnEnded;
+
             CombatManager.Instance.OnActiveUnitChanged += CombatManager_OnActiveUnitChanged;
             CombatManager.Instance.OnCombatFinishing += CombatManager_OnCombatFinishing;
             _abilityBarController.OnSelectedAbilityChanged += AbilityBar_OnSelectedAbilityChanged;
@@ -118,17 +120,18 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _endTurnButton.gameObject.SetActive(false);
             ClearSelectedActions();
             SetSelectedTileAndUnit(GridIndex.Invalid());
+
             _inputDisabled = false;
         }
 
-        private void CombatManager_OnUnitTurnStarted(Unit unit)
+        private void CombatManager_OnPlayerTurnStarted()
         {
             _endTurnButton.gameObject.SetActive(true);
-            SetSelectedTileAndUnit(unit.UnitGridIndex);
-            SetSelectedActions(_combatMoveActionPrefab, null);
+            //SetSelectedTileAndUnit(CombatManager.Instance.GetActiveUnit().UnitGridIndex);
+            //SetSelectedActions(_combatMoveActionPrefab, null);
         }
 
-        private void CombatManager_OnUnitTurnEnded(Unit unit)
+        private void CombatManager_OnPlayerTurnEnded()
         {
             _endTurnButton.gameObject.SetActive(false);
             ClearSelectedActions();
@@ -151,7 +154,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void CombatManager_OnActiveUnitChanged(Unit unit)
         {
-            _endTurnButton.gameObject.SetActive(true);
+            //TODO: if isPlayerTurn
             SetSelectedTileAndUnit(unit.UnitGridIndex);
             SetSelectedActions(_combatMoveActionPrefab, null);
         }

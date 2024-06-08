@@ -39,14 +39,14 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public event Action<Unit, GridIndex> OnUnitGridIndexChanged;
         public event Action OnUnitTeamChanged;
         public event Action OnCombatStarted;
+        public event Action<int> OnCombatFinishing;
         public event Action OnCombatEnded;
-        public event Action<Unit> OnUnitTurnStarted;
-        public event Action<Unit> OnUnitTurnEnded;
+        public event Action OnPlayerTurnStarted;
+        public event Action OnPlayerTurnEnded;
         public event Action OnAbilityUseCompleted;
         public event Action OnActiveTeamChanged;
         public event Action<Unit> OnActiveUnitChanged;
         public event Action<Unit> OnUnitAddedDuringCombat;
-        public event Action<int> OnCombatFinishing;
         public event Action OnActionStarted;
         public event Action OnActionEnded;
 
@@ -63,7 +63,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public int NumberOfTeams { get => _teamColors.Count; }
         public bool IsInCombat { get => _isInCombat; }
         public bool ShowEnemyMoveRange { get => _showEnemyMoveRange; set => _showEnemyMoveRange = value; }
-        public Unit ActiveUnit { get => _activeUnit; }
 
         private List<Unit> _unitsInCombat = new List<Unit>();
         private Dictionary<int, HashSet<Unit>> _unitTeams = new Dictionary<int, HashSet<Unit>>();
@@ -78,6 +77,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private Unit _activeUnit = null;
         private int _activeTeamIndex = -1;
         private int _playerControlledIndex = 100;
+
+        public Unit GetActiveUnit() => _activeUnit;
 
         private void Awake()
         {
@@ -107,6 +108,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _tacticsGrid.OnTileDataUpdated -= TacticsGrid_OnTileDataUpdated;
             _tacticsGrid.OnTileHeightChanged -= TacticsGrid_OnTileHeightChanged;
         }
+
         public CombatStartParams CanStartCombat()
         {
             CombatStartParams combatStartParams;
@@ -116,19 +118,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             combatStartParams.canStartCombat = !_isInCombat && _unitTeams.Count(kvp => kvp.Value.Count > 0) >= 2 && _unitsInCombat.Count >= 2;
 
             return combatStartParams;
-        }
-
-        private void SetActiveTeamIndex()
-        {
-            var teamIndexes = _unitTeams.Keys.Where(k => k > _activeTeamIndex && _unitTeams[k]?.Count > 0).OrderBy(k => k);
-            if (teamIndexes.Any())
-            {
-                _activeTeamIndex = teamIndexes.First();
-            }
-            else
-            {
-                _activeTeamIndex = _unitTeams.Keys.Min();
-            }
         }
 
         private void OrderUnitsByTeam()
@@ -242,6 +231,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                     {
                         _orderedUnits[i].TurnStarted();
                     }
+                    OnPlayerTurnStarted?.Invoke();
                 }
             }
             else
@@ -258,7 +248,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void AdvanceToNextUnit()
         {
-            if(_orderedUnits.Count > 0)
+            if (_orderedUnits.Count > 0)
             {
                 int activeIndex = _orderedUnits.IndexOf(_activeUnit);
                 _activeUnit = _orderedUnits[++activeIndex % _orderedUnits.Count];
@@ -271,6 +261,10 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             {
                 _turnsCompleted = 0;
                 _orderedUnits.Clear();
+
+                //if activeTeam == player
+                OnPlayerTurnEnded?.Invoke();
+
                 SetActiveTeamIndex();
                 OrderUnitsByTeam();
                 OnActiveTeamChanged?.Invoke();
@@ -286,7 +280,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         public void EndUnitTurn()
         {
-            OnUnitTurnEnded?.Invoke(_activeUnit);
             _turnsCompleted++;
             if (_turnOrderType == TurnOrderType.Team)
             {
@@ -297,7 +290,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 else
                 {
                     Unit turnEndedUnit = _activeUnit;
-                    CycleUnits();
+                    turnEndedUnit.TurnEnded();
+                    AdvanceToNextTeamUnit();
                     _orderedUnits.Remove(turnEndedUnit);
                 }
             }
@@ -307,20 +301,36 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             }
         }
 
+        private void SetActiveTeamIndex()
+        {
+            var teamIndexes = _unitTeams.Keys.Where(k => k > _activeTeamIndex && _unitTeams[k]?.Count > 0).OrderBy(k => k);
+            if (teamIndexes.Any())
+            {
+                _activeTeamIndex = teamIndexes.First();
+            }
+            else
+            {
+                _activeTeamIndex = _unitTeams.Keys.Min();
+            }
+        }
+
+        public void SetActiveTeamUnit(Unit unit)
+        {
+            if (_orderedUnits.Contains(unit))
+            {
+                _activeUnit = unit;
+                OnActiveUnitChanged?.Invoke(_activeUnit);
+            }
+        }
+
         //If null is passed in, grab next in list. Otherwise, select unit passed in selected.
-        public void CycleUnits(Unit unit = null)
+        public void AdvanceToNextTeamUnit()
         {
             Unit currentUnit = _activeUnit;
             if (_turnOrderType == TurnOrderType.Team)
             {
-                if (_orderedUnits.Contains(unit))
-                {
-                    _activeUnit = unit;
-                }
-                else
-                {
-                    AdvanceToNextUnit();
-                }
+                AdvanceToNextUnit();
+
                 if (currentUnit != _activeUnit)
                     OnActiveUnitChanged?.Invoke(_activeUnit);
             }
@@ -361,7 +371,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             costEffect.modifier = costModifier;
 
             unit.GetComponent<IAbilitySystem>().GetAbilitySystem().ApplyEffect(costEffect);
-
             _tacticsGrid.RemoveUnitFromTile(unit.UnitGridIndex);
             _tacticsGrid.AddUnitToTile(path.Last(), unit, false);
             OnUnitGridIndexChanged?.Invoke(unit, path.Last());

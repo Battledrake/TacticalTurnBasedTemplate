@@ -47,6 +47,15 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             }
         }
 
+        private void ClearMoveAndPathLines()
+        {
+            LineRendererPool.Instance.ReturnInstances(_borrowedMoveRenders);
+            LineRendererPool.Instance.ReturnInstances(_borrowedSprintRenders);
+            _pathLine.enabled = false;
+            _generatedPath.Clear();
+            _generatedPathLength = 0f;
+        }
+
         public override bool ExecuteAction(GridIndex index)
         {
             if (_generatedPath.Count > 0)
@@ -56,8 +65,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
                 CombatManager.Instance.MoveUnit(_playerActions.SelectedUnit, _generatedPath, _generatedPathLength);
 
-                _generatedPath.Clear();
-                _generatedPathLength = 0f;
+                ClearMoveAndPathLines();
                 _isUnitMoving = true;
 
                 return true;
@@ -94,7 +102,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
                 LineRendererPool.Instance.ReturnInstances(_borrowedMoveRenders);
                 LineRendererPool.Instance.ReturnInstances(_borrowedSprintRenders);
-
 
                 PathParams pathParams = GridPathfinding.CreatePathParamsFromUnit(_currentUnit, unit.GetMoveRange());
                 PathfindingResult pathResult = _playerActions.TacticsGrid.GridPathfinder.FindTilesInRange(_currentUnit.UnitGridIndex, pathParams);
@@ -249,6 +256,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void GeneratePathForUnit()
         {
+            _pathLine.enabled = false;
+
             if (!_playerActions.SelectedUnit)
                 return;
 
@@ -256,6 +265,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 return;
 
             _generatedPath.Clear();
+
             int unitMoveRange = _playerActions.SelectedUnit.GetMoveRange();
             float pathLength = UnitHasEnoughActionPoints(2) ? unitMoveRange * 2 : unitMoveRange;
 
@@ -275,6 +285,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 {
                     _pathLine.SetPosition(i, _playerActions.TacticsGrid.GetTilePositionFromIndex(result.Path[i]) + new Vector3(0f, 0.5f, 0f));
                 }
+                _pathLine.enabled = true;
             }
         }
 
@@ -293,10 +304,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void Unit_OnUnitStartedMovement(Unit unit)
         {
-            LineRendererPool.Instance.ReturnInstances(_borrowedMoveRenders);
-            LineRendererPool.Instance.ReturnInstances(_borrowedSprintRenders);
-
-            _playerActions.TacticsGrid.ClearAllTilesWithState(TileState.IsInMoveRange);
             unit.OnUnitStartedMovement -= Unit_OnUnitStartedMovement;
 
             _currentUnit = null;
@@ -305,8 +312,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private void Unit_OnUnitReachedDestination(Unit unit)
         {
             _isUnitMoving = false;
-            if (_pathLine != null)
-                _pathLine.enabled = false;
 
             unit.OnUnitStartedMovement -= Unit_OnUnitReachedDestination;
 
@@ -328,10 +333,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void OnDisable()
         {
-            LineRendererPool.Instance.ReturnInstances(_borrowedMoveRenders);
-            LineRendererPool.Instance.ReturnInstances(_borrowedSprintRenders);
-
-            _playerActions.TacticsGrid.ClearAllTilesWithState(TileState.IsInMoveRange);
+            ClearMoveAndPathLines();
         }
     }
 }
