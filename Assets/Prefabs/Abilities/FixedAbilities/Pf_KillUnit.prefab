@@ -71,4 +71,4 @@ MonoBehaviour:
         interval: 0
         executeImmediately: 0
     attribute: 1
-    minMaxModifier: {x: -10000, y: -10000}
+    magnitudeRange: {x: -100, y: -100}

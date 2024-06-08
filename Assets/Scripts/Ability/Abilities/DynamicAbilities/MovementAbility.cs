@@ -30,15 +30,15 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             return sprintRangeData;
         }
 
-        public override List<AbilityEffect> GetEffects()
+        public override List<RangedAbilityEffect> GetEffects()
         {
-            return new List<AbilityEffect>();
+            return new List<RangedAbilityEffect>();
         }
 
         protected override void CommitAbility()
         {
-            AbilityEffectReal moveCostEffect =  _costEffect.effect;
-            moveCostEffect.modifier = _moveCost;
+            AbilityEffect moveCostEffect =  _costEffect.effect;
+            moveCostEffect.magnitude = _moveCost;
             _owner.ApplyEffect(moveCostEffect); 
         }
 

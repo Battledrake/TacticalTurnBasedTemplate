@@ -47,7 +47,6 @@ MonoBehaviour:
   _abilityId: 2
   _icon: {fileID: 21300000, guid: 384a9982cc7676249932679d732c2b08, type: 3}
   _costEffect: {fileID: 11400000, guid: 6a24367ecd336df4b9a19351c380cb63, type: 2}
-  _actionCost: 1
   _cooldown: 0
   _affectsFriendly: 0
   _rangeData:
@@ -64,7 +63,15 @@ MonoBehaviour:
       requireLineOfSight: 0
       height: 0
       offsetDistance: 0
-  _effects: []
+  _effects:
+  - durationData:
+      durationPolicy: 1
+      duration: 2
+      period:
+        interval: 0
+        executeImmediately: 0
+    attribute: 3
+    magnitudeRange: {x: -20, y: -20}
   _vinePrefab: {fileID: 1199601900371724, guid: d67ed860424886e4db64e996b4d85493,
     type: 3}
   _playbackSpeed: 0.25

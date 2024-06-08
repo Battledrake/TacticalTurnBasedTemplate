@@ -372,12 +372,12 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 return;
             }
 
-            int costModifier = pathLength <= unit.GetMoveRange() ? -1 : -2;
+            int costMagnitude = pathLength <= unit.GetMoveRange() ? -1 : -2;
 
-            AbilityEffectReal costEffect = new AbilityEffectReal();
+            AbilityEffect costEffect = new AbilityEffect();
             costEffect.durationData.durationPolicy = EffectDurationPolicy.Instant;
             costEffect.attribute = AttributeId.ActionPoints;
-            costEffect.modifier = costModifier;
+            costEffect.magnitude = costMagnitude;
 
             unit.GetComponent<IAbilitySystem>().GetAbilitySystem().ApplyEffect(costEffect);
             _tacticsGrid.RemoveUnitFromTile(unit.UnitGridIndex);
@@ -549,7 +549,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             }
         }
 
-        public void ApplyEffectsToTarget(AbilitySystem instigator, AbilitySystem receiver, List<AbilityEffect> effectsToApply)
+        public void ApplyEffectsToTarget(AbilitySystem instigator, AbilitySystem receiver, List<RangedAbilityEffect> effectsToApply)
         {
             if (receiver == null)
                 return;
@@ -557,13 +557,13 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             //bool didHit = UnityEngine.Random.Range(0f, 1f) <= 0.85f;
             bool didHit = true;
 
-            List<AbilityEffectReal> effectsRealList = new List<AbilityEffectReal>();
+            List<AbilityEffect> effectsRealList = new List<AbilityEffect>();
             for (int i = 0; i < effectsToApply.Count; i++)
             {
-                AbilityEffectReal effectReal;
+                AbilityEffect effectReal;
                 effectReal.durationData = effectsToApply[i].durationData;
                 effectReal.attribute = effectsToApply[i].attribute;
-                effectReal.modifier = didHit ? StaticUtilities.MinMaxRandom(effectsToApply[i].minMaxModifier) : 0;
+                effectReal.magnitude = didHit ? StaticUtilities.MinMaxRandom(effectsToApply[i].magnitudeRange) : 0;
                 effectsRealList.Add(effectReal);
             }
             for (int i = 0; i < effectsRealList.Count; i++)

@@ -76,7 +76,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
     {
         public EffectDurationPolicy durationPolicy { get; private set; }
         public AttributeId attribute { get; private set; }
-        public int modifier { get; private set; }
+        public int magnitude { get; private set; }
         public int duration { get; private set; }
         public int baseInterval { get; private set; }
         public int currentInterval { get; private set; }
@@ -85,11 +85,11 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         /// </summary>
         public bool isPeriodic { get; private set; }
 
-        public ActiveEffect(EffectDurationPolicy durationPolicy, AttributeId attribute, int modifier, int duration, int interval)
+        public ActiveEffect(EffectDurationPolicy durationPolicy, AttributeId attribute, int magnitude, int duration, int interval)
         {
             this.durationPolicy = durationPolicy;
             this.attribute = attribute;
-            this.modifier = modifier;
+            this.magnitude = magnitude;
             this.duration = duration;
             if (interval == 0)
                 isPeriodic = false;
@@ -99,14 +99,14 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             baseInterval = interval;
             currentInterval = baseInterval;
         }
-        public void UpdateDuration(int modifier)
+        public void UpdateDuration(int amount)
         {
-            duration += modifier;
+            duration += amount;
         }
 
-        public void UpdateInterval(int modifier)
+        public void UpdateInterval(int amount)
         {
-            currentInterval += modifier;
+            currentInterval += amount;
         }
 
         public void ResetInterval()
@@ -119,7 +119,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
     {
         Instant,
         Duration,
-        Permanent
+        Infinite
     }
 
     [Serializable]
@@ -133,10 +133,18 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
     [Serializable]
     public struct EffectPeriodData
     {
-        [Tooltip("Application Interval (in turns). 0 applies effect modifier to current value until duration expires.")]
+        [Tooltip("Application Interval (in turns). Effect magnitude is applied to base value on each interval. 0 disables periodic effect.")]
         public int interval;
-        [Tooltip("Apply effect modifier immediately or first on turn start")]
+        [Tooltip("Apply effect magnitude immediately or wait until interval count")]
         public bool executeImmediately;
+    }
+
+    [Serializable]
+    public struct RangedAbilityEffect
+    {
+        public EffectDurationData durationData;
+        public AttributeId attribute;
+        public Vector2Int magnitudeRange;
     }
 
     [Serializable]
@@ -144,15 +152,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
     {
         public EffectDurationData durationData;
         public AttributeId attribute;
-        public Vector2Int minMaxModifier;
-    }
-
-    [Serializable]
-    public struct AbilityEffectReal
-    {
-        public EffectDurationData durationData;
-        public AttributeId attribute;
-        public int modifier;
+        public int magnitude;
     }
 
     public abstract class Ability : MonoBehaviour
@@ -181,7 +181,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         public abstract AbilityRangeData GetRangeData();
         public abstract AbilityRangeData GetAreaOfEffectData();
-        public abstract List<AbilityEffect> GetEffects();
+        public abstract List<RangedAbilityEffect> GetEffects();
 
         public void InitAbility(AbilitySystem abilitySystem)
         {

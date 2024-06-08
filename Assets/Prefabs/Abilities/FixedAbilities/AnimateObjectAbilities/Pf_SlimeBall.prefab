@@ -47,7 +47,6 @@ MonoBehaviour:
   _abilityId: 10
   _icon: {fileID: 21300000, guid: 565a01bbd18e5e249a49aac4de1d1e69, type: 3}
   _costEffect: {fileID: 11400000, guid: 6a24367ecd336df4b9a19351c380cb63, type: 2}
-  _actionCost: 1
   _cooldown: 0
   _affectsFriendly: 0
   _rangeData:
@@ -72,7 +71,7 @@ MonoBehaviour:
         interval: 0
         executeImmediately: 0
     attribute: 1
-    minMaxModifier: {x: -2, y: -3}
+    magnitudeRange: {x: -1, y: -3}
   _objectToAnimate: {fileID: 6636130739088828296, guid: 438e239d4d0f17049a999e30216259f0,
     type: 3}
   _taskData: {fileID: 11400000, guid: 3fc9bf9f143e06147a449c48676c3b82, type: 2}

@@ -202,7 +202,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         }
 
         /// <summary>
-        /// This sets the current value. Any existing effect modifiers should have been accounted for by the caller.
+        /// This sets the current value. Any existing effect magnitudes should have been accounted for by the caller.
         /// </summary>
         /// <param name="attribute"></param>
         /// <param name="newValue"></param>
@@ -253,11 +253,11 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                     //We don't want to apply a periodic effect to an effect we're removing. Design decision. Contains check could be removed to allow one last periodic effect on removal.
                     if (!effectsToRemove.Contains(activeEffectPair.Value[i]) && activeEffectPair.Value[i].isPeriodic)
                     {
-                        //Update the interval counter. Once it reaches 0 we apply the modifier and reset.
+                        //Update the interval counter. Once it reaches 0 we apply the magnitude and reset.
                         activeEffectPair.Value[i].UpdateInterval(-1);
                         if (activeEffectPair.Value[i].currentInterval <= 0)
                         {
-                            ExecuteEffect(activeEffectPair.Key, activeEffectPair.Value[i].modifier);
+                            ExecuteEffect(activeEffectPair.Key, activeEffectPair.Value[i].magnitude);
                             activeEffectPair.Value[i].ResetInterval();
                         }
                     }
@@ -280,17 +280,17 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private void UpdateAttributeCurrentValue(AttributeId id)
         {
             int baseValue = _attributes[id].baseValue;
-            int effectModifierSum = 0;
+            int effectMagnitudeSum = 0;
             if (_activeEffects.TryGetValue(id, out List<ActiveEffect> attributeEffects))
             {
                 for (int i = 0; i < attributeEffects.Count; i++)
                 {
-                    //We don't want periodic effect modifiers to be added to current values. These are applied to base values at intervals.
+                    //We don't want periodic effect magnitudes to be added to current values. These are applied to base values at intervals.
                     if (!attributeEffects[i].isPeriodic)
-                        effectModifierSum += attributeEffects[i].modifier;
+                        effectMagnitudeSum += attributeEffects[i].magnitude;
                 }
             }
-            int effectSum = baseValue + effectModifierSum;
+            int effectSum = baseValue + effectMagnitudeSum;
             SetAttributeCurrentValue(id, effectSum);
         }
 
@@ -299,10 +299,10 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         /// </summary>
         /// <param name="id"></param>
         /// <param name="effect"></param>
-        private void ExecuteEffect(AttributeId id, int modifier)
+        private void ExecuteEffect(AttributeId id, int magnitude)
         {
             int baseValue = _attributes[id].baseValue;
-            int newValue = baseValue + modifier;
+            int newValue = baseValue + magnitude;
             SetAttributeBaseValue(id, newValue);
         }
 
@@ -326,9 +326,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         /// <param name="attribute"></param>
         /// <param name="effect"></param>
         /// <returns></returns>
-        private ActiveEffect ApplyActiveEffectToSelf(AttributeId attribute, AbilityEffectReal effect)
+        private ActiveEffect ApplyActiveEffectToSelf(AttributeId attribute, AbilityEffect effect)
         {
-            ActiveEffect newEffect = new ActiveEffect(effect.durationData.durationPolicy, attribute, effect.modifier, effect.durationData.duration, effect.durationData.period.interval);
+            ActiveEffect newEffect = new ActiveEffect(effect.durationData.durationPolicy, attribute, effect.magnitude, effect.durationData.duration, effect.durationData.period.interval);
             if (_activeEffects.TryGetValue(attribute, out List<ActiveEffect> attributeEffects))
             {
                 attributeEffects.Add(newEffect);
@@ -343,7 +343,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             {
                 if (effect.durationData.period.executeImmediately)
                 {
-                    ExecuteEffect(attribute, effect.modifier);
+                    ExecuteEffect(attribute, effect.magnitude);
                 }
             }
             else
@@ -361,15 +361,15 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         }
 
         /// <summary>
-        /// Bridge for effect application. Instant effects are executed (modifier applied immediately to base value). Duration effects result in an ActiveEffect creation with returned reference.
+        /// Bridge for effect application. Instant effects are executed (magnitude applied immediately to base value). Duration effects result in an ActiveEffect creation with returned reference.
         /// </summary>
         /// <param name="effect"></param>
         /// <returns></returns>
-        public ActiveEffect ApplyEffect(AbilityEffectReal effect)
+        public ActiveEffect ApplyEffect(AbilityEffect effect)
         {
             if (effect.durationData.durationPolicy == EffectDurationPolicy.Instant)
             {
-                ExecuteEffect(effect.attribute, effect.modifier);
+                ExecuteEffect(effect.attribute, effect.magnitude);
             }
             else
             {

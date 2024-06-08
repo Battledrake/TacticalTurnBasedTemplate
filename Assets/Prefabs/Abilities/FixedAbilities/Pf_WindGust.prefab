@@ -47,7 +47,6 @@ MonoBehaviour:
   _abilityId: 3
   _icon: {fileID: 21300000, guid: 3c7e93125f544564ea234f4f23b39a1e, type: 3}
   _costEffect: {fileID: 11400000, guid: 6a24367ecd336df4b9a19351c380cb63, type: 2}
-  _actionCost: 1
   _cooldown: 0
   _affectsFriendly: 0
   _rangeData:
@@ -72,7 +71,7 @@ MonoBehaviour:
         interval: 0
         executeImmediately: 0
     attribute: 1
-    minMaxModifier: {x: -3, y: -4}
+    magnitudeRange: {x: -2, y: -3}
   _projectilePrefab: {fileID: 8467555195680559298, guid: 500f8dbd9712d644a95ac106c8a00ca5,
     type: 3}
   _taskData: {fileID: 11400000, guid: 5453bef032747ca4eb5acac1930ad5e7, type: 2}

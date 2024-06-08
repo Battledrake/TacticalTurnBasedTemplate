@@ -19,7 +19,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public AttributeId attribute;
         public int baseValue;
         /// <summary>
-        /// We keep the currentValue private as its value is always set based on the base value + effect modifiers.
+        /// We keep the currentValue private as its value is always set based on the base value + effect magnitudes.
         /// </summary>
         private int _currentValue;
 

@@ -7,6 +7,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
     [CreateAssetMenu(fileName = "Effect", menuName = "TTBT/Ability/Effect")]
     public class AbilityEffectScriptable : ScriptableObject
     {
-        public AbilityEffectReal effect;
+        public AbilityEffect effect;
     }
 }

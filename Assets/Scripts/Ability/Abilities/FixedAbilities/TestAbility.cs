@@ -15,7 +15,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         public override void ActivateAbility(AbilityActivationData activationData)
         {
-            //ExecuteAbilityTask(Action action);
             _startPosition = activationData.tacticsGrid.GetWorldPositionFromGridIndex(activationData.originIndex) + Vector3.up;
             _targetPosition = activationData.tacticsGrid.GetWorldPositionFromGridIndex(activationData.targetIndex);
             Vector3 lookDirection = _targetPosition - _startPosition;
@@ -27,13 +26,25 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             sysMain.startSpeed = Vector3.Distance(_targetPosition, _startPosition) / 2 * 10;
             sysMain.simulationSpeed = _playbackSpeed;
 
-            Invoke("EndAbility", 2f);
+            Invoke("EndAbility", 4f);
+
+            if(activationData.tacticsGrid.GetTileDataFromIndex(activationData.targetIndex, out TileData targetData))
+            {
+                if (targetData.unitOnTile)
+                {
+                    AbilitySystem receiver = targetData.unitOnTile.GetComponent<IAbilitySystem>().GetAbilitySystem();
+                    if (receiver)
+                    {
+                        CombatManager.Instance.ApplyEffectsToTarget(_owner, receiver, _effects);
+                    }
+                }
+            }
         }
 
         public override void EndAbility()
         {
             Destroy(_spawnedObject);
-            EndAbility();
+            base.EndAbility();
         }
     }
 }
