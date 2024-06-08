@@ -36,6 +36,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
     {
         public static CombatManager Instance;
 
+        //Do we need all these events? There's a lot happening, and they all have uses. Maybe a TurnManager class to separate some of this out.
         public event Action<Unit, GridIndex> OnUnitGridIndexChanged;
         public event Action OnUnitTeamChanged;
         public event Action OnCombatStarted;
@@ -43,7 +44,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public event Action OnCombatEnded;
         public event Action OnPlayerTurnStarted;
         public event Action OnPlayerTurnEnded;
-        public event Action OnAbilityUseCompleted;
         public event Action OnActiveTeamChanged;
         public event Action<Unit> OnActiveUnitChanged;
         public event Action<Unit> OnUnitAddedDuringCombat;
@@ -323,7 +323,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             }
         }
 
-        //If null is passed in, grab next in list. Otherwise, select unit passed in selected.
         public void AdvanceToNextTeamUnit()
         {
             Unit currentUnit = _activeUnit;
@@ -361,6 +360,14 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             {
                 unit.OnUnitReachedDestination += Unit_OnUnitReachedDestination;
                 gridMoveComp.SetPathAndMove(path);
+
+                OnActionStarted?.Invoke();
+            }
+            else
+            {
+                Debug.LogWarning("Unit does not have a grid movement component. Cancelling Operation");
+                unit.OnUnitReachedDestination -= Unit_OnUnitReachedDestination;
+                return;
             }
 
             int costModifier = pathLength <= unit.GetMoveRange() ? -1 : -2;
@@ -374,11 +381,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _tacticsGrid.RemoveUnitFromTile(unit.UnitGridIndex);
             _tacticsGrid.AddUnitToTile(path.Last(), unit, false);
             OnUnitGridIndexChanged?.Invoke(unit, path.Last());
-
-            if (unit.GetAbilitySystem().GetAttributeCurrentValue(AttributeId.ActionPoints) <= 0)
-                EndUnitTurn();
-
-            OnActionStarted?.Invoke();
         }
 
         public void TeleportUnit(Unit unit, GridIndex targetIndex)
@@ -391,6 +393,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             unit.OnUnitReachedDestination -= Unit_OnUnitReachedDestination;
             OnActionEnded?.Invoke();
+
+            if (unit.GetAbilitySystem().GetAttributeCurrentValue(AttributeId.ActionPoints) <= 0)
+                EndUnitTurn();
         }
 
         public void AddUnitToCombat(Vector3 worldPosition, Unit unit, int teamIndex = 0)
@@ -505,6 +510,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             activationData.targetIndex = target;
 
             ability.OnAbilityEnded += Ability_OnAbilityEnded;
+
             OnActionStarted?.Invoke();
 
             if (!ability.TryActivateAbility(activationData))
@@ -519,15 +525,14 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private void Ability_OnAbilityEnded(Ability ability)
         {
             ability.OnAbilityEnded -= Ability_OnAbilityEnded;
+            OnActionEnded?.Invoke();
 
             if (_isCombatFinishing) return;
 
-            OnAbilityUseCompleted?.Invoke();
             if (ability.GetAbilityOwner().GetAttributeCurrentValue(AttributeId.ActionPoints) <= 0)
             {
                 EndUnitTurn();
             }
-            OnActionEnded?.Invoke();
         }
 
         public void ApplyEffectsToTarget(AbilitySystem instigator, AbilitySystem receiver, List<AbilityEffect> effectsToApply)

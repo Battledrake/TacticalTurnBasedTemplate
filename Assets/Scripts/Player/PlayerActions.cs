@@ -112,6 +112,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _endCombatButton.gameObject.SetActive(true);
             ClearSelectedActions();
             SetSelectedTileAndUnit(GridIndex.Invalid());
+
+            _inputDisabled = true;
         }
 
         private void CombatManager_OnCombatEnded()
@@ -127,14 +129,14 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private void CombatManager_OnPlayerTurnStarted()
         {
             _endTurnButton.gameObject.SetActive(true);
-            //SetSelectedTileAndUnit(CombatManager.Instance.GetActiveUnit().UnitGridIndex);
-            //SetSelectedActions(_combatMoveActionPrefab, null);
+            _inputDisabled = false;
         }
 
         private void CombatManager_OnPlayerTurnEnded()
         {
             _endTurnButton.gameObject.SetActive(false);
             ClearSelectedActions();
+            _inputDisabled = true;
         }
 
         private void Unit_OnAnyUnitDied(Unit unit)
@@ -157,12 +159,13 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             //TODO: if isPlayerTurn
             SetSelectedTileAndUnit(unit.UnitGridIndex);
             SetSelectedActions(_combatMoveActionPrefab, null);
+
+            _inputDisabled = false;
+            _abilityBarController.ShowBar();
         }
 
         private void CombatManager_OnActionEnded()
         {
-            _inputDisabled = false;
-            _abilityBarController.ShowBar();
         }
 
         private void CombatManager_OnActionStarted()

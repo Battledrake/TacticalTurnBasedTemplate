@@ -20,11 +20,11 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _playerActions.TacticsGrid.ClearAllTilesWithState(TileState.IsInAbilityRange);
             _playerActions.TacticsGrid.ClearAllTilesWithState(TileState.IsInAoeRange);
 
-            CombatManager.Instance.OnAbilityUseCompleted += CombatManager_OnAbilityBehaviorComplete;
+            CombatManager.Instance.OnActionEnded += CombatManager_OnActionEnded;
 
             if (!CombatManager.Instance.TryActivateAbility(_currentAbility, _playerActions.SelectedTile, index))
             {
-                CombatManager.Instance.OnAbilityUseCompleted -= CombatManager_OnAbilityBehaviorComplete;
+                CombatManager.Instance.OnActionEnded -= CombatManager_OnActionEnded;
                 _abilityInUse = false;
                 return false;
             }
@@ -44,9 +44,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             return false;
         }
 
-        private void CombatManager_OnAbilityBehaviorComplete()
+        private void CombatManager_OnActionEnded()
         {
-            CombatManager.Instance.OnAbilityUseCompleted -= CombatManager_OnAbilityBehaviorComplete;
+            CombatManager.Instance.OnActionEnded -= CombatManager_OnActionEnded;
             _playerActions.PlayerAbilityBar.SetSelectedAbilityFromIndex(-1);
             _abilityInUse = false;
         }
