@@ -12,7 +12,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public event Action<AttributeId, int, int> OnAttributeBaseChanged;
         public event Action<AttributeId, int, int> OnAttributeCurrentChanged;
 
-        [SerializeField] private int _maxBaseActionPoints = 2;
         [SerializeField] private int _teamIndex = 8;
         [SerializeField] private Transform _abilityInstanceContainer;
 

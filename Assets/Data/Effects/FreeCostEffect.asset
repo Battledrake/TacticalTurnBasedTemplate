@@ -20,4 +20,4 @@ MonoBehaviour:
         interval: 0
         executeImmediately: 0
     attribute: 0
-    modifier: -1
+    modifier: 0

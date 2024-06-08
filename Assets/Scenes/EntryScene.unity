@@ -7151,9 +7151,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a400875770b5bc34fb580a7b4e11e181, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _maxBaseActionPoints: 2
   _teamIndex: 8
-  _baseActionPoints: 1000
   _abilityInstanceContainer: {fileID: 1401220137}
+  _actionPointEffect: {fileID: 0}
 --- !u!1001 &348643395
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -29472,7 +29473,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _lineRendererPrefab: {fileID: 5320414255084716970, guid: 442016c996cdda24ca848fb85951761f,
     type: 3}
-  _baseInstanceCount: 500
+  _baseInstanceCount: 1000
   _instanceContainer: {fileID: 186280646}
 --- !u!1 &1550524270
 GameObject:

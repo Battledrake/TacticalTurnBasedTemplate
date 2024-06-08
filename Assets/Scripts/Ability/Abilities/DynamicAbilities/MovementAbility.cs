@@ -12,6 +12,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
     /// </summary>
     public class MovementAbility : Ability
     {
+        [SerializeField] private AbilityEffectScriptable _doubleCostEffect;
+        private int _abilityCost;
+
         public override AbilityRangeData GetRangeData()
         {
             AbilityRangeData moveRangeData = new AbilityRangeData();
@@ -33,10 +36,16 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             return new List<AbilityEffect>();
         }
 
+        protected override void CommitAbility()
+        {
+            _owner.ApplyEffect(_abilityCost == 1 ? _costEffect.effect : _doubleCostEffect.effect); 
+        }
+
+
         //Do Logic Here
         public override void ActivateAbility(AbilityActivationData activationData)
         {
-            _actionCost = CombatManager.Instance.GetAbilityRange(activationData.originIndex, this.GetRangeData()).Contains(activationData.targetIndex) ? 1 : 2;
+            _abilityCost = CombatManager.Instance.GetAbilityRange(activationData.originIndex, this.GetRangeData()).Contains(activationData.targetIndex) ? 1 : 2;
 
             CommitAbility();
 
