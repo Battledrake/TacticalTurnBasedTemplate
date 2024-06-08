@@ -68,8 +68,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private Dictionary<int, HashSet<Unit>> _unitTeams = new Dictionary<int, HashSet<Unit>>();
         private List<Unit> _orderedUnits = new List<Unit>();
 
-        private int _turnsCompleted = 0;
-
         private bool _isInCombat = false;
         private bool _isCombatFinishing = false;
         private bool _showEnemyMoveRange = false;
@@ -177,7 +175,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             switch (_turnOrderType)
             {
                 case TurnOrderType.Team:
-                    SetActiveTeamIndex();
                     OrderUnitsByTeam();
                     break;
                 case TurnOrderType.Stat:
@@ -197,6 +194,11 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _activeTeamIndex = -1;
             _orderedUnits.Clear();
 
+            if (_turnOrderType == TurnOrderType.Team)
+            {
+                SetActiveTeamIndex();
+            }
+
             OrderUnitsByTurnOrderType();
 
             for (int i = 0; i < _unitsInCombat.Count; i++)
@@ -207,8 +209,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _isInCombat = true;
             _isCombatFinishing = false;
             OnCombatStarted?.Invoke();
-
-            _turnsCompleted = 0;
 
             _activeUnit = null;
 
@@ -225,7 +225,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 }
                 else
                 {
-                    AdvanceToNextUnit();
+                    SetNextTeamUnitAsActive();
 
                     for (int i = 0; i < _orderedUnits.Count; i++)
                     {
@@ -236,22 +236,37 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             }
             else
             {
-                AdvanceToNextUnit();
+                _activeUnit = GetNextOrderedUnit();
                 _activeUnit.TurnStarted();
-            }
 
-            OnActiveUnitChanged?.Invoke(_activeUnit);
+                //TODO: If not ai controlled
+                OnPlayerTurnStarted?.Invoke();
+
+                OnActiveUnitChanged?.Invoke(_activeUnit);
+            }
 
             //TODO: Make controller a singleton? Or different way of handling.
             GameObject.Find("[Cameras]").GetComponent<CameraController>().SetMoveToTarget(_activeUnit.transform.position);
         }
 
-        private void AdvanceToNextUnit()
+        private Unit GetNextOrderedUnit()
         {
+            int activeIndex = _orderedUnits.IndexOf(_activeUnit);
+            return _orderedUnits[++activeIndex % _orderedUnits.Count];
+        }
+
+        public void SetNextTeamUnitAsActive()
+        {
+            if (_turnOrderType != TurnOrderType.Team) return;
+
+            Unit currentUnit = _activeUnit;
             if (_orderedUnits.Count > 0)
             {
                 int activeIndex = _orderedUnits.IndexOf(_activeUnit);
                 _activeUnit = _orderedUnits[++activeIndex % _orderedUnits.Count];
+
+                if (currentUnit != _activeUnit)
+                    OnActiveUnitChanged.Invoke(_activeUnit);
             }
         }
 
@@ -259,7 +274,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             if (_turnOrderType == TurnOrderType.Team)
             {
-                _turnsCompleted = 0;
                 _orderedUnits.Clear();
 
                 //if activeTeam == player
@@ -269,7 +283,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 OrderUnitsByTeam();
                 OnActiveTeamChanged?.Invoke();
             }
-            //Temporary as starting next turns too fast is a terrible experience.
+            //Temporary as starting next turns too fast feels bad.
             StartCoroutine(WaitToStartTurn());
             IEnumerator WaitToStartTurn()
             {
@@ -280,19 +294,18 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         public void EndUnitTurn()
         {
-            _turnsCompleted++;
             if (_turnOrderType == TurnOrderType.Team)
             {
-                if (_turnsCompleted >= _unitTeams[_activeTeamIndex].Count)
+                _activeUnit.TurnEnded();
+                _orderedUnits.Remove(_activeUnit);
+
+                if (_orderedUnits.Count <= 0)
                 {
                     NextTurn();
                 }
                 else
                 {
-                    Unit turnEndedUnit = _activeUnit;
-                    turnEndedUnit.TurnEnded();
-                    AdvanceToNextTeamUnit();
-                    _orderedUnits.Remove(turnEndedUnit);
+                    SetNextTeamUnitAsActive();
                 }
             }
             else
@@ -323,18 +336,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             }
         }
 
-        public void AdvanceToNextTeamUnit()
-        {
-            Unit currentUnit = _activeUnit;
-            if (_turnOrderType == TurnOrderType.Team)
-            {
-                AdvanceToNextUnit();
-
-                if (currentUnit != _activeUnit)
-                    OnActiveUnitChanged?.Invoke(_activeUnit);
-            }
-        }
-
         public void EndCombat()
         {
             for (int i = 0; i < _unitsInCombat.Count; i++)
@@ -349,6 +350,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void FinishCombat(int winTeamIndex)
         {
+            StopAllCoroutines();
             _isCombatFinishing = true;
             OnCombatFinishing?.Invoke(winTeamIndex);
         }
@@ -422,9 +424,15 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 if (_turnOrderType == TurnOrderType.Team)
                 {
                     if (teamIndex == _activeTeamIndex)
+                    {
                         _orderedUnits.Add(unit);
+                        unit.TurnStarted();
+                    }
                     else
+                    {
                         return;
+                    }
+
                 }
                 else
                 {
@@ -461,6 +469,12 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private void Unit_OnUnitDied(Unit unit, bool shouldDestroy = false)
         {
             unit.OnUnitDied -= Unit_OnUnitDied;
+
+            if (_activeUnit == unit)
+            {
+                EndUnitTurn();
+            }
+
 
             //TODO: fix this when we fix the SetUnitTeamIndex stuff
             int unitTeam = unit.TeamIndex;

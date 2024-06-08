@@ -116,6 +116,7 @@ public class CombatTabController : MonoBehaviour
 
     private void CombatManager_OnCombatStarted()
     {
+        _activeUnitsPreCombat.Clear();
         List<Unit> unitsInCombat = new List<Unit>(CombatManager.Instance.UnitsInCombat);
 
         for(int i = 0; i < unitsInCombat.Count; i++)

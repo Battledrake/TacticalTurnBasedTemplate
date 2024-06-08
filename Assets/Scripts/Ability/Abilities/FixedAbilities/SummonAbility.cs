@@ -60,8 +60,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             CombatManager.Instance.AddUnitToCombat(activationData.targetIndex, _summonedUnit, _owner.GetOwningUnit().TeamIndex);
 
             _summonedUnit.OnUnitDied += Unit_OnSummonedUnitDied;
-            if(_owner.GetOwningUnit())
-            _owner.GetOwningUnit().OnUnitDied += Unit_OnOwningUnitDied;
+            if (_owner.GetOwningUnit())
+                _owner.GetOwningUnit().OnUnitDied += Unit_OnOwningUnitDied;
 
             _isActive = true;
         }
@@ -84,16 +84,17 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private void Unit_OnOwningUnitDied(Unit unit, bool shouldDestroy)
         {
             unit.OnUnitDied -= Unit_OnOwningUnitDied;
-            _summonedUnit.Die();
+            _summonedUnit.Die(true);
         }
 
         private void Unit_OnSummonedUnitDied(Unit unit, bool shouldDestroy)
         {
+            _summonedUnit.OnUnitDied -= Unit_OnSummonedUnitDied;
+
             if (_owner.GetOwningUnit())
                 _owner.GetOwningUnit().OnUnitDied -= Unit_OnSummonedUnitDied;
 
-            _summonedUnit.OnUnitDied -= Unit_OnSummonedUnitDied;
-            CombatManager.Instance.RemoveUnitFromCombat(unit, true, 2f);
+            Destroy(_summonedUnit.gameObject, 2f);
             _isActive = false;
         }
 

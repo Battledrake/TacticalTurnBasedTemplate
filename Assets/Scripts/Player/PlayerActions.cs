@@ -156,16 +156,17 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void CombatManager_OnActiveUnitChanged(Unit unit)
         {
-            //TODO: if isPlayerTurn
+            //TODO: Need a check to see if unit is under our control.
             SetSelectedTileAndUnit(unit.UnitGridIndex);
             SetSelectedActions(_combatMoveActionPrefab, null);
 
-            _inputDisabled = false;
             _abilityBarController.ShowBar();
         }
 
         private void CombatManager_OnActionEnded()
         {
+            _inputDisabled = false;
+            _abilityBarController.ShowBar();
         }
 
         private void CombatManager_OnActionStarted()

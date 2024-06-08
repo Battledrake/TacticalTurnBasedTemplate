@@ -26,7 +26,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void Start()
         {
-            //CombatManager.Instance.OnUnitTeamChanged += CombatManager_OnUnitTeamChanged;
             CombatManager.Instance.OnCombatStarted += CombatManager_OnCombatStarted;
             CombatManager.Instance.OnCombatEnded += CombatManager_OnCombatEnded;
             CombatManager.Instance.OnActiveUnitChanged += CombatManager_OnActiveUnitChanged;
@@ -37,7 +36,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void OnDisable()
         {
-            //CombatManager.Instance.OnUnitTeamChanged += CombatManager_OnUnitTeamChanged;
             CombatManager.Instance.OnCombatStarted -= CombatManager_OnCombatStarted;
             CombatManager.Instance.OnCombatEnded -= CombatManager_OnCombatEnded;
             CombatManager.Instance.OnActiveUnitChanged -= CombatManager_OnActiveUnitChanged;

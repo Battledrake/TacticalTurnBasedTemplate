@@ -55,7 +55,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             if (Input.GetKeyDown(KeyCode.Tab))
             {
-                CombatManager.Instance.AdvanceToNextTeamUnit();
+                CombatManager.Instance.SetNextTeamUnitAsActive();
             }
 
             if (_moveToTarget)

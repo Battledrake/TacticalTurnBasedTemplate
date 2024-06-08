@@ -55,7 +55,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _unit.OnUnitSelectedChanged += Unit_OnUnitSelectedChanged;
             _unit.OnTurnEnded += Unit_OnTurnEnded;
 
-            _isActive = true;
+            if(CombatManager.Instance.TurnOrderType == TurnOrderType.Team)
+                _isActive = true;
         }
 
         private void OnDisable()
@@ -104,9 +105,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void Unit_OnUnitHoveredChanged(bool isHovered)
         {
-            if (!_isActive)
-                return;
-
             Color defaultAlpha = _defaultBackground.color;
             Color selectedAlpha = _selectedBackground.color;
             if (isHovered)
@@ -158,11 +156,11 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             if (_isActive)
             {
-                //TODO: Fixed one. We'll fix cameras one day. All these camera GameObject.Finds have got to go.
-                GameObject.Find("[Cameras]").GetComponent<CameraController>().SetMoveToTarget(_unit.transform.position + new Vector3(0f, 1.5f, 0f));
 
                 CombatManager.Instance.SetActiveTeamUnit(_unit);
             }
+            //TODO: Fixed one. We'll fix cameras one day. All these camera GameObject.Finds have got to go.
+            GameObject.Find("[Cameras]").GetComponent<CameraController>().SetMoveToTarget(_unit.transform.position + new Vector3(0f, 1.5f, 0f));
         }
     }
 }

@@ -77,7 +77,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             if (_isUnitMoving) return;
 
-            if (!_playerActions.SelectedUnit) return;
+            if (!_playerActions.SelectedUnit || _playerActions.SelectedUnit != _currentUnit) return;
 
             if (!UnitHasEnoughActionPoints()) return;
 
