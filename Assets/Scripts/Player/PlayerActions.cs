@@ -26,7 +26,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         [Header("Dependencies")]
         [SerializeField] private TacticsGrid _tacticsGrid;
         [SerializeField] private AbilityTabController _abilityTabController;
-        [SerializeField] private AbilityBarController _abilityBarController;
+        [SerializeField] private PlayerAbilityUIController _playerAbilityUIController;
 
         public TacticsGrid TacticsGrid { get => _tacticsGrid; }
         public GridIndex HoveredTile { get => _hoveredTile; set => _selectedTile = value; }
@@ -36,7 +36,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public ActionBase LeftClickAction { get => _leftClickAction; }
         public ActionBase RightClickAction { get => _rightClickAction; }
         public Ability CurrentAbility { get => _currentAbility; set { _currentAbility = value; OnCurrentAbilityChanged?.Invoke(_currentAbility); } }
-        public AbilityBarController PlayerAbilityBar { get => _abilityBarController; }
+        public PlayerAbilityUIController PlayerAbilityBar { get => _playerAbilityUIController; }
 
         private GridIndex _hoveredTile = new GridIndex(int.MinValue, int.MinValue);
         private GridIndex _selectedTile = new GridIndex(int.MinValue, int.MinValue);
@@ -72,7 +72,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
             CombatManager.Instance.OnActiveUnitChanged += CombatManager_OnActiveUnitChanged;
             CombatManager.Instance.OnCombatFinishing += CombatManager_OnCombatFinishing;
-            _abilityBarController.OnSelectedAbilityChanged += AbilityBar_OnSelectedAbilityChanged;
+            _playerAbilityUIController.OnSelectedAbilityChanged += AbilityBar_OnSelectedAbilityChanged;
             CombatManager.Instance.OnActionStarted += CombatManager_OnActionStarted;
             CombatManager.Instance.OnActionEnded += CombatManager_OnActionEnded;
         }
@@ -81,8 +81,11 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             _endCombatButton.gameObject.SetActive(false);
             _endTurnButton.gameObject.SetActive(false);
+
             ClearSelectedActions();
             SetSelectedTileAndUnit(GridIndex.Invalid());
+
+            _playerAbilityUIController.HideVisuals();
 
             _combatFinishedPanel.gameObject.SetActive(true);
             _combatFinishedPanel.GetComponentInChildren<TextMeshProUGUI>().SetText($"Team {winTeamIndex} Won!");
@@ -120,8 +123,11 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             _endCombatButton.gameObject.SetActive(false);
             _endTurnButton.gameObject.SetActive(false);
+
             ClearSelectedActions();
             SetSelectedTileAndUnit(GridIndex.Invalid());
+
+            _playerAbilityUIController.HideVisuals();
 
             _inputDisabled = false;
         }
@@ -160,7 +166,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             SetSelectedTileAndUnit(unit.UnitGridIndex);
             SetSelectedActions(_combatMoveActionPrefab, null);
 
-            _abilityBarController.ShowBar();
+            _playerAbilityUIController.DisplayVisuals();
         }
 
         private void CombatManager_OnActionEnded()
@@ -168,13 +174,13 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             if (CombatManager.Instance.IsCombatFinishing()) return;
 
             _inputDisabled = false;
-            _abilityBarController.ShowBar();
+            _playerAbilityUIController.DisplayVisuals();
         }
 
         private void CombatManager_OnActionStarted()
         {
             _inputDisabled = true;
-            _abilityBarController.HideBar();
+            _playerAbilityUIController.HideVisuals();
         }
 
         private void OnHoveredTileChanged_UpdateActions(GridIndex gridIndex)
@@ -230,7 +236,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 char pressedChar = inputString[0];
                 if(pressedChar >= '0' && pressedChar <= '9')
                 {
-                    _abilityBarController.SetSelectedAbilityFromIndex(pressedChar - 49);
+                    _playerAbilityUIController.SetSelectedAbilityFromIndex(pressedChar - 49);
                 }
             }
 

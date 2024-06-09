@@ -175,9 +175,11 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public Sprite Icon { get => _icon; }
 
         protected AbilitySystem _owner;
+        protected int _activeCooldown;
 
         public AbilityId GetAbilityId() => _abilityId;
         public AbilitySystem GetAbilityOwner() => _owner;
+        public int GetActiveCooldown() => _activeCooldown;
 
         public abstract AbilityRangeData GetRangeData();
         public abstract AbilityRangeData GetAreaOfEffectData();
@@ -190,26 +192,24 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         public void ReduceCooldown(int amount)
         {
-            if (_cooldown > 0)
+            if (_activeCooldown > 0)
             {
-                _cooldown -= amount;
-                if (_cooldown < 0)
-                    _cooldown = 0;
+                _activeCooldown += amount;
             }
         }
 
         public virtual bool CanActivateAbility(AbilityActivationData activationData)
         {
-            if (_owner.GetAttributeCurrentValue(AttributeId.ActionPoints) <= 0)
-                return false;
+            if (_activeCooldown > 0) return false;
 
-            if (CombatManager.Instance.GetAbilityRange(activationData.originIndex, this.GetRangeData()).Contains(activationData.targetIndex))
-                return true;
+            if (_owner.GetAttributeCurrentValue(AttributeId.ActionPoints) <= 0) return false;
+
+            if (CombatManager.Instance.GetAbilityRange(activationData.originIndex, this.GetRangeData()).Contains(activationData.targetIndex)) return true;
 
             return false;
         }
 
-        protected virtual void CommitAbility() { _owner.ApplyEffect(_costEffect.effect); }
+        protected virtual void CommitAbility() { _owner.ApplyEffect(_costEffect.effect); _activeCooldown = _cooldown; }
 
         public abstract void ActivateAbility(AbilityActivationData activationData);
 

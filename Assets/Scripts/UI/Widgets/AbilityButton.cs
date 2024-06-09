@@ -15,12 +15,16 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         [SerializeField] private Color _defaultBorderColor;
         [SerializeField] private Color _selectedBorderColor;
         [SerializeField] private Image _borderImage;
+        [SerializeField] private Image _greyCover;
         [SerializeField] private Image _icon;
+        [SerializeField] private TextMeshProUGUI _cooldownText;
 
         private Toggle _buttonToggle;
         private Animator _animator;
 
         private AbilityId _abilityId;
+
+        public AbilityId GetAbilityId() => _abilityId;
 
         private void Awake()
         {
@@ -36,6 +40,21 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private void OnDisable()
         {
             _buttonToggle.onValueChanged.RemoveListener(OnButtonToggleChanged);
+        }
+
+        public void SetCooldownValue(int value)
+        {
+            if (value > 0)
+            {
+                _greyCover.enabled = true;
+                _cooldownText.enabled = true;
+                _cooldownText.text = value.ToString();
+            }
+            else
+            {
+                _greyCover.enabled = false;
+                _cooldownText.enabled = false;
+            }
         }
 
         private void OnButtonToggleChanged(bool isOn)

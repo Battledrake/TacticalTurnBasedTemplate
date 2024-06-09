@@ -43,7 +43,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
             foreach (KeyValuePair<AbilityId, Ability> abilityPair in _abilities)
             {
-                abilityPair.Value.ReduceCooldown(1);
+                abilityPair.Value.ReduceCooldown(-1);
             }
         }
 
