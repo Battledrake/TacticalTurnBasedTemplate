@@ -23,9 +23,13 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             if (_owner.GetOwningUnit())
             {
                 _owner.GetOwningUnit().LookAtTarget(activationData.targetIndex);
-            }
 
-            SpawnAnimationTaskAndExecute(activationData);
+                SpawnAnimationTaskAndExecute(activationData);
+            }
+            else
+            {
+                SummonUnit(activationData);
+            }
         }
 
         private void SpawnAnimationTaskAndExecute(AbilityActivationData activationData)
@@ -57,7 +61,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _summonedUnit = Instantiate(_unitPrefab, activationData.tacticsGrid.GetWorldPositionFromGridIndex(activationData.targetIndex), Quaternion.identity);
             _summonedUnit.InitUnit(_unitType);
 
-            CombatManager.Instance.AddUnitToCombat(activationData.targetIndex, _summonedUnit, _owner.GetOwningUnit().TeamIndex);
+            CombatManager.Instance.AddUnitToCombat(activationData.targetIndex, _summonedUnit, _owner.TeamIndex);
 
             _summonedUnit.OnUnitDied += Unit_OnSummonedUnitDied;
             if (_owner.GetOwningUnit())

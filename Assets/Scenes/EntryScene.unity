@@ -7303,7 +7303,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a400875770b5bc34fb580a7b4e11e181, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _teamIndex: 8
+  _teamIndex: 7
   _abilityInstanceContainer: {fileID: 1401220137}
   _actionPointEffect: {fileID: 0}
 --- !u!1001 &348643395

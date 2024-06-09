@@ -16,7 +16,13 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
             if (_ability != null)
             {
-                return CombatManager.Instance.TryActivateAbility(_ability, _playerActions.SelectedTile, index);
+                if (!CombatManager.Instance.GetAbilityRange(_playerActions.SelectedTile, _ability.GetRangeData()).Contains(index)) return false;
+
+                AbilityActivationData activationData;
+                activationData.tacticsGrid = _playerActions.TacticsGrid;
+                activationData.originIndex = _playerActions.SelectedTile;
+                activationData.targetIndex = index;
+                return _ability.TryActivateAbility(activationData);
             }
             return false;
         }

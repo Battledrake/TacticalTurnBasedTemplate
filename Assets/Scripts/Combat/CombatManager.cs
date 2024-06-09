@@ -480,10 +480,10 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 EndUnitTurn();
             }
 
-
-            //TODO: fix this when we fix the SetUnitTeamIndex stuff
             int unitTeam = unit.TeamIndex;
             RemoveUnitFromCombat(unit, shouldDestroy);
+
+            if (!_isInCombat) return;
 
             int aliveTeams = 0;
             int winIndex = -1;

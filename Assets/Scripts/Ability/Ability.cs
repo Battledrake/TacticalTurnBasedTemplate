@@ -176,10 +176,13 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         protected AbilitySystem _owner;
         protected int _activeCooldown;
+        protected bool _unlimitedUses = false;
 
         public AbilityId GetAbilityId() => _abilityId;
         public AbilitySystem GetAbilityOwner() => _owner;
         public int GetActiveCooldown() => _activeCooldown;
+
+        public bool SetCheat() => _unlimitedUses = true;
 
         public abstract AbilityRangeData GetRangeData();
         public abstract AbilityRangeData GetAreaOfEffectData();
@@ -200,6 +203,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         public virtual bool CanActivateAbility(AbilityActivationData activationData)
         {
+            if (_unlimitedUses) return true;
+
             if (_activeCooldown > 0) return false;
 
             if (_owner.GetAttributeCurrentValue(AttributeId.ActionPoints) <= 0) return false;
@@ -209,7 +214,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             return false;
         }
 
-        protected virtual void CommitAbility() { _owner.ApplyEffect(_costEffect.effect); _activeCooldown = _cooldown; }
+        protected virtual void CommitAbility() { if (_unlimitedUses) return; _owner.ApplyEffect(_costEffect.effect); _activeCooldown = _cooldown; }
 
         public abstract void ActivateAbility(AbilityActivationData activationData);
 
