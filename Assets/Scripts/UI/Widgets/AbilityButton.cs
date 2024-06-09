@@ -47,24 +47,19 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         public void SetAbilityUsesText(int usesLeft)
         {
+            if (usesLeft == -1) return;
             _abilityUsesLeft = usesLeft;
 
-            if(usesLeft > -1)
+
+            if (usesLeft == 0)
             {
-                if (usesLeft == 0)
-                {
-                    _greyCover.enabled = true;
-                    _cooldownText.enabled = false;
-                }
-
-
-                _abilityUsesText.enabled = true;
-                _abilityUsesText.text = "x" + usesLeft;
+                _greyCover.enabled = true;
+                _cooldownText.enabled = false;
             }
             else
             {
-                _greyCover.enabled = false;
-                _abilityUsesText.enabled = false;
+                _abilityUsesText.enabled = true;
+                _abilityUsesText.text = "x" + usesLeft;
             }
         }
 

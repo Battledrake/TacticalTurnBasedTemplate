@@ -37,8 +37,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         protected override void CommitAbility()
         {
-            AbilityEffect moveCostEffect =  _costEffect.effect;
-            moveCostEffect.magnitude = _moveCost;
+            AbilityEffect moveCostEffect =  _costEffect.effects[_moveCost];
             _owner.ApplyEffect(moveCostEffect); 
         }
 

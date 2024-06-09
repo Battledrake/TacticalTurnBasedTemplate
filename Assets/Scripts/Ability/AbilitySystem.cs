@@ -15,7 +15,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         [SerializeField] private int _teamIndex = 8;
         [SerializeField] private Transform _abilityInstanceContainer;
 
-        [SerializeField] private AbilityEffectScriptable _actionPointEffect;
+        [SerializeField] private AbilityEffectsContainer _actionPointEffect;
 
         public int TeamIndex { get => _teamIndex; set => _teamIndex = value; }
 
@@ -78,7 +78,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             }
 
             if (_actionPointEffect != null)
-                ApplyEffect(_actionPointEffect.effect);
+            {
+                ApplyEffect(_actionPointEffect.effects[0]);
+            }
         }
 
         private void SetAttributeDefaults(List<AttributeData> attributeData)
