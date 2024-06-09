@@ -18,11 +18,14 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         [SerializeField] private Image _greyCover;
         [SerializeField] private Image _icon;
         [SerializeField] private TextMeshProUGUI _cooldownText;
+        [SerializeField] private TextMeshProUGUI _abilityUsesText;
 
         private Toggle _buttonToggle;
         private Animator _animator;
 
         private AbilityId _abilityId;
+
+        private int _abilityUsesLeft = -1;
 
         public AbilityId GetAbilityId() => _abilityId;
 
@@ -42,8 +45,33 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _buttonToggle.onValueChanged.RemoveListener(OnButtonToggleChanged);
         }
 
+        public void SetAbilityUsesText(int usesLeft)
+        {
+            _abilityUsesLeft = usesLeft;
+
+            if(usesLeft > -1)
+            {
+                if (usesLeft == 0)
+                {
+                    _greyCover.enabled = true;
+                    _cooldownText.enabled = false;
+                }
+
+
+                _abilityUsesText.enabled = true;
+                _abilityUsesText.text = "x" + usesLeft;
+            }
+            else
+            {
+                _greyCover.enabled = false;
+                _abilityUsesText.enabled = false;
+            }
+        }
+
         public void SetCooldownValue(int value)
         {
+            if (_abilityUsesLeft == 0) return;
+
             if (value > 0)
             {
                 _greyCover.enabled = true;

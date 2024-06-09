@@ -46,8 +46,26 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             _abilityButtonContainer.gameObject.SetActive(true);
             _actionPointContainer.gameObject.SetActive(true);
-            UpdateActionPointDisplay(_abilitySystem.GetAttributeCurrentValue(AttributeId.ActionPoints));
+            UpdateActionPointDisplay();
             UpdateCooldownDisplays();
+            UpdateUsesDisplay();
+        }
+
+        private void UpdateUsesDisplay()
+        {
+            foreach (KeyValuePair<int, AbilityButton> abilityButtonPair in _abilityButtons)
+            {
+                int abilityUses = _abilitySystem.GetAbility(abilityButtonPair.Value.GetAbilityId()).GetUsesLeft();
+                if (abilityUses == 0)
+                {
+                    abilityButtonPair.Value.GetComponent<Toggle>().interactable = false;
+                }
+                else
+                {
+                    abilityButtonPair.Value.GetComponent<Toggle>().interactable = true;
+                }
+                abilityButtonPair.Value.SetAbilityUsesText(abilityUses);
+            }
         }
 
         private void UpdateCooldownDisplays()
@@ -55,7 +73,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             foreach (KeyValuePair<int, AbilityButton> abilityButtonPair in _abilityButtons)
             {
                 int abilityCooldown = _abilitySystem.GetAbility(abilityButtonPair.Value.GetAbilityId()).GetActiveCooldown();
-                Debug.Log($"Ability: {abilityButtonPair.Value.GetAbilityId()}, Cooldown: {abilityCooldown}");
                 if (abilityCooldown > 0)
                 {
                     abilityButtonPair.Value.GetComponent<Toggle>().interactable = false;
@@ -68,8 +85,10 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             }
         }
 
-        private void UpdateActionPointDisplay(int currentValue)
+        private void UpdateActionPointDisplay()
         {
+            int currentValue = _abilitySystem.GetAttributeCurrentValue(AttributeId.ActionPoints);
+
             if (currentValue > _defaultActionPoints)
             {
                 for (int i = _defaultActionPoints; i < currentValue; i++)
@@ -110,8 +129,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             if (_abilitySystem != null)
             {
                 PopulateAbilityBar(_abilitySystem.GetAllAbilities());
-
-                UpdateCooldownDisplays();
 
                 DisplayVisuals();
             }
@@ -158,6 +175,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             if (_abilityButtons.TryGetValue(index, out AbilityButton abilityButton))
             {
+                if (_abilitySystem.GetAbility(_abilityButtons[index].GetAbilityId()).GetUsesLeft() == 0) return;
                 if (_abilitySystem.GetAbility(_abilityButtons[index].GetAbilityId()).GetActiveCooldown() > 0) return;
 
                 Toggle abilityButtonToggle = abilityButton.GetComponent<Toggle>();

@@ -73,5 +73,15 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
             EndAbility();
         }
+
+        public override int GetUsesLeft()
+        {
+            return -1;
+        }
+
+        public override void ReduceUsesLeft(int amount)
+        {
+            //Here we could subtract items from an inventory or whatever.
+        }
     }
 }

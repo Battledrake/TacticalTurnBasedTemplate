@@ -46,10 +46,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _abilityId: 1
   _icon: {fileID: 21300000, guid: 3868bb9369da0634e991c0adc2e1ebc5, type: 3}
+  _endTurnOnUse: 0
   _costEffect: {fileID: 11400000, guid: 6a24367ecd336df4b9a19351c380cb63, type: 2}
-  _actionCost: 1
-  _cooldown: 0
+  _cooldown: 5
   _affectsFriendly: 0
+  _usesPerCombat: -1
   _rangeData:
     rangePattern: 5
     rangeMinMax: {x: 1, y: 3}

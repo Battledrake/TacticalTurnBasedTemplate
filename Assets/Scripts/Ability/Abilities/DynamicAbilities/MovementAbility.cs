@@ -99,5 +99,15 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             }
             return false;
         }
+
+        public override int GetUsesLeft()
+        {
+            return -1;
+        }
+
+        public override void ReduceUsesLeft(int amount)
+        {
+            //No use in this ability
+        }
     }
 }

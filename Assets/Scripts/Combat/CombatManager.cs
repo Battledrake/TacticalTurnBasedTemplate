@@ -548,7 +548,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
             if (_isCombatFinishing) return;
 
-            if (ability.GetAbilityOwner().GetAttributeCurrentValue(AttributeId.ActionPoints) <= 0)
+            if (ability.GetEndTurnOnUse() || ability.GetAbilityOwner().GetAttributeCurrentValue(AttributeId.ActionPoints) <= 0)
             {
                 EndUnitTurn();
             }

@@ -46,9 +46,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _abilityId: 8
   _icon: {fileID: 21300000, guid: e2101e051833dcb48bdedf34deb7d1dc, type: 3}
+  _endTurnOnUse: 0
   _costEffect: {fileID: 11400000, guid: f0f82bc81a223c54488e2f999b768557, type: 2}
-  _cooldown: 0
+  _cooldown: 4
   _affectsFriendly: 1
+  _usesPerCombat: -1
   _rangeData:
     rangePattern: 0
     rangeMinMax: {x: 0, y: 0}
@@ -74,7 +76,7 @@ MonoBehaviour:
     magnitudeRange: {x: 2, y: 6}
   - durationData:
       durationPolicy: 1
-      duration: 3
+      duration: 1
       period:
         interval: 0
         executeImmediately: 0
