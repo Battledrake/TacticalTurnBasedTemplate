@@ -22,6 +22,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         [Header("Actions")]
         [SerializeField] private CombatMoveAction _combatMoveActionPrefab;
         [SerializeField] private CombatUseAbilityAction _combatUseAbilityActionPrefab;
+        [SerializeField] private CombatWaitForTurnAction _combatWaitForTurnActionPrefab;
 
         [Header("Dependencies")]
         [SerializeField] private TacticsGrid _tacticsGrid;
@@ -68,28 +69,13 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             CombatManager.Instance.OnCombatEnded += CombatManager_OnCombatEnded;
 
             CombatManager.Instance.OnPlayerTurnStarted += CombatManager_OnPlayerTurnStarted;
-            CombatManager.Instance.OnPlayerTurnEnded -= CombatManager_OnPlayerTurnEnded;
+            CombatManager.Instance.OnPlayerTurnEnded += CombatManager_OnPlayerTurnEnded;
 
             CombatManager.Instance.OnActiveUnitChanged += CombatManager_OnActiveUnitChanged;
             CombatManager.Instance.OnCombatFinishing += CombatManager_OnCombatFinishing;
             _playerAbilityUIController.OnSelectedAbilityChanged += PlayerAbilityUI_OnSelectedAbilityChanged;
             CombatManager.Instance.OnActionStarted += CombatManager_OnActionStarted;
             CombatManager.Instance.OnActionEnded += CombatManager_OnActionEnded;
-        }
-
-        private void CombatManager_OnCombatFinishing(int winTeamIndex)
-        {
-            _endCombatButton.gameObject.SetActive(false);
-            _endTurnButton.gameObject.SetActive(false);
-
-            ClearSelectedActions();
-            SetSelectedTileAndUnit(GridIndex.Invalid());
-
-            _playerAbilityUIController.HideVisuals();
-
-            _combatFinishedPanel.gameObject.SetActive(true);
-            _combatFinishedPanel.GetComponentInChildren<TextMeshProUGUI>().SetText($"Team {winTeamIndex} Won!");
-            _combatFinishedPanel.GetComponentInChildren<TextMeshProUGUI>().color = CombatManager.Instance.GetTeamColor(winTeamIndex);
         }
 
         private void PlayerAbilityUI_OnSelectedAbilityChanged(Ability ability)
@@ -119,6 +105,21 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _inputDisabled = true;
         }
 
+        private void CombatManager_OnCombatFinishing(int winTeamIndex)
+        {
+            _endCombatButton.gameObject.SetActive(false);
+            _endTurnButton.gameObject.SetActive(false);
+
+            ClearSelectedActions();
+            SetSelectedTileAndUnit(GridIndex.Invalid());
+
+            _playerAbilityUIController.HideVisuals();
+
+            _combatFinishedPanel.gameObject.SetActive(true);
+            _combatFinishedPanel.GetComponentInChildren<TextMeshProUGUI>().SetText($"Team {winTeamIndex} Won!");
+            _combatFinishedPanel.GetComponentInChildren<TextMeshProUGUI>().color = CombatManager.Instance.GetTeamColor(winTeamIndex);
+        }
+
         private void CombatManager_OnCombatEnded()
         {
             _endCombatButton.gameObject.SetActive(false);
@@ -141,8 +142,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private void CombatManager_OnPlayerTurnEnded()
         {
             _endTurnButton.gameObject.SetActive(false);
-            ClearSelectedActions();
-            _inputDisabled = true;
+            _playerAbilityUIController.HideVisuals();
+            SetSelectedActions(_combatWaitForTurnActionPrefab, null);
         }
 
         private void Unit_OnAnyUnitDied(Unit unit)
@@ -162,20 +163,23 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void CombatManager_OnActiveUnitChanged(Unit unit)
         {
-            //TODO: Need a check to see if unit is under our control.
             SetSelectedTileAndUnit(unit.UnitGridIndex);
-            SetSelectedActions(_combatMoveActionPrefab, null);
 
-            _playerAbilityUIController.DisplayVisuals();
+            if (unit.GetUnitAI() != null)
+                return;
+
+            SetSelectedActions(_combatMoveActionPrefab, null);
+            _playerAbilityUIController.DisplayVisuals(unit);
         }
 
         private void CombatManager_OnActionEnded()
         {
             if (CombatManager.Instance.IsCombatFinishing()) return;
+            if (_selectedUnit.GetUnitAI() != null) return;
 
             _inputDisabled = false;
-            _playerAbilityUIController.DisplayVisuals();
             SetSelectedActions(_combatMoveActionPrefab, null);
+            _playerAbilityUIController.DisplayVisuals(_selectedUnit);
         }
 
         private void CombatManager_OnActionStarted()

@@ -50,10 +50,10 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _abilitySystem = this.GetComponent<AbilitySystem>();
             _abilitySystem.InitAbilitySystem(null, null, _debugAbilities);
 
-            List<Ability> initializedAbilities = _abilitySystem.GetAllAbilities();
+            List<Ability> initializedAbilities = _abilitySystem.GetAbilities();
             for(int i = 0; i < initializedAbilities.Count; i++)
             {
-                _abilitySystem.GetAllAbilities()[i].SetCheat();
+                _abilitySystem.GetAbilities()[i].SetCheat();
             }
 
             for (int i = 0; i < _debugAbilities.Count; i++)

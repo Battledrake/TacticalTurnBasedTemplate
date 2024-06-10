@@ -416,7 +416,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 return null;
         }
 
-        public List<Ability> GetAllAbilities()
+        public List<Ability> GetAbilities()
         {
             return _abilities.Values.ToList();
         }

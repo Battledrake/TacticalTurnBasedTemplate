@@ -52,6 +52,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         [SerializeField] TurnOrderType _turnOrderType;
         [SerializeField] private List<TeamColorData> _teamColors;
+        [SerializeField] private UnitAI _unitAIPrefab;
 
         [Header("Dependencies")]
         [SerializeField] private TacticsGrid _tacticsGrid;
@@ -74,7 +75,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private Unit _activeUnit = null;
         private int _activeTeamIndex = -1;
-        private int _playerControlledIndex = 100;
+        private bool _isAIControlledTeam = false;
 
         public Unit GetActiveUnit() => _activeUnit;
 
@@ -118,6 +119,18 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             combatStartParams.canStartCombat = !_isInCombat && _unitTeams.Count(kvp => kvp.Value.Count > 0) >= 2 && _unitsInCombat.Count >= 2;
 
             return combatStartParams;
+        }
+
+        public void SetUnitUseAI(Unit unit, bool isUsingAI)
+        {
+            if (isUsingAI)
+            {
+                unit.SetUnitAI(_unitAIPrefab);
+            }
+            else
+            {
+                unit.SetUnitAI(null);
+            }
         }
 
         private void OrderUnitsByTeam()
@@ -214,6 +227,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
             _activeUnit = null;
 
+            _isAIControlledTeam = _orderedUnits[0].GetUnitAI() != null;
+
             StartTurn();
         }
 
@@ -223,9 +238,10 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             //ActiveUnitChanged enables various UI displays that depend on AbilitySystem values to be updated like ActionPoints and Cooldowns.
             if (_turnOrderType == TurnOrderType.Team)
             {
-                if (_activeTeamIndex == _playerControlledIndex)
+                if (_isAIControlledTeam)
                 {
-                    //AI LOGIC IN HUR
+                    SetNextTeamUnitAsActive();
+                    _activeUnit.TurnStarted();
                 }
                 else
                 {
@@ -240,10 +256,17 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             else
             {
                 _activeUnit = GetNextOrderedUnit();
-                _activeUnit.TurnStarted();
 
-                //TODO: If not ai controlled
-                OnPlayerTurnStarted?.Invoke();
+                if (_activeUnit.GetUnitAI() != null)
+                {
+                    OnPlayerTurnEnded?.Invoke();
+                }
+                else
+                {
+                    OnPlayerTurnStarted?.Invoke();
+                }
+
+                _activeUnit.TurnStarted();
 
                 OnActiveUnitChanged?.Invoke(_activeUnit);
             }
@@ -279,11 +302,14 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             {
                 _orderedUnits.Clear();
 
-                //if activeTeam == player
-                OnPlayerTurnEnded?.Invoke();
+                if (!_isAIControlledTeam)
+                    OnPlayerTurnEnded?.Invoke();
 
                 SetActiveTeamIndex();
                 OrderUnitsByTeam();
+
+                _isAIControlledTeam = _orderedUnits[0].GetUnitAI() != null;
+
                 OnActiveTeamChanged?.Invoke();
             }
             //Temporary as starting next turns too fast feels bad.
@@ -301,6 +327,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             {
                 _activeUnit.TurnEnded();
                 _orderedUnits.Remove(_activeUnit);
+                _activeUnit = null;
 
                 if (_orderedUnits.Count <= 0)
                 {
@@ -309,6 +336,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 else
                 {
                     SetNextTeamUnitAsActive();
+
+                    if (_isAIControlledTeam)
+                        _activeUnit.TurnStarted();
                 }
             }
             else

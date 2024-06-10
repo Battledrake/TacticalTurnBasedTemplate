@@ -22,7 +22,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private Unit _unit;
         private Vector2 _defaultIconSize = new Vector2(75f, 75f);
         private Vector2 _selectedIconSize = new Vector2(100f, 100f);
-        private bool _isActive = false;
+        private bool _canSetActiveTeamUnit = false;
 
         public void UpdateIcon(Unit unit)
         {
@@ -30,7 +30,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             if (_unit)
             {
                 _unit.OnUnitHoveredChanged -= Unit_OnUnitHoveredChanged;
-                _unit.OnUnitSelectedChanged -= Unit_OnUnitSelectedChanged;
             }
 
             _unit = unit;
@@ -52,11 +51,11 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
             Unit.OnAnyUnitHealthChanged += Unit_OnAnyUnitHealthChanged;
             _unit.OnUnitHoveredChanged += Unit_OnUnitHoveredChanged;
-            _unit.OnUnitSelectedChanged += Unit_OnUnitSelectedChanged;
+            CombatManager.Instance.OnActiveUnitChanged += CombatManager_OnActiveUnitChanged;
             _unit.OnTurnEnded += Unit_OnTurnEnded;
 
-            if(CombatManager.Instance.TurnOrderType == TurnOrderType.Team)
-                _isActive = true;
+            if(CombatManager.Instance.TurnOrderType == TurnOrderType.Team && _unit.GetUnitAI() == null)
+                _canSetActiveTeamUnit = true;
         }
 
         private void OnDisable()
@@ -66,7 +65,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
             Unit.OnAnyUnitHealthChanged -= Unit_OnAnyUnitHealthChanged;
             _unit.OnUnitHoveredChanged -= Unit_OnUnitHoveredChanged;
-            _unit.OnUnitSelectedChanged -= Unit_OnUnitSelectedChanged;
+            //_unit.OnUnitSelectedChanged -= Unit_OnUnitSelectedChanged;
+            CombatManager.Instance.OnActiveUnitChanged -= CombatManager_OnActiveUnitChanged;
             _unit.OnTurnEnded -= Unit_OnTurnEnded;
         }
 
@@ -77,12 +77,14 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 Color greyed = Color.grey;
                 greyed.a = _defaultAlpha / 255f;
                 _defaultBackground.color = greyed;
-                _isActive = false;
+                _canSetActiveTeamUnit = false;
             }
         }
 
-        private void Unit_OnUnitSelectedChanged(bool isSelected)
+        private void CombatManager_OnActiveUnitChanged(Unit unit)
         {
+            bool isSelected = unit == _unit;
+
             Color backgroundAlpha = _selectedBackground.color;
             if (isSelected)
             {
@@ -127,12 +129,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 UpdateIconHealth(_unit.GetHealth(), _unit.GetMaxHealth());
         }
 
-        private void AbilitySystem_OnAttributeCurrentChanged(AttributeId id, int newValue)
-        {
-            if (id == AttributeId.Health)
-                UpdateIconHealth(_unit.GetHealth(), _unit.GetMaxHealth());
-        }
-
         public void UpdateIconHealth(int currentHealth, int maxHealth)
         {
             _healthText.text = currentHealth + " / " + maxHealth;
@@ -154,9 +150,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         public void OnPointerClick(PointerEventData eventData)
         {
-            if (_isActive)
+            if (_canSetActiveTeamUnit)
             {
-
                 CombatManager.Instance.SetActiveTeamUnit(_unit);
             }
             //TODO: Fixed one. We'll fix cameras one day. All these camera GameObject.Finds have got to go.

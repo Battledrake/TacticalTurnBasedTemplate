@@ -10,6 +10,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public int UnitTeamIndex { get => _unitTeamIndex; set => _unitTeamIndex = value; }
 
         private int _unitTeamIndex = 0;
+        private bool _isUsingAI = false;
+
+        public void SetIsUsingAI(bool isUsingAI) {  _isUsingAI = isUsingAI; }
 
         public override bool ExecuteAction(GridIndex index)
         {
@@ -30,6 +33,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                         newUnit.InitUnit((UnitId)actionValue);
 
                         CombatManager.Instance.AddUnitToCombat(index, newUnit, _unitTeamIndex);
+                        CombatManager.Instance.SetUnitUseAI(newUnit, _isUsingAI);
                         return true;
                     }
                 }

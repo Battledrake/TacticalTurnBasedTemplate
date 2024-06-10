@@ -12,6 +12,7 @@ public class CombatTabController : MonoBehaviour
     [Header("Units")]
     [SerializeField] private UnitButton _unitButtonPrefab;
     [SerializeField] private Transform _unitButtonContainer;
+    [SerializeField] private Toggle _isUnitAIToggle;
     [SerializeField] private SliderWidget _setUnitTeamSlider;
     [SerializeField] private SliderWidget _addUnitTeamSlider;
 
@@ -46,6 +47,8 @@ public class CombatTabController : MonoBehaviour
 
     private void Start()
     {
+        _isUnitAIToggle.onValueChanged.AddListener(OnUnitAIToggled);
+
         UnitData[] unitData = DataManager.GetAllUnitData();
         for (int i = 0; i < unitData.Length; i++)
         {
@@ -73,6 +76,15 @@ public class CombatTabController : MonoBehaviour
         CombatManager.Instance.OnCombatStarted += CombatManager_OnCombatStarted;
         CombatManager.Instance.OnCombatEnded += CombatManager_OnCombatEnded;
         UpdateButtonAndTexts();
+    }
+
+    private void OnUnitAIToggled(bool isAI)
+    {
+        AddUnitToGridAction addUnitToGridAction = _playerActions.LeftClickAction?.GetComponent<AddUnitToGridAction>();
+        if (addUnitToGridAction)
+        {
+            addUnitToGridAction.SetIsUsingAI(isAI);
+        }
     }
 
     private void OnTurnOrderTypeChanged(int value)

@@ -26,29 +26,29 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private Dictionary<int, AbilityButton> _abilityButtons = new Dictionary<int, AbilityButton>();
         private AbilitySystem _abilitySystem;
 
-        private void Start()
-        {
-            _playerActions.OnSelectedUnitChanged += PlayerActions_OnSelectedUnitChanged;
-        }
-
-        private void OnDisable()
-        {
-            _playerActions.OnSelectedUnitChanged -= PlayerActions_OnSelectedUnitChanged;
-        }
-
         public void HideVisuals()
         {
+            ClearBar();
             _abilityBarToggleGroup.SetAllTogglesOff();
             _abilityButtonContainer.gameObject.SetActive(false);
             _actionPointContainer.gameObject.SetActive(false);
         }
-        public void DisplayVisuals()
+        public void DisplayVisuals(Unit unit)
         {
-            _abilityButtonContainer.gameObject.SetActive(true);
-            _actionPointContainer.gameObject.SetActive(true);
-            UpdateActionPointDisplay();
-            UpdateCooldownDisplays();
-            UpdateUsesDisplay();
+            if (unit == null)
+                return;
+
+            _abilitySystem = unit.GetComponent<IAbilitySystem>().GetAbilitySystem();
+
+            if(_abilitySystem != null)
+            {
+                PopulateAbilityBar(_abilitySystem.GetAbilities());
+                _abilityButtonContainer.gameObject.SetActive(true);
+                _actionPointContainer.gameObject.SetActive(true);
+                UpdateActionPointDisplay();
+                UpdateCooldownDisplays();
+                UpdateUsesDisplay();
+            }
         }
 
         private void UpdateUsesDisplay()
@@ -117,27 +117,12 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             }
         }
 
-        private void PlayerActions_OnSelectedUnitChanged(Unit unit)
-        {
-            ClearBar();
-
-            if (unit == null)
-                return;
-
-            _abilitySystem = unit.GetAbilitySystem();
-
-            if (_abilitySystem != null)
-            {
-                PopulateAbilityBar(_abilitySystem.GetAllAbilities());
-
-                DisplayVisuals();
-            }
-        }
-
         public void ClearBar()
         {
             for (int i = 0; i < _abilityButtons.Count; i++)
             {
+                _abilityButtons[i].OnAbilityButtonSelected -= AbilityButton_OnAbilityButtonSelected;
+                _abilityButtons[i].OnAbilityButtonDeselected -= AbilityButton_OnAbilityButtonDeselected;
                 _abilityBarToggleGroup.UnregisterToggle(_abilityButtons[i].GetComponent<Toggle>());
                 Destroy(_abilityButtons[i].gameObject);
             }
@@ -146,6 +131,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         public void PopulateAbilityBar(List<Ability> abilities)
         {
+            if (_abilityButtons.Count > 0)
+                ClearBar();
+
             for (int i = 0; i < abilities.Count; i++)
             {
                 AbilityButton newButton = Instantiate(_abilityButtonPrefab, _abilityButtonContainer);

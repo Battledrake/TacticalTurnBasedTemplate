@@ -53,6 +53,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private GridMovement _gridMovement;
         private HealthVisual _healthVisual;
         private AbilitySystem _abilitySystem;
+        private UnitAI _unitAI;
 
         //Outline Stuff
         private Outline _unitOutline;
@@ -92,6 +93,26 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public int GetAgility() => _abilitySystem.GetAttributeCurrentValue(AttributeId.Agility);
         public AnimationEventHandler GetAnimationEventHandler() => _animEventHandler;
         public AbilitySystem GetAbilitySystem() => _abilitySystem;
+        public UnitAI GetUnitAI() => _unitAI;
+
+        public void SetUnitAI(UnitAI unitAI)
+        {
+            if (_unitAI != null)
+                Destroy(_unitAI.gameObject);
+
+            _unitAI = unitAI;
+
+            if (_unitAI != null)
+            {
+                _unitAI = Instantiate(unitAI, this.transform);
+
+                Transform headTransform = FindTransform(_unitVisual, "Head");
+                if (headTransform)
+                {
+                    _unitAI.transform.position = headTransform.position + Vector3.up;
+                }
+            }
+        }
 
         //Used for initial team setting or permanent team changes.
         public void SetTeamIndex(int index)
@@ -121,6 +142,19 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             _abilitySystem.ResetActionPoints();
             OnTurnStarted?.Invoke();
+
+            if (_unitAI != null)
+                AIStartTurn();
+        }
+
+        private void AIStartTurn()
+        {
+            _unitAI.RunAILogic();
+        }
+
+        public void AIEndTurn()
+        {
+            CombatManager.Instance.EndUnitTurn();
         }
 
         public void TurnEnded()
@@ -197,13 +231,13 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 OnAnyUnitHealthChanged?.Invoke(this);
                 _healthVisual.DisplayHealthChange(newValue - oldValue);
 
-                if(newValue <= 0 && !_isImmortal)
+                if (newValue <= 0 && !_isImmortal)
                 {
                     Die();
                 }
                 else
                 {
-                    if(newValue - oldValue < 0)
+                    if (newValue - oldValue < 0)
                     {
                         PlayAnimationType(AnimationType.Hit);
                     }
