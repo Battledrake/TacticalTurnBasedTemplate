@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: daf15654c4be21244b66be4cf75846ae, type: 3}
   m_Name: FreeCostEffect
   m_EditorClassIdentifier: 
-  effect:
-    durationData:
+  effects:
+  - durationData:
       durationPolicy: 0
       duration: 0
       period:
         interval: 0
         executeImmediately: 0
     attribute: 0
-    modifier: 0
+    magnitude: 0

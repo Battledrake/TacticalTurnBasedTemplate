@@ -1,7 +1,5 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 namespace BattleDrakeCreations.TacticalTurnBasedTemplate
@@ -220,9 +218,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
             if (_owner.GetAttributeCurrentValue(AttributeId.ActionPoints) <= 0) return false;
 
-            if (CombatManager.Instance.GetAbilityRange(activationData.originIndex, this.GetRangeData()).Contains(activationData.targetIndex)) return true;
+            if (!CombatManager.Instance.GetAbilityRange(activationData.originIndex, this.GetRangeData()).Contains(activationData.targetIndex)) return false;
 
-            return false;
+            return true;
         }
 
         protected virtual void CommitAbility()

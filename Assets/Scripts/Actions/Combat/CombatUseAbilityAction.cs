@@ -28,6 +28,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 _abilityInUse = false;
                 return false;
             }
+
+            _playerActions.PlayerAbilityBar.SetSelectedAbilityFromIndex(-1);
+
             return true;
         }
 
@@ -47,7 +50,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private void CombatManager_OnActionEnded()
         {
             CombatManager.Instance.OnActionEnded -= CombatManager_OnActionEnded;
-            _playerActions.PlayerAbilityBar.SetSelectedAbilityFromIndex(-1);
             _abilityInUse = false;
         }
 

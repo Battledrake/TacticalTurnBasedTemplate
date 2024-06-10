@@ -72,7 +72,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
             CombatManager.Instance.OnActiveUnitChanged += CombatManager_OnActiveUnitChanged;
             CombatManager.Instance.OnCombatFinishing += CombatManager_OnCombatFinishing;
-            _playerAbilityUIController.OnSelectedAbilityChanged += AbilityBar_OnSelectedAbilityChanged;
+            _playerAbilityUIController.OnSelectedAbilityChanged += PlayerAbilityUI_OnSelectedAbilityChanged;
             CombatManager.Instance.OnActionStarted += CombatManager_OnActionStarted;
             CombatManager.Instance.OnActionEnded += CombatManager_OnActionEnded;
         }
@@ -92,7 +92,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _combatFinishedPanel.GetComponentInChildren<TextMeshProUGUI>().color = CombatManager.Instance.GetTeamColor(winTeamIndex);
         }
 
-        private void AbilityBar_OnSelectedAbilityChanged(Ability ability)
+        private void PlayerAbilityUI_OnSelectedAbilityChanged(Ability ability)
         {
             if (ability != null)
             {
@@ -175,6 +175,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
             _inputDisabled = false;
             _playerAbilityUIController.DisplayVisuals();
+            SetSelectedActions(_combatMoveActionPrefab, null);
         }
 
         private void CombatManager_OnActionStarted()

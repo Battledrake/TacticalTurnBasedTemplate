@@ -206,13 +206,13 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                         {
                             if (i != 0)
                             {
-                                returnSet.Add(new GridIndex(i, j)); // Up to down, right
-                                returnSet.Add(new GridIndex(-i, j)); // Down to up, left
+                                returnSet.Add(new GridIndex(i, j));
+                                returnSet.Add(new GridIndex(-i, j));
                             }
                             if (i != j)
                             {
-                                returnSet.Add(new GridIndex(j, i)); // Right to left, up
-                                returnSet.Add(new GridIndex(j, -i)); // Left to right, down
+                                returnSet.Add(new GridIndex(j, i));
+                                returnSet.Add(new GridIndex(j, -i));
                             }
                         }
                         break;
