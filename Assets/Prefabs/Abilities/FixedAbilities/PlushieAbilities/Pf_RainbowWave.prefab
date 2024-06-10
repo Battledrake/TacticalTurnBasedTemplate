@@ -46,10 +46,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _abilityId: 14
   _icon: {fileID: 21300000, guid: 3b5692edb069368418afc770290c1888, type: 3}
+  _endTurnOnUse: 1
   _costEffect: {fileID: 11400000, guid: 6a24367ecd336df4b9a19351c380cb63, type: 2}
-  _actionCost: 1
   _cooldown: 0
   _affectsFriendly: 0
+  _usesPerCombat: -1
   _rangeData:
     rangePattern: 1
     rangeMinMax: {x: 1, y: 5}
@@ -71,8 +72,8 @@ MonoBehaviour:
       period:
         interval: 0
         executeImmediately: 0
-    attribute: 0
-    minMaxModifier: {x: -2, y: -3}
+    attribute: 1
+    magnitudeRange: {x: -1, y: -3}
   _objectToAnimate: {fileID: 6050157609116873709, guid: 8253182efb9636a47b2f24bb791b6d61,
     type: 3}
   _taskData: {fileID: 11400000, guid: 64e4035c2faac104c83eb46e1a06e33c, type: 2}

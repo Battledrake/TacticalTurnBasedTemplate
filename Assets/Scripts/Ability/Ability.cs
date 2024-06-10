@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace BattleDrakeCreations.TacticalTurnBasedTemplate
@@ -216,7 +217,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
             if (_activeCooldown > 0) return false;
 
-            if (_owner.GetAttributeCurrentValue(AttributeId.ActionPoints) <= 0) return false;
+            if (_owner.GetAttributeCurrentValue(AttributeId.ActionPoints) < _costEffect.effects.FirstOrDefault(e => e.attribute == AttributeId.ActionPoints).magnitude) return false;
 
             if (!CombatManager.Instance.GetAbilityRange(activationData.originIndex, this.GetRangeData()).Contains(activationData.targetIndex)) return false;
 

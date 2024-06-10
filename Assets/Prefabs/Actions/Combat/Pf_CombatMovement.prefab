@@ -50,10 +50,10 @@ MonoBehaviour:
   _moveRangeColor: {r: 0, g: 1, b: 1, a: 1}
   _sprintRangeColor: {r: 1, g: 0.98664254, b: 0, a: 1}
   _outOfRangeColor: {r: 0, g: 0, b: 0, a: 0}
-  _outlineLength: 0.8
-  _distanceToEdge: 0.8
-  _outlineHeight: 0.2
-  _pathLineSize: 0.2
+  _outlineLength: 1
+  _distanceToEdge: 1
+  _outlineHeight: 0.3
+  _pathLineSize: 0.1
   _pathLineSpeed: 3
 --- !u!120 &6650969265936182871
 LineRenderer:

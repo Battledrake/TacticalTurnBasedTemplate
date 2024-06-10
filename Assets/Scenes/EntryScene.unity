@@ -13248,7 +13248,7 @@ PrefabInstance:
         type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_Target
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 735718219}
     - target: {fileID: 9127293637513576739, guid: 8997797976dfd1842ad7ccc8f7c5dda9,
         type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[2].m_Target
@@ -13307,7 +13307,7 @@ PrefabInstance:
     - target: {fileID: 9127293637513576739, guid: 8997797976dfd1842ad7ccc8f7c5dda9,
         type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
-      value: BattleDrakeCreations.TacticalTurnBasedTemplate.UnitTabController, Assembly-CSharp
+      value: CombatTabController, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 9127293637513576739, guid: 8997797976dfd1842ad7ccc8f7c5dda9,
         type: 3}
