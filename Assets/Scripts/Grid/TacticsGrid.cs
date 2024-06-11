@@ -472,7 +472,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                     return false;
             }
             tileData.unitOnTile = unit;
-            unit.UnitGridIndex = index;
+            unit.SetGridIndex(index);
 
             if (shouldPosition)
                 unit.transform.position = tileData.tileMatrix.GetPosition();
@@ -490,7 +490,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _gridTiles.TryGetValue(index, out TileData tileData);
             if (tileData.unitOnTile)
             {
-                tileData.unitOnTile.UnitGridIndex = GridIndex.Invalid();
+                tileData.unitOnTile.SetGridIndex(GridIndex.Invalid());
 
                 tileData.unitOnTile = null;
                 _gridTiles[index] = tileData;

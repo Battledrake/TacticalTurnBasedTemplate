@@ -133,7 +133,7 @@ public class CombatTabController : MonoBehaviour
 
         for (int i = 0; i < unitsInCombat.Count; i++)
         {
-            _activeUnitsPreCombat.TryAdd(unitsInCombat[i], unitsInCombat[i].UnitGridIndex);
+            _activeUnitsPreCombat.TryAdd(unitsInCombat[i], unitsInCombat[i].GetGridIndex());
         }
 
         _turnOrderTypeCombo.interactable = false;

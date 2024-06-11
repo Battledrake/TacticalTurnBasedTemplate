@@ -61,7 +61,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private void PlayAnimationTask_OnAnimationEvent(PlayAnimationTask animationTask, AbilityActivationData activationData)
         {
             animationTask.OnAnimationEvent -= PlayAnimationTask_OnAnimationEvent;
-            animationTask.OnAnimationCancelled -= AbilityTask_OnAnimationCancelled;
 
             activationData.tacticsGrid.GetTileDataFromIndex(activationData.targetIndex, out TileData targetData);
             if (targetData.unitOnTile)

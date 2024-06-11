@@ -66,7 +66,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
             List<GridIndex> aoeIndexes = CombatManager.Instance.GetAbilityRange(activateData.targetIndex, this.GetAreaOfEffectData());
 
-            if (!aoeIndexes.Contains(receiver.GetOwningUnit().UnitGridIndex))
+            if (!aoeIndexes.Contains(receiver.GetOwningUnit().GetGridIndex()))
             {
                 return;
             }

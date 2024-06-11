@@ -85,7 +85,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             if (unit == _currentUnit)
             {
                 PathParams pathParams = GridPathfinding.CreatePathParamsFromUnit(unit, unit.GetMoveRange());
-                GenerateTilesInRange(unit.UnitGridIndex, pathParams);
+                GenerateTilesInRange(unit.GetGridIndex(), pathParams);
             }
         }
 

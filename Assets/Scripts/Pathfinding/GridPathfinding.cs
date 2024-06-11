@@ -288,7 +288,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             if (pathResult.Result == PathResult.SearchSuccess || pathParams.allowPartialSolution)
             {
                 pathResult.Path = ConvertPathNodesToIndexes(startNode, bestNode, pathParams.includeStartNode);
-                pathResult.Length = bestNode.totalCost;
+                pathResult.Length = bestNode.traversalCost;
             }
             return pathResult;
         }
@@ -354,6 +354,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                     bestNodeCost = newHeuristic;
                     bestNode = neighborNode;
                 }
+
             }
             return true;
         }

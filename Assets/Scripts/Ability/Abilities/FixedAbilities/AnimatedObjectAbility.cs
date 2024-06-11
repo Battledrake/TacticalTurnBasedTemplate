@@ -64,8 +64,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void PlayAnimationTask_OnAnimationEvent(PlayAnimationTask animationTask, AbilityActivationData activationData)
         {
-            animationTask.OnAnimationEvent -= PlayAnimationTask_OnAnimationEvent;
             animationTask.OnAnimationCancelled -= AbilityTask_OnAnimationCancelled;
+            animationTask.OnAnimationEvent -= PlayAnimationTask_OnAnimationEvent;
             SpawnAnimateObjectTaskAndExecute(activationData);
         }
 
@@ -102,6 +102,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void AnimateObjectTask_OnInitialAnimationComplete(AnimateObjectTask task, AbilityActivationData activationData)
         {
+            task.OnObjectCollisionWithUnit -= AnimateObjectTask_OnObjectCollisionWithUnit;
             task.OnInitialAnimationCompleted -= AnimateObjectTask_OnInitialAnimationComplete;
 
             List<GridIndex> aoeIndexes = CombatManager.Instance.GetAbilityRange(activationData.targetIndex, GetAreaOfEffectData());

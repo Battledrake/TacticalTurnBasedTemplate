@@ -28,7 +28,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
 
         public Unit GetOwningUnit() => _ownerUnit;
-        public GridIndex GetGridIndex() => _ownerUnit ? _ownerUnit.UnitGridIndex : _gridIndex;
+        public GridIndex GetGridIndex() => _ownerUnit ? _ownerUnit.GetGridIndex() : _gridIndex;
 
         private void Unit_OnTeamIndexChanged()
         {

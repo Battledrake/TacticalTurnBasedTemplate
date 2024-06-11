@@ -38,7 +38,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             if (unit != null)
             {
                 PathParams pathParams = GridPathfinding.CreatePathParamsFromUnit(unit, unit.GetMoveRange());
-                PathfindingResult pathResult = _playerActions.TacticsGrid.GridPathfinder.FindTilesInRange(unit.UnitGridIndex, pathParams);
+                PathfindingResult pathResult = _playerActions.TacticsGrid.GridPathfinder.FindTilesInRange(unit.GetGridIndex(), pathParams);
                 if (pathResult.Result != PathResult.SearchFail)
                 {
                     _borrowedMoveRenders = LineRendererPool.Instance.BorrowInstances(pathResult.Edges.Count);

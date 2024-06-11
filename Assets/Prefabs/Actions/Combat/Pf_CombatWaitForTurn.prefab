@@ -45,7 +45,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   actionValue: -1
-  _moveRangeColor: {r: 1, g: 0.02109909, b: 0, a: 1}
+  _moveRangeColor: {r: 0, g: 0.9696946, b: 1, a: 1}
   _outlineHeight: 0.3
   _distanceToEdge: 1
   _outlineLength: 1

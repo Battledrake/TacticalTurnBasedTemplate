@@ -104,7 +104,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 LineRendererPool.Instance.ReturnInstances(_borrowedSprintRenders);
 
                 PathParams pathParams = GridPathfinding.CreatePathParamsFromUnit(_currentUnit, unit.GetMoveRange());
-                PathfindingResult pathResult = _playerActions.TacticsGrid.GridPathfinder.FindTilesInRange(_currentUnit.UnitGridIndex, pathParams);
+                PathfindingResult pathResult = _playerActions.TacticsGrid.GridPathfinder.FindTilesInRange(_currentUnit.GetGridIndex(), pathParams);
                 if (pathResult.Result != PathResult.SearchFail)
                 {
                     _moveRangeIndexes = pathResult.Path;
@@ -201,7 +201,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private void GenerateSprintRangeTiles()
         {
             PathParams pathParams = GridPathfinding.CreatePathParamsFromUnit(_currentUnit, _currentUnit.GetMoveRange() * 2);
-            PathfindingResult pathResult = _playerActions.TacticsGrid.GridPathfinder.FindTilesInRange(_currentUnit.UnitGridIndex, pathParams);
+            PathfindingResult pathResult = _playerActions.TacticsGrid.GridPathfinder.FindTilesInRange(_currentUnit.GetGridIndex(), pathParams);
             if (pathResult.Result != PathResult.SearchFail)
             {
                 HashSet<EdgeData> sprintEdges = new HashSet<EdgeData>(pathResult.Edges);
@@ -270,20 +270,20 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             float pathLength = UnitHasEnoughActionPoints(2) ? unitMoveRange * 2 : unitMoveRange;
 
             PathParams pathParams = GridPathfinding.CreatePathParamsFromUnit(_playerActions.SelectedUnit, pathLength, true);
-            PathfindingResult result = _playerActions.TacticsGrid.GridPathfinder.FindPath(_playerActions.SelectedTile, _playerActions.HoveredTile, pathParams);
+            PathfindingResult pathResult = _playerActions.TacticsGrid.GridPathfinder.FindPath(_playerActions.SelectedTile, _playerActions.HoveredTile, pathParams);
 
-            if (result.Result == PathResult.SearchSuccess || result.Result == PathResult.GoalUnreachable)
+            if (pathResult.Result == PathResult.SearchSuccess || pathResult.Result == PathResult.GoalUnreachable)
             {
-                _generatedPath = result.Path;
-                _generatedPathLength = result.Length;
+                _generatedPath = pathResult.Path;
+                _generatedPathLength = pathResult.Length;
 
-                EnableAndInitializePathLine(result.Path.Count);
+                EnableAndInitializePathLine(pathResult.Path.Count);
 
                 List<Vector3> pathPositions = new List<Vector3>();
 
-                for (int i = 0; i < result.Path.Count; i++)
+                for (int i = 0; i < pathResult.Path.Count; i++)
                 {
-                    _pathLine.SetPosition(i, _playerActions.TacticsGrid.GetTilePositionFromIndex(result.Path[i]) + new Vector3(0f, 0.5f, 0f));
+                    _pathLine.SetPosition(i, _playerActions.TacticsGrid.GetTilePositionFromIndex(pathResult.Path[i]) + new Vector3(0f, 0.5f, 0f));
                 }
                 _pathLine.enabled = true;
             }

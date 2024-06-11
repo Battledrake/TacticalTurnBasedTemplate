@@ -29,7 +29,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             {
                 PathParams pathParams = GridPathfinding.CreatePathParamsFromUnit(_currentUnit, _currentUnit.GetMoveRange());
 
-                PathfindingResult pathResult = _playerActions.TacticsGrid.GridPathfinder.FindPath(_currentUnit.UnitGridIndex, index, pathParams);
+                PathfindingResult pathResult = _playerActions.TacticsGrid.GridPathfinder.FindPath(_currentUnit.GetGridIndex(), index, pathParams);
                 if (pathResult.Result == PathResult.SearchSuccess)
                 {
                     for (int i = 0; i < pathResult.Path.Count; i++)

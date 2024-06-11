@@ -11669,7 +11669,7 @@ PrefabInstance:
     - target: {fileID: 1217478410378078153, guid: 5074a686a13b6374d8a6839ec36abcac,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
-      value: 1
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 1217478410378078153, guid: 5074a686a13b6374d8a6839ec36abcac,
         type: 3}
@@ -11684,12 +11684,17 @@ PrefabInstance:
     - target: {fileID: 1217478410378078153, guid: 5074a686a13b6374d8a6839ec36abcac,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: EndCombat
+      value: FinishCombat
       objectReference: {fileID: 0}
     - target: {fileID: 1217478410378078153, guid: 5074a686a13b6374d8a6839ec36abcac,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
       value: BattleDrakeCreations.TacticalTurnBasedTemplate.CombatManager, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 1217478410378078153, guid: 5074a686a13b6374d8a6839ec36abcac,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_IntArgument
+      value: -1
       objectReference: {fileID: 0}
     - target: {fileID: 1217478410378078153, guid: 5074a686a13b6374d8a6839ec36abcac,
         type: 3}
@@ -11699,9 +11704,7 @@ PrefabInstance:
     - target: {fileID: 4918482348271790007, guid: 5074a686a13b6374d8a6839ec36abcac,
         type: 3}
       propertyPath: m_text
-      value: 'End Combat
-
-'
+      value: Finish Combat
       objectReference: {fileID: 0}
     - target: {fileID: 8686266317598625381, guid: 5074a686a13b6374d8a6839ec36abcac,
         type: 3}
@@ -11806,7 +11809,7 @@ PrefabInstance:
     - target: {fileID: 8982790556209900721, guid: 5074a686a13b6374d8a6839ec36abcac,
         type: 3}
       propertyPath: m_Name
-      value: EndCombat_Button
+      value: FinishCombat_Button
       objectReference: {fileID: 0}
     - target: {fileID: 8982790556209900721, guid: 5074a686a13b6374d8a6839ec36abcac,
         type: 3}

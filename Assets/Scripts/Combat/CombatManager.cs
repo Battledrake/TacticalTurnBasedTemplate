@@ -383,7 +383,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             OnCombatEnded?.Invoke();
         }
 
-        private void FinishCombat(int winTeamIndex)
+        public void FinishCombat(int winTeamIndex)
         {
             StopAllCoroutines();
             _isCombatFinishing = true;
@@ -392,7 +392,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         public void MoveUnit(Unit unit, List<GridIndex> path, float pathLength)
         {
-            GridMovement gridMoveComp = unit.GetComponent<GridMovement>();
+            GridMovement gridMoveComp = unit.GetGridMovement();
             if (gridMoveComp)
             {
                 unit.OnUnitReachedDestination += Unit_OnUnitReachedDestination;
@@ -415,14 +415,14 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             costEffect.magnitude = costMagnitude;
 
             unit.GetComponent<IAbilitySystem>().GetAbilitySystem().ApplyEffect(costEffect);
-            _tacticsGrid.RemoveUnitFromTile(unit.UnitGridIndex);
+            _tacticsGrid.RemoveUnitFromTile(unit.GetGridIndex());
             _tacticsGrid.AddUnitToTile(path.Last(), unit, false);
             OnUnitGridIndexChanged?.Invoke(unit, path.Last());
         }
 
         public void TeleportUnit(Unit unit, GridIndex targetIndex)
         {
-            _tacticsGrid.RemoveUnitFromTile(unit.UnitGridIndex);
+            _tacticsGrid.RemoveUnitFromTile(unit.GetGridIndex());
             _tacticsGrid.AddUnitToTile(targetIndex, unit, true, true);
         }
 
@@ -431,7 +431,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             unit.OnUnitReachedDestination -= Unit_OnUnitReachedDestination;
             OnActionEnded?.Invoke();
 
-            if (unit.GetAbilitySystem().GetAttributeCurrentValue(AttributeId.ActionPoints) <= 0)
+            if (unit.GetAbilitySystem().GetAttributeCurrentValue(AttributeId.ActionPoints) <= 0 && unit.GetUnitAI() == null)
                 EndUnitTurn();
         }
 
@@ -541,7 +541,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _unitsInCombat.Remove(unit);
             _orderedUnits.Remove(unit);
 
-            _tacticsGrid.RemoveUnitFromTile(unit.UnitGridIndex);
+            _tacticsGrid.RemoveUnitFromTile(unit.GetGridIndex());
 
             SetUnitTeamIndex(unit, -1);
 
@@ -564,6 +564,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
             if (!ability.TryActivateAbility(activationData))
             {
+                Debug.Log("We're not returning false");
                 ability.OnAbilityEnded -= Ability_OnAbilityEnded;
                 OnActionEnded?.Invoke();
                 return false;
@@ -577,6 +578,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             OnActionEnded?.Invoke();
 
             if (_isCombatFinishing) return;
+
+            if (_activeUnit.GetUnitAI() != null) return;
 
             if (ability.GetEndTurnOnUse() || ability.GetAbilityOwner().GetAttributeCurrentValue(AttributeId.ActionPoints) <= 0)
             {
@@ -736,7 +739,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void TacticsGrid_OnTileDataUpdated(GridIndex index)
         {
-            Unit unit = _unitsInCombat.FirstOrDefault(u => u.UnitGridIndex == index);
+            Unit unit = _unitsInCombat.FirstOrDefault(u => u.GetGridIndex() == index);
             if (unit)
             {
                 if (IsValidTileForUnit(unit, index))
@@ -752,7 +755,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void TacticsGrid_OnTileHeightChanged(GridIndex index)
         {
-            Unit unit = _unitsInCombat.FirstOrDefault(u => u.UnitGridIndex == index);
+            Unit unit = _unitsInCombat.FirstOrDefault(u => u.GetGridIndex() == index);
             if (unit)
             {
                 _tacticsGrid.GetTileDataFromIndex(index, out TileData tileData);

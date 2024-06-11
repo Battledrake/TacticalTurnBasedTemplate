@@ -53,11 +53,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void Update()
         {
-            if (Input.GetKeyDown(KeyCode.Tab))
-            {
-                CombatManager.Instance.SetNextTeamUnitAsActive();
-            }
-
             if (_moveToTarget)
             {
                 this.transform.position = Vector3.MoveTowards(this.transform.position, _targetPosition, _moveToTargetSpeed * Time.deltaTime);

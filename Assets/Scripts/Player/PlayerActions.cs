@@ -122,14 +122,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void CombatManager_OnCombatEnded()
         {
-            _endCombatButton.gameObject.SetActive(false);
-            _endTurnButton.gameObject.SetActive(false);
-
-            ClearSelectedActions();
-            SetSelectedTileAndUnit(GridIndex.Invalid());
-
-            _playerAbilityUIController.HideVisuals();
-
             _inputDisabled = false;
         }
 
@@ -144,6 +136,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _endTurnButton.gameObject.SetActive(false);
             _playerAbilityUIController.HideVisuals();
             SetSelectedActions(_combatWaitForTurnActionPrefab, null);
+            _inputDisabled = true;
         }
 
         private void Unit_OnAnyUnitDied(Unit unit)
@@ -163,7 +156,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void CombatManager_OnActiveUnitChanged(Unit unit)
         {
-            SetSelectedTileAndUnit(unit.UnitGridIndex);
+            SetSelectedTileAndUnit(unit.GetGridIndex());
 
             if (unit.GetUnitAI() != null)
                 return;
@@ -207,14 +200,14 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void Update()
         {
+            UpdatedHoveredTileAndUnit();
+
             if (_inputDisabled)
             {
                 _isLeftClickDown = false;
                 _isRightClickDown = false;
                 return;
             }
-
-            UpdatedHoveredTileAndUnit();
 
             if (Input.GetMouseButtonDown(0))
             {
@@ -233,6 +226,12 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             if (Input.GetMouseButtonUp(1))
             {
                 _isRightClickDown = false;
+            }
+
+
+            if (Input.GetKeyDown(KeyCode.Tab))
+            {
+                CombatManager.Instance.SetNextTeamUnitAsActive();
             }
 
             string inputString = Input.inputString;
@@ -278,7 +277,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             GridIndex newIndex;
             if (_hoveredUnit)
             {
-                newIndex = _hoveredUnit.UnitGridIndex;
+                newIndex = _hoveredUnit.GetGridIndex();
             }
             else
             {
