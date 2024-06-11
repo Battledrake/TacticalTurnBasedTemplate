@@ -46,7 +46,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             task.OnAnimationCancelled -= AbilityTask_OnAnimationCancelled;
 
             activationData.tacticsGrid.GetTileDataFromIndex(activationData.targetIndex, out TileData targetData);
-            CombatManager.Instance.ApplyEffectsToTarget(_owner, targetData.unitOnTile.GetComponent<IAbilitySystem>().GetAbilitySystem(), _effects);
+            if (targetData.unitOnTile)
+                CombatManager.Instance.ApplyEffectsToTarget(_owner, targetData.unitOnTile.GetComponent<IAbilitySystem>().GetAbilitySystem(), _effects);
 
             EndAbility();
         }

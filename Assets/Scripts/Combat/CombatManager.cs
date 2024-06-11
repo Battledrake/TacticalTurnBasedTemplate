@@ -234,6 +234,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void StartTurn()
         {
+            if (_isCombatFinishing) return;
             //NOTE: Ensure turn start is called before setting the active unit. This allows the turn start logic, like updating ability system stuff, to happen before OnActiveUnitChanged is fired.
             //ActiveUnitChanged enables various UI displays that depend on AbilitySystem values to be updated like ActionPoints and Cooldowns.
             if (_turnOrderType == TurnOrderType.Team)
@@ -298,6 +299,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void NextTurn()
         {
+            if (_isCombatFinishing) return;
+
             if (_turnOrderType == TurnOrderType.Team)
             {
                 _orderedUnits.Clear();

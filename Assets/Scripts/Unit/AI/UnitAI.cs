@@ -82,6 +82,19 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _aiActions[AIState.MoveToPosition] = MoveToPosition;
             _aiActions[AIState.UseAbility] = UseAbility;
             _aiActions[AIState.EndTurn] = AdvanceToNextState;
+
+            CombatManager.Instance.OnCombatFinishing += CombatManager_OnCombatFinishing;
+            CombatManager.Instance.OnCombatEnded += CombatManager_OnCombatEnded;
+        }
+
+        private void CombatManager_OnCombatEnded()
+        {
+            ClearAIVisuals();
+        }
+
+        private void CombatManager_OnCombatFinishing(int winTeam)
+        {
+            _currentState = AIState.EndTurn;
         }
 
         private void DecideAbility()
@@ -92,7 +105,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 do
                 {
                     _activeAbility = abilities[UnityEngine.Random.Range(0, abilities.Count)];
-                } while (_activeAbility.AffectsFriendly);
+                } while (_activeAbility.AffectsFriendly || _activeAbility.GetActiveCooldown() > 0 || _activeAbility.GetUsesLeft() == 0);
             }
             AdvanceToNextState();
         }
@@ -102,6 +115,14 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             if(_targetUnit == null)
             {
                 HashSet<Unit> playerUnits = CombatManager.Instance.UnitTeams[0];
+                if (playerUnits.Count == 0)
+                {
+                    Debug.Log("No enemies");
+                    AdvanceToNextState();
+                    return;
+                }
+
+
                 Unit closestUnit = playerUnits.Last();
                 float shortestUnitDist = Mathf.Infinity;
                 foreach (Unit unit in playerUnits)
@@ -147,7 +168,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                     {
                         if (pathResult.Length > _unit.GetMoveRange())
                         {
-                            _currentState = AIState.EndTurn;
+                            _currentState = AIState.UseAbility;
                         }
                         _unit.OnUnitReachedDestination += Unit_OnUnitReachedDestination;
                         CombatManager.Instance.MoveUnit(_unit, pathResult.Path, pathResult.Length);
@@ -176,10 +197,11 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void UseAbility()
         {
-            if(CombatManager.Instance.GetAbilityRange(_unit.GetGridIndex(), _activeAbility.GetRangeData()).Contains(_targetUnit.GetGridIndex()))
+            GridIndex targetIndex = _activeAbility.GetRangeData().rangeMinMax.y == 0 ? _unit.GetGridIndex() : _targetUnit.GetGridIndex();
+            if(CombatManager.Instance.GetAbilityRange(_unit.GetGridIndex(), _activeAbility.GetRangeData()).Contains(targetIndex))
             {
                 _activeAbility.OnAbilityEnded += Ability_OnAbilityEnded;
-                if(!CombatManager.Instance.TryActivateAbility(_activeAbility, _unit.GetGridIndex(), _targetUnit.GetGridIndex()))
+                if(!CombatManager.Instance.TryActivateAbility(_activeAbility, _unit.GetGridIndex(), targetIndex))
                 {
                     _activeAbility.OnAbilityEnded -= Ability_OnAbilityEnded;
                     AdvanceToNextState();

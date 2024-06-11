@@ -297,7 +297,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a19b12cb5918cdf4cab03782c350c67f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _delayBetweenStates: 0
+  _delayBetweenStates: 0.5
   _aiStateVisualContainer: {fileID: 3191432738296532511}
   _aiStateVisualLinkers:
   - aiState: 1

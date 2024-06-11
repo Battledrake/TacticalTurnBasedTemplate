@@ -93,7 +93,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 _pooledDisplays[i].gameObject.SetActive(false);
             }
 
-            _pooledDisplays.OrderBy(i => i.transform.GetSiblingIndex());
+            _pooledDisplays = _pooledDisplays.OrderBy(i => i.transform.GetSiblingIndex()).ToList();
 
 
             for (int i = 0; i < orderedUnits.Count; i++)
