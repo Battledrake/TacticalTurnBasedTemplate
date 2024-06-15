@@ -14,26 +14,29 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
     {
         private int _moveCost;
 
-        public override AbilityRangeData GetRangeData()
+        public override AbilityRangeData RangeData
         {
-            AbilityRangeData moveRangeData = new AbilityRangeData();
-            moveRangeData.rangePattern = AbilityRangePattern.Movement;
-            moveRangeData.rangeMinMax = new Vector2Int(1, _owner.GetAttributeCurrentValue(AttributeId.MoveRange));
-            return moveRangeData;
+            get
+            {
+                AbilityRangeData moveRangeData = new AbilityRangeData();
+                moveRangeData.rangePattern = AbilityRangePattern.Movement;
+                moveRangeData.rangeMinMax = new Vector2Int(1, _owner.GetAttributeCurrentValue(AttributeId.MoveRange));
+                return moveRangeData;
+            }
         }
 
-        public override AbilityRangeData GetAreaOfEffectData()
+        public override AbilityRangeData AreaOfEffectData
         {
-            AbilityRangeData sprintRangeData = new AbilityRangeData();
-            sprintRangeData.rangePattern = AbilityRangePattern.Movement;
-            sprintRangeData.rangeMinMax = new Vector2Int(0, _owner.GetAttributeCurrentValue(AttributeId.MoveRange) * 2);
-            return sprintRangeData;
+            get
+            {
+                AbilityRangeData sprintRangeData = new AbilityRangeData();
+                sprintRangeData.rangePattern = AbilityRangePattern.Movement;
+                sprintRangeData.rangeMinMax = new Vector2Int(0, _owner.GetAttributeCurrentValue(AttributeId.MoveRange) * 2);
+                return sprintRangeData;
+            }
         }
 
-        public override List<RangedAbilityEffect> GetEffects()
-        {
-            return new List<RangedAbilityEffect>();
-        }
+        public override List<RangedAbilityEffect> Effects => new List<RangedAbilityEffect>();
 
         protected override void CommitAbility()
         {
@@ -45,35 +48,36 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         //Do Logic Here
         public override void ActivateAbility(AbilityActivationData activationData)
         {
-            _moveCost = CombatManager.Instance.GetAbilityRange(activationData.originIndex, this.GetRangeData()).Contains(activationData.targetIndex) ? 1 : 2;
+            _moveCost = CombatManager.Instance.GetAbilityRange(activationData.originIndex, this.RangeData).Contains(activationData.targetIndex) ? 1 : 2;
 
             CommitAbility();
 
             //TODO: Move this to a task. MoveToLocationTask?;
-            PathParams pathParams = GridPathfinding.CreatePathParamsFromUnit(_owner.GetOwningUnit());
+            PathParams pathParams = GridPathfinding.CreatePathParamsFromUnit(_owner.OwningUnit);
 
             PathfindingResult pathResult = activationData.tacticsGrid.Pathfinder.FindPath(activationData.originIndex, activationData.targetIndex, pathParams);
             if (pathResult.Result == PathResult.SearchSuccess)
             {
-                CombatManager.Instance.MoveUnit(_owner.GetOwningUnit(), pathResult.Path, pathResult.Length);
+                CombatManager.Instance.MoveUnit(_owner.OwningUnit, pathResult.Path, pathResult.Length);
 
-                _owner.GetOwningUnit().OnUnitMovementStopped += Instigator_OnUnitMovementStopped;
-                _owner.GetOwningUnit().OnUnitReachedDestination += Instigator_OnUnitReachedDestination;
+                _owner.
+                OwningUnit.OnUnitMovementStopped += Instigator_OnUnitMovementStopped;
+                _owner.                OwningUnit.OnUnitReachedDestination += Instigator_OnUnitReachedDestination;
             }
         }
 
         private void Instigator_OnUnitMovementStopped(Unit unit)
         {
-            _owner.GetOwningUnit().OnUnitMovementStopped -= Instigator_OnUnitMovementStopped;
-            _owner.GetOwningUnit().OnUnitReachedDestination -= Instigator_OnUnitReachedDestination;
+            _owner.            OwningUnit.OnUnitMovementStopped -= Instigator_OnUnitMovementStopped;
+            _owner.            OwningUnit.OnUnitReachedDestination -= Instigator_OnUnitReachedDestination;
 
             EndAbility();
         }
 
         private void Instigator_OnUnitReachedDestination(Unit unit)
         {
-            _owner.GetOwningUnit().OnUnitMovementStopped -= Instigator_OnUnitMovementStopped;
-            _owner.GetOwningUnit().OnUnitReachedDestination -= Instigator_OnUnitReachedDestination;
+            _owner.            OwningUnit.OnUnitMovementStopped -= Instigator_OnUnitMovementStopped;
+            _owner.            OwningUnit.OnUnitReachedDestination -= Instigator_OnUnitReachedDestination;
 
             EndAbility();
         }
@@ -84,10 +88,10 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             if (_owner.GetAttributeCurrentValue(AttributeId.ActionPoints) <= 0)
                 return false;
 
-            if (_owner.GetAttributeCurrentValue(AttributeId.ActionPoints) == 1 && !CombatManager.Instance.GetAbilityRange(activationData.originIndex, this.GetRangeData()).Contains(activationData.targetIndex))
+            if (_owner.GetAttributeCurrentValue(AttributeId.ActionPoints) == 1 && !CombatManager.Instance.GetAbilityRange(activationData.originIndex, this.RangeData).Contains(activationData.targetIndex))
                 return false;
 
-            if (CombatManager.Instance.GetAbilityRange(activationData.originIndex, this.GetAreaOfEffectData()).Contains(activationData.targetIndex))
+            if (CombatManager.Instance.GetAbilityRange(activationData.originIndex, this.AreaOfEffectData).Contains(activationData.targetIndex))
             {
                 GridMovement gridMovement = _owner.GetComponent<GridMovement>();
                 if (gridMovement == null) return false;
@@ -99,10 +103,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             return false;
         }
 
-        public override int GetUsesLeft()
-        {
-            return -1;
-        }
+        public override int UsesLeft => -1;
 
         public override void ReduceUsesLeft(int amount)
         {

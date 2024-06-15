@@ -18,9 +18,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             CommitAbility();
 
-            if (_owner.GetOwningUnit())
+            if (_owner.OwningUnit)
             {
-                _owner.GetOwningUnit().LookAtTarget(activationData.targetIndex);
+                _owner.                OwningUnit.LookAtTarget(activationData.targetIndex);
             }
 
             SpawnAnimationTaskAndExecute(activationData);

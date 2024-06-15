@@ -48,13 +48,13 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         [SerializeField] private GridVisual _gridVisual;
         [SerializeField] private GridPathfinding _pathfinder;
 
-        public Dictionary<GridIndex, TileData> GridTiles { get => _gridTiles; }
-        public GridVisual GridVisual { get => _gridVisual; }
+        public Dictionary<GridIndex, TileData> GridTiles => _gridTiles;
+        public GridVisual GridVisual => _gridVisual;
         public GridIndex GridTileCount { get => _gridTileCount; set => _gridTileCount = value; }
         public Vector3 TileSize { get => _gridTileSize; set => _gridTileSize = value; }
-        public GridShape GridShape { get => _gridShape; set { _gridShape = value; } }
+        public GridShape GridShape { get => _gridShape; set => _gridShape = value; }
         public bool UseEnvironment { get => _useEnvironment; set => _useEnvironment = value; }
-        public GridPathfinding Pathfinder { get => _pathfinder; }
+        public GridPathfinding Pathfinder => _pathfinder;
 
         private Vector3 _gridPosition = Vector3.zero;
         private GridShape _gridShape = GridShape.Square;

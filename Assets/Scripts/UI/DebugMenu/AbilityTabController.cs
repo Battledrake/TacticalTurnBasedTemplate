@@ -38,9 +38,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         [Header("Dependences")]
         [SerializeField] private PlayerActions _playerActions;
 
-        public ToggleGroup AbilityButtonsToggleGroup { get => _abilityButtonsToggleGroup; }
-        public Ability ActiveAbility { get => _activeAbility; }
-
         private Dictionary<AbilityId, AbilityButton> _abilityButtons = new Dictionary<AbilityId, AbilityButton>();
         private Ability _activeAbility;
         private int _activeButton = -1;
@@ -57,11 +54,11 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 _abilitySystem.GetAbilities()[i].SetCheat(true); 
                 
                 AbilityButton abilityButton = Instantiate(_abilityButtonPrefab, _abilityButtonContainer);
-                abilityButton.InitializeButton(initializedAbilities[i].GetAbilityId(), initializedAbilities[i].Icon);
+                abilityButton.InitializeButton(initializedAbilities[i].AbilityId, initializedAbilities[i].Icon);
                 abilityButton.OnAbilityButtonSelected += AbilityButton_OnAbilityButtonSelected;
                 abilityButton.OnAbilityButtonDeselected += AbilityButton_OnAbilityButtonDeselected;
 
-                _abilityButtons.TryAdd(initializedAbilities[i].GetAbilityId(), abilityButton);
+                _abilityButtons.TryAdd(initializedAbilities[i].AbilityId, abilityButton);
 
                 _abilityButtonsToggleGroup.RegisterToggle(abilityButton.GetComponent<Toggle>());
                 abilityButton.GetComponent<Toggle>().group = _abilityButtonsToggleGroup;

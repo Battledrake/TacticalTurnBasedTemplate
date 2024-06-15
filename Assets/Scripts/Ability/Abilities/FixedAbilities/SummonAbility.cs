@@ -20,9 +20,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             CommitAbility();
 
-            if (_owner.GetOwningUnit())
+            if (_owner.OwningUnit)
             {
-                _owner.GetOwningUnit().LookAtTarget(activationData.targetIndex);
+                _owner.                OwningUnit.LookAtTarget(activationData.targetIndex);
 
                 SpawnAnimationTaskAndExecute(activationData);
             }
@@ -61,11 +61,12 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _summonedUnit = Instantiate(_unitPrefab, activationData.tacticsGrid.GetWorldPositionFromGridIndex(activationData.targetIndex), Quaternion.identity);
             _summonedUnit.InitUnit(_unitType);
 
-            CombatManager.Instance.AddUnitToCombat(activationData.targetIndex, _summonedUnit, _owner.TeamIndex);
+            int teamIndex = _owner.OwningUnit ? _owner.OwningUnit.TeamIndex : 8;
+            CombatManager.Instance.AddUnitToCombat(activationData.targetIndex, _summonedUnit, _owner.OwningUnit.TeamIndex);
 
             _summonedUnit.OnUnitDied += Unit_OnSummonedUnitDied;
-            if (_owner.GetOwningUnit())
-                _owner.GetOwningUnit().OnUnitDied += Unit_OnOwningUnitDied;
+            if (_owner.OwningUnit)
+                _owner.                OwningUnit.OnUnitDied += Unit_OnOwningUnitDied;
 
             _isActive = true;
         }
@@ -95,8 +96,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             _summonedUnit.OnUnitDied -= Unit_OnSummonedUnitDied;
 
-            if (_owner.GetOwningUnit())
-                _owner.GetOwningUnit().OnUnitDied -= Unit_OnSummonedUnitDied;
+            if (_owner.OwningUnit)
+                _owner.                OwningUnit.OnUnitDied -= Unit_OnSummonedUnitDied;
 
             Destroy(_summonedUnit.gameObject, 2f);
             _isActive = false;

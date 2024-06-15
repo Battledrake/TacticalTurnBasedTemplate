@@ -7,40 +7,49 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 {
     public class DynamicAbilityExample : Ability
     {
-        public override AbilityRangeData GetRangeData()
+        public override AbilityRangeData RangeData
         {
-            AbilityRangeData randomRangeData = new AbilityRangeData();
-            AbilityRangePattern[] rangePatterns = Enum.GetValues(typeof(AbilityRangePattern)).Cast<AbilityRangePattern>().ToArray();
-            int randomNumber = UnityEngine.Random.Range(0, rangePatterns.Length);
-            randomRangeData.rangePattern = rangePatterns[randomNumber];
+            get
+            {
+                AbilityRangeData randomRangeData = new AbilityRangeData();
+                AbilityRangePattern[] rangePatterns = Enum.GetValues(typeof(AbilityRangePattern)).Cast<AbilityRangePattern>().ToArray();
+                int randomNumber = UnityEngine.Random.Range(0, rangePatterns.Length);
+                randomRangeData.rangePattern = rangePatterns[randomNumber];
 
-            randomRangeData.rangeMinMax = new Vector2Int(0, 10);
+                randomRangeData.rangeMinMax = new Vector2Int(0, 10);
 
-            return randomRangeData;
+                return randomRangeData;
+            }
         }
 
-        public override AbilityRangeData GetAreaOfEffectData()
+        public override AbilityRangeData AreaOfEffectData
         {
-            AbilityRangeData randomRangeData = new AbilityRangeData();
-            AbilityRangePattern[] rangePatterns = Enum.GetValues(typeof(AbilityRangePattern)).Cast<AbilityRangePattern>().ToArray();
-            int randomNumber = UnityEngine.Random.Range(0, rangePatterns.Length);
-            randomRangeData.rangePattern = rangePatterns[randomNumber];
+            get
+            {
+                AbilityRangeData randomRangeData = new AbilityRangeData();
+                AbilityRangePattern[] rangePatterns = Enum.GetValues(typeof(AbilityRangePattern)).Cast<AbilityRangePattern>().ToArray();
+                int randomNumber = UnityEngine.Random.Range(0, rangePatterns.Length);
+                randomRangeData.rangePattern = rangePatterns[randomNumber];
 
-            randomRangeData.rangeMinMax = new Vector2Int(0, 10);
+                randomRangeData.rangeMinMax = new Vector2Int(0, 10);
 
-            return randomRangeData;
+                return randomRangeData;
+            }
         }
 
-        public override List<RangedAbilityEffect> GetEffects()
+        public override List<RangedAbilityEffect> Effects
         {
-            RangedAbilityEffect randomEffect;
-            AttributeId[] attributes = Enum.GetValues(typeof(AttributeId)).Cast<AttributeId>().ToArray();
-            int randomNumber = UnityEngine.Random.Range(0, attributes.Length);
-            randomEffect.durationData = new EffectDurationData() { durationPolicy = EffectDurationPolicy.Infinite };
-            randomEffect.attribute = attributes[randomNumber];
-            randomEffect.magnitudeRange = new Vector2Int(1, 11);
+            get
+            {
+                RangedAbilityEffect randomEffect;
+                AttributeId[] attributes = Enum.GetValues(typeof(AttributeId)).Cast<AttributeId>().ToArray();
+                int randomNumber = UnityEngine.Random.Range(0, attributes.Length);
+                randomEffect.durationData = new EffectDurationData() { durationPolicy = EffectDurationPolicy.Infinite };
+                randomEffect.attribute = attributes[randomNumber];
+                randomEffect.magnitudeRange = new Vector2Int(1, 11);
 
-            return new List<RangedAbilityEffect> { randomEffect };
+                return new List<RangedAbilityEffect> { randomEffect };
+            }
         }
 
         public override void ActivateAbility(AbilityActivationData activationData)
@@ -69,15 +78,12 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 receiver = _owner;
             }
 
-            CombatManager.Instance.ApplyEffectsToTarget(_owner, receiver, GetEffects());
+            CombatManager.Instance.ApplyEffectsToTarget(_owner, receiver, Effects);
 
             EndAbility();
         }
 
-        public override int GetUsesLeft()
-        {
-            return -1;
-        }
+        public override int UsesLeft => -1;
 
         public override void ReduceUsesLeft(int amount)
         {

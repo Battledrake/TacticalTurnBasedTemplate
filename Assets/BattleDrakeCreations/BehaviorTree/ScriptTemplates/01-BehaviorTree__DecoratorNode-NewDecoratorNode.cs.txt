@@ -1,0 +1,20 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using BattleDrakeCreations.BehaviorTree;
+
+public class #SCRIPTNAME# : DecoratorNode
+{
+    protected override void OnStart()
+    {
+    }
+
+    protected override void OnStop()
+    {
+    }
+
+    protected override NodeResult OnEvaluate()
+    {
+        return _child.Evaluate();
+    }
+}

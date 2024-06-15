@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fa08e052582f1f5478fae4a40a6cf1d4, type: 3}
+  m_Name: BehaviorTreeSettings
+  m_EditorClassIdentifier: 
+  behaviorTreeXml: {fileID: 9197481963319205126, guid: 354892f4424aac0448815a63b7bd464a,
+    type: 3}
+  behaviorTreeStyle: {fileID: 7433441132597879392, guid: 2e9feefcc709b804a8fa0d11d37e9819,
+    type: 3}
+  nodeXml: {fileID: 9197481963319205126, guid: aad342ecf02c148498031a52b4ec8283, type: 3}
+  scriptTemplateTaskNode: {fileID: 4900000, guid: 31ccb1342cfcc93438cdcf84a101cbe7,
+    type: 3}
+  scriptTemplateCompositeNode: {fileID: 4900000, guid: 2d910f4fb5bd59246b526f1cb68bbf4f,
+    type: 3}
+  scriptTemplateDecoratorNode: {fileID: 4900000, guid: be0a8a8d0e600d146b107367c78b7d8b,
+    type: 3}
+  newNodeBasePath: Assets/_ThirdParty/BattleDrakeCreations/BehaviorTree/Scripts/

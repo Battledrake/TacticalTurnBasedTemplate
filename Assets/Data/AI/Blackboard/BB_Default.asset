@@ -13,10 +13,26 @@ MonoBehaviour:
   m_Name: BB_Default
   m_EditorClassIdentifier: 
   entries:
-  - keyName: TargetIndex
-    valueType: 8
+  - keyName: EnemyTeam
+    valueType: 0
     value:
-      type: 8
+      type: 0
+      intValue: 0
+      floatValue: 0
+      boolValue: 0
+      stringValue: 
+      vector3Value: {x: 0, y: 0, z: 0}
+      transformValue: {fileID: 0}
+      gameObjectValue: {fileID: 0}
+      unitValue: {fileID: 0}
+      gridIndexValue:
+        x: 0
+        z: 0
+      abilityValue: {fileID: 0}
+  - keyName: ActiveAbility
+    valueType: 9
+    value:
+      type: 9
       intValue: 0
       floatValue: 0
       boolValue: 0
@@ -45,26 +61,10 @@ MonoBehaviour:
         x: 0
         z: 0
       abilityValue: {fileID: 0}
-  - keyName: EnemyTeam
-    valueType: 0
+  - keyName: TargetIndex
+    valueType: 8
     value:
-      type: 0
-      intValue: 0
-      floatValue: 0
-      boolValue: 0
-      stringValue: 
-      vector3Value: {x: 0, y: 0, z: 0}
-      transformValue: {fileID: 0}
-      gameObjectValue: {fileID: 0}
-      unitValue: {fileID: 0}
-      gridIndexValue:
-        x: 0
-        z: 0
-      abilityValue: {fileID: 0}
-  - keyName: ActiveAbility
-    valueType: 9
-    value:
-      type: 9
+      type: 8
       intValue: 0
       floatValue: 0
       boolValue: 0

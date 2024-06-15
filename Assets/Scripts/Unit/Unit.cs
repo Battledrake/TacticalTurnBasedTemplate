@@ -29,12 +29,12 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         [SerializeField] private Color _selectedColor = Color.green;
         [SerializeField] private bool _isImmortal = false;
 
-        public Transform LookAtTransform { get => _lookAtTransform; }
-        public GridIndex GetGridIndex() { return _gridIndex; }
-        public UnitData UnitData { get => _unitData; }
-        public bool IsAlive { get => _isAlive; }
-        public int TeamIndex { get => _teamIndex; }
-        public int PreviousTeamIndex { get => _prevTeamIndex; }
+        public Transform LookAtTransform => _lookAtTransform;
+        public GridIndex GridIndex => _gridIndex;
+        public UnitData UnitData  => _unitData; 
+        public bool IsAlive  => _isAlive; 
+        public int TeamIndex => _teamIndex;
+        public int PreviousTeamIndex => _prevTeamIndex;
         public GridMovement GridMovement => _gridMovement;
         public TacticsGrid TacticsGrid => _tacticsGrid;
         public int Health => _abilitySystem.GetAttributeCurrentValue(AttributeId.Health);

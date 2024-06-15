@@ -1,0 +1,29 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
+    <Style src="project://database/Assets/BattleDrakeCreations/BehaviorTree/UIBuilder/BehaviorTreeEditorStyle.uss?fileID=7433441132597879392&amp;guid=2e9feefcc709b804a8fa0d11d37e9819&amp;type=3#BehaviorTreeEditorStyle" />
+    <uie:Toolbar style="flex-direction: row;">
+        <uie:ToolbarMenu tabindex="-1" parse-escape-sequences="true" display-tooltip-when-elided="true" text="Assets" style="width: 69px; flex-direction: row; justify-content: flex-start; align-self: auto;" />
+    </uie:Toolbar>
+    <BattleDrakeCreations.BehaviorTree.SplitView fixed-pane-initial-dimension="250" fixed-pane-index="1" name="SplitView" style="width: auto; align-self: auto; align-items: stretch; height: auto;">
+        <ui:VisualElement name="left-panel" style="flex-grow: 1; width: auto; flex-direction: column; align-items: auto; justify-content: flex-start; -unity-text-outline-color: rgba(0, 0, 0, 0);">
+            <ui:Label tabindex="-1" text="Graph" parse-escape-sequences="true" display-tooltip-when-elided="true" style="align-items: stretch; align-self: stretch; opacity: 1; background-color: rgb(32, 32, 32); -unity-background-image-tint-color: rgb(255, 255, 255); background-image: none; color: rgb(255, 255, 255); margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0;" />
+            <BattleDrakeCreations.BehaviorTree.BehaviorTreeView focusable="true" style="flex-grow: 1; width: auto; align-items: stretch; align-self: stretch; flex-shrink: 0; min-width: auto;" />
+        </ui:VisualElement>
+        <ui:VisualElement name="right-panel" style="flex-grow: 1; flex-wrap: nowrap; align-items: center; align-self: stretch; flex-direction: column; -unity-text-outline-color: rgba(0, 0, 0, 0); width: auto;">
+            <ui:Label tabindex="-1" text="Inspector" parse-escape-sequences="true" display-tooltip-when-elided="true" style="align-self: stretch; align-items: stretch; background-color: rgb(37, 37, 37); color: rgb(255, 255, 255); margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0;" />
+            <BattleDrakeCreations.BehaviorTree.InspectorView style="flex-grow: 1; width: auto; height: auto; align-items: stretch; justify-content: flex-start; flex-shrink: 1; align-self: stretch; flex-direction: column; -unity-text-outline-color: rgb(60, 60, 60); background-color: rgb(60, 60, 60); color: rgb(255, 255, 255); max-width: none; max-height: none;" />
+        </ui:VisualElement>
+    </BattleDrakeCreations.BehaviorTree.SplitView>
+    <ui:VisualElement name="Overlay" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; background-color: rgba(0, 0, 0, 0.5); align-items: center; justify-content: center;">
+        <ui:VisualElement style="flex-grow: 1; background-color: rgb(56, 56, 56); border-top-left-radius: 10px; border-bottom-left-radius: 10px; border-top-right-radius: 10px; border-bottom-right-radius: 10px; max-height: 200px; min-height: 200px; min-width: 533px; max-width: 533px; justify-content: space-around; align-self: center; -unity-text-align: upper-left; align-items: stretch; flex-direction: column;">
+            <ui:VisualElement name="VisualElement" style="flex-grow: 1; margin-left: 10px; margin-right: 10px; margin-top: 10px; margin-bottom: 10px; background-color: rgb(56, 56, 56); align-items: stretch; justify-content: space-around; align-self: stretch; -unity-text-align: upper-left;">
+                <ui:Label text="Create New Tree" display-tooltip-when-elided="true" style="-unity-text-align: upper-center; font-size: 25px; color: rgb(210, 210, 210); -unity-font-style: bold;" />
+                <ui:TextField picking-mode="Ignore" label="Name" value="New Behavior Tree" text="New Behaviour Tree" name="TreeName" style="margin-top: 2px; align-self: auto; justify-content: flex-start; min-height: 30px; margin-right: 4px; margin-bottom: 2px; margin-left: 4px;" />
+                <ui:TextField picking-mode="Ignore" label="Location" value="Assets/BattleDrakeCreations/BehaviorTree/Data/Trees" text="Assets/" name="LocationPath" readonly="false" style="margin-top: 2px; min-height: 30px;" />
+                <ui:VisualElement name="ButtonsContainer" style="flex-grow: 0; min-height: 40px; flex-direction: row; justify-content: space-around; align-self: auto; align-items: stretch; flex-wrap: nowrap;">
+                    <ui:Button text="Create" display-tooltip-when-elided="true" name="CreateButton" style="min-height: auto; white-space: normal; padding-top: 5px; padding-right: 5px; padding-bottom: 5px; padding-left: 5px; margin-top: 2px; margin-right: 2px; margin-bottom: 2px; margin-left: 2px; align-self: stretch; max-width: 50%; min-width: 50%;" />
+                    <ui:Button text="Cancel" display-tooltip-when-elided="true" name="CancelButton" style="min-height: auto; white-space: normal; padding-top: 5px; padding-right: 5px; padding-bottom: 5px; padding-left: 5px; margin-top: 2px; margin-right: 2px; margin-bottom: 2px; margin-left: 2px; align-self: stretch; justify-content: space-around; align-items: stretch; max-width: none; min-width: 50%; -unity-text-align: middle-center;" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

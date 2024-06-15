@@ -416,14 +416,14 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
             _moveCost = pathLength <= unit.MoveRange ? -1 : -2;
 
-            _tacticsGrid.RemoveUnitFromTile(unit.GetGridIndex());
+            _tacticsGrid.RemoveUnitFromTile(unit.GridIndex);
             _tacticsGrid.AddUnitToTile(path.Last(), unit, false);
             OnUnitGridIndexChanged?.Invoke(unit, path.Last());
         }
 
         public void TeleportUnit(Unit unit, GridIndex targetIndex)
         {
-            _tacticsGrid.RemoveUnitFromTile(unit.GetGridIndex());
+            _tacticsGrid.RemoveUnitFromTile(unit.GridIndex);
             _tacticsGrid.AddUnitToTile(targetIndex, unit, true, true);
         }
 
@@ -550,7 +550,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _unitsInCombat.Remove(unit);
             _orderedUnits.Remove(unit);
 
-            _tacticsGrid.RemoveUnitFromTile(unit.GetGridIndex());
+            _tacticsGrid.RemoveUnitFromTile(unit.GridIndex);
 
             SetUnitTeamIndex(unit, -1);
 
@@ -589,7 +589,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
             if (_activeUnit.UnitAI != null) return;
 
-            if (ability.GetEndTurnOnUse() || ability.GetAbilityOwner().GetAttributeCurrentValue(AttributeId.ActionPoints) <= 0)
+            if (ability.EndTurnOnUse || ability.AbilityOwner.GetAttributeCurrentValue(AttributeId.ActionPoints) <= 0)
             {
                 EndUnitTurn();
             }
@@ -663,7 +663,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void TacticsGrid_OnTileDataUpdated(GridIndex index)
         {
-            Unit unit = _unitsInCombat.FirstOrDefault(u => u.GetGridIndex() == index);
+            Unit unit = _unitsInCombat.FirstOrDefault(u => u.GridIndex == index);
             if (unit)
             {
                 if (IsValidTileForUnit(unit, index))
@@ -679,7 +679,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void TacticsGrid_OnTileHeightChanged(GridIndex index)
         {
-            Unit unit = _unitsInCombat.FirstOrDefault(u => u.GetGridIndex() == index);
+            Unit unit = _unitsInCombat.FirstOrDefault(u => u.GridIndex == index);
             if (unit)
             {
                 _tacticsGrid.GetTileDataFromIndex(index, out TileData tileData);

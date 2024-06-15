@@ -22,23 +22,21 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         [Tooltip("Height difference of current and next tile before jumping is done")]
         [SerializeField] private float _heightBeforeJump = 0.2f;
 
-        public bool IsMoving { get => _isMoving; }
-
-        private TacticsGrid _tacticsGrid;
+        public bool IsMoving => _isMoving;
 
         private List<GridIndex> _currentPathToFollow = new List<GridIndex>();
-        private bool _isMoving;
-
         private Matrix4x4 _previousTileTransform;
         private Matrix4x4 _nextTileTransform;
-
         private GridIndex _prevIndex;
 
+        private bool _isMoving;
         private float _traversalStep = 0f;
         private float _timeElapsed = 0f;
-
         private bool _isAscending = false;
         private bool _isDescending = false;
+
+        //Dependencies
+        private TacticsGrid _tacticsGrid;
 
         public void SetPathingGrid(TacticsGrid tacticsGrid)
         {

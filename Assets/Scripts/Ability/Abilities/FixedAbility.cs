@@ -25,30 +25,18 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             }
         }
 
-        public override int GetUsesLeft()
-        {
-            return _abilityUsesLeft;
-        }
+        public override int UsesLeft => _abilityUsesLeft;
 
         public override void ReduceUsesLeft(int amount)
         {
             _abilityUsesLeft += amount;
         }
 
-        public override AbilityRangeData GetAreaOfEffectData()
-        {
-            return _areaOfEffectData;
-        }
+        public override AbilityRangeData AreaOfEffectData => _areaOfEffectData;
 
-        public override List<RangedAbilityEffect> GetEffects()
-        {
-            return _effects;
-        }
+        public override List<RangedAbilityEffect> Effects => _effects;
 
-        public override AbilityRangeData GetRangeData()
-        {
-            return _rangeData;
-        }
+        public override AbilityRangeData RangeData => _rangeData;
 
         public abstract override void ActivateAbility(AbilityActivationData activationData);
     }

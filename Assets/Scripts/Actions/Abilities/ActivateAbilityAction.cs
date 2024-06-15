@@ -16,7 +16,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
             if (_ability != null)
             {
-                if (!CombatManager.Instance.GetAbilityRange(_playerActions.SelectedTile, _ability.GetRangeData()).Contains(index)) return false;
+                if (!CombatManager.Instance.GetAbilityRange(_playerActions.SelectedTile, _ability.RangeData).Contains(index)) return false;
 
                 AbilityActivationData activationData;
                 activationData.tacticsGrid = _playerActions.TacticsGrid;

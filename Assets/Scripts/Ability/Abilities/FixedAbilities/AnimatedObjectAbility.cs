@@ -89,10 +89,11 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private void AnimateObjectTask_OnObjectCollisionWithUnit(AbilitySystem receiver, AbilityActivationData activationData)
         {
             if (receiver == _owner && !_isFriendlyOnly) return;
-            if (_owner.TeamIndex == receiver.TeamIndex && !_isFriendlyOnly) return;
-            if (_isFriendlyOnly && _owner.TeamIndex != receiver.TeamIndex) return;
+            int instigatorTeamIndex = _owner.OwningUnit ? _owner.OwningUnit.TeamIndex : 8;
+            if (instigatorTeamIndex == receiver.OwningUnit.TeamIndex && !_isFriendlyOnly) return;
+            if (_isFriendlyOnly && instigatorTeamIndex != receiver.OwningUnit.TeamIndex) return;
 
-            if (receiver.GetGridIndex() != activationData.targetIndex && !CombatManager.Instance.GetAbilityRange(activationData.targetIndex, this.GetAreaOfEffectData()).Contains(receiver.GetGridIndex()))
+            if (receiver.OwningUnit.GridIndex != activationData.targetIndex && !CombatManager.Instance.GetAbilityRange(activationData.targetIndex, this.AreaOfEffectData).Contains(receiver.OwningUnit.GridIndex))
             {
                 return;
             }
@@ -105,7 +106,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             task.OnObjectCollisionWithUnit -= AnimateObjectTask_OnObjectCollisionWithUnit;
             task.OnInitialAnimationCompleted -= AnimateObjectTask_OnInitialAnimationComplete;
 
-            List<GridIndex> aoeIndexes = CombatManager.Instance.GetAbilityRange(activationData.targetIndex, GetAreaOfEffectData());
+            List<GridIndex> aoeIndexes = CombatManager.Instance.GetAbilityRange(activationData.targetIndex, AreaOfEffectData);
 
             //HACK: If somehow our object didn't hit a valid unit due to a collision miss or something? hit it here and possibly fix issue that prevented collision in the first place. If Possible.
             for (int i = 0; i < aoeIndexes.Count; i++)

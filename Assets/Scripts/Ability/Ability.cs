@@ -173,29 +173,28 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         [SerializeField] protected int _cooldown;
         [Tooltip("Ability only affects same team?")]
         [SerializeField] protected bool _isFriendlyOnly = false;
-        public string Name { get => _abilityId.ToString(); }
-        public Sprite Icon { get => _icon; }
+        public string Name => _abilityId.ToString();
+        public Sprite Icon => _icon;
+
+        public AbilityId AbilityId => _abilityId;
+        public AbilitySystem AbilityOwner => _owner;
+        public int ActiveCooldown => _activeCooldown;
+        public bool EndTurnOnUse => _endTurnOnUse;
+        public bool IsFriendlyOnly => _isFriendlyOnly;
+        public abstract int UsesLeft { get; }
+        public abstract AbilityRangeData RangeData { get; }
+        public abstract AbilityRangeData AreaOfEffectData { get; }
+        public abstract List<RangedAbilityEffect> Effects { get; }
 
         protected AbilitySystem _owner;
         protected int _activeCooldown;
         protected bool _cheatEnabled = false;
 
-        public AbilityId GetAbilityId() => _abilityId;
-        public AbilitySystem GetAbilityOwner() => _owner;
-        public int GetActiveCooldown() => _activeCooldown;
-        public bool GetEndTurnOnUse() => _endTurnOnUse;
-        public abstract int GetUsesLeft();
-        public bool GetIsFriendlyOnly() { return _isFriendlyOnly; }
-        public abstract AbilityRangeData GetRangeData();
-        public abstract AbilityRangeData GetAreaOfEffectData();
-        public abstract List<RangedAbilityEffect> GetEffects();
-
-        public bool SetCheat(bool isEnabled) => _cheatEnabled = isEnabled;
-
         public virtual void InitAbility(AbilitySystem abilitySystem)
         {
             _owner = abilitySystem;
         }
+        public bool SetCheat(bool isEnabled) => _cheatEnabled = isEnabled;
 
         public void ReduceCooldown(int amount)
         {
@@ -211,13 +210,13 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             if (_cheatEnabled) return true;
 
-            if (GetUsesLeft() == 0) return false;
+            if (UsesLeft == 0) return false;
 
             if (_activeCooldown > 0) return false;
 
             if (_owner.GetAttributeCurrentValue(AttributeId.ActionPoints) < _costEffect.effects.FirstOrDefault(e => e.attribute == AttributeId.ActionPoints).magnitude) return false;
 
-            if (!CombatManager.Instance.GetAbilityRange(activationData.originIndex, this.GetRangeData()).Contains(activationData.targetIndex)) return false;
+            if (!CombatManager.Instance.GetAbilityRange(activationData.originIndex, this.RangeData).Contains(activationData.targetIndex)) return false;
 
             return true;
         }
@@ -226,7 +225,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             if (_cheatEnabled) return;
 
-            if (GetUsesLeft() > 0)
+            if (UsesLeft > 0)
                 ReduceUsesLeft(-1);
 
             for (int i = 0; i < _costEffect.effects.Count; i++)

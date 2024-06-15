@@ -85,10 +85,10 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void ShowAbilityRangePattern()
         {
-            _rangeIndexes = CombatManager.Instance.GetAbilityRange(_selectedTileIndex, _currentAbility.GetRangeData());
+            _rangeIndexes = CombatManager.Instance.GetAbilityRange(_selectedTileIndex, _currentAbility.RangeData);
 
-            if (_currentAbility.GetRangeData().lineOfSightData.requireLineOfSight)
-                _rangeIndexes = CombatManager.Instance.RemoveIndexesWithoutLineOfSight(_selectedTileIndex, _rangeIndexes, _currentAbility.GetRangeData().lineOfSightData.height, _currentAbility.GetRangeData().lineOfSightData.offsetDistance);
+            if (_currentAbility.RangeData.lineOfSightData.requireLineOfSight)
+                _rangeIndexes = CombatManager.Instance.RemoveIndexesWithoutLineOfSight(_selectedTileIndex, _rangeIndexes, _currentAbility.RangeData.lineOfSightData.height, _currentAbility.RangeData.lineOfSightData.offsetDistance);
 
             SetTileStateOnList(TileState.IsInAbilityRange, _rangeIndexes);
         }
@@ -98,10 +98,10 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             if (!_rangeIndexes.Contains(_hoveredTileIndex))
                 return;
 
-            _areaOfEffectIndexes = CombatManager.Instance.GetAbilityRange(_hoveredTileIndex, _currentAbility.GetAreaOfEffectData());
+            _areaOfEffectIndexes = CombatManager.Instance.GetAbilityRange(_hoveredTileIndex, _currentAbility.AreaOfEffectData);
 
-            if (_currentAbility.GetAreaOfEffectData().lineOfSightData.requireLineOfSight)
-                _areaOfEffectIndexes = CombatManager.Instance.RemoveIndexesWithoutLineOfSight(_hoveredTileIndex, _areaOfEffectIndexes, _currentAbility.GetAreaOfEffectData().lineOfSightData.height, _currentAbility.GetAreaOfEffectData().lineOfSightData.offsetDistance);
+            if (_currentAbility.AreaOfEffectData.lineOfSightData.requireLineOfSight)
+                _areaOfEffectIndexes = CombatManager.Instance.RemoveIndexesWithoutLineOfSight(_hoveredTileIndex, _areaOfEffectIndexes, _currentAbility.AreaOfEffectData.lineOfSightData.height, _currentAbility.AreaOfEffectData.lineOfSightData.offsetDistance);
 
             SetTileStateOnList(TileState.IsInAoeRange, _areaOfEffectIndexes);
         }

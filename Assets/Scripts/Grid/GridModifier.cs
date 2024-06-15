@@ -9,7 +9,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         [SerializeField] private GridShape _gridShape;
         [SerializeField] private TileType _tileType;
 
-        public TileType TileType { get => _tileType; }
+        public TileType TileType => _tileType;
 
         private MeshFilter _meshFilter;
         private MeshRenderer _meshRenderer;

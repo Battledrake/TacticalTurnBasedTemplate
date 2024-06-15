@@ -125,7 +125,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 do
                 {
                     _activeAbility = abilities[UnityEngine.Random.Range(0, abilities.Count)];
-                } while (_activeAbility.GetIsFriendlyOnly() || _activeAbility.GetActiveCooldown() > 0 || _activeAbility.GetUsesLeft() == 0);
+                } while (_activeAbility.IsFriendlyOnly || _activeAbility.ActiveCooldown > 0 || _activeAbility.UsesLeft == 0);
             }
             AdvanceToNextState();
         }
@@ -159,7 +159,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
             if(_targetUnit != null)
             {
-                List<GridIndex> abilityRangeIndexes = CombatManager.Instance.GetAbilityRange(_targetUnit.GetGridIndex(), _activeAbility.GetRangeData());
+                List<GridIndex> abilityRangeIndexes = CombatManager.Instance.GetAbilityRange(_targetUnit.GridIndex, _activeAbility.RangeData);
                 GridIndex closestIndex = abilityRangeIndexes.Last();
                 float shortestAbilityIndexDist = Mathf.Infinity;
                 for (int i = 0; i < abilityRangeIndexes.Count; i++)
@@ -178,10 +178,10 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void MoveToPosition()
         {
-            if (_unit.GetGridIndex() != _targetIndex)
+            if (_unit.GridIndex != _targetIndex)
             {
                 PathParams pathParams = GridPathfinding.CreatePathParamsFromUnit(_unit, _unit.MoveRange * 2, true);
-                PathfindingResult pathResult = _tacticsGrid.Pathfinder.FindPath(_unit.GetGridIndex(), _targetIndex, pathParams);
+                PathfindingResult pathResult = _tacticsGrid.Pathfinder.FindPath(_unit.GridIndex, _targetIndex, pathParams);
                 if (pathResult.Result != PathResult.SearchFail)
                 {
                     if (pathResult.Path.Count > 0)
@@ -217,11 +217,11 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void UseAbility()
         {
-            GridIndex targetIndex = _activeAbility.GetRangeData().rangeMinMax.y == 0 ? _unit.GetGridIndex() : _targetUnit.GetGridIndex();
-            if(CombatManager.Instance.GetAbilityRange(_unit.GetGridIndex(), _activeAbility.GetRangeData()).Contains(targetIndex))
+            GridIndex targetIndex = _activeAbility.RangeData.rangeMinMax.y == 0 ? _unit.GridIndex : _targetUnit.GridIndex;
+            if(CombatManager.Instance.GetAbilityRange(_unit.GridIndex, _activeAbility.RangeData).Contains(targetIndex))
             {
                 _activeAbility.OnAbilityEnded += Ability_OnAbilityEnded;
-                if(!CombatManager.Instance.TryActivateAbility(_activeAbility, _unit.GetGridIndex(), targetIndex))
+                if(!CombatManager.Instance.TryActivateAbility(_activeAbility, _unit.GridIndex, targetIndex))
                 {
                     _activeAbility.OnAbilityEnded -= Ability_OnAbilityEnded;
                     AdvanceToNextState();

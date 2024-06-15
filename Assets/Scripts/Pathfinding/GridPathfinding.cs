@@ -106,7 +106,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public bool AllowPartialSolution { get => _allowPartialSolution; set => _allowPartialSolution = value; }
         public bool IgnoreClosed { get => _ignoreClosed; set => _ignoreClosed = value; }
         public bool IncludeStartNodeInPath { get => _includeStartNodeInPath; set => _includeStartNodeInPath = value; }
-
         public Dictionary<GridIndex, PathNode> PathNodePool { get => _pathNodePool; }
 
         private bool _includeDiagonals = false;

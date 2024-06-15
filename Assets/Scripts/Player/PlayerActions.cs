@@ -29,15 +29,15 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         [SerializeField] private AbilityTabController _abilityTabController;
         [SerializeField] private PlayerAbilityUIController _playerAbilityUIController;
 
-        public TacticsGrid TacticsGrid { get => _tacticsGrid; }
+        public TacticsGrid TacticsGrid => _tacticsGrid;
         public GridIndex HoveredTile { get => _hoveredTile; set => _selectedTile = value; }
-        public GridIndex SelectedTile { get => _selectedTile; set => _selectedTile = value; }
+        public GridIndex SelectedTile => _selectedTile;
         public Unit HoveredUnit { get => _hoveredUnit; set => _hoveredUnit = value; }
-        public Unit SelectedUnit { get => _selectedUnit; }
-        public ActionBase LeftClickAction { get => _leftClickAction; }
-        public ActionBase RightClickAction { get => _rightClickAction; }
+        public Unit SelectedUnit => _selectedUnit;
+        public ActionBase LeftClickAction => _leftClickAction;
+        public ActionBase RightClickAction => _rightClickAction;
         public Ability CurrentAbility { get => _currentAbility; set { _currentAbility = value; OnCurrentAbilityChanged?.Invoke(_currentAbility); } }
-        public PlayerAbilityUIController PlayerAbilityBar { get => _playerAbilityUIController; }
+        public PlayerAbilityUIController PlayerAbilityBar => _playerAbilityUIController;
 
         private GridIndex _hoveredTile = new GridIndex(int.MinValue, int.MinValue);
         private GridIndex _selectedTile = new GridIndex(int.MinValue, int.MinValue);
@@ -156,7 +156,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void CombatManager_OnActiveUnitChanged(Unit unit)
         {
-            SetSelectedTileAndUnit(unit.GetGridIndex());
+            SetSelectedTileAndUnit(unit.GridIndex);
 
             if (unit.UnitAI != null)
                 return;
@@ -277,7 +277,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             GridIndex newIndex;
             if (_hoveredUnit)
             {
-                newIndex = _hoveredUnit.GetGridIndex();
+                newIndex = _hoveredUnit.GridIndex;
             }
             else
             {

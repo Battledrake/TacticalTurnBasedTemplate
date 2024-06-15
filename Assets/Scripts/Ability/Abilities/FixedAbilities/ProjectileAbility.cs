@@ -22,7 +22,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             CommitAbility();
 
-            Unit unit = _owner.GetOwningUnit();
+            Unit unit = _owner.OwningUnit;
             if (unit)
             {
                 unit.LookAtTarget(activationData.targetIndex);
@@ -32,7 +32,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
             Vector3 startPosition = activationData.tacticsGrid.GetTilePositionFromIndex(activationData.targetIndex);
 
-            List<GridIndex> aoeIndexes = CombatManager.Instance.GetAbilityRange(activationData.targetIndex, this.GetAreaOfEffectData());
+            List<GridIndex> aoeIndexes = CombatManager.Instance.GetAbilityRange(activationData.targetIndex, this.AreaOfEffectData);
 
             for (int i = 0; i < aoeIndexes.Count; i++)
             {
@@ -60,13 +60,13 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private void AnimateObjectTask_OnObjectCollisionWithUnit(AbilitySystem receiver, AbilityActivationData activateData)
         {
             //TODO: Improve on the friendly fire logic
-            if (receiver == _owner && !this.GetIsFriendlyOnly())
+            if (receiver == _owner && !this.IsFriendlyOnly)
                 return;
 
 
-            List<GridIndex> aoeIndexes = CombatManager.Instance.GetAbilityRange(activateData.targetIndex, this.GetAreaOfEffectData());
+            List<GridIndex> aoeIndexes = CombatManager.Instance.GetAbilityRange(activateData.targetIndex, this.AreaOfEffectData);
 
-            if (!aoeIndexes.Contains(receiver.GetOwningUnit().GetGridIndex()))
+            if (!aoeIndexes.Contains(receiver.OwningUnit.GridIndex))
             {
                 return;
             }
@@ -79,7 +79,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             animateObjectTask.OnInitialAnimationCompleted -= AnimateObjectTask_OnInitialAnimationCompleted;
             animateObjectTask.OnObjectCollisionWithUnit -= AnimateObjectTask_OnObjectCollisionWithUnit;
 
-            List<GridIndex> aoeIndexes = CombatManager.Instance.GetAbilityRange(activateData.targetIndex, this.GetAreaOfEffectData());
+            List<GridIndex> aoeIndexes = CombatManager.Instance.GetAbilityRange(activateData.targetIndex, this.AreaOfEffectData);
             //HACK: If somehow our object didn't hit a valid unit due to a collision miss or something? hit it here and possibly fix issue that prevented collision in the first place. If Possible.
             for (int i = 0; i < aoeIndexes.Count; i++)
             {

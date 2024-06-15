@@ -104,7 +104,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 LineRendererPool.Instance.ReturnInstances(_borrowedSprintRenders);
 
                 PathParams pathParams = GridPathfinding.CreatePathParamsFromUnit(_currentUnit, unit.MoveRange);
-                PathfindingResult pathResult = _playerActions.TacticsGrid.Pathfinder.FindTilesInRange(_currentUnit.GetGridIndex(), pathParams);
+                PathfindingResult pathResult = _playerActions.TacticsGrid.Pathfinder.FindTilesInRange(_currentUnit.GridIndex, pathParams);
                 if (pathResult.Result != PathResult.SearchFail)
                 {
                     _moveRangeIndexes = pathResult.Path;
@@ -201,7 +201,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private void GenerateSprintRangeTiles()
         {
             PathParams pathParams = GridPathfinding.CreatePathParamsFromUnit(_currentUnit, _currentUnit.MoveRange * 2);
-            PathfindingResult pathResult = _playerActions.TacticsGrid.Pathfinder.FindTilesInRange(_currentUnit.GetGridIndex(), pathParams);
+            PathfindingResult pathResult = _playerActions.TacticsGrid.Pathfinder.FindTilesInRange(_currentUnit.GridIndex, pathParams);
             if (pathResult.Result != PathResult.SearchFail)
             {
                 HashSet<EdgeData> sprintEdges = new HashSet<EdgeData>(pathResult.Edges);

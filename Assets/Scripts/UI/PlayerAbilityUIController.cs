@@ -55,7 +55,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             foreach (KeyValuePair<int, AbilityButton> abilityButtonPair in _abilityButtons)
             {
-                int abilityUses = _abilitySystem.GetAbility(abilityButtonPair.Value.GetAbilityId()).GetUsesLeft();
+                int abilityUses = _abilitySystem.GetAbility(abilityButtonPair.Value.GetAbilityId()).UsesLeft;
                 if (abilityUses == 0)
                 {
                     abilityButtonPair.Value.GetComponent<Toggle>().interactable = false;
@@ -72,7 +72,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             foreach (KeyValuePair<int, AbilityButton> abilityButtonPair in _abilityButtons)
             {
-                int abilityCooldown = _abilitySystem.GetAbility(abilityButtonPair.Value.GetAbilityId()).GetActiveCooldown();
+                int abilityCooldown = _abilitySystem.GetAbility(abilityButtonPair.Value.GetAbilityId()).ActiveCooldown;
                 if (abilityCooldown > 0)
                 {
                     abilityButtonPair.Value.GetComponent<Toggle>().interactable = false;
@@ -137,7 +137,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             for (int i = 0; i < abilities.Count; i++)
             {
                 AbilityButton newButton = Instantiate(_abilityButtonPrefab, _abilityButtonContainer);
-                newButton.InitializeButton(abilities[i].GetAbilityId(), abilities[i].Icon);
+                newButton.InitializeButton(abilities[i].AbilityId, abilities[i].Icon);
                 _abilityButtons.TryAdd(i, newButton);
 
                 Toggle newButtonToggle = newButton.GetComponent<Toggle>();
@@ -163,8 +163,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             if (_abilityButtons.TryGetValue(index, out AbilityButton abilityButton))
             {
-                if (_abilitySystem.GetAbility(_abilityButtons[index].GetAbilityId()).GetUsesLeft() == 0) return;
-                if (_abilitySystem.GetAbility(_abilityButtons[index].GetAbilityId()).GetActiveCooldown() > 0) return;
+                if (_abilitySystem.GetAbility(_abilityButtons[index].GetAbilityId()).UsesLeft == 0) return;
+                if (_abilitySystem.GetAbility(_abilityButtons[index].GetAbilityId()).ActiveCooldown > 0) return;
 
                 Toggle abilityButtonToggle = abilityButton.GetComponent<Toggle>();
                 if (abilityButtonToggle.isOn)

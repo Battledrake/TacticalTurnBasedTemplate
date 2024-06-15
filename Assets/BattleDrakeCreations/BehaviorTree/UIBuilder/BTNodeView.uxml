@@ -1,0 +1,24 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/BattleDrakeCreations/BehaviorTree/UIToolkit/BTNodeViewStyle.uss?fileID=7433441132597879392&amp;guid=0c01b192137c4e04684f26db6143f8c3&amp;type=3#BTNodeViewStyle" />
+    <ui:VisualElement name="result-border" style="flex-grow: 1;" />
+    <ui:VisualElement name="node-border">
+        <ui:VisualElement name="contents" style="flex-shrink: 1;">
+            <ui:VisualElement name="top" style="height: auto;">
+                <ui:VisualElement name="input" focusable="false" style="align-self: auto; justify-content: flex-start; position: relative; align-items: center; height: auto; width: auto;" />
+                <ui:VisualElement name="divider" class="vertical" />
+                <ui:VisualElement name="title" style="min-height: 10px; -unity-text-align: upper-left; background-color: rgba(0, 0, 0, 0);">
+                    <ui:Label name="title-label" text="WaitTask" class="unity-text-element unity-label" style="-unity-text-align: upper-center;" />
+                    <ui:VisualElement name="title-button-container">
+                        <ui:VisualElement name="collapse-button">
+                            <ui:VisualElement name="icon" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:Label tabindex="-1" text="This is a description" parse-escape-sequences="true" display-tooltip-when-elided="true" name="description" style="height: auto; flex-shrink: 1; background-color: rgba(0, 0, 0, 0); max-width: 100%;" />
+                <ui:VisualElement name="divider" class="horizontal" />
+                <ui:VisualElement name="output" style="position: relative; align-self: auto; flex-shrink: 1; height: auto; justify-content: flex-start; flex-grow: 0; flex-direction: column; min-width: auto;" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+    <ui:VisualElement name="selection-border" picking-mode="Ignore" />
+</ui:UXML>

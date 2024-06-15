@@ -78,7 +78,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private void ShowAbilityRangePattern()
         {
             _playerActions.TacticsGrid.ClearAllTilesWithState(TileState.IsInAbilityRange);
-            List<GridIndex> rangeIndexes = CombatManager.Instance.GetAbilityRange(_playerActions.SelectedTile, _currentAbility.GetRangeData());
+            List<GridIndex> rangeIndexes = CombatManager.Instance.GetAbilityRange(_playerActions.SelectedTile, _currentAbility.RangeData);
             for (int i = 0; i < rangeIndexes.Count; i++)
             {
                 _playerActions.TacticsGrid.AddStateToTile(rangeIndexes[i], TileState.IsInAbilityRange);
@@ -91,13 +91,13 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             _playerActions.TacticsGrid.ClearAllTilesWithState(TileState.IsInAoeRange);
 
-            if (!CombatManager.Instance.GetAbilityRange(_playerActions.SelectedTile, _currentAbility.GetRangeData()).Contains(_playerActions.HoveredTile))
+            if (!CombatManager.Instance.GetAbilityRange(_playerActions.SelectedTile, _currentAbility.RangeData).Contains(_playerActions.HoveredTile))
                 return;
 
-            List<GridIndex> areaOfEffectIndexes = CombatManager.Instance.GetAbilityRange(_playerActions.HoveredTile, _currentAbility.GetAreaOfEffectData());
+            List<GridIndex> areaOfEffectIndexes = CombatManager.Instance.GetAbilityRange(_playerActions.HoveredTile, _currentAbility.AreaOfEffectData);
 
-            if (_currentAbility.GetRangeData().lineOfSightData.requireLineOfSight)
-                areaOfEffectIndexes = CombatManager.Instance.RemoveIndexesWithoutLineOfSight(_playerActions.HoveredTile, areaOfEffectIndexes, _currentAbility.GetAreaOfEffectData().lineOfSightData.height, _currentAbility.GetAreaOfEffectData().lineOfSightData.offsetDistance);
+            if (_currentAbility.RangeData.lineOfSightData.requireLineOfSight)
+                areaOfEffectIndexes = CombatManager.Instance.RemoveIndexesWithoutLineOfSight(_playerActions.HoveredTile, areaOfEffectIndexes, _currentAbility.AreaOfEffectData.lineOfSightData.height, _currentAbility.AreaOfEffectData.lineOfSightData.offsetDistance);
 
             for (int i = 0; i < areaOfEffectIndexes.Count; i++)
             {

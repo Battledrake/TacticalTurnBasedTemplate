@@ -22,12 +22,12 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate {
 
             for (int i = 0; i < _abilityPrefabs.Count; i++)
             {
-                if (_abilitiesById.ContainsKey(_abilityPrefabs[i].GetAbilityId()))
+                if (_abilitiesById.ContainsKey(_abilityPrefabs[i].AbilityId))
                 {
-                    Debug.LogWarning($"Duplicate AbilityIds Found. Abilities: {_abilityPrefabs[i].gameObject.name}, {_abilitiesById[_abilityPrefabs[i].GetAbilityId()].gameObject.name}");
+                    Debug.LogWarning($"Duplicate AbilityIds Found. Abilities: {_abilityPrefabs[i].gameObject.name}, {_abilitiesById[_abilityPrefabs[i].AbilityId].gameObject.name}");
                 }
 
-                _abilitiesById.TryAdd(_abilityPrefabs[i].GetAbilityId(), _abilityPrefabs[i]);
+                _abilitiesById.TryAdd(_abilityPrefabs[i].AbilityId, _abilityPrefabs[i]);
             }
         }
 

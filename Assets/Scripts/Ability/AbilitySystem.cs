@@ -12,28 +12,14 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public event Action<AttributeId, int, int> OnAttributeBaseChanged;
         public event Action<AttributeId, int, int> OnAttributeCurrentChanged;
 
-        [SerializeField] private int _teamIndex = 8;
         [SerializeField] private Transform _abilityInstanceContainer;
-
         [SerializeField] private AbilityEffectsContainer _actionPointEffect;
-
-        public int TeamIndex { get => _teamIndex; set => _teamIndex = value; }
+        public Unit OwningUnit => _owningUnit;
 
         private Dictionary<AttributeId, AttributeData> _attributes = new Dictionary<AttributeId, AttributeData>();
         private Dictionary<AbilityId, Ability> _abilities = new Dictionary<AbilityId, Ability>();
         private Dictionary<AttributeId, List<ActiveEffect>> _activeEffects = new Dictionary<AttributeId, List<ActiveEffect>>();
-
-        private Unit _ownerUnit;
-        private GridIndex _gridIndex = new GridIndex(0, 0);
-
-
-        public Unit GetOwningUnit() => _ownerUnit;
-        public GridIndex GetGridIndex() => _ownerUnit ? _ownerUnit.GetGridIndex() : _gridIndex;
-
-        private void Unit_OnTeamIndexChanged()
-        {
-            _teamIndex = _ownerUnit.TeamIndex;
-        }
+        private Unit _owningUnit;
 
         public void ResetActionPoints()
         {
@@ -51,8 +37,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             if (owner != null)
             {
-                _ownerUnit = owner;
-                _ownerUnit.OnTeamIndexChanged += Unit_OnTeamIndexChanged;
+                _owningUnit = owner;
             }
 
             _activeEffects.Clear();
@@ -420,14 +405,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public List<Ability> GetAbilities()
         {
             return _abilities.Values.ToList();
-        }
-
-        public void OnDisable()
-        {
-            if (_ownerUnit != null)
-            {
-                _ownerUnit.OnTeamIndexChanged -= Unit_OnTeamIndexChanged;
-            }
         }
     }
 }

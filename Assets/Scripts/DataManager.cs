@@ -8,7 +8,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
     {
         public static GridShapeData GetGridShapeData(GridShape gridShape)
         {
-            GridShapeData[] _gridData = Resources.LoadAll<GridShapeData>("Data/Grid");
+            GridShapeData[] _gridData = Resources.LoadAll<GridShapeData>("Grid");
             return _gridData.FirstOrDefault<GridShapeData>(data => data.gridShape == gridShape);
         }
 
@@ -18,9 +18,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             return unitData.FirstOrDefault<UnitData>(data => data.unitId == unitId);
         }
 
-        public static UnitData[] GetAllUnitData()
-        {
-            return Resources.LoadAll<UnitData>("Data/Unit");
-        }
+        public static UnitData[] GetAllUnitData() => Resources.LoadAll<UnitData>("Unit");
     }
 }
