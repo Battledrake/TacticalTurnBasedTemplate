@@ -1,51 +1,51 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using BattleDrakeCreations.BehaviorTree;
-using BattleDrakeCreations.TacticalTurnBasedTemplate;
 
-public class SetActiveAbility : TaskNode
+namespace BattleDrakeCreations.TacticalTurnBasedTemplate.BehaviorTree
 {
-    [SerializeField] private AbilityId _abilityId;
-    [Tooltip("Give the unit the ability if it doesn't have it")]
-    [SerializeField] private bool _giveAbility;
-
-    public override string title { get => "Set Active Ability"; }
-    public override string description { get => $"Ability: {_abilityId}"; }
-
-    private BlackboardKey _activeAbilityKey;
-
-    protected override void OnStart() 
+    public class SetActiveAbility : TaskNode
     {
-        _activeAbilityKey = _blackboard.GetOrRegisterKey("ActiveAbility");
-    }
+        [SerializeField] private AbilityId _abilityId;
+        [Tooltip("Give the unit the ability if it doesn't have it")]
+        [SerializeField] private bool _giveAbility;
 
-    protected override void OnStop() 
-    {
-    }
+        public override string title { get => "Set Active Ability"; }
+        public override string description { get => $"Ability: {_abilityId}"; }
 
-    protected override NodeResult OnEvaluate() 
-    {
-        Ability ability = _agent.AbilitySystem.GetAbility(_abilityId);
-        if (ability == null)
+        private BlackboardKey _activeAbilityKey;
+
+        protected override void OnStart()
         {
-            if (!_giveAbility)
-            {
-                return NodeResult.Failed;
-            }
-            else
-            {
-                _agent.AbilitySystem.AddAbility(_abilityId);
-                ability = _agent.AbilitySystem.GetAbility(_abilityId);
-            }
+            _activeAbilityKey = _blackboard.GetOrRegisterKey("ActiveAbility");
         }
 
-        if (ability)
+        protected override void OnStop()
         {
-            _blackboard.SetValue(_activeAbilityKey, ability);
-            return NodeResult.Succeeded;
         }
 
-        return NodeResult.Failed;
+        protected override NodeResult OnEvaluate()
+        {
+            Ability ability = _agent.AbilitySystem.GetAbility(_abilityId);
+            if (ability == null)
+            {
+                if (!_giveAbility)
+                {
+                    return NodeResult.Failed;
+                }
+                else
+                {
+                    _agent.AbilitySystem.AddAbility(_abilityId);
+                    ability = _agent.AbilitySystem.GetAbility(_abilityId);
+                }
+            }
+
+            if (ability)
+            {
+                _blackboard.SetValue(_activeAbilityKey, ability);
+                return NodeResult.Succeeded;
+            }
+
+            return NodeResult.Failed;
+        }
     }
 }

@@ -31,7 +31,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         public TacticsGrid TacticsGrid => _tacticsGrid;
         public GridIndex HoveredTile { get => _hoveredTile; set => _selectedTile = value; }
-        public GridIndex SelectedTile => _selectedTile;
+        public GridIndex SelectedTile { get => _selectedTile; set => _selectedTile = value; }
         public Unit HoveredUnit { get => _hoveredUnit; set => _hoveredUnit = value; }
         public Unit SelectedUnit => _selectedUnit;
         public ActionBase LeftClickAction => _leftClickAction;

@@ -84,7 +84,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
     public class PathfindingResult
     {
         public PathResult Result { get; set; }
-        public List<GridIndex> Path { get; set; }
+        public List<PathNode> Path { get; set; }
+        public List<GridIndex> RangeIndexes { get; set; }
         public float Length { get; set; }
         public HashSet<EdgeData> Edges { get; set; }
     }
@@ -142,7 +143,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             return pathParams;
         }
 
-        public static PathParams CreatePathParamsFromUnit(Unit unit, float pathLength = 1000f, bool allowPartialSolution = false, bool includeStartNode = false)
+        public static PathParams CreatePathParamsFromUnit(Unit unit, float pathLength = 1000f, bool allowPartialSolution = true, bool includeStartNode = false)
         {
             PathParams pathParams;
             pathParams.includeDiagonals = unit.UnitData.unitStats.canMoveDiagonal;
@@ -158,7 +159,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public PathfindingResult FindTilesInRange(GridIndex startIndex, PathParams pathParams)
         {
             PathfindingResult pathResult = new PathfindingResult();
-            pathResult.Path = new List<GridIndex>();
+            pathResult.RangeIndexes = new List<GridIndex>();
             pathResult.Result = PathResult.SearchSuccess;
             pathResult.Edges = new HashSet<EdgeData>();
 
@@ -170,10 +171,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
             _pathNodePool.Clear();
             _rangeNodes = new PriorityQueue<PathNode>();
-            List<GridIndex> indexesInRange = new List<GridIndex>();
 
             if (pathParams.includeStartNode)
-                indexesInRange.Add(startIndex);
+                pathResult.RangeIndexes.Add(startIndex);
 
             PathNode startNode = CreateAndAddNodeToPool(startIndex);
             startNode.traversalCost = 0;
@@ -237,18 +237,17 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                     {
                         neighborNode.isOpened = true;
                         _rangeNodes.Enqueue(neighborNode);
-                        indexesInRange.Add(neighborNode.index);
+                        pathResult.RangeIndexes.Add(neighborNode.index);
                     }
                 }
             }
-            pathResult.Path = indexesInRange;
             return pathResult;
         }
 
         public PathfindingResult FindPath(GridIndex startIndex, GridIndex targetIndex, PathParams pathParams)
         {
             PathfindingResult pathResult = new PathfindingResult();
-            pathResult.Path = new List<GridIndex>();
+            pathResult.Path = new List<PathNode>();
             pathResult.Result = PathResult.SearchSuccess;
 
             if (!_tacticsGrid.IsIndexValid(startIndex) || !_tacticsGrid.IsIndexValid(targetIndex))
@@ -358,28 +357,29 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             return true;
         }
 
-        private List<GridIndex> ConvertPathNodesToIndexes(PathNode startNode, PathNode endNode, bool includeStartNode)
+        private List<PathNode> ConvertPathNodesToIndexes(PathNode startNode, PathNode endNode, bool includeStartNode)
         {
-            List<GridIndex> tileIndexes = new List<GridIndex>();
+            List<PathNode> pathNodes = new List<PathNode>();
 
-            tileIndexes.Add(endNode.index);
+            pathNodes.Add(endNode);
 
             PathNode currentNode = endNode;
 
-            int pathLength = tileIndexes.Count;
+            int numOfNodes = pathNodes.Count;
             while (currentNode.index != startNode.index)
             {
-                tileIndexes.Add(currentNode.parent);
+                pathNodes.Add(_pathNodePool[currentNode.parent]);
+                //pathNodes.Add(currentNode.parent);
                 currentNode = _pathNodePool[currentNode.parent];
-                pathLength++;
+                numOfNodes++;
             }
 
             if (!includeStartNode)
-                tileIndexes.RemoveAt(pathLength - 1);
+                pathNodes.RemoveAt(numOfNodes - 1);
 
-            tileIndexes.Reverse();
+            pathNodes.Reverse();
 
-            return tileIndexes;
+            return pathNodes;
         }
 
         public PathNode CreateAndAddNodeToPool(GridIndex index)

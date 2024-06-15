@@ -262,6 +262,7 @@ GameObject:
   - component: {fileID: -8186604555658985836}
   - component: {fileID: 6728330543466200128}
   - component: {fileID: 4634768888240707380}
+  - component: {fileID: -5438962426130934536}
   m_Layer: 0
   m_Name: Pf_UnitAI
   m_TagString: Untagged
@@ -319,6 +320,7 @@ MonoBehaviour:
   - aiState: 6
     visualPrefab: {fileID: 4639905990837646673, guid: 8db39b107b0e3ae428afd466eb80e468,
       type: 3}
+  _aiLogic: 0
 --- !u!114 &6728330543466200128
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -345,3 +347,36 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _behaviorTree: {fileID: 11400000, guid: 8eb9dbb2c25effe43a8495285e498ee8, type: 2}
   _delayBetweenEvaluations: 0
+--- !u!114 &-5438962426130934536
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7619291508787322986}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e50e75d603a5a5d4e9f790854917a251, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _delayBetweenStates: 0.5
+  _aiStateVisualContainer: {fileID: 3191432738296532511}
+  _aiStateVisualLinkers:
+  - aiState: 1
+    visualPrefab: {fileID: 6952049661224728923, guid: 724a65de7aa376e499e27c1497719c42,
+      type: 3}
+  - aiState: 2
+    visualPrefab: {fileID: 6559350247270701732, guid: 93fdffb323c17a740bb78094b278f486,
+      type: 3}
+  - aiState: 3
+    visualPrefab: {fileID: 7807602249511447732, guid: 6234897eadef29f488e05d42d53c87d5,
+      type: 3}
+  - aiState: 4
+    visualPrefab: {fileID: 4044074565356848031, guid: dc969702d2aa9bd44bc3127d17219d26,
+      type: 3}
+  - aiState: 5
+    visualPrefab: {fileID: 247586773960121106, guid: 49031d3a39b0a2846a92602c9add4811,
+      type: 3}
+  - aiState: 6
+    visualPrefab: {fileID: 4639905990837646673, guid: 8db39b107b0e3ae428afd466eb80e468,
+      type: 3}

@@ -181,6 +181,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public int ActiveCooldown => _activeCooldown;
         public bool EndTurnOnUse => _endTurnOnUse;
         public bool IsFriendlyOnly => _isFriendlyOnly;
+        public int ActionPointCost => _costEffect.effects.FirstOrDefault(effect => effect.attribute == AttributeId.ActionPoints).magnitude;
         public abstract int UsesLeft { get; }
         public abstract AbilityRangeData RangeData { get; }
         public abstract AbilityRangeData AreaOfEffectData { get; }

@@ -1,72 +1,78 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using BattleDrakeCreations.BehaviorTree;
-using BattleDrakeCreations.TacticalTurnBasedTemplate;
-using System;
+using System.Collections.Generic;
 
-public class MoveToTargetIndex : TaskNode
+namespace BattleDrakeCreations.TacticalTurnBasedTemplate.BehaviorTree
 {
-    public override string title { get => "Move To Target Index"; }
-    public override string description { get => $"Dest: {_targetIndex}"; }
-
-    private BlackboardKey _targetIndexKey;
-    private GridIndex _targetIndex;
-
-    private bool _isMoving = false;
-    private bool _hasArrived = false;
-
-    protected override void OnStart()
+    public class MoveToTargetIndex : TaskNode
     {
-        _targetIndexKey = _blackboard.GetOrRegisterKey("TargetIndex");
-        _isMoving = false;
-        _hasArrived = false;
-        _result = NodeResult.Running;
-    }
+        public override string title { get => "Move To Target Index"; }
+        public override string description { get => $"Dest: {_targetIndex}"; }
 
-    protected override void OnStop()
-    {
-    }
+        private BlackboardKey _targetIndexKey;
+        private GridIndex _targetIndex;
 
-    protected override NodeResult OnEvaluate()
-    {
-        if (_isMoving)
-            return NodeResult.Running;
+        private bool _isMoving = false;
+        private bool _hasArrived = false;
 
-        if (_hasArrived)
-            return NodeResult.Succeeded;
-
-        if (!_blackboard.TryGetValue(_targetIndexKey, out GridIndex targetIndex))
-            return NodeResult.Failed;
-
-        _targetIndex = targetIndex;
-
-        if (_targetIndex == _agent.Unit.GridIndex)
-            return NodeResult.Succeeded;
-
-        PathParams pathParams = GridPathfinding.CreatePathParamsFromUnit(_agent.Unit, _agent.Unit.MoveRange * 2, true);
-        PathfindingResult pathResult = _agent.TacticsGrid.Pathfinder.FindPath(_agent.Unit.GridIndex, _targetIndex, pathParams);
-        if (pathResult.Result != PathResult.SearchFail)
+        protected override void OnStart()
         {
-            if (pathResult.Path.Count > 0)
+            _targetIndexKey = _blackboard.GetOrRegisterKey("TargetIndex");
+            _isMoving = false;
+            _hasArrived = false;
+            _result = NodeResult.Running;
+        }
+
+        protected override void OnStop()
+        {
+        }
+
+        protected override NodeResult OnEvaluate()
+        {
+            if (_isMoving)
+                return NodeResult.Running;
+
+            if (_hasArrived)
+                return NodeResult.Succeeded;
+
+            if (!_blackboard.TryGetValue(_targetIndexKey, out GridIndex targetIndex))
+                return NodeResult.Failed;
+
+            _targetIndex = targetIndex;
+
+            if (_targetIndex == _agent.Unit.GridIndex)
+                return NodeResult.Succeeded;
+
+            PathParams pathParams = GridPathfinding.CreatePathParamsFromUnit(_agent.Unit);
+            PathfindingResult pathResult = _agent.TacticsGrid.Pathfinder.FindPath(_agent.Unit.GridIndex, _targetIndex, pathParams);
+            if (pathResult.Result != PathResult.SearchFail)
             {
+
+                int maxTravel = _agent.AbilitySystem.GetAttributeCurrentValue(AttributeId.ActionPoints) >= 2 ? _agent.Unit.MoveRange * 2 : _agent.Unit.MoveRange;
+                List<GridIndex> pathIndexes = new();
+                for (int i = 0; i < pathResult.Path.Count; i++)
+                {
+                    if (pathResult.Path[i].traversalCost > maxTravel)
+                        break;
+                    else
+                        pathIndexes.Add(pathResult.Path[i].index);
+                }
                 _agent.Unit.OnUnitReachedDestination += Unit_OnUnitReachedDestination;
-                CombatManager.Instance.MoveUnit(_agent.Unit, pathResult.Path, pathResult.Length);
+                CombatManager.Instance.MoveUnit(_agent.Unit, pathIndexes, maxTravel);
                 _isMoving = true;
             }
+            else
+            {
+                return NodeResult.Failed;
+            }
+
+            return NodeResult.Running;
         }
-        else
+
+        private void Unit_OnUnitReachedDestination(Unit unit)
         {
-            return NodeResult.Failed;
+            _agent.Unit.OnUnitReachedDestination -= Unit_OnUnitReachedDestination;
+            _isMoving = false;
+            _hasArrived = true;
         }
-
-        return NodeResult.Running;
-    }
-
-    private void Unit_OnUnitReachedDestination(Unit unit)
-    {
-        _agent.Unit.OnUnitReachedDestination -= Unit_OnUnitReachedDestination;
-        _isMoving = false;
-        _hasArrived = true;
     }
 }

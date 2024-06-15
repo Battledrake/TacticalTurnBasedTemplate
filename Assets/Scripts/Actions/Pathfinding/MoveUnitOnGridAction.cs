@@ -32,11 +32,12 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 PathfindingResult pathResult = _playerActions.TacticsGrid.Pathfinder.FindPath(_currentUnit.GridIndex, index, pathParams);
                 if (pathResult.Result == PathResult.SearchSuccess)
                 {
-                    for (int i = 0; i < pathResult.Path.Count; i++)
+                    List<GridIndex> pathIndexes = PathfindingStatics.ConvertPathNodesToGridIndexes(pathResult.Path);
+                    for (int i = 0; i < pathIndexes.Count; i++)
                     {
-                        _playerActions.TacticsGrid.AddStateToTile(pathResult.Path[i], TileState.IsInPath);
+                        _playerActions.TacticsGrid.AddStateToTile(pathIndexes[i], TileState.IsInPath);
                     }
-                    CombatManager.Instance.MoveUnit(_currentUnit, pathResult.Path, pathResult.Length);
+                    CombatManager.Instance.MoveUnit(_currentUnit, pathIndexes, pathResult.Length);
 
                     _playerActions.TacticsGrid.ClearAllTilesWithState(TileState.IsInMoveRange);
                     _currentUnit.OnUnitReachedDestination += SelectedUnit_OnUnitReachedDestination;

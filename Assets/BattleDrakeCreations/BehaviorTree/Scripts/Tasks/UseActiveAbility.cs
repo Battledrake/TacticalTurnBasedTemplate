@@ -1,63 +1,61 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using BattleDrakeCreations.BehaviorTree;
-using BattleDrakeCreations.TacticalTurnBasedTemplate;
-using System;
 
-public class UseActiveAbility : TaskNode
+namespace BattleDrakeCreations.TacticalTurnBasedTemplate.BehaviorTree
 {
-    public override string title { get => "Use Active Ability"; }
-    public override string description { get => ""; }
-
-    private BlackboardKey _activeAbilityKey;
-    private BlackboardKey _targetUnitKey;
-
-    private bool _isUsingAbility = false;
-    private bool _isAbilityCompleted = false;
-
-    protected override void OnStart()
+    public class UseActiveAbility : TaskNode
     {
-        _activeAbilityKey = _blackboard.GetOrRegisterKey("ActiveAbility");
-        _targetUnitKey = _blackboard.GetOrRegisterKey("TargetUnit");
+        public override string title { get => "Use Active Ability"; }
+        public override string description { get => ""; }
 
-        _result = NodeResult.Running;
-        _isUsingAbility = false;
-        _isAbilityCompleted = false;
-    }
+        private BlackboardKey _activeAbilityKey;
+        private BlackboardKey _targetUnitKey;
 
-    protected override void OnStop()
-    {
-    }
+        private bool _isUsingAbility = false;
+        private bool _isAbilityCompleted = false;
 
-    protected override NodeResult OnEvaluate()
-    {
-        if (_isUsingAbility)
-            return NodeResult.Running;
-
-        if (_isAbilityCompleted)
-            return NodeResult.Succeeded;
-
-        _blackboard.TryGetValue(_activeAbilityKey, out Ability activeAbility);
-        _blackboard.TryGetValue(_targetUnitKey, out Unit targetUnit);
-
-        if (activeAbility == null || targetUnit == null)
-            return NodeResult.Failed;
-
-        activeAbility.OnAbilityEnded += Ability_OnAbilityEnded;
-        if (!CombatManager.Instance.TryActivateAbility(activeAbility, _agent.Unit.GridIndex, targetUnit.GridIndex))
+        protected override void OnStart()
         {
-            activeAbility.OnAbilityEnded -= Ability_OnAbilityEnded;
-            return NodeResult.Failed;
-        }
-        _isUsingAbility = true;
-        return NodeResult.Running;
-    }
+            _activeAbilityKey = _blackboard.GetOrRegisterKey("ActiveAbility");
+            _targetUnitKey = _blackboard.GetOrRegisterKey("TargetUnit");
 
-    private void Ability_OnAbilityEnded(Ability ability)
-    {
-        ability.OnAbilityEnded -= Ability_OnAbilityEnded;
-        _isUsingAbility = false;
-        _isAbilityCompleted = true;
+            _result = NodeResult.Running;
+            _isUsingAbility = false;
+            _isAbilityCompleted = false;
+        }
+
+        protected override NodeResult OnEvaluate()
+        {
+            if (_isUsingAbility)
+                return NodeResult.Running;
+
+            if (_isAbilityCompleted)
+                return NodeResult.Succeeded;
+
+            _blackboard.TryGetValue(_activeAbilityKey, out Ability activeAbility);
+            _blackboard.TryGetValue(_targetUnitKey, out Unit targetUnit);
+
+            if (activeAbility == null || targetUnit == null)
+                return NodeResult.Failed;
+
+            activeAbility.OnAbilityEnded += Ability_OnAbilityEnded;
+            if (!CombatManager.Instance.TryActivateAbility(activeAbility, _agent.Unit.GridIndex, targetUnit.GridIndex))
+            {
+                activeAbility.OnAbilityEnded -= Ability_OnAbilityEnded;
+                return NodeResult.Failed;
+            }
+            _isUsingAbility = true;
+            return NodeResult.Running;
+        }
+
+        private void Ability_OnAbilityEnded(Ability ability)
+        {
+            ability.OnAbilityEnded -= Ability_OnAbilityEnded;
+            _isUsingAbility = false;
+            _isAbilityCompleted = true;
+        }
+
+        protected override void OnStop()
+        {
+        }
     }
 }

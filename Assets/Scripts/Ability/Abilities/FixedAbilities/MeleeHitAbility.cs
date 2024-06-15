@@ -14,13 +14,15 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         [Tooltip("Delay before animation task cancels itself")]
         [SerializeField] private float _animTaskCancelDelay = 3f;
 
+        private Unit _attackedUnit = null;
+
         public override void ActivateAbility(AbilityActivationData activationData)
         {
             CommitAbility();
 
             if (_owner.OwningUnit)
             {
-                _owner.                OwningUnit.LookAtTarget(activationData.targetIndex);
+                _owner.OwningUnit.LookAtTarget(activationData.targetIndex);
             }
 
             SpawnAnimationTaskAndExecute(activationData);
@@ -45,9 +47,14 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             task.OnTaskCompleted -= AbilityTask_OnTaskCompleted;
             task.OnAnimationCancelled -= AbilityTask_OnAnimationCancelled;
 
-            activationData.tacticsGrid.GetTileDataFromIndex(activationData.targetIndex, out TileData targetData);
-            if (targetData.unitOnTile)
-                CombatManager.Instance.ApplyEffectsToTarget(_owner, targetData.unitOnTile.GetComponent<IAbilitySystem>().AbilitySystem, _effects);
+            //For cases where we receive an animation event (attack animation was successful), but we don't receive an animation complete event in time. We don't want to hit our target twice.
+            if (_attackedUnit == null)
+            {
+                activationData.tacticsGrid.GetTileDataFromIndex(activationData.targetIndex, out TileData targetData);
+                if (targetData.unitOnTile)
+                    CombatManager.Instance.ApplyEffectsToTarget(_owner, targetData.unitOnTile.GetComponent<IAbilitySystem>().AbilitySystem, _effects);
+            }
+            _attackedUnit = null;
 
             EndAbility();
         }
@@ -65,7 +72,10 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
             activationData.tacticsGrid.GetTileDataFromIndex(activationData.targetIndex, out TileData targetData);
             if (targetData.unitOnTile)
+            {
                 CombatManager.Instance.ApplyEffectsToTarget(_owner, targetData.unitOnTile.GetComponent<IAbilitySystem>().AbilitySystem, _effects);
+                _attackedUnit = targetData.unitOnTile;
+            }
 
             GameObject hitFx = Instantiate(_impactFxPrefab, targetData.tileMatrix.GetPosition() + new Vector3(0f, 1.5f, 0f), Quaternion.identity);
             Destroy(hitFx, 2f);

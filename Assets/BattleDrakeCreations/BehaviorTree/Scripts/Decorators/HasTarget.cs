@@ -1,49 +1,48 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using BattleDrakeCreations.BehaviorTree;
-using BattleDrakeCreations.TacticalTurnBasedTemplate;
-using System;
 
-public class HasTarget : DecoratorNode
+namespace BattleDrakeCreations.TacticalTurnBasedTemplate.BehaviorTree
 {
-    [SerializeField] private IsSet _isSet;
-    public override string title { get => "Has Target?"; }
-    public override string description { get => $"IsSet: {_isSet}"; }
-
-    private BlackboardKey _targetUnitKey;
-    private Unit _targetUnit;
-
-    protected override void OnStart()
+    public class HasTarget : DecoratorNode
     {
-        _targetUnitKey = _blackboard.GetOrRegisterKey("TargetUnit");
-        _blackboard.OnValueSet -= Blackboard_OnValueSet;
-        _blackboard.OnValueSet += Blackboard_OnValueSet;
+        [SerializeField] private IsSet _isSet;
+        public override string title { get => "Has Target?"; }
+        public override string description { get => $"IsSet: {_isSet}"; }
 
-        _result = NodeResult.Running;
-    }
+        private BlackboardKey _targetUnitKey;
+        private Unit _targetUnit;
 
-    private void Blackboard_OnValueSet(BlackboardKey key)
-    {
-        if (key.Equals(_targetUnitKey))
+        protected override void OnStart()
         {
-            if (_blackboard.TryGetValue(_targetUnitKey, out Unit targetUnit))
+            _targetUnitKey = _blackboard.GetOrRegisterKey("TargetUnit");
+            _blackboard.OnValueSet -= Blackboard_OnValueSet;
+            _blackboard.OnValueSet += Blackboard_OnValueSet;
+
+            _result = NodeResult.Running;
+        }
+
+        private void Blackboard_OnValueSet(BlackboardKey key)
+        {
+            if (key.Equals(_targetUnitKey))
             {
-                _targetUnit = targetUnit;
+                if (_blackboard.TryGetValue(_targetUnitKey, out Unit targetUnit))
+                {
+                    _targetUnit = targetUnit;
+                }
             }
         }
-    }
 
-    protected override void OnStop()
-    {
-        _blackboard.OnValueSet -= Blackboard_OnValueSet;
-    }
+        protected override void OnStop()
+        {
+            _blackboard.OnValueSet -= Blackboard_OnValueSet;
+        }
 
-    protected override NodeResult OnEvaluate()
-    {
-        if ((_targetUnit == null && _isSet == IsSet.IsNotSet) || (_targetUnit != null && _isSet == IsSet.IsSet))
-            return _child.Evaluate();
-        else
-            return NodeResult.Succeeded;
+        protected override NodeResult OnEvaluate()
+        {
+            if (_targetUnit == null && _isSet == IsSet.IsNotSet || _targetUnit != null && _isSet == IsSet.IsSet)
+                return _child.Evaluate();
+            else
+                return NodeResult.Succeeded;
+        }
     }
 }

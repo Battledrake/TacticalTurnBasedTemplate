@@ -107,7 +107,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 PathfindingResult pathResult = _playerActions.TacticsGrid.Pathfinder.FindTilesInRange(_currentUnit.GridIndex, pathParams);
                 if (pathResult.Result != PathResult.SearchFail)
                 {
-                    _moveRangeIndexes = pathResult.Path;
+                    _moveRangeIndexes = pathResult.RangeIndexes;
                     _moveRangeEdges = pathResult.Edges;
 
                     _borrowedMoveRenders = LineRendererPool.Instance.BorrowInstances(_moveRangeEdges.Count);
@@ -274,16 +274,16 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
             if (pathResult.Result == PathResult.SearchSuccess || pathResult.Result == PathResult.GoalUnreachable)
             {
-                _generatedPath = pathResult.Path;
+                _generatedPath = PathfindingStatics.ConvertPathNodesToGridIndexes(pathResult.Path);
                 _generatedPathLength = pathResult.Length;
 
                 EnableAndInitializePathLine(pathResult.Path.Count);
 
                 List<Vector3> pathPositions = new List<Vector3>();
 
-                for (int i = 0; i < pathResult.Path.Count; i++)
+                for (int i = 0; i < _generatedPath.Count; i++)
                 {
-                    _pathLine.SetPosition(i, _playerActions.TacticsGrid.GetTilePositionFromIndex(pathResult.Path[i]) + new Vector3(0f, 0.5f, 0f));
+                    _pathLine.SetPosition(i, _playerActions.TacticsGrid.GetTilePositionFromIndex(_generatedPath[i]) + new Vector3(0f, 0.5f, 0f));
                 }
                 _pathLine.enabled = true;
             }

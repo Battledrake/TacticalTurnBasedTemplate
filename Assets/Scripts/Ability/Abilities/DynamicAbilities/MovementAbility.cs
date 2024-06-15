@@ -54,11 +54,11 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
             //TODO: Move this to a task. MoveToLocationTask?;
             PathParams pathParams = GridPathfinding.CreatePathParamsFromUnit(_owner.OwningUnit);
-
             PathfindingResult pathResult = activationData.tacticsGrid.Pathfinder.FindPath(activationData.originIndex, activationData.targetIndex, pathParams);
             if (pathResult.Result == PathResult.SearchSuccess)
             {
-                CombatManager.Instance.MoveUnit(_owner.OwningUnit, pathResult.Path, pathResult.Length);
+                List<GridIndex> pathIndexes = PathfindingStatics.ConvertPathNodesToGridIndexes(pathResult.Path);
+                CombatManager.Instance.MoveUnit(_owner.OwningUnit, pathIndexes, pathResult.Length);
 
                 _owner.
                 OwningUnit.OnUnitMovementStopped += Instigator_OnUnitMovementStopped;

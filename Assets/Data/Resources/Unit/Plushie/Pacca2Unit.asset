@@ -32,8 +32,4 @@ MonoBehaviour:
       baseValue: 8
     - attribute: 4
       baseValue: 6
-    abilities:
-    - {fileID: -7179713428241320167, guid: 2acbfa7fcca56f942aa9005729504ba2, type: 3}
-    - {fileID: 7178079176350786143, guid: b56db9fb34c6b52478982580c657c5b0, type: 3}
-    - {fileID: 7178079176350786143, guid: 51c5526442aeafe46a822d70b13169fd, type: 3}
-    - {fileID: 7178079176350786143, guid: 674821355342d2b4ba85acdf7a344bb9, type: 3}
+    abilities: 000000000e0000000f00000010000000

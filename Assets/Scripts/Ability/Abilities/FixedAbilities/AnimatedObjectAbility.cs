@@ -33,11 +33,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             CommitAbility();
 
-            //TODO: Separate away into an interface? ILookAt or something. Get rid of these Unit hard refs.
-            if (_owner.GetComponent<Unit>())
+            if (_owner.OwningUnit)
             {
-                _owner.GetComponent<Unit>().LookAtTarget(activationData.targetIndex);
-
+                _owner.OwningUnit.LookAtTarget(activationData.targetIndex);
 
                 PlayAnimationTask animationTask = new GameObject("PlayAnimationTask", typeof(PlayAnimationTask)).GetComponent<PlayAnimationTask>();
                 animationTask.transform.SetParent(this.transform);

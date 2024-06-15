@@ -46,12 +46,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _abilityId: 13
   _icon: {fileID: 21300000, guid: b00726e79e69e1a4ca83cb8608de62b4, type: 3}
+  _endTurnOnUse: 1
   _costEffect: {fileID: 11400000, guid: 6a24367ecd336df4b9a19351c380cb63, type: 2}
   _cooldown: 0
-  _affectsFriendly: 0
+  _isFriendlyOnly: 0
+  _usesPerCombat: -1
   _rangeData:
     rangePattern: 5
-    rangeMinMax: {x: 2, y: 10}
+    rangeMinMax: {x: 3, y: 10}
     lineOfSightData:
       requireLineOfSight: 1
       height: 2

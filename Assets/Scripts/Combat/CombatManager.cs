@@ -58,13 +58,13 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         [SerializeField] private TacticsGrid _tacticsGrid;
 
         public TurnOrderType TurnOrderType { get => _turnOrderType; set => _turnOrderType = value; }
-        public List<Unit> UnitsInCombat { get => _unitsInCombat; }
-        public Dictionary<int, HashSet<Unit>> UnitTeams { get => _unitTeams; }
-        public List<Unit> OrderedUnits { get => _orderedUnits; }
-        public int NumberOfTeams { get => _teamColors.Count; }
-        public Unit ActiveUnit => _activeUnit;
-        public bool IsInCombat { get => _isInCombat; }
         public bool ShowEnemyMoveRange { get => _showEnemyMoveRange; set => _showEnemyMoveRange = value; }
+        public List<Unit> UnitsInCombat => _unitsInCombat;
+        public Dictionary<int, HashSet<Unit>> UnitTeams => _unitTeams;
+        public List<Unit> OrderedUnits => _orderedUnits;
+        public int NumberOfTeams => _teamColors.Count;
+        public Unit ActiveUnit => _activeUnit;
+        public bool IsInCombat => _isInCombat;
 
         private List<Unit> _unitsInCombat = new List<Unit>();
         private Dictionary<int, HashSet<Unit>> _unitTeams = new Dictionary<int, HashSet<Unit>>();
@@ -584,6 +584,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             ability.OnAbilityEnded -= Ability_OnAbilityEnded;
             OnActionEnded?.Invoke();
+
+            //Unit that used ability could no longer be active.
+            if (_activeUnit == null) return;
 
             if (_isCombatFinishing) return;
 

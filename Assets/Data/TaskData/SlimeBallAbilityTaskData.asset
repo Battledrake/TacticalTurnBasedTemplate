@@ -12,8 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 743b85315ff3bba4b80fd4d20a3d73ae, type: 3}
   m_Name: SlimeBallAbilityTaskData
   m_EditorClassIdentifier: 
-  animationTime: 0.75
-  animationSpeed: 1
   positionAlphaCurve:
     serializedVersion: 2
     m_Curve:

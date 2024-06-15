@@ -23,6 +23,16 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             return 1f;
         }
 
+        public static List<GridIndex> ConvertPathNodesToGridIndexes(List<PathNode> pathNodes)
+        {
+            List<GridIndex> pathIndexes = new List<GridIndex>();
+            for(int i = 0; i < pathNodes.Count; i++)
+            {
+                pathIndexes.Add(pathNodes[i].index);
+            }
+            return pathIndexes;
+        }
+
 
         public static float GetPathCost(TacticsGrid tacticsGrid, List<GridIndex> path)
         {

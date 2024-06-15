@@ -26,9 +26,10 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
                 if (result.Result != PathResult.SearchFail)
                 {
-                    for (int i = 0; i < result.Path.Count; i++)
+                    List<GridIndex> pathIndexes = PathfindingStatics.ConvertPathNodesToGridIndexes(result.Path);
+                    for (int i = 0; i < pathIndexes.Count; i++)
                     {
-                        _playerActions.TacticsGrid.AddStateToTile(result.Path[i], TileState.IsInPath);
+                        _playerActions.TacticsGrid.AddStateToTile(pathIndexes[i], TileState.IsInPath);
                     }
                     return true;
                 }

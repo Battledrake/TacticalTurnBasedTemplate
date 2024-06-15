@@ -6,17 +6,17 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 {
     public class ShowMoveRangeAction : SelectTileAndUnitAction
     {
-        private List<GridIndex> _currentTilesInRange = new List<GridIndex>();
+        private List<GridIndex> _currentIndexesInRange = new List<GridIndex>();
         private Unit _currentUnit;
 
         public override bool ExecuteAction(GridIndex index)
         {
             base.ExecuteAction(index);
 
-            if (_currentTilesInRange.Count > 0)
+            if (_currentIndexesInRange.Count > 0)
             {
-                _playerActions.TacticsGrid.ClearStateFromTiles(_currentTilesInRange, TileState.IsInMoveRange);
-                _currentTilesInRange.Clear();
+                _playerActions.TacticsGrid.ClearStateFromTiles(_currentIndexesInRange, TileState.IsInMoveRange);
+                _currentIndexesInRange.Clear();
             }
 
             if (_currentUnit != null && _currentUnit != _playerActions.SelectedUnit)
@@ -54,10 +54,10 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             PathfindingResult pathResult = _playerActions.TacticsGrid.Pathfinder.FindTilesInRange(index, filter);
             if (pathResult.Result != PathResult.SearchFail)
             {
-                _currentTilesInRange = pathResult.Path;
-                for(int i = 0; i < _currentTilesInRange.Count; i++)
+                _currentIndexesInRange = pathResult.RangeIndexes;
+                for(int i = 0; i < _currentIndexesInRange.Count; i++)
                 {
-                    _playerActions.TacticsGrid.AddStateToTile(_currentTilesInRange[i], TileState.IsInMoveRange);
+                    _playerActions.TacticsGrid.AddStateToTile(_currentIndexesInRange[i], TileState.IsInMoveRange);
                 }
                 if (_currentUnit)
                     _currentUnit.OnUnitStartedMovement += Unit_OnUnitStartedMovement;
@@ -69,7 +69,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void Unit_OnUnitStartedMovement(Unit unit)
         {
-            _playerActions.TacticsGrid.ClearStateFromTiles(_currentTilesInRange, TileState.IsInMoveRange);
+            _playerActions.TacticsGrid.ClearStateFromTiles(_currentIndexesInRange, TileState.IsInMoveRange);
             if (_currentUnit == unit)
             {
                 unit.OnUnitStartedMovement -= Unit_OnUnitStartedMovement;
@@ -91,8 +91,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void OnDestroy()
         {
-            _playerActions.TacticsGrid.ClearStateFromTiles(_currentTilesInRange, TileState.IsInMoveRange);
-            _currentTilesInRange.Clear();
+            _playerActions.TacticsGrid.ClearStateFromTiles(_currentIndexesInRange, TileState.IsInMoveRange);
+            _currentIndexesInRange.Clear();
 
             if (_currentUnit != null)
             {
