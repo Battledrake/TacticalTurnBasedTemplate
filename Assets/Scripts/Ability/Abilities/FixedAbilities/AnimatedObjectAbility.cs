@@ -88,9 +88,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void AnimateObjectTask_OnObjectCollisionWithUnit(AbilitySystem receiver, AbilityActivationData activationData)
         {
-            if (receiver == _owner && !_affectsFriendly) return;
-            if (_owner.TeamIndex == receiver.TeamIndex && !_affectsFriendly) return;
-            if (_affectsFriendly && _owner.TeamIndex != receiver.TeamIndex) return;
+            if (receiver == _owner && !_isFriendlyOnly) return;
+            if (_owner.TeamIndex == receiver.TeamIndex && !_isFriendlyOnly) return;
+            if (_isFriendlyOnly && _owner.TeamIndex != receiver.TeamIndex) return;
 
             if (receiver.GetGridIndex() != activationData.targetIndex && !CombatManager.Instance.GetAbilityRange(activationData.targetIndex, this.GetAreaOfEffectData()).Contains(receiver.GetGridIndex()))
             {
@@ -113,7 +113,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 activationData.tacticsGrid.GetTileDataFromIndex(aoeIndexes[i], out TileData tileData);
                 if (tileData.unitOnTile)
                 {
-                    AbilitySystem receiver = tileData.unitOnTile.GetComponent<IAbilitySystem>().GetAbilitySystem();
+                    AbilitySystem receiver = tileData.unitOnTile.GetComponent<IAbilitySystem>().AbilitySystem;
                     if (!task.HitUnits.Contains(receiver))
                     {
                         Debug.LogWarning($"Unit at {tileData.index} missed by ability collision. Applying late effect");

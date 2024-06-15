@@ -6,7 +6,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 {
     public interface IHealthVisual
     {
-        public int GetHealth();
-        public int GetMaxHealth();
+        public int Health { get; }
+        public int MaxHealth { get; }
     }
 }

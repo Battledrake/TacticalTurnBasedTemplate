@@ -103,8 +103,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 LineRendererPool.Instance.ReturnInstances(_borrowedMoveRenders);
                 LineRendererPool.Instance.ReturnInstances(_borrowedSprintRenders);
 
-                PathParams pathParams = GridPathfinding.CreatePathParamsFromUnit(_currentUnit, unit.GetMoveRange());
-                PathfindingResult pathResult = _playerActions.TacticsGrid.GridPathfinder.FindTilesInRange(_currentUnit.GetGridIndex(), pathParams);
+                PathParams pathParams = GridPathfinding.CreatePathParamsFromUnit(_currentUnit, unit.MoveRange);
+                PathfindingResult pathResult = _playerActions.TacticsGrid.Pathfinder.FindTilesInRange(_currentUnit.GetGridIndex(), pathParams);
                 if (pathResult.Result != PathResult.SearchFail)
                 {
                     _moveRangeIndexes = pathResult.Path;
@@ -200,8 +200,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void GenerateSprintRangeTiles()
         {
-            PathParams pathParams = GridPathfinding.CreatePathParamsFromUnit(_currentUnit, _currentUnit.GetMoveRange() * 2);
-            PathfindingResult pathResult = _playerActions.TacticsGrid.GridPathfinder.FindTilesInRange(_currentUnit.GetGridIndex(), pathParams);
+            PathParams pathParams = GridPathfinding.CreatePathParamsFromUnit(_currentUnit, _currentUnit.MoveRange * 2);
+            PathfindingResult pathResult = _playerActions.TacticsGrid.Pathfinder.FindTilesInRange(_currentUnit.GetGridIndex(), pathParams);
             if (pathResult.Result != PathResult.SearchFail)
             {
                 HashSet<EdgeData> sprintEdges = new HashSet<EdgeData>(pathResult.Edges);
@@ -266,11 +266,11 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
             _generatedPath.Clear();
 
-            int unitMoveRange = _playerActions.SelectedUnit.GetMoveRange();
+            int unitMoveRange = _playerActions.SelectedUnit.MoveRange;
             float pathLength = UnitHasEnoughActionPoints(2) ? unitMoveRange * 2 : unitMoveRange;
 
             PathParams pathParams = GridPathfinding.CreatePathParamsFromUnit(_playerActions.SelectedUnit, pathLength, true);
-            PathfindingResult pathResult = _playerActions.TacticsGrid.GridPathfinder.FindPath(_playerActions.SelectedTile, _playerActions.HoveredTile, pathParams);
+            PathfindingResult pathResult = _playerActions.TacticsGrid.Pathfinder.FindPath(_playerActions.SelectedTile, _playerActions.HoveredTile, pathParams);
 
             if (pathResult.Result == PathResult.SearchSuccess || pathResult.Result == PathResult.GoalUnreachable)
             {
@@ -293,7 +293,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             if (_playerActions.SelectedUnit)
             {
-                AbilitySystem abilitySystem = _playerActions.SelectedUnit.GetComponent<IAbilitySystem>().GetAbilitySystem();
+                AbilitySystem abilitySystem = _playerActions.SelectedUnit.GetComponent<IAbilitySystem>().AbilitySystem;
                 if (abilitySystem)
                 {
                     return abilitySystem.GetAttributeCurrentValue(AttributeId.ActionPoints) >= amountNeeded;

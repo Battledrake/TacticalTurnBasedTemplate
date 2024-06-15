@@ -27,7 +27,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _timeBeforeCancelling = timeBeforeCancelling;
 
             _animationType = animationType;
-            _animEventHandler = animatee.GetAnimationEventHandler();
+            _animEventHandler = animatee.AnimationEventHandler;
         }
 
         private void OnAnimationEvent_OnAnimationCompleted()

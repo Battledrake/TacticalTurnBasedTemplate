@@ -47,7 +47,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             }
         }
 
-        public void InitAbilitySystem(Unit owner, List<AttributeData> attributeSet, List<Ability> startingAbilities)
+        public void InitAbilitySystem(Unit owner, List<AttributeData> attributeSet, List<AbilityId> startingAbilities)
         {
             if (owner != null)
             {
@@ -73,7 +73,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             {
                 for (int i = 0; i < startingAbilities.Count; i++)
                 {
-                    GiveAbility(startingAbilities[i].GetAbilityId(), startingAbilities[i]);
+                    AddAbility(startingAbilities[i]);
                 }
             }
 
@@ -308,13 +308,14 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             SetAttributeBaseValue(id, newValue);
         }
 
-        private void GiveAbility(AbilityId id, Ability ability)
+        public void AddAbility(AbilityId id)
         {
             if (!_abilities.ContainsKey(id))
             {
-                Ability abilityObject = Instantiate(ability, _abilityInstanceContainer);
-                abilityObject.InitAbility(this);
-                _abilities.Add(id, abilityObject);
+                Ability abilityInstance = AbilityFactory.Instance.GetNewAbilityInstance(id);
+                abilityInstance.transform.SetParent(_abilityInstanceContainer);
+                abilityInstance.InitAbility(this);
+                _abilities.Add(id, abilityInstance);
             }
             else
             {

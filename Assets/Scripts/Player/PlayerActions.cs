@@ -158,7 +158,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             SetSelectedTileAndUnit(unit.GetGridIndex());
 
-            if (unit.GetUnitAI() != null)
+            if (unit.UnitAI != null)
                 return;
 
             SetSelectedActions(_combatMoveActionPrefab, null);
@@ -168,7 +168,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private void CombatManager_OnActionEnded()
         {
             if (CombatManager.Instance.IsCombatFinishing()) return;
-            if (_selectedUnit.GetUnitAI() != null) return;
+            if (_selectedUnit.UnitAI != null) return;
 
             _inputDisabled = false;
             SetSelectedActions(_combatMoveActionPrefab, null);

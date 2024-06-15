@@ -32,10 +32,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private Vector3 _targetFollowOffset;
         CinemachineTransposer _cameraTransposer;
 
-        private int _currentTargetIndex = 0;
         private Vector3 _targetPosition;
         private bool _moveToTarget;
-
 
         private void Start()
         {

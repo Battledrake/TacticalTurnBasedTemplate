@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,7 +12,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
     [RequireComponent(typeof(AbilitySystem))]
     public class AbilityTabController : MonoBehaviour, IAbilitySystem
     {
-        [SerializeField] private List<Ability> _debugAbilities;
+        [SerializeField] private List<AbilityId> _debugAbilities;
 
         [Header("AbilityButtons")]
         [SerializeField] private AbilityButton _abilityButtonPrefab;
@@ -53,21 +54,19 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             List<Ability> initializedAbilities = _abilitySystem.GetAbilities();
             for(int i = 0; i < initializedAbilities.Count; i++)
             {
-                _abilitySystem.GetAbilities()[i].SetCheat();
-            }
-
-            for (int i = 0; i < _debugAbilities.Count; i++)
-            {
+                _abilitySystem.GetAbilities()[i].SetCheat(true); 
+                
                 AbilityButton abilityButton = Instantiate(_abilityButtonPrefab, _abilityButtonContainer);
-                abilityButton.InitializeButton(_debugAbilities[i].GetAbilityId(), _debugAbilities[i].Icon);
+                abilityButton.InitializeButton(initializedAbilities[i].GetAbilityId(), initializedAbilities[i].Icon);
                 abilityButton.OnAbilityButtonSelected += AbilityButton_OnAbilityButtonSelected;
                 abilityButton.OnAbilityButtonDeselected += AbilityButton_OnAbilityButtonDeselected;
 
-                _abilityButtons.TryAdd(_debugAbilities[i].GetAbilityId(), abilityButton);
+                _abilityButtons.TryAdd(initializedAbilities[i].GetAbilityId(), abilityButton);
 
                 _abilityButtonsToggleGroup.RegisterToggle(abilityButton.GetComponent<Toggle>());
                 abilityButton.GetComponent<Toggle>().group = _abilityButtonsToggleGroup;
             }
+
             _showAbilityPatternsButton.OnButtonToggled += OnShowAbilityRangePatternsButtonToggled;
 
             _abilityRangeCombo.AddOptions(Enum.GetValues(typeof(AbilityRangePattern)).Cast<AbilityRangePattern>().Select(p => p.ToString()).ToList());
@@ -272,9 +271,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _playerActions.CurrentAbility = null;
         }
 
-        public AbilitySystem GetAbilitySystem()
-        {
-            return _abilitySystem;
-        }
+        public AbilitySystem AbilitySystem => _abilitySystem;
     }
 }

@@ -18,7 +18,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
     public interface IPlayAnimation
     {
-        public AnimationEventHandler GetAnimationEventHandler();
+        public AnimationEventHandler AnimationEventHandler { get; }
+
         public void PlayAnimationType(AnimationType animationType) { }
     }
 }

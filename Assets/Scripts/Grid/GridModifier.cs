@@ -16,22 +16,22 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private MeshCollider _meshCollider;
         private GridShapeData _currentShapeData;
 
-        private void OnValidate()
-        {
-            _meshFilter = GetComponent<MeshFilter>();
-            _meshRenderer = GetComponent<MeshRenderer>();
-            _meshCollider = GetComponent<MeshCollider>();
+        //private void OnValidate()
+        //{
+        //    _meshFilter = GetComponent<MeshFilter>();
+        //    _meshRenderer = GetComponent<MeshRenderer>();
+        //    _meshCollider = GetComponent<MeshCollider>();
 
-            if (_gridShape != GridShape.None)
-            {
-                _currentShapeData = DataManager.GetGridShapeData(_gridShape);
+        //    if (_gridShape != GridShape.None)
+        //    {
+        //        _currentShapeData = DataManager.GetGridShapeData(_gridShape);
 
-                _meshFilter.mesh = _currentShapeData.mesh;
-                _meshRenderer.material = GetMaterialFromTileType();
-                _meshCollider.sharedMesh = _currentShapeData.mesh;
-                _meshCollider.convex = true;
-            }
-        }
+        //        _meshFilter.mesh = _currentShapeData.mesh;
+        //        _meshRenderer.material = GetMaterialFromTileType();
+        //        _meshCollider.sharedMesh = _currentShapeData.mesh;
+        //        _meshCollider.convex = true;
+        //    }
+        //}
 
         private Material GetMaterialFromTileType()
         {

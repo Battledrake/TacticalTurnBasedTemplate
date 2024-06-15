@@ -52,7 +52,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             //TODO: Move this to a task. MoveToLocationTask?;
             PathParams pathParams = GridPathfinding.CreatePathParamsFromUnit(_owner.GetOwningUnit());
 
-            PathfindingResult pathResult = activationData.tacticsGrid.GridPathfinder.FindPath(activationData.originIndex, activationData.targetIndex, pathParams);
+            PathfindingResult pathResult = activationData.tacticsGrid.Pathfinder.FindPath(activationData.originIndex, activationData.targetIndex, pathParams);
             if (pathResult.Result == PathResult.SearchSuccess)
             {
                 CombatManager.Instance.MoveUnit(_owner.GetOwningUnit(), pathResult.Path, pathResult.Length);

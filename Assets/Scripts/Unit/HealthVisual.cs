@@ -38,10 +38,10 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         public void UpdateHealthVisual()
         {
-            if (_healthUnitChildren.Count < _owner.GetMaxHealth())
+            if (_healthUnitChildren.Count < _owner.MaxHealth)
             {
                 int currentCount = _healthUnitChildren.Count;
-                int healthDiff = _owner.GetMaxHealth() - currentCount;
+                int healthDiff = _owner.MaxHealth - currentCount;
                 for (int i = 1; i <= healthDiff; i++)
                 {
                     SpawnHealthUnitVisual(currentCount + i);
@@ -53,16 +53,16 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 healthUnitPair.Value.transform.parent.gameObject.SetActive(false);
             }
 
-            for (int i = 1; i <= _owner.GetMaxHealth(); i++)
+            for (int i = 1; i <= _owner.MaxHealth; i++)
             {
                 _healthUnitChildren[i].transform.parent.gameObject.SetActive(true);
-                if (_owner.GetHealth() >= i)
+                if (_owner.Health >= i)
                     _healthUnitChildren[i].enabled = true;
                 else
                     _healthUnitChildren[i].enabled = false;
             }
 
-            _displayedHealth = _owner.GetHealth();
+            _displayedHealth = _owner.Health;
         }
 
         public void SetHealthUnitColor(Color color)
@@ -113,14 +113,14 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private IEnumerator UpdateHealthBar()
         {
 
-            while (_displayedHealth != _owner.GetHealth())
+            while (_displayedHealth != _owner.Health)
             {
-                int step = _displayedHealth > _owner.GetHealth() ? -1 : 1;
-                int targetHealth = _owner.GetHealth();
+                int step = _displayedHealth > _owner.Health ? -1 : 1;
+                int targetHealth = _owner.Health;
 
                 yield return new WaitForSeconds(_healthChangeDelay);
 
-                int indexStep = _displayedHealth > _owner.GetHealth() ? 0 : 1;
+                int indexStep = _displayedHealth > _owner.Health ? 0 : 1;
 
                 for (int i = _displayedHealth + indexStep; i != targetHealth + indexStep; i += step)
                 {
@@ -129,7 +129,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
                     yield return new WaitForSeconds(_healthChangeDelay);
                 }
-                _displayedHealth = Mathf.Clamp(targetHealth, 0, _owner.GetMaxHealth());
+                _displayedHealth = Mathf.Clamp(targetHealth, 0, _owner.MaxHealth);
             }
         }
     }

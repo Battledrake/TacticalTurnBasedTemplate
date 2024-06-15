@@ -32,7 +32,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             {
                 if (targetData.unitOnTile)
                 {
-                    AbilitySystem receiver = targetData.unitOnTile.GetComponent<IAbilitySystem>().GetAbilitySystem();
+                    AbilitySystem receiver = targetData.unitOnTile.GetComponent<IAbilitySystem>().AbilitySystem;
                     if (receiver)
                     {
                         CombatManager.Instance.ApplyEffectsToTarget(_owner, receiver, _effects);

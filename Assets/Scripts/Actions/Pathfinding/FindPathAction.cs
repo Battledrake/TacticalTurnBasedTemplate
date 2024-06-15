@@ -18,11 +18,11 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             {
                 float pathLength = actionValue;
 
-                PathParams pathParams = _playerActions.TacticsGrid.GridPathfinder.CreateDefaultPathParams(pathLength);
+                PathParams pathParams = _playerActions.TacticsGrid.Pathfinder.CreateDefaultPathParams(pathLength);
                     
-                PathfindingResult result = _playerActions.TacticsGrid.GridPathfinder.FindPath(_playerActions.SelectedTile, index, pathParams);
+                PathfindingResult result = _playerActions.TacticsGrid.Pathfinder.FindPath(_playerActions.SelectedTile, index, pathParams);
 
-                _playerActions.TacticsGrid.GridPathfinder.OnPathfindingCompleted?.Invoke();
+                _playerActions.TacticsGrid.Pathfinder.OnPathfindingCompleted?.Invoke();
 
                 if (result.Result != PathResult.SearchFail)
                 {

@@ -12,7 +12,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
             if (index != _playerActions.SelectedTile)
             {
-                _playerActions.TacticsGrid.GridPathfinder.ClearNodePool();
+                _playerActions.TacticsGrid.Pathfinder.ClearNodePool();
                 return false;
             }
 
@@ -22,17 +22,17 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             foreach (KeyValuePair<GridIndex, TileData> gridTilePair in _playerActions.TacticsGrid.GridTiles)
             {
                 GridIndex gridIndex = gridTilePair.Key;
-                PathNode gridNode = _playerActions.TacticsGrid.GridPathfinder.CreateAndAddNodeToPool(gridIndex);
-                gridNode.heuristicCost = _playerActions.TacticsGrid.GridPathfinder.GetHeuristicCost(gridIndex, index);
-                _playerActions.TacticsGrid.GridPathfinder.PathNodePool[gridIndex] = gridNode;
-                _playerActions.TacticsGrid.GridPathfinder.OnPathfindingDataUpdated?.Invoke();
+                PathNode gridNode = _playerActions.TacticsGrid.Pathfinder.CreateAndAddNodeToPool(gridIndex);
+                gridNode.heuristicCost = _playerActions.TacticsGrid.Pathfinder.GetHeuristicCost(gridIndex, index);
+                _playerActions.TacticsGrid.Pathfinder.PathNodePool[gridIndex] = gridNode;
+                _playerActions.TacticsGrid.Pathfinder.OnPathfindingDataUpdated?.Invoke();
             }
             return true;
         }
 
         private void OnDestroy()
         {
-            _playerActions.TacticsGrid.GridPathfinder.ClearNodePool();
+            _playerActions.TacticsGrid.Pathfinder.ClearNodePool();
         }
     }
 }

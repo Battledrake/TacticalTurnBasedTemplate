@@ -60,7 +60,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private void AnimateObjectTask_OnObjectCollisionWithUnit(AbilitySystem receiver, AbilityActivationData activateData)
         {
             //TODO: Improve on the friendly fire logic
-            if (receiver == _owner && !this.AffectsFriendly)
+            if (receiver == _owner && !this.GetIsFriendlyOnly())
                 return;
 
 
@@ -86,7 +86,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 activateData.tacticsGrid.GetTileDataFromIndex(aoeIndexes[i], out TileData tileData);
                 if (tileData.unitOnTile)
                 {
-                    AbilitySystem receiver = tileData.unitOnTile.GetComponent<IAbilitySystem>().GetAbilitySystem();
+                    AbilitySystem receiver = tileData.unitOnTile.GetComponent<IAbilitySystem>().AbilitySystem;
                     if (!animateObjectTask.HitUnits.Contains(receiver))
                     {
                         CombatManager.Instance.ApplyEffectsToTarget(_owner, receiver, _effects);

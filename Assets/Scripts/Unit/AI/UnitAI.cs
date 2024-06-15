@@ -1,3 +1,4 @@
+using BattleDrakeCreations.BehaviorTree;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -35,7 +36,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         }
     }
 
-    public class UnitAI : MonoBehaviour
+    public class UnitAI : MonoBehaviour, IBehaviorTreeAgent
     {
         public event Action<AIState> OnAIStateChanged;
 
@@ -43,12 +44,22 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         [SerializeField] private Transform _aiStateVisualContainer;
         [SerializeField] private List<AIStateVisualLinker> _aiStateVisualLinkers;
 
+        //IBehaviorTreeAgent
+        public Unit Unit => _unit;
+        public AbilitySystem AbilitySystem => _abilitySystem;
+        public TacticsGrid TacticsGrid => _tacticsGrid;
+        public GridMovement GridMovement => _gridMovement;
+
         //Stuff
         private AIState _currentState = AIState.None;
         private Dictionary<AIState, GameObject> _aiStateVisuals = new Dictionary<AIState, GameObject>();
         private Dictionary<AIState, Action> _aiActions = new Dictionary<AIState, Action>();
         private Action OnNextAIAction;
+
+        //Can be pulled from CombatManager and selected based on conditions
         private List<Unit> _enemyUnits;
+        
+        //Move to blackboard keys to be set on evaluations
         private Ability _activeAbility;
         private Unit _targetUnit;
         private GridIndex _targetIndex;
@@ -60,14 +71,21 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         //Dependencies
         private TacticsGrid _tacticsGrid;
+        private BehaviorTreeRunner _btRunner;
+
+
+        private void Awake()
+        {
+            _btRunner = this.GetComponent<BehaviorTreeRunner>();
+        }
 
 
         private void Start()
         {
             _unit = this.GetComponentInParent<Unit>();
-            _gridMovement = _unit.GetGridMovement();
-            _tacticsGrid = _unit.GetTacticsGrid();
-            _abilitySystem = this.GetComponentInParent<IAbilitySystem>().GetAbilitySystem();
+            _gridMovement = _unit.GridMovement;
+            _tacticsGrid = _unit.TacticsGrid;
+            _abilitySystem = this.GetComponentInParent<IAbilitySystem>().AbilitySystem;
 
             OnNextAIAction = AdvanceToNextState;
 
@@ -94,6 +112,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void CombatManager_OnCombatFinishing(int winTeam)
         {
+            StopAllCoroutines();
+            _btRunner.BehaviorTree.Traverse(_btRunner.BehaviorTree.RootNode, (n) => n.Abort());
             _currentState = AIState.EndTurn;
         }
 
@@ -105,7 +125,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 do
                 {
                     _activeAbility = abilities[UnityEngine.Random.Range(0, abilities.Count)];
-                } while (_activeAbility.AffectsFriendly || _activeAbility.GetActiveCooldown() > 0 || _activeAbility.GetUsesLeft() == 0);
+                } while (_activeAbility.GetIsFriendlyOnly() || _activeAbility.GetActiveCooldown() > 0 || _activeAbility.GetUsesLeft() == 0);
             }
             AdvanceToNextState();
         }
@@ -160,13 +180,13 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             if (_unit.GetGridIndex() != _targetIndex)
             {
-                PathParams pathParams = GridPathfinding.CreatePathParamsFromUnit(_unit, _unit.GetMoveRange() * 2, true);
-                PathfindingResult pathResult = _tacticsGrid.GridPathfinder.FindPath(_unit.GetGridIndex(), _targetIndex, pathParams);
+                PathParams pathParams = GridPathfinding.CreatePathParamsFromUnit(_unit, _unit.MoveRange * 2, true);
+                PathfindingResult pathResult = _tacticsGrid.Pathfinder.FindPath(_unit.GetGridIndex(), _targetIndex, pathParams);
                 if (pathResult.Result != PathResult.SearchFail)
                 {
                     if (pathResult.Path.Count > 0)
                     {
-                        if (pathResult.Length > _unit.GetMoveRange())
+                        if (pathResult.Length > _unit.MoveRange)
                         {
                             _currentState = AIState.UseAbility;
                         }
@@ -247,9 +267,17 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         public void RunAILogic()
         {
-            ClearAIVisuals();
+            //ClearAIVisuals();
 
-            StartCoroutine(SetAIState(AIState.StartTurn));
+            //StartCoroutine(SetAIState(AIState.StartTurn));
+            _btRunner.OnBehaviorFinished += BehaviorTreeRunner_OnBehaviorFinished;
+            StartCoroutine(_btRunner.RunBehavior());
+        }
+
+        private void BehaviorTreeRunner_OnBehaviorFinished()
+        {
+            _btRunner.OnBehaviorFinished -= BehaviorTreeRunner_OnBehaviorFinished;
+            _unit.AIEndTurn();
         }
 
         private IEnumerator SetAIState(AIState newState)

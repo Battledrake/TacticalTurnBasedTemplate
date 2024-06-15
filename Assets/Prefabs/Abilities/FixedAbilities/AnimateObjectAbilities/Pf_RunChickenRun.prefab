@@ -49,7 +49,7 @@ MonoBehaviour:
   _endTurnOnUse: 0
   _costEffect: {fileID: 11400000, guid: f0f82bc81a223c54488e2f999b768557, type: 2}
   _cooldown: 4
-  _affectsFriendly: 1
+  _isFriendlyOnly: 1
   _usesPerCombat: -1
   _rangeData:
     rangePattern: 0

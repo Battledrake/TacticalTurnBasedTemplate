@@ -172,9 +172,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         [Tooltip("Turns before the ability can be used again")]
         [SerializeField] protected int _cooldown;
         [Tooltip("Ability only affects same team?")]
-        [SerializeField] protected bool _affectsFriendly = false;
-
-        public bool AffectsFriendly { get => _affectsFriendly; }
+        [SerializeField] protected bool _isFriendlyOnly = false;
         public string Name { get => _abilityId.ToString(); }
         public Sprite Icon { get => _icon; }
 
@@ -187,12 +185,12 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public int GetActiveCooldown() => _activeCooldown;
         public bool GetEndTurnOnUse() => _endTurnOnUse;
         public abstract int GetUsesLeft();
-
-        public bool SetCheat() => _cheatEnabled = true;
-
+        public bool GetIsFriendlyOnly() { return _isFriendlyOnly; }
         public abstract AbilityRangeData GetRangeData();
         public abstract AbilityRangeData GetAreaOfEffectData();
         public abstract List<RangedAbilityEffect> GetEffects();
+
+        public bool SetCheat(bool isEnabled) => _cheatEnabled = isEnabled;
 
         public virtual void InitAbility(AbilitySystem abilitySystem)
         {

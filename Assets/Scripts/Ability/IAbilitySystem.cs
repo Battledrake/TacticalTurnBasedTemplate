@@ -6,6 +6,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 {
     public interface IAbilitySystem
     {
-        public AbilitySystem GetAbilitySystem();
+        public AbilitySystem AbilitySystem { get; }
     }
 }

@@ -62,6 +62,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public Dictionary<int, HashSet<Unit>> UnitTeams { get => _unitTeams; }
         public List<Unit> OrderedUnits { get => _orderedUnits; }
         public int NumberOfTeams { get => _teamColors.Count; }
+        public Unit ActiveUnit => _activeUnit;
         public bool IsInCombat { get => _isInCombat; }
         public bool ShowEnemyMoveRange { get => _showEnemyMoveRange; set => _showEnemyMoveRange = value; }
 
@@ -76,8 +77,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private Unit _activeUnit = null;
         private int _activeTeamIndex = -1;
         private bool _isAIControlledTeam = false;
-
-        public Unit GetActiveUnit() => _activeUnit;
+        //TODO: This is done to remove ability points after arrived for AI flow. Maybe reimplement MoveAbility so effect can be applied through that.
+        private int _moveCost = 0;
 
         private void Awake()
         {
@@ -152,9 +153,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             List<Unit> unitsToSort = new List<Unit>(_unitsInCombat);
             unitsToSort.Sort((unit1, unit2) =>
             {
-                if (unit1.GetAgility() > unit2.GetAgility())
+                if (unit1.Agility > unit2.Agility)
                     return -1;
-                else if (unit1.GetAgility() < unit2.GetAgility())
+                else if (unit1.Agility < unit2.Agility)
                     return 1;
                 else
                     return 0;
@@ -227,7 +228,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
             _activeUnit = null;
 
-            _isAIControlledTeam = _orderedUnits[0].GetUnitAI() != null;
+
+            _isAIControlledTeam = _orderedUnits[0].UnitAI != null;
 
             StartTurn();
         }
@@ -258,7 +260,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             {
                 _activeUnit = GetNextOrderedUnit();
 
-                if (_activeUnit.GetUnitAI() != null)
+                if (_activeUnit.UnitAI != null)
                 {
                     OnPlayerTurnEnded?.Invoke();
                 }
@@ -311,7 +313,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 SetActiveTeamIndex();
                 OrderUnitsByTeam();
 
-                _isAIControlledTeam = _orderedUnits[0].GetUnitAI() != null;
+                _isAIControlledTeam = _orderedUnits[0].UnitAI != null;
 
                 OnActiveTeamChanged?.Invoke();
             }
@@ -352,6 +354,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void SetActiveTeamIndex()
         {
+            //First we check if there are any valid teams with an index greater than the current index.
             var teamIndexes = _unitTeams.Keys.Where(k => k > _activeTeamIndex && _unitTeams[k]?.Count > 0).OrderBy(k => k);
             if (teamIndexes.Any())
             {
@@ -359,6 +362,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             }
             else
             {
+                //No greater indexes found. We return the lowest valid index.
                 _activeTeamIndex = _unitTeams.Keys.Min();
             }
         }
@@ -395,7 +399,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         public void MoveUnit(Unit unit, List<GridIndex> path, float pathLength)
         {
-            GridMovement gridMoveComp = unit.GetGridMovement();
+            GridMovement gridMoveComp = unit.GridMovement;
             if (gridMoveComp)
             {
                 unit.OnUnitReachedDestination += Unit_OnUnitReachedDestination;
@@ -410,14 +414,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 return;
             }
 
-            int costMagnitude = pathLength <= unit.GetMoveRange() ? -1 : -2;
+            _moveCost = pathLength <= unit.MoveRange ? -1 : -2;
 
-            AbilityEffect costEffect = new AbilityEffect();
-            costEffect.durationData.durationPolicy = EffectDurationPolicy.Instant;
-            costEffect.attribute = AttributeId.ActionPoints;
-            costEffect.magnitude = costMagnitude;
-
-            unit.GetComponent<IAbilitySystem>().GetAbilitySystem().ApplyEffect(costEffect);
             _tacticsGrid.RemoveUnitFromTile(unit.GetGridIndex());
             _tacticsGrid.AddUnitToTile(path.Last(), unit, false);
             OnUnitGridIndexChanged?.Invoke(unit, path.Last());
@@ -432,9 +430,17 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private void Unit_OnUnitReachedDestination(Unit unit)
         {
             unit.OnUnitReachedDestination -= Unit_OnUnitReachedDestination;
+
+            AbilityEffect costEffect = new AbilityEffect();
+            costEffect.durationData.durationPolicy = EffectDurationPolicy.Instant;
+            costEffect.attribute = AttributeId.ActionPoints;
+            costEffect.magnitude = _moveCost;
+
+            unit.GetComponent<IAbilitySystem>().AbilitySystem.ApplyEffect(costEffect);
+
             OnActionEnded?.Invoke();
 
-            if (unit.GetAbilitySystem().GetAttributeCurrentValue(AttributeId.ActionPoints) <= 0 && unit.GetUnitAI() == null)
+            if (unit.AbilitySystem.GetAttributeCurrentValue(AttributeId.ActionPoints) <= 0 && unit.UnitAI == null)
                 EndUnitTurn();
         }
 
@@ -567,7 +573,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
             if (!ability.TryActivateAbility(activationData))
             {
-                Debug.Log("We're not returning false");
                 ability.OnAbilityEnded -= Ability_OnAbilityEnded;
                 OnActionEnded?.Invoke();
                 return false;
@@ -582,7 +587,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
             if (_isCombatFinishing) return;
 
-            if (_activeUnit.GetUnitAI() != null) return;
+            if (_activeUnit.UnitAI != null) return;
 
             if (ability.GetEndTurnOnUse() || ability.GetAbilityOwner().GetAttributeCurrentValue(AttributeId.ActionPoints) <= 0)
             {
@@ -627,98 +632,15 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             List<GridIndex> returnList = new List<GridIndex>();
             for (int i = 0; i < tiles.Count; i++)
             {
-                if (HasLineOfSight(origin, tiles[i], height, offsetDistance))
+                if (_tacticsGrid.GetTileDataFromIndex(origin, out TileData originData) && _tacticsGrid.GetTileDataFromIndex(tiles[i], out TileData targetData))
                 {
-                    returnList.Add(tiles[i]);
+                    if (AbilityStatics.HasLineOfSight(originData, targetData, height, offsetDistance))
+                    {
+                        returnList.Add(tiles[i]);
+                    }
                 }
             }
             return returnList;
-        }
-
-        public bool HasLineOfSight(GridIndex origin, GridIndex target, float height, float offsetDistance)
-        {
-            if (!_tacticsGrid.GetTileDataFromIndex(origin, out TileData originData))
-            {
-                return false;
-            }
-            if (!_tacticsGrid.GetTileDataFromIndex(target, out TileData targetData))
-            {
-                return false;
-            }
-
-
-            Vector3 startPosition = originData.tileMatrix.GetPosition();
-            startPosition.y += height;
-
-            Vector3 targetPosition = targetData.tileMatrix.GetPosition();
-            targetPosition.y += height;
-
-            Vector3 direction = targetPosition - startPosition;
-
-            if (Physics.Raycast(startPosition, direction, out RaycastHit hitInfo, direction.magnitude))
-            {
-
-                Unit abilityUnit = originData.unitOnTile;
-                Unit targetUnit = targetData.unitOnTile;
-                Unit hitUnit = hitInfo.collider.GetComponent<Unit>();
-                if (hitUnit != null)
-                {
-                    if (hitUnit != abilityUnit && hitUnit != targetUnit)
-                        return false;
-                    else
-                        return true;
-                }
-                else
-                {
-                    if (offsetDistance > 0)
-                    {
-                        //Offset distances are scaled from 0 to 1, reflecting percentage from center to edge. We math that here.
-                        float relativeDistance = (_tacticsGrid.TileSize.x / 2) * offsetDistance;
-                        Vector2[] offsets = new Vector2[]
-                        {
-                        new Vector2(-relativeDistance, 0f),
-                        new Vector2(0f, relativeDistance),
-                        new Vector2(relativeDistance, 0f),
-                        new Vector2(0f, -relativeDistance)
-                        };
-                        for (int i = 0; i < offsets.Length; i++)
-                        {
-                            Vector3 startOffset = startPosition + new Vector3(offsets[i].x, 0f, offsets[i].y);
-
-                            int unitLayer = 0;
-                            if (abilityUnit)
-                            {
-                                unitLayer = abilityUnit.gameObject.layer;
-                                abilityUnit.gameObject.layer = LayerMask.GetMask("Ignore Raycast");
-                            }
-
-                            if (!Physics.Raycast(startOffset, direction, out hitInfo, direction.magnitude))
-                            {
-                                if (abilityUnit)
-                                    abilityUnit.gameObject.layer = unitLayer;
-                                return true;
-                            }
-                            else
-                            {
-                                if (hitUnit = hitInfo.collider.GetComponent<Unit>())
-                                {
-                                    if (abilityUnit)
-                                        abilityUnit.gameObject.layer = unitLayer;
-
-                                    if (hitUnit != targetUnit)
-                                        return false;
-                                    else
-                                        return true;
-                                }
-                            }
-                            if (abilityUnit)
-                                abilityUnit.gameObject.layer = unitLayer;
-                        }
-                    }
-                    return false;
-                }
-            }
-            return true;
         }
 
         private void TacticsGrid_OnGridGenerated()
@@ -727,7 +649,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             for (int i = 0; i < copyList.Count; i++)
             {
                 Unit unit = copyList[i];
-                //GridIndex unitIndex = unit.UnitGridIndex;
                 GridIndex positionIndex = _tacticsGrid.GetTileIndexFromWorldPosition(unit.transform.position);
                 if (IsValidTileForUnit(unit, positionIndex))
                 {

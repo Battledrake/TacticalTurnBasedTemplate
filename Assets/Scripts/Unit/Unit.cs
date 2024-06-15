@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using static UnityEngine.Rendering.DebugUI;
+using BattleDrakeCreations.BehaviorTree;
 
 namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 {
@@ -21,7 +21,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public event Action OnTurnStarted;
         public event Action OnTurnEnded;
         public event Action<Unit, bool> OnUnitDied;
-        public event Action<Unit> OnUnitRespawn;
         public event Action OnTeamIndexChanged;
 
         [SerializeField] private UnitId _unitDataId = UnitId.Ranger;
@@ -36,7 +35,17 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public bool IsAlive { get => _isAlive; }
         public int TeamIndex { get => _teamIndex; }
         public int PreviousTeamIndex { get => _prevTeamIndex; }
+        public GridMovement GridMovement => _gridMovement;
+        public TacticsGrid TacticsGrid => _tacticsGrid;
+        public int Health => _abilitySystem.GetAttributeCurrentValue(AttributeId.Health);
+        public int MaxHealth => _abilitySystem.GetAttributeCurrentValue(AttributeId.MaxHealth);
+        public int MoveRange => _abilitySystem.GetAttributeCurrentValue(AttributeId.MoveRange);
+        public int Agility => _abilitySystem.GetAttributeCurrentValue(AttributeId.Agility);
+        public AnimationEventHandler AnimationEventHandler => _animEventHandler;
+        public AbilitySystem AbilitySystem => _abilitySystem;
+        public UnitAI UnitAI => _unitAI;
 
+        //private fields
         private GameObject _unitVisual;
         private UnitData _unitData;
         private GridIndex _gridIndex = GridIndex.Invalid();
@@ -57,7 +66,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         //Outline Stuff
         private Outline _unitOutline;
         private float _defaultOutlineWidth = 2f;
-        private float _hoverSelectedWidth = 3f;
+        //private float _hoverSelectedWidth = 3f;
         private bool _isHovered = false;
         private bool _isSelected = false;
 
@@ -84,17 +93,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _gridMovement.OnReachedNewTile -= GridMovement_OnReachedNewTile;
             _gridMovement.OnReachedDestination -= GridMovement_OnReachedDestination;
         }
-
-        public GridMovement GetGridMovement() => _gridMovement;
-        public TacticsGrid GetTacticsGrid() => _tacticsGrid;
-        public int GetHealth() => _abilitySystem.GetAttributeCurrentValue(AttributeId.Health);
-        public int GetMaxHealth() => _abilitySystem.GetAttributeCurrentValue(AttributeId.MaxHealth);
-
-        public int GetMoveRange() => _abilitySystem.GetAttributeCurrentValue(AttributeId.MoveRange);
-        public int GetAgility() => _abilitySystem.GetAttributeCurrentValue(AttributeId.Agility);
-        public AnimationEventHandler GetAnimationEventHandler() => _animEventHandler;
-        public AbilitySystem GetAbilitySystem() => _abilitySystem;
-        public UnitAI GetUnitAI() => _unitAI;
 
         public void SetGridIndex(GridIndex value) { _gridIndex = value; }
 

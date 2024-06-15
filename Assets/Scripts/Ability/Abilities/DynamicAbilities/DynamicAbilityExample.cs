@@ -54,15 +54,15 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             if (originData.unitOnTile && targetData.unitOnTile)
             {
                 int random = UnityEngine.Random.Range(0, 2);
-                receiver = random == 0 ? originData.unitOnTile.GetComponent<IAbilitySystem>().GetAbilitySystem() : targetData.unitOnTile.GetComponent<IAbilitySystem>().GetAbilitySystem();
+                receiver = random == 0 ? originData.unitOnTile.GetComponent<IAbilitySystem>().AbilitySystem : targetData.unitOnTile.GetComponent<IAbilitySystem>().AbilitySystem;
             }
             else if (originData.unitOnTile)
             {
-                receiver = originData.unitOnTile.GetComponent<IAbilitySystem>().GetAbilitySystem();
+                receiver = originData.unitOnTile.GetComponent<IAbilitySystem>().AbilitySystem;
             }
             else if(targetData.unitOnTile)
             {
-                receiver = targetData.unitOnTile.GetComponent<IAbilitySystem>().GetAbilitySystem();
+                receiver = targetData.unitOnTile.GetComponent<IAbilitySystem>().AbilitySystem;
             }
             else
             {

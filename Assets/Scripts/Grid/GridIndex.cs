@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 {
-    [System.Serializable]
+    [Serializable]
     public struct GridIndex : IEquatable<GridIndex>
     {
         public int x;

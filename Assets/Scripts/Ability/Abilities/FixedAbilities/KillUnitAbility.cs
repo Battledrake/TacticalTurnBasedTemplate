@@ -11,7 +11,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             activationData.tacticsGrid.GetTileDataFromIndex(activationData.targetIndex, out TileData targetData);
             if (targetData.unitOnTile)
             {
-                CombatManager.Instance.ApplyEffectsToTarget(_owner, targetData.unitOnTile.GetComponent<IAbilitySystem>().GetAbilitySystem(), _effects);
+                CombatManager.Instance.ApplyEffectsToTarget(_owner, targetData.unitOnTile.GetComponent<IAbilitySystem>().AbilitySystem, _effects);
             }
 
             EndAbility();

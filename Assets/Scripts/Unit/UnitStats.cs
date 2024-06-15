@@ -34,6 +34,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public float heightAllowance = 2f;
         public List<TileType> validTileTypes = new List<TileType> { TileType.Normal, TileType.DoubleCost, TileType.TripleCost };
         public List<AttributeData> attributes;
-        public List<Ability> abilities;
+        public List<AbilityId> abilities;
     }
 }

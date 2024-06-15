@@ -8,19 +8,80 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 {
     public static class AbilityStatics
     {
-        public static bool HasLineOfSight(TileData origin, TileData target, float height, float distance)
+        public static bool HasLineOfSight(TileData originData, TileData targetData, float height, float offsetDistance)
         {
-            Vector3 startPosition = origin.tileMatrix.GetPosition();
+            Vector3 startPosition = originData.tileMatrix.GetPosition();
             startPosition.y += height;
-            Vector3 targetPosition = target.tileMatrix.GetPosition();
-            targetPosition.y += height;
-            Vector3 targetDirection = targetPosition - startPosition;
 
-            if (Physics.Raycast(startPosition, targetDirection, out RaycastHit hitInfo, distance))
+            Vector3 targetPosition = targetData.tileMatrix.GetPosition();
+            targetPosition.y += height;
+
+            Vector3 direction = targetPosition - startPosition;
+
+            if (Physics.Raycast(startPosition, direction, out RaycastHit hitInfo, direction.magnitude))
             {
-                return true;
+
+                Unit abilityUnit = originData.unitOnTile;
+                Unit targetUnit = targetData.unitOnTile;
+                Unit hitUnit = hitInfo.collider.GetComponent<Unit>();
+                if (hitUnit != null)
+                {
+                    if (hitUnit != abilityUnit && hitUnit != targetUnit)
+                        return false;
+                    else
+                        return true;
+                }
+                else
+                {
+                    if (offsetDistance > 0)
+                    {
+                        //Offset distances are scaled from 0 to 1, reflecting percentage from center to edge. We math that here.
+                        float relativeDistance = (abilityUnit.TacticsGrid.TileSize.x / 2) * offsetDistance;
+                        Vector2[] offsets = new Vector2[]
+                        {
+                        new Vector2(-relativeDistance, 0f),
+                        new Vector2(0f, relativeDistance),
+                        new Vector2(relativeDistance, 0f),
+                        new Vector2(0f, -relativeDistance)
+                        };
+                        for (int i = 0; i < offsets.Length; i++)
+                        {
+                            Vector3 startOffset = startPosition + new Vector3(offsets[i].x, 0f, offsets[i].y);
+
+                            int unitLayer = 0;
+                            if (abilityUnit)
+                            {
+                                unitLayer = abilityUnit.gameObject.layer;
+                                abilityUnit.gameObject.layer = LayerMask.GetMask("Ignore Raycast");
+                            }
+
+                            if (!Physics.Raycast(startOffset, direction, out hitInfo, direction.magnitude))
+                            {
+                                if (abilityUnit)
+                                    abilityUnit.gameObject.layer = unitLayer;
+                                return true;
+                            }
+                            else
+                            {
+                                if (hitUnit = hitInfo.collider.GetComponent<Unit>())
+                                {
+                                    if (abilityUnit)
+                                        abilityUnit.gameObject.layer = unitLayer;
+
+                                    if (hitUnit != targetUnit)
+                                        return false;
+                                    else
+                                        return true;
+                                }
+                            }
+                            if (abilityUnit)
+                                abilityUnit.gameObject.layer = unitLayer;
+                        }
+                    }
+                    return false;
+                }
             }
-            return false;
+            return true;
         }
 
         public static List<GridIndex> GetIndexesFromPatternAndRange(GridIndex origin, GridShape gridShape, Vector2Int rangeMinMax, AbilityRangePattern pattern)

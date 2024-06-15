@@ -47,14 +47,14 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _iconImage.sprite = unit.UnitData.assetData.unitIcon;
             _iconImage.GetComponent<RectTransform>().sizeDelta = _defaultIconSize;
 
-            UpdateIconHealth(_unit.GetHealth(), _unit.GetMaxHealth());
+            UpdateIconHealth(_unit.Health, _unit.MaxHealth);
 
             Unit.OnAnyUnitHealthChanged += Unit_OnAnyUnitHealthChanged;
             _unit.OnUnitHoveredChanged += Unit_OnUnitHoveredChanged;
             CombatManager.Instance.OnActiveUnitChanged += CombatManager_OnActiveUnitChanged;
             _unit.OnTurnEnded += Unit_OnTurnEnded;
 
-            if(CombatManager.Instance.TurnOrderType == TurnOrderType.Team && _unit.GetUnitAI() == null)
+            if(CombatManager.Instance.TurnOrderType == TurnOrderType.Team && _unit.UnitAI == null)
                 _canSetActiveTeamUnit = true;
         }
 
@@ -126,7 +126,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private void Unit_OnAnyUnitHealthChanged(Unit unit)
         {
             if (_unit == unit)
-                UpdateIconHealth(_unit.GetHealth(), _unit.GetMaxHealth());
+                UpdateIconHealth(_unit.Health, _unit.MaxHealth);
         }
 
         public void UpdateIconHealth(int currentHealth, int maxHealth)

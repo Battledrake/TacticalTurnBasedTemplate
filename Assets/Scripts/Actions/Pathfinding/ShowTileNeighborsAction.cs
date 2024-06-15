@@ -17,7 +17,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             if (_playerActions.TacticsGrid.IsIndexValid(index))
             {
                 bool includeDiagonals = actionValue == 1;
-                _neighborList = _playerActions.TacticsGrid.GridPathfinder.GetTileNeighbors(index, includeDiagonals);
+                _neighborList = _playerActions.TacticsGrid.Pathfinder.GetTileNeighbors(index, includeDiagonals);
 
                 _playerActions.TacticsGrid.GridTiles.TryGetValue(index, out TileData selectedData);
 
@@ -30,7 +30,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                             if (GridStatics.IsTileTypeWalkable(tileData.tileType))
                             {
                                 float heightDifference = Mathf.Abs(tileData.tileMatrix.GetPosition().y - selectedData.tileMatrix.GetPosition().y);
-                                if (heightDifference <= _playerActions.TacticsGrid.GridPathfinder.HeightAllowance)
+                                if (heightDifference <= _playerActions.TacticsGrid.Pathfinder.HeightAllowance)
                                 {
                                     _playerActions.TacticsGrid.AddStateToTile(_neighborList[i], TileState.IsNeighbor);
                                 }

@@ -36,9 +36,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _tacticsGrid.OnGridGenerated += UpdateTextOnAllTiles;
             _tacticsGrid.OnTileDataUpdated += (i => UpdateTextOnTile(i));
             _tacticsGrid.OnGridDestroyed += ClearAllTextGameObjects;
-            _tacticsGrid.GridPathfinder.OnPathfindingCompleted += UpdateTextOnAllTiles;
-            _tacticsGrid.GridPathfinder.OnPathfindingDataCleared += UpdateTextOnAllTiles;
-            _tacticsGrid.GridPathfinder.OnPathfindingDataUpdated += UpdateTextOnAllTiles;
+            _tacticsGrid.Pathfinder.OnPathfindingCompleted += UpdateTextOnAllTiles;
+            _tacticsGrid.Pathfinder.OnPathfindingDataCleared += UpdateTextOnAllTiles;
+            _tacticsGrid.Pathfinder.OnPathfindingDataUpdated += UpdateTextOnAllTiles;
         }
 
         private void OnDisable()
@@ -46,9 +46,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _tacticsGrid.OnGridGenerated -= UpdateTextOnAllTiles;
             _tacticsGrid.OnTileDataUpdated -= (i => UpdateTextOnTile(i));
             _tacticsGrid.OnGridDestroyed -= ClearAllTextGameObjects;
-            _tacticsGrid.GridPathfinder.OnPathfindingCompleted -= UpdateTextOnAllTiles;
-            _tacticsGrid.GridPathfinder.OnPathfindingDataCleared -= UpdateTextOnAllTiles;
-            _tacticsGrid.GridPathfinder.OnPathfindingDataUpdated -= UpdateTextOnAllTiles;
+            _tacticsGrid.Pathfinder.OnPathfindingCompleted -= UpdateTextOnAllTiles;
+            _tacticsGrid.Pathfinder.OnPathfindingDataCleared -= UpdateTextOnAllTiles;
+            _tacticsGrid.Pathfinder.OnPathfindingDataUpdated -= UpdateTextOnAllTiles;
         }
 
         private bool ShowAnyDebug()
@@ -103,9 +103,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
                 if (HasPathfindingData())
                 {
-                    if (_tacticsGrid.GridPathfinder.PathNodePool != null)
+                    if (_tacticsGrid.Pathfinder.PathNodePool != null)
                     {
-                        if (_tacticsGrid.GridPathfinder.PathNodePool.TryGetValue(index, out PathNode pathNode))
+                        if (_tacticsGrid.Pathfinder.PathNodePool.TryGetValue(index, out PathNode pathNode))
                         {
 
                             if (_showTraversalCost && pathNode.traversalCost != Mathf.Infinity)
