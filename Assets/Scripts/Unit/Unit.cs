@@ -326,6 +326,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         public void Die(bool shouldDestroy = false)
         {
+            Debug.Log("I dwied");
             _isAlive = false;
             _gridMovement.Stop();
             _collider.enabled = false;

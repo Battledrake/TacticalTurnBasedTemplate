@@ -31,7 +31,7 @@ namespace BattleDrakeCreations.BehaviorTree
 
         public IEnumerator RunBehavior()
         {
-            while (_behaviorTree.ExecuteTree() == NodeResult.Running)
+            while (_behaviorTree.ExecuteTree() != NodeResult.Succeeded)
             {
                 yield return new WaitForSeconds(_delayBetweenEvaluations);
             }

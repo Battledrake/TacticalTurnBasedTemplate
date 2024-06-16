@@ -35,6 +35,13 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate.BehaviorTree
             if (abilityRangeIndexes.Count == 0)
                 return NodeResult.Failed;
 
+            if (abilityRangeIndexes.Contains(_agent.Unit.GridIndex))
+            {
+                _blackboard.SetValue(_targetIndexKey, _agent.Unit.GridIndex);
+                return NodeResult.Succeeded;
+            }
+
+
             GridIndex closestIndex = abilityRangeIndexes.Last();
             float shortestAbilityIndexDist = Mathf.Infinity;
             for (int i = 0; i < abilityRangeIndexes.Count; i++)

@@ -195,12 +195,19 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 {
                     int maxTravel = UnitHasEnoughAbilityPoints(2) ? _unit.MoveRange * 2 : _unit.MoveRange;
                     List<GridIndex> pathIndexes = new();
+                    float lastTraversal = 0f;
                     for (int i = 0; i < pathResult.Path.Count; i++)
                     {
                         if (pathResult.Path[i].traversalCost > maxTravel)
+                        {
                             break;
+                        }
                         else
+                        {
+                            lastTraversal = pathResult.Path[i].traversalCost;
                             pathIndexes.Add(pathResult.Path[i].index);
+                        }
+
                     }
                     _unit.OnUnitReachedDestination += Unit_OnUnitReachedDestination;
                     CombatManager.Instance.MoveUnit(_unit, pathIndexes, maxTravel);

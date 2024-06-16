@@ -52,6 +52,12 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             CombatManager.Instance.OnCombatEnded += CombatManager_OnCombatEnded;
         }
 
+        private void OnDisable()
+        {
+            CombatManager.Instance.OnCombatFinishing -= CombatManager_OnCombatFinishing;
+            CombatManager.Instance.OnCombatEnded -= CombatManager_OnCombatEnded;
+        }
+
         private void CombatManager_OnCombatEnded()
         {
         }

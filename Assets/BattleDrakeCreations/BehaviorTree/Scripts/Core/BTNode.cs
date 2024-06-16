@@ -25,7 +25,7 @@ namespace BattleDrakeCreations.BehaviorTree
 
         protected NodeResult _result = NodeResult.Running;
         protected bool _hasStarted = false;
-        private BehaviorTree _tree;
+        protected BehaviorTree _tree;
         protected Blackboard _blackboard;
         protected IBehaviorTreeAgent _agent;
         private float _lastEvaluationTime = 0f;

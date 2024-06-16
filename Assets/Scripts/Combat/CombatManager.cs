@@ -314,7 +314,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 OrderUnitsByTeam();
 
                 _isAIControlledTeam = _orderedUnits[0].UnitAI != null;
-
+                Debug.Log($"Team: {_activeTeamIndex}, IsAI?: {_isAIControlledTeam}");
                 OnActiveTeamChanged?.Invoke();
             }
             //Temporary as starting next turns too fast feels bad.
@@ -330,7 +330,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             if (_turnOrderType == TurnOrderType.Team)
             {
-                _activeUnit.TurnEnded();
+                _activeUnit.TurnEnded(); //Used for timeline displays
                 _orderedUnits.Remove(_activeUnit);
                 _activeUnit = null;
 
@@ -585,12 +585,10 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             ability.OnAbilityEnded -= Ability_OnAbilityEnded;
             OnActionEnded?.Invoke();
 
-            //Unit that used ability could no longer be active.
-            if (_activeUnit == null) return;
-
             if (_isCombatFinishing) return;
 
-            if (_activeUnit.UnitAI != null) return;
+            //We only want to call end turn on player. AI handle their own end turn logic.
+            if (ability.AbilityOwner.OwningUnit && ability.AbilityOwner.OwningUnit.UnitAI != null) return;
 
             if (ability.EndTurnOnUse || ability.AbilityOwner.GetAttributeCurrentValue(AttributeId.ActionPoints) <= 0)
             {

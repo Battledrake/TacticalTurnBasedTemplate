@@ -5,6 +5,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate.BehaviorTree
     public class AllPointsUsed : DecoratorNode
     {
         public override string title { get => "All Points Used"; }
+        public override string description { get => "Aborts on Success"; }
+
         private int _currentActionPoints = 0;
         protected override void OnStart()
         {
@@ -31,6 +33,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate.BehaviorTree
 
             if (_currentActionPoints > 0)
                 return NodeResult.Running;
+            else
+                _tree.Traverse(_tree.RootNode, (n) => n.Abort());
 
             return NodeResult.Succeeded;
         }

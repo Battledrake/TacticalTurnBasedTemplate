@@ -19,7 +19,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate.BehaviorTree
             _targetIndexKey = _blackboard.GetOrRegisterKey("TargetIndex");
             _isMoving = false;
             _hasArrived = false;
-            _result = NodeResult.Running;
         }
 
         protected override void OnStop()
@@ -32,7 +31,10 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate.BehaviorTree
                 return NodeResult.Running;
 
             if (_hasArrived)
+            {
+                _hasArrived = false;
                 return NodeResult.Succeeded;
+            }
 
             if (!_blackboard.TryGetValue(_targetIndexKey, out GridIndex targetIndex))
                 return NodeResult.Failed;
@@ -46,22 +48,29 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate.BehaviorTree
             PathfindingResult pathResult = _agent.TacticsGrid.Pathfinder.FindPath(_agent.Unit.GridIndex, _targetIndex, pathParams);
             if (pathResult.Result != PathResult.SearchFail)
             {
-
                 int maxTravel = _agent.AbilitySystem.GetAttributeCurrentValue(AttributeId.ActionPoints) >= 2 ? _agent.Unit.MoveRange * 2 : _agent.Unit.MoveRange;
                 List<GridIndex> pathIndexes = new();
+                float pathLength = 0f;
                 for (int i = 0; i < pathResult.Path.Count; i++)
                 {
                     if (pathResult.Path[i].traversalCost > maxTravel)
+                    {
                         break;
+                    }
                     else
+                    {
+                        pathLength = pathResult.Path[i].traversalCost;
                         pathIndexes.Add(pathResult.Path[i].index);
+                    }
+
                 }
                 _agent.Unit.OnUnitReachedDestination += Unit_OnUnitReachedDestination;
-                CombatManager.Instance.MoveUnit(_agent.Unit, pathIndexes, maxTravel);
+                CombatManager.Instance.MoveUnit(_agent.Unit, pathIndexes, pathLength);
                 _isMoving = true;
             }
             else
             {
+                UnityEngine.Debug.Log("Uh... the PathResult failed?");
                 return NodeResult.Failed;
             }
 
