@@ -167,7 +167,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void CombatManager_OnActionEnded()
         {
-            if (CombatManager.Instance.IsCombatFinishing()) return;
+            if (CombatManager.Instance.IsCombatFinishing) return;
             if (_selectedUnit.UnitAI != null) return;
 
             _inputDisabled = false;

@@ -160,7 +160,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         public void AIEndTurn()
         {
-            CombatManager.Instance.EndUnitTurn();
+            CombatManager.Instance.RequestEndTurn(this);
         }
 
         public void TurnEnded()

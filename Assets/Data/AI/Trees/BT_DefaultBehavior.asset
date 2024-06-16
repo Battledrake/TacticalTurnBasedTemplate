@@ -13,39 +13,9 @@ MonoBehaviour:
   m_Name: IsInAbilityRange
   m_EditorClassIdentifier: 
   _guid: 11e6e06d1fbfa0f47848a68be1a3ee20
-  _position: {x: 434.57437, y: 441}
+  _position: {x: 435.00006, y: 290.6511}
   _child: {fileID: 6044070414847437353}
   _isSet: 0
---- !u!114 &-8789103376633920073
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6b61c209e3fe5664aaddc45a0615646b, type: 3}
-  m_Name: Wait
-  m_EditorClassIdentifier: 
-  _guid: f715b903846ca7b468db60e376850f08
-  _position: {x: 809, y: 530}
-  _waitTime: 1
---- !u!114 &-7061080798638146640
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2689f48329e033247a75da4c0091f7e9, type: 3}
-  m_Name: AllPointsUsed
-  m_EditorClassIdentifier: 
-  _guid: b5175c549cd85c046a56bbc7b7ce7d71
-  _position: {x: 0.00012207031, y: 148.30002}
-  _child: {fileID: 1411388301814986295}
 --- !u!114 &-4149828485500814706
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -59,7 +29,7 @@ MonoBehaviour:
   m_Name: FindNearestTarget
   m_EditorClassIdentifier: 
   _guid: 1f16f4c26fcbd3f439163217e7401209
-  _position: {x: -389.43137, y: 571}
+  _position: {x: -388.99997, y: 420.65106}
 --- !u!114 &-3251115330291794114
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -73,7 +43,7 @@ MonoBehaviour:
   m_Name: SetActiveAbility
   m_EditorClassIdentifier: 
   _guid: 3d10b44ed4fd1db429c550bb399c79ca
-  _position: {x: -206.4314, y: 441}
+  _position: {x: -206.00005, y: 290.6511}
   _abilityId: 13
   _giveAbility: 0
 --- !u!114 &-196761483346059194
@@ -89,7 +59,7 @@ MonoBehaviour:
   m_Name: HasTarget
   m_EditorClassIdentifier: 
   _guid: 787cc36b7d0cfec48be050301dd8d1af
-  _position: {x: -378.43137, y: 441}
+  _position: {x: -377.99994, y: 290.6511}
   _child: {fileID: -4149828485500814706}
   _isSet: 1
 --- !u!114 &11400000
@@ -115,9 +85,8 @@ MonoBehaviour:
   - {fileID: -9204690594765555065}
   - {fileID: 6044070414847437353}
   - {fileID: 7575327354453547856}
-  - {fileID: -7061080798638146640}
   - {fileID: 1411388301814986295}
-  - {fileID: -8789103376633920073}
+  - {fileID: 3890829827446207242}
 --- !u!114 &1411388301814986295
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -131,13 +100,28 @@ MonoBehaviour:
   m_Name: Sequencer
   m_EditorClassIdentifier: 
   _guid: 8a3475ac2deef254ab6e4d56b1ef37c4
-  _position: {x: -0.00010681152, y: 297}
+  _position: {x: 0.00003170967, y: 146.6511}
   _children:
   - {fileID: -196761483346059194}
   - {fileID: -3251115330291794114}
   - {fileID: 7575327354453547856}
   - {fileID: 4278650068578607975}
   - {fileID: -9204690594765555065}
+--- !u!114 &3890829827446207242
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6b61c209e3fe5664aaddc45a0615646b, type: 3}
+  m_Name: Wait
+  m_EditorClassIdentifier: 
+  _guid: ce6b467839e8d9b4ea6006b5b8988887
+  _position: {x: 731.05835, y: 338.1671}
+  _waitTime: 1
 --- !u!114 &4278650068578607975
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -151,7 +135,7 @@ MonoBehaviour:
   m_Name: MoveTo
   m_EditorClassIdentifier: 
   _guid: 0cec8ed02d4a0a74a930bc6fcdbc2dfb
-  _position: {x: 219.62798, y: 441}
+  _position: {x: 220.00003, y: 290.6511}
 --- !u!114 &6044070414847437353
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -165,7 +149,7 @@ MonoBehaviour:
   m_Name: UseActiveAbility
   m_EditorClassIdentifier: 
   _guid: 7ae1e3017710e614facea5dffd20a625
-  _position: {x: 434.99988, y: 571}
+  _position: {x: 435.00006, y: 420.65106}
 --- !u!114 &7575327354453547856
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -179,7 +163,7 @@ MonoBehaviour:
   m_Name: FindNearestIndex
   m_EditorClassIdentifier: 
   _guid: 97bb4dd1a2f7ee24fb98586290620b1c
-  _position: {x: -40.372025, y: 441}
+  _position: {x: -39.999943, y: 290.6511}
 --- !u!114 &8053059767221403373
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -194,4 +178,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _guid: 7732b72cad9d3f244aaa08a01c1c62e4
   _position: {x: 0, y: 0}
-  _childNode: {fileID: -7061080798638146640}
+  _childNode: {fileID: 1411388301814986295}

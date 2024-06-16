@@ -7414,7 +7414,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a400875770b5bc34fb580a7b4e11e181, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _teamIndex: 7
   _abilityInstanceContainer: {fileID: 1401220137}
   _actionPointEffect: {fileID: 0}
 --- !u!1001 &348643395
@@ -14204,7 +14203,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 676821037}
   m_HandleRect: {fileID: 676821035}
   m_Direction: 2
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -15438,7 +15437,7 @@ PrefabInstance:
     - target: {fileID: 1217478410378078153, guid: 5074a686a13b6374d8a6839ec36abcac,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: EndUnitTurn
+      value: PlayerRequestEndTurn
       objectReference: {fileID: 0}
     - target: {fileID: 1217478410378078153, guid: 5074a686a13b6374d8a6839ec36abcac,
         type: 3}
@@ -33170,6 +33169,7 @@ MonoBehaviour:
     color: {r: 0.5377358, g: 0.2570111, b: 0.19023673, a: 1}
   _unitAIPrefab: {fileID: -8186604555658985836, guid: 63374a49a9f18cb438cac1c3238e829f,
     type: 3}
+  _endTurnDelay: 0
   _tacticsGrid: {fileID: 825704801}
 --- !u!4 &1700013398
 Transform:

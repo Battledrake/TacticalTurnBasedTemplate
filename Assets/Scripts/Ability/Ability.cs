@@ -181,7 +181,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public int ActiveCooldown => _activeCooldown;
         public bool EndTurnOnUse => _endTurnOnUse;
         public bool IsFriendlyOnly => _isFriendlyOnly;
-        public int ActionPointCost => _costEffect.effects.FirstOrDefault(effect => effect.attribute == AttributeId.ActionPoints).magnitude;
+        public int ActionPointCost => Mathf.Abs(_costEffect.effects.FirstOrDefault(effect => effect.attribute == AttributeId.ActionPoints).magnitude);
         public abstract int UsesLeft { get; }
         public abstract AbilityRangeData RangeData { get; }
         public abstract AbilityRangeData AreaOfEffectData { get; }
@@ -215,7 +215,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
             if (_activeCooldown > 0) return false;
 
-            if (_owner.GetAttributeCurrentValue(AttributeId.ActionPoints) < _costEffect.effects.FirstOrDefault(e => e.attribute == AttributeId.ActionPoints).magnitude) return false;
+            if (_owner.GetAttributeCurrentValue(AttributeId.ActionPoints) < ActionPointCost) return false;
 
             if (!CombatManager.Instance.GetAbilityRange(activationData.originIndex, this.RangeData).Contains(activationData.targetIndex)) return false;
 

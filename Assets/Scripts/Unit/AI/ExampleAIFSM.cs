@@ -11,8 +11,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
     {
         None,
         StartingTurn,
-        DecideAbility,
-        DecidePosition,
+        PickAbility,
+        FindTargetUnit,
+        FindPosition,
         MoveToPosition,
         UseAbility,
         EndingTurn
@@ -42,9 +43,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         //Can be pulled from CombatManager and selected based on conditions
         private List<Unit> _enemyUnits;
 
-        private Ability _activeAbility;
-        private Unit _targetUnit;
-        private GridIndex _targetIndex;
+        private Ability _activeAbility = null;
+        private Unit _targetUnit = null;
+        private GridIndex _targetIndex = GridIndex.Invalid();
 
         //Components
         private Unit _unit;
@@ -68,14 +69,28 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             }
 
             _aiActions[AIState.StartingTurn] = StartingTurn;
-            _aiActions[AIState.DecideAbility] = DecideAbility;
-            _aiActions[AIState.DecidePosition] = DecidePosition;
+            _aiActions[AIState.PickAbility] = PickRandomAbility;
+            _aiActions[AIState.FindTargetUnit] = FindTargetUnit;
+            _aiActions[AIState.FindPosition] = FindPosition;
             _aiActions[AIState.MoveToPosition] = MoveToPosition;
             _aiActions[AIState.UseAbility] = UseAbility;
             _aiActions[AIState.EndingTurn] = EndingTurn;
 
+            _unit.OnTurnEnded += Unit_OnTurnEnded;
             CombatManager.Instance.OnCombatFinishing += CombatManager_OnCombatFinishing;
             CombatManager.Instance.OnCombatEnded += CombatManager_OnCombatEnded;
+        }
+
+        private void OnDisable()
+        {
+            _unit.OnTurnEnded -= Unit_OnTurnEnded;
+            CombatManager.Instance.OnCombatFinishing -= CombatManager_OnCombatFinishing;
+            CombatManager.Instance.OnCombatEnded -= CombatManager_OnCombatEnded;
+        }
+
+        private void Unit_OnTurnEnded()
+        {
+            MakeDecision(AIState.EndingTurn, true);
         }
 
         private void CombatManager_OnCombatEnded()
@@ -91,7 +106,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private void StartingTurn()
         {
             ClearAIVisuals();
-            AdvanceToNextState(AIState.DecideAbility);
+            MakeDecision(AIState.StartingTurn, true);
         }
 
         private void EndingTurn()
@@ -100,58 +115,196 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             OnEndTurn?.Invoke();
         }
 
-        private void DecideAbility()
+        private bool UnitHasEnoughAbilityPoints(int amount)
         {
-            if (_activeAbility == null)
-            {
-                List<Ability> abilities = _abilitySystem.GetAbilities();
-                int checkCount = 0;
-                do
-                {
-                    _activeAbility = abilities[UnityEngine.Random.Range(0, abilities.Count)];
-                    checkCount++;
-                } while (
-                (_activeAbility.IsFriendlyOnly
-                || _activeAbility.ActiveCooldown > 0
-                || _activeAbility.UsesLeft == 0
-                || _activeAbility.ActionPointCost > _abilitySystem.GetAttributeCurrentValue(AttributeId.ActionPoints))
-                && checkCount < abilities.Count);
-
-                if (checkCount >= abilities.Count)
-                {
-                    AdvanceToNextState(AIState.EndingTurn);
-                }
-            }
-            AdvanceToNextState(AIState.DecidePosition);
+            if (_abilitySystem.GetAttributeCurrentValue(AttributeId.ActionPoints) >= amount)
+                return true;
+            else
+                return false;
         }
 
-        private void DecidePosition()
+        private void MakeDecision(AIState attemptedState, bool succeeded)
         {
-            if (_targetUnit == null)
+            switch (attemptedState)
             {
-                HashSet<Unit> playerUnits = CombatManager.Instance.UnitTeams[0];
-                if (playerUnits.Count == 0)
-                {
-                    Debug.Log("No enemies");
-                    AdvanceToNextState(AIState.EndingTurn);
-                    return;
-                }
-
-
-                Unit closestUnit = playerUnits.Last();
-                float shortestUnitDist = Mathf.Infinity;
-                foreach (Unit unit in playerUnits)
-                {
-                    float distance = Vector3.Distance(unit.transform.position, closestUnit.transform.position);
-                    if (distance < shortestUnitDist)
+                case AIState.None:
+                    break;
+                case AIState.StartingTurn:
                     {
-                        closestUnit = unit;
-                        shortestUnitDist = distance;
+                        if (_activeAbility && !_activeAbility.IsFriendlyOnly)
+                        {
+                            AdvanceToNextState(AIState.FindTargetUnit);
+                        }
+                        else
+                        {
+                            AdvanceToNextState(AIState.PickAbility);
+                        }
                     }
-                }
-                _targetUnit = closestUnit;
+                    break;
+                case AIState.PickAbility:
+                    {
+                        if (succeeded)
+                        {
+                            if (_activeAbility.IsFriendlyOnly)
+                            {
+                                _targetUnit = _unit;
+                                AdvanceToNextState(AIState.UseAbility);
+                            }
+                            else
+                            {
+                                if (_targetUnit)
+                                    AdvanceToNextState(AIState.FindPosition);
+                                else
+                                    AdvanceToNextState(AIState.FindTargetUnit);
+                            }
+                        }
+                        else
+                        {
+                            AdvanceToNextState(AIState.EndingTurn);
+                        }
+                    }
+                    break;
+                case AIState.FindTargetUnit:
+                    {
+                        if (succeeded)
+                        {
+                            AdvanceToNextState(AIState.FindPosition);
+                        }
+                        else
+                        {
+                            AdvanceToNextState(AIState.EndingTurn);
+                        }
+                    }
+                    break;
+                case AIState.FindPosition:
+                    {
+                        if (succeeded)
+                        {
+                            if (_targetIndex == _unit.GridIndex)
+                                AdvanceToNextState(AIState.UseAbility);
+                            else
+                                AdvanceToNextState(AIState.MoveToPosition);
+                        }
+                        else
+                        {
+                            AdvanceToNextState(AIState.FindTargetUnit);
+                        }
+                    }
+                    break;
+                case AIState.MoveToPosition:
+                    {
+                        if (succeeded)
+                        {
+                            if (UnitHasEnoughAbilityPoints(_activeAbility.ActionPointCost))
+                                AdvanceToNextState(AIState.UseAbility);
+                            else
+                                AdvanceToNextState(AIState.EndingTurn);
+                        }
+                        else
+                        {
+                            AdvanceToNextState(AIState.EndingTurn);
+                        }
+                    }
+                    break;
+                case AIState.UseAbility:
+                    {
+                        if (succeeded)
+                        {
+                            if (!_activeAbility.EndTurnOnUse)
+                            {
+                                if (_activeAbility.IsFriendlyOnly)
+                                {
+                                    _targetUnit = null;
+                                    AdvanceToNextState(AIState.PickAbility);
+                                }
+                                else
+                                {
+                                    if (UnitHasEnoughAbilityPoints(_activeAbility.ActionPointCost))
+                                    {
+                                        AdvanceToNextState(AIState.UseAbility);
+                                    }
+                                    else
+                                    {
+                                        AdvanceToNextState(AIState.PickAbility);
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                AdvanceToNextState(AIState.EndingTurn);
+                            }
+                        }
+                        else
+                        {
+                            if (UnitHasEnoughAbilityPoints(_activeAbility.ActionPointCost))
+                            {
+                                AdvanceToNextState(AIState.MoveToPosition);
+                            }
+                            else
+                            {
+                                AdvanceToNextState(AIState.PickAbility);
+                            }
+                        }
+                    }
+                    break;
+                case AIState.EndingTurn:
+                    {
+                        _currentState = AIState.None;
+                    }
+                    break;
+            }
+        }
+
+        private void PickRandomAbility()
+        {
+            List<Ability> abilities = _abilitySystem.GetAbilities();
+            int checkCount = 0;
+            do
+            {
+                _activeAbility = abilities[UnityEngine.Random.Range(0, abilities.Count)];
+                checkCount++;
+            } while (
+            (!UnitHasEnoughAbilityPoints(_activeAbility.ActionPointCost)
+            || _activeAbility.ActiveCooldown > 0
+            || _activeAbility.UsesLeft == 0)
+            && checkCount < abilities.Count);
+
+            if (checkCount >= abilities.Count)
+            {
+                MakeDecision(AIState.PickAbility, false);
             }
 
+            MakeDecision(AIState.PickAbility, true);
+        }
+
+        private void FindTargetUnit()
+        {
+            HashSet<Unit> playerUnits = CombatManager.Instance.UnitTeams[0];
+            if (playerUnits.Count == 0)
+            {
+                Debug.Log("No enemies");
+                MakeDecision(AIState.FindTargetUnit, false);
+                return;
+            }
+
+            Unit closestUnit = playerUnits.Last();
+            float shortestUnitDist = Mathf.Infinity;
+            foreach (Unit unit in playerUnits)
+            {
+                float distance = Vector3.Distance(unit.transform.position, closestUnit.transform.position);
+                if (distance < shortestUnitDist)
+                {
+                    closestUnit = unit;
+                    shortestUnitDist = distance;
+                }
+            }
+            _targetUnit = closestUnit;
+
+            MakeDecision(AIState.FindTargetUnit, true);
+        }
+
+        private void FindPosition()
+        {
             if (_targetUnit != null)
             {
                 List<GridIndex> abilityRangeIndexes = CombatManager.Instance.GetAbilityRange(_targetUnit.GridIndex, _activeAbility.RangeData);
@@ -168,34 +321,24 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 }
                 _targetIndex = closestIndex;
             }
-            AdvanceToNextState(AIState.MoveToPosition);
-        }
-
-        private bool UnitHasEnoughAbilityPoints(int amount)
-        {
-            if (_abilitySystem.GetAttributeCurrentValue(AttributeId.ActionPoints) >= amount)
-                return true;
             else
-                return false;
+            {
+                MakeDecision(AIState.FindPosition, false);
+            }
+            MakeDecision(AIState.FindPosition, true);
         }
 
         private void MoveToPosition()
         {
-            if (_unit.GridIndex != _targetIndex)
+            PathParams pathParams = GridPathfinding.CreatePathParamsFromUnit(_unit);
+            PathfindingResult pathResult = _tacticsGrid.Pathfinder.FindPath(_unit.GridIndex, _targetIndex, pathParams);
+            if (pathResult.Result != PathResult.SearchFail)
             {
-                if (!UnitHasEnoughAbilityPoints(1))
-                {
-                    AdvanceToNextState(AIState.EndingTurn);
-                    return;
-                }
-
-                PathParams pathParams = GridPathfinding.CreatePathParamsFromUnit(_unit);
-                PathfindingResult pathResult = _tacticsGrid.Pathfinder.FindPath(_unit.GridIndex, _targetIndex, pathParams);
-                if (pathResult.Result != PathResult.SearchFail)
+                if (pathResult.Path.Count > 0)
                 {
                     int maxTravel = UnitHasEnoughAbilityPoints(2) ? _unit.MoveRange * 2 : _unit.MoveRange;
                     List<GridIndex> pathIndexes = new();
-                    float lastTraversal = 0f;
+                    float lastTraversalCost = 0f;
                     for (int i = 0; i < pathResult.Path.Count; i++)
                     {
                         if (pathResult.Path[i].traversalCost > maxTravel)
@@ -204,67 +347,60 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                         }
                         else
                         {
-                            lastTraversal = pathResult.Path[i].traversalCost;
+                            lastTraversalCost = pathResult.Path[i].traversalCost;
                             pathIndexes.Add(pathResult.Path[i].index);
                         }
-
                     }
                     _unit.OnUnitReachedDestination += Unit_OnUnitReachedDestination;
-                    CombatManager.Instance.MoveUnit(_unit, pathIndexes, maxTravel);
+                    CombatManager.Instance.MoveUnit(_unit, pathIndexes, lastTraversalCost);
                 }
                 else
                 {
-                    Debug.LogWarning("Path Failed. Invalid Origin or TargetIndex. Ending Turn.");
-                    AdvanceToNextState(AIState.EndingTurn);
+                    MakeDecision(AIState.MoveToPosition, false);
                 }
             }
             else
             {
-                AdvanceToNextState(AIState.UseAbility);
+                MakeDecision(AIState.MoveToPosition, false);
             }
+
         }
 
         private void Unit_OnUnitReachedDestination(Unit unit)
         {
             _unit.OnUnitReachedDestination -= Unit_OnUnitReachedDestination;
 
-            AdvanceToNextState(AIState.UseAbility);
+            MakeDecision(AIState.MoveToPosition, true);
         }
 
         private void UseAbility()
         {
-            GridIndex targetIndex = _activeAbility.RangeData.rangeMinMax.y == 0 ? _unit.GridIndex : _targetUnit.GridIndex;
-            if (CombatManager.Instance.GetAbilityRange(_unit.GridIndex, _activeAbility.RangeData).Contains(targetIndex))
+            if (CombatManager.Instance.GetAbilityRange(_unit.GridIndex, _activeAbility.RangeData).Contains(_targetUnit.GridIndex))
             {
                 _activeAbility.OnAbilityEnded += Ability_OnAbilityEnded;
-                if (!CombatManager.Instance.TryActivateAbility(_activeAbility, _unit.GridIndex, targetIndex))
+                if (!CombatManager.Instance.UseAbility(_activeAbility, _unit.GridIndex, _targetUnit.GridIndex))
                 {
                     _activeAbility.OnAbilityEnded -= Ability_OnAbilityEnded;
-                    AdvanceToNextState(AIState.EndingTurn);
+                    MakeDecision(AIState.UseAbility, false);
                 }
             }
             else
             {
-                Debug.Log("Unit not in range");
-                AdvanceToNextState(AIState.MoveToPosition);
+                MakeDecision(AIState.UseAbility, false);
             }
         }
 
         private void Ability_OnAbilityEnded(Ability ability)
         {
             _activeAbility.OnAbilityEnded -= Ability_OnAbilityEnded;
-            _activeAbility = null;
-            _targetUnit = null;
-            _targetIndex = GridIndex.Invalid();
 
-            if (ability.EndTurnOnUse)
-                AdvanceToNextState(AIState.EndingTurn);
-            else
-                AdvanceToNextState(AIState.DecideAbility);
+            MakeDecision(AIState.UseAbility, true);
         }
 
         private void AdvanceToNextState(AIState stateToMoveTo)
         {
+            if (_currentState == AIState.None)
+                return;
             StartCoroutine(SetAIState(stateToMoveTo));
         }
 

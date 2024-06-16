@@ -48,12 +48,14 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _tacticsGrid = _unit.TacticsGrid;
             _abilitySystem = this.GetComponentInParent<IAbilitySystem>().AbilitySystem;
 
+            _unit.OnTurnEnded += Unit_OnTurnEnded;
             CombatManager.Instance.OnCombatFinishing += CombatManager_OnCombatFinishing;
             CombatManager.Instance.OnCombatEnded += CombatManager_OnCombatEnded;
         }
 
         private void OnDisable()
         {
+            _unit.OnTurnEnded += Unit_OnTurnEnded;
             CombatManager.Instance.OnCombatFinishing -= CombatManager_OnCombatFinishing;
             CombatManager.Instance.OnCombatEnded -= CombatManager_OnCombatEnded;
         }
@@ -63,6 +65,15 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         }
 
         private void CombatManager_OnCombatFinishing(int winTeam)
+        {
+            StopAllCoroutines();
+            _exampleFSM.OnEndTurn -= ExampleAIFSM_OnEndTurn;
+            _btRunner.OnBehaviorFinished -= BehaviorTreeRunner_OnBehaviorFinished;
+
+            _btRunner.BehaviorTree.Traverse(_btRunner.BehaviorTree.RootNode, (n) => n.Abort());
+        }
+
+        private void Unit_OnTurnEnded()
         {
             StopAllCoroutines();
             _exampleFSM.OnEndTurn -= ExampleAIFSM_OnEndTurn;

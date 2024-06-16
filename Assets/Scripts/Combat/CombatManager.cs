@@ -53,6 +53,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         [SerializeField] TurnOrderType _turnOrderType;
         [SerializeField] private List<TeamColorData> _teamColors;
         [SerializeField] private UnitAI _unitAIPrefab;
+        [SerializeField] private float _endTurnDelay = 1f;
 
         [Header("Dependencies")]
         [SerializeField] private TacticsGrid _tacticsGrid;
@@ -65,6 +66,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public int NumberOfTeams => _teamColors.Count;
         public Unit ActiveUnit => _activeUnit;
         public bool IsInCombat => _isInCombat;
+        public bool IsCombatFinishing => _isCombatFinishing;
 
         private List<Unit> _unitsInCombat = new List<Unit>();
         private Dictionary<int, HashSet<Unit>> _unitTeams = new Dictionary<int, HashSet<Unit>>();
@@ -77,8 +79,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private Unit _activeUnit = null;
         private int _activeTeamIndex = -1;
         private bool _isAIControlledTeam = false;
-        //TODO: This is done to remove ability points after arrived for AI flow. Maybe reimplement MoveAbility so effect can be applied through that.
-        private int _moveCost = 0;
+        private float _lastEndTurnTime = 0f;
 
         private void Awake()
         {
@@ -90,7 +91,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             DontDestroyOnLoad(this.gameObject);
         }
 
-        public bool IsCombatFinishing() => _isCombatFinishing;
 
         public Color GetTeamColor(int teamIndex)
         {
@@ -236,7 +236,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void StartTurn()
         {
-            if (_isCombatFinishing) return;
             //NOTE: Ensure turn start is called before setting the active unit. This allows the turn start logic, like updating ability system stuff, to happen before OnActiveUnitChanged is fired.
             //ActiveUnitChanged enables various UI displays that depend on AbilitySystem values to be updated like ActionPoints and Cooldowns.
             if (_turnOrderType == TurnOrderType.Team)
@@ -301,8 +300,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void NextTurn()
         {
-            if (_isCombatFinishing) return;
-
             if (_turnOrderType == TurnOrderType.Team)
             {
                 _orderedUnits.Clear();
@@ -326,11 +323,37 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             }
         }
 
-        public void EndUnitTurn()
+        //For AI to cancel their turn if logic allows. AI might put in request after its turn was ended by CombatManager and is no longer the active unit so we stop it here.
+        public void RequestEndTurn(Unit unit)
+        {
+            if (_isCombatFinishing) return;
+
+            if (unit == _activeUnit)
+            {
+                if (Time.time > _lastEndTurnTime + _endTurnDelay)
+                {
+                    _lastEndTurnTime = Time.time;
+                    EndUnitTurn();
+                }
+                else
+                {
+                    Debug.LogWarning("End Turn called before delay finished. Ignoring.");
+                }
+            }
+        }
+
+        //Player can cancel their turn manually with End Turn button. We just ensure they're not somehow doing so when it's the AI's turn.
+        public void PlayerRequestEndTurn()
+        {
+            if (_activeUnit.UnitAI == null)
+                RequestEndTurn(_activeUnit);
+        }
+
+        private void EndUnitTurn()
         {
             if (_turnOrderType == TurnOrderType.Team)
             {
-                _activeUnit.TurnEnded(); //Used for timeline displays
+                _activeUnit.TurnEnded(); //Used for timeline displays and AI cancelling.
                 _orderedUnits.Remove(_activeUnit);
                 _activeUnit = null;
 
@@ -367,6 +390,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             }
         }
 
+        //This allows team unit selection from the Timeline UI bar or. (Only available during TurnOrderType.Team)
         public void SetActiveTeamUnit(Unit unit)
         {
             if (_activeUnit == unit) return;
@@ -378,6 +402,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             }
         }
 
+        //Called specifically by the end combat button on the finished combat panel
         public void EndCombat()
         {
             for (int i = 0; i < _unitsInCombat.Count; i++)
@@ -390,6 +415,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             OnCombatEnded?.Invoke();
         }
 
+        //Called by Game conditions or End Combat button.
         public void FinishCombat(int winTeamIndex)
         {
             StopAllCoroutines();
@@ -414,7 +440,14 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 return;
             }
 
-            _moveCost = pathLength <= unit.MoveRange ? -1 : -2;
+            int moveCost = pathLength <= unit.MoveRange ? -1 : -2;
+
+            AbilityEffect costEffect = new AbilityEffect();
+            costEffect.durationData.durationPolicy = EffectDurationPolicy.Instant;
+            costEffect.attribute = AttributeId.ActionPoints;
+            costEffect.magnitude = moveCost;
+
+            unit.GetComponent<IAbilitySystem>().AbilitySystem.ApplyEffect(costEffect);
 
             _tacticsGrid.RemoveUnitFromTile(unit.GridIndex);
             _tacticsGrid.AddUnitToTile(path.Last(), unit, false);
@@ -431,17 +464,10 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             unit.OnUnitReachedDestination -= Unit_OnUnitReachedDestination;
 
-            AbilityEffect costEffect = new AbilityEffect();
-            costEffect.durationData.durationPolicy = EffectDurationPolicy.Instant;
-            costEffect.attribute = AttributeId.ActionPoints;
-            costEffect.magnitude = _moveCost;
-
-            unit.GetComponent<IAbilitySystem>().AbilitySystem.ApplyEffect(costEffect);
-
             OnActionEnded?.Invoke();
 
-            if (unit.AbilitySystem.GetAttributeCurrentValue(AttributeId.ActionPoints) <= 0 && unit.UnitAI == null)
-                EndUnitTurn();
+            if (unit.AbilitySystem.GetAttributeCurrentValue(AttributeId.ActionPoints) <= 0)
+                RequestEndTurn(unit);
         }
 
         public void AddUnitToCombat(Vector3 worldPosition, Unit unit, int teamIndex = 0)
@@ -515,9 +541,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             unit.OnUnitDied -= Unit_OnUnitDied;
 
             if (_activeUnit == unit)
-            {
-                EndUnitTurn();
-            }
+                RequestEndTurn(unit);
 
             int unitTeam = unit.TeamIndex;
             RemoveUnitFromCombat(unit, shouldDestroy);
@@ -560,7 +584,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             }
         }
 
-        public bool TryActivateAbility(Ability ability, GridIndex origin, GridIndex target)
+        public bool UseAbility(Ability ability, GridIndex origin, GridIndex target)
         {
             AbilityActivationData activationData;
             activationData.tacticsGrid = _tacticsGrid;
@@ -585,14 +609,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             ability.OnAbilityEnded -= Ability_OnAbilityEnded;
             OnActionEnded?.Invoke();
 
-            if (_isCombatFinishing) return;
-
-            //We only want to call end turn on player. AI handle their own end turn logic.
-            if (ability.AbilityOwner.OwningUnit && ability.AbilityOwner.OwningUnit.UnitAI != null) return;
-
             if (ability.EndTurnOnUse || ability.AbilityOwner.GetAttributeCurrentValue(AttributeId.ActionPoints) <= 0)
             {
-                EndUnitTurn();
+                RequestEndTurn(ability.AbilityOwner.OwningUnit);
             }
         }
 
