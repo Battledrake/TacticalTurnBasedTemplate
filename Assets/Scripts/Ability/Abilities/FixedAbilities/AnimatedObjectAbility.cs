@@ -18,7 +18,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         [SerializeField] private GameObject _objectToAnimate;
         [SerializeField] private AnimateObjectTaskData _taskData;
 
-        [SerializeField] private AnimationType _animationType = AnimationType.Attack;
+        [SerializeField] private AnimationType _animationType = AnimationType.RangedAttack;
         [Tooltip("How long the animation task runs for.")]
         [SerializeField] private float _animationTime = 1f;
         [Tooltip("How fast the animation plays. 1 is default curve speed")]

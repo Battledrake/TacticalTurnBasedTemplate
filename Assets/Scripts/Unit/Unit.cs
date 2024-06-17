@@ -188,7 +188,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         {
             OnUnitReachedDestination?.Invoke(this);
 
-
             if (_tacticsGrid.GetTileDataFromIndex(_gridIndex, out TileData data))
             {
                 if (data.cover.hasCover)
@@ -364,16 +363,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         public void PlayAnimationType(AnimationType animationType)
         {
-            if(animationType == AnimationType.HalfCover || animationType == AnimationType.FullCover)
-            {
-                _unitAnimator.SetBool(animationType.ToString(), true);
-                return;
-            }
-            if(animationType == AnimationType.Run || animationType == AnimationType.Idle)
-            {
-                _unitAnimator.SetBool("HalfCover", false);
-                _unitAnimator.SetBool("FullCover", false);
-            }
             _unitAnimator.SetTrigger(animationType.ToString());
         }
     }

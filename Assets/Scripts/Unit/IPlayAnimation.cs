@@ -9,7 +9,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
     {
         Idle,
         Run,
-        Attack,
+        MeleeAttack,
+        RangedAttack,
         Cast,
         Hit,
         Death,

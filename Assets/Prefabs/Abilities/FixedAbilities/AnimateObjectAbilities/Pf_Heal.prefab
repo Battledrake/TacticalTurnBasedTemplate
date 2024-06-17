@@ -46,9 +46,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _abilityId: 6
   _icon: {fileID: 21300000, guid: e5045c4be6e250441ae670dbd004d624, type: 3}
-  _endTurnOnUse: 0
   _costEffect: {fileID: 11400000, guid: 6a24367ecd336df4b9a19351c380cb63, type: 2}
   _cooldown: 2
+  _ignoresCover: 0
+  _endTurnOnUse: 0
   _isFriendlyOnly: 1
   _usesPerCombat: -1
   _rangeData:
@@ -77,7 +78,7 @@ MonoBehaviour:
   _objectToAnimate: {fileID: 2589646638898681473, guid: 7b6c9957a7fd9fc409f49f3228983163,
     type: 3}
   _taskData: {fileID: 11400000, guid: 8fb034d5e7e38df469c098237dfd409f, type: 2}
-  _animationType: 3
+  _animationType: 4
   _animationTime: 0.75
   _animationSpeed: 1
   _loopAnimation: 0
