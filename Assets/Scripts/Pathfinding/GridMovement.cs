@@ -90,6 +90,24 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             else
             {
                 _isMoving = false;
+                if(_tacticsGrid.GetTileDataFromIndex(_prevIndex, out TileData data))
+                {
+                    if (data.cover.hasCover)
+                    {
+                        this.GetComponent<Unit>().LookAtTarget(_prevIndex + data.cover.data[0].direction);
+                        switch (data.cover.data[0].coverType)
+                        {
+                            case CoverType.None:
+                                break;
+                            case CoverType.HalfCover:
+                                this.GetComponent<Unit>().PlayAnimationType(AnimationType.HalfCover);
+                                break;
+                            case CoverType.FullCover:
+                                this.GetComponent<Unit>().PlayAnimationType(AnimationType.FullCover);
+                                break;
+                        }
+                    }
+                }
                 OnReachedDestination?.Invoke();
             }
         }

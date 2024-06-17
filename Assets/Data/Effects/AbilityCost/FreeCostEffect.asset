@@ -9,8 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: daf15654c4be21244b66be4cf75846ae, type: 3}
-  m_Name: DoubleCostEffect
+  m_Script: {fileID: 11500000, guid: b47c45ca5d3976d40ad560e309046ab9, type: 3}
+  m_Name: FreeCostEffect
   m_EditorClassIdentifier: 
   effects:
   - durationData:
@@ -20,4 +20,4 @@ MonoBehaviour:
         interval: 0
         executeImmediately: 0
     attribute: 0
-    magnitude: -2
+    magnitude: 0

@@ -37,18 +37,18 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             }
         }
 
-        public override List<RangedAbilityEffect> Effects
+        public override List<RangedGameplayEffect> Effects
         {
             get
             {
-                RangedAbilityEffect randomEffect;
+                RangedGameplayEffect randomEffect;
                 AttributeId[] attributes = Enum.GetValues(typeof(AttributeId)).Cast<AttributeId>().ToArray();
                 int randomNumber = UnityEngine.Random.Range(0, attributes.Length);
                 randomEffect.durationData = new EffectDurationData() { durationPolicy = EffectDurationPolicy.Infinite };
                 randomEffect.attribute = attributes[randomNumber];
                 randomEffect.magnitudeRange = new Vector2Int(1, 11);
 
-                return new List<RangedAbilityEffect> { randomEffect };
+                return new List<RangedGameplayEffect> { randomEffect };
             }
         }
 

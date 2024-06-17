@@ -10,7 +10,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         Health,
         MaxHealth,
         MoveRange,
-        Agility
+        Agility,
+        Aim,
+        Defense
     }
 
     [Serializable]

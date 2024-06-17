@@ -20,6 +20,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public bool ShowHeuristicCost { get => _showHeuristicCost; set => _showHeuristicCost = value; }
         public bool ShowTotalCost { get => _showTotalCost; set => _showTotalCost = value; }
         public bool ShowClimbLinks { get => _showClimbLinks; set => _showClimbLinks = value; }
+        public bool ShowCover { get => _showCover; set => _showCover = value; }
 
         private Dictionary<GridIndex, GameObject> _spawnedTexts = new Dictionary<GridIndex, GameObject>();
 
@@ -30,6 +31,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private bool _showHeuristicCost = false;
         private bool _showTotalCost = false;
         private bool _showClimbLinks = false;
+        private bool _showCover = false;
 
         private void OnEnable()
         {
@@ -51,9 +53,16 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _tacticsGrid.Pathfinder.OnPathfindingDataUpdated -= UpdateTextOnAllTiles;
         }
 
+        [ContextMenu("ShowCover")]
+        public void ContextShowCover()
+        {
+            _showCover = true;
+            UpdateDebugText();
+        }
+
         private bool ShowAnyDebug()
         {
-            return _showTileIndexes || _showTerrainCost || _showUnitOnTile || _showClimbLinks || HasPathfindingData();
+            return _showTileIndexes || _showTerrainCost || _showUnitOnTile || _showClimbLinks || _showCover || HasPathfindingData();
         }
 
         private bool HasPathfindingData()
@@ -130,6 +139,14 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                             climbText += "cl:" + tileData.climbData.climbLinks[i] + "\n";
                         }
                         debugText += climbText;
+                    }
+                }
+
+                if (_showCover)
+                {
+                    if (tileData.cover.hasCover)
+                    {
+                        debugText += "Cover";
                     }
                 }
 

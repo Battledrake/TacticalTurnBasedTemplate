@@ -13,7 +13,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public event Action<AttributeId, int, int> OnAttributeCurrentChanged;
 
         [SerializeField] private Transform _abilityInstanceContainer;
-        [SerializeField] private AbilityEffectsContainer _actionPointEffect;
+        [SerializeField] private GameplayEffectsContainer _actionPointEffect;
         public Unit OwningUnit => _owningUnit;
 
         private Dictionary<AttributeId, AttributeData> _attributes = new Dictionary<AttributeId, AttributeData>();
@@ -314,7 +314,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         /// <param name="attribute"></param>
         /// <param name="effect"></param>
         /// <returns></returns>
-        private ActiveEffect ApplyActiveEffectToSelf(AttributeId attribute, AbilityEffect effect)
+        private ActiveEffect ApplyActiveEffectToSelf(AttributeId attribute, GameplayEffect effect)
         {
             ActiveEffect newEffect = new ActiveEffect(effect.durationData.durationPolicy, attribute, effect.magnitude, effect.durationData.duration, effect.durationData.period.interval);
             if (_activeEffects.TryGetValue(attribute, out List<ActiveEffect> attributeEffects))
@@ -353,7 +353,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         /// </summary>
         /// <param name="effect"></param>
         /// <returns></returns>
-        public ActiveEffect ApplyEffect(AbilityEffect effect)
+        public ActiveEffect ApplyEffect(GameplayEffect effect)
         {
             if (effect.durationData.durationPolicy == EffectDurationPolicy.Instant)
             {

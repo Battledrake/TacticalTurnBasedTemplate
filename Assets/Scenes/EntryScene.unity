@@ -33170,6 +33170,24 @@ MonoBehaviour:
   _unitAIPrefab: {fileID: -8186604555658985836, guid: 63374a49a9f18cb438cac1c3238e829f,
     type: 3}
   _endTurnDelay: 0
+  _halfCoverEffect:
+    durationData:
+      durationPolicy: 2
+      duration: 0
+      period:
+        interval: 0
+        executeImmediately: 0
+    attribute: 6
+    magnitude: 20
+  _fullCoverEffect:
+    durationData:
+      durationPolicy: 2
+      duration: 0
+      period:
+        interval: 0
+        executeImmediately: 0
+    attribute: 6
+    magnitude: 40
   _tacticsGrid: {fileID: 825704801}
 --- !u!4 &1700013398
 Transform:

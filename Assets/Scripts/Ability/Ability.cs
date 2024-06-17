@@ -139,7 +139,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
     }
 
     [Serializable]
-    public struct RangedAbilityEffect
+    public struct RangedGameplayEffect
     {
         public EffectDurationData durationData;
         public AttributeId attribute;
@@ -147,7 +147,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
     }
 
     [Serializable]
-    public struct AbilityEffect
+    public struct GameplayEffect
     {
         public EffectDurationData durationData;
         public AttributeId attribute;
@@ -168,7 +168,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         [Tooltip("End unit's turn when ability is used, regardless of remaining action points")]
         [SerializeField] protected bool _endTurnOnUse = true;
         [Tooltip("Ability effect used to determine cost of using ability")]
-        [SerializeField] protected AbilityEffectsContainer _costEffect;
+        [SerializeField] protected GameplayEffectsContainer _costEffect;
         [Tooltip("Turns before the ability can be used again")]
         [SerializeField] protected int _cooldown;
         [Tooltip("Ability only affects same team?")]
@@ -185,7 +185,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public abstract int UsesLeft { get; }
         public abstract AbilityRangeData RangeData { get; }
         public abstract AbilityRangeData AreaOfEffectData { get; }
-        public abstract List<RangedAbilityEffect> Effects { get; }
+        public abstract List<RangedGameplayEffect> Effects { get; }
 
         protected AbilitySystem _owner;
         protected int _activeCooldown;

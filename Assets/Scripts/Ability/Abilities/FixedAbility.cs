@@ -12,7 +12,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         
         [SerializeField] protected AbilityRangeData _rangeData;
         [SerializeField] protected AbilityRangeData _areaOfEffectData;
-        [SerializeField] protected List<RangedAbilityEffect> _effects;
+        [SerializeField] protected List<RangedGameplayEffect> _effects;
 
         protected int _abilityUsesLeft = -1;
 
@@ -34,7 +34,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         public override AbilityRangeData AreaOfEffectData => _areaOfEffectData;
 
-        public override List<RangedAbilityEffect> Effects => _effects;
+        public override List<RangedGameplayEffect> Effects => _effects;
 
         public override AbilityRangeData RangeData => _rangeData;
 

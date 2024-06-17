@@ -16,6 +16,25 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         Obstacle
     }
 
+    public enum CoverType
+    {
+        None,
+        HalfCover,
+        FullCover
+    }
+
+    public struct CoverData
+    {
+        public CoverType coverType;
+        public GridIndex direction;
+    }
+
+    public struct Cover
+    {
+        public bool hasCover;
+        public List<CoverData> data;
+    }
+
     public struct ClimbData
     {
         public bool hasClimbLink;
@@ -30,6 +49,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public HashSet<TileState> tileStates;
         public Unit unitOnTile;
         public ClimbData climbData;
+        public Cover cover;
     }
 
     public class TacticsGrid : MonoBehaviour
@@ -55,12 +75,14 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public GridShape GridShape { get => _gridShape; set => _gridShape = value; }
         public bool UseEnvironment { get => _useEnvironment; set => _useEnvironment = value; }
         public GridPathfinding Pathfinder => _pathfinder;
+        public Dictionary<GridIndex, Cover> Covers => _covers;
 
         private Vector3 _gridPosition = Vector3.zero;
         private GridShape _gridShape = GridShape.Square;
 
-        private Dictionary<GridIndex, TileData> _gridTiles = new Dictionary<GridIndex, TileData>();
-        private Dictionary<TileState, HashSet<GridIndex>> _tileStateIndexes = new Dictionary<TileState, HashSet<GridIndex>>();
+        private Dictionary<GridIndex, TileData> _gridTiles = new();
+        private Dictionary<TileState, HashSet<GridIndex>> _tileStateIndexes = new();
+        private Dictionary<GridIndex, Cover> _covers = new();
 
         private void Start()
         {
@@ -361,6 +383,13 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                                     tileData.climbData.climbLinks = climbLinks;
                                 }
 
+                                Cover cover = TraceForCover(hitPosition);
+                                if (cover.hasCover)
+                                {
+                                    tileData.cover = cover;
+                                    _covers.TryAdd(tileData.index, cover);
+                                }
+
                                 tileData.tileType = tileType;
                                 instanceRotation = Quaternion.FromToRotation(Vector3.up, hitNormal) * instanceRotation;
                                 tileData.tileMatrix = Matrix4x4.TRS(hitPosition, instanceRotation, instanceScale);
@@ -382,6 +411,37 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
                 OnGridGenerated?.Invoke();
             }
+        }
+
+        private Cover TraceForCover(Vector3 originPosition)
+        {
+            GridIndex[] squareDir = new[] { new GridIndex(0, 1), new GridIndex(1, 0), new GridIndex(-1, 0), new GridIndex(0, -1) };
+            Vector3 up = Vector3.up * 0.25f;
+            LayerMask checkLayer = LayerMask.GetMask("Ground", "Obstacle");
+            Cover cover = new();
+            cover.hasCover = false;
+            cover.data = new();
+            for (int i = 0; i < squareDir.Length; i++)
+            {
+                Vector3 direction = new Vector3(squareDir[i].x, 0, squareDir[i].z);
+                float distance = _gridTileSize.x;
+                if(Physics.Raycast(originPosition + up, direction, distance, checkLayer))
+                {
+                    if (!cover.hasCover)
+                        cover.hasCover = true;
+
+                    CoverData coverData = new();
+                    coverData.direction = squareDir[i];
+                    coverData.coverType = CoverType.HalfCover;
+
+                    if(Physics.Raycast(originPosition + Vector3.up * 1.75f, direction, distance, checkLayer))
+                    {
+                        coverData.coverType = CoverType.FullCover;
+                    }
+                    cover.data.Add(coverData);
+                }
+            }
+            return cover;
         }
 
         private List<GridIndex> TraceForClimbLinks(GridIndex origin, Vector3 originPosition)

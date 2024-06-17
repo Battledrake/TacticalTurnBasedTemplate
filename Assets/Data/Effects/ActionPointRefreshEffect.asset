@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: daf15654c4be21244b66be4cf75846ae, type: 3}
+  m_Script: {fileID: 11500000, guid: b47c45ca5d3976d40ad560e309046ab9, type: 3}
   m_Name: ActionPointRefreshEffect
   m_EditorClassIdentifier: 
   effects:

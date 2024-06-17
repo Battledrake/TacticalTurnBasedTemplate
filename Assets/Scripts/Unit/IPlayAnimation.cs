@@ -13,7 +13,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         Cast,
         Hit,
         Death,
-        Respawn
+        Respawn,
+        HalfCover,
+        FullCover
     }
 
     public interface IPlayAnimation

@@ -36,11 +36,11 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             }
         }
 
-        public override List<RangedAbilityEffect> Effects => new List<RangedAbilityEffect>();
+        public override List<RangedGameplayEffect> Effects => new List<RangedGameplayEffect>();
 
         protected override void CommitAbility()
         {
-            AbilityEffect moveCostEffect =  _costEffect.effects[_moveCost];
+            GameplayEffect moveCostEffect =  _costEffect.effects[_moveCost];
             _owner.ApplyEffect(moveCostEffect); 
         }
 

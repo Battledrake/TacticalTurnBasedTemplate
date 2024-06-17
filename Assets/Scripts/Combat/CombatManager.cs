@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEditor.Experimental.GraphView;
+using UnityEditor.ShaderGraph.Internal;
 using UnityEngine;
 
 namespace BattleDrakeCreations.TacticalTurnBasedTemplate
@@ -54,6 +55,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         [SerializeField] private List<TeamColorData> _teamColors;
         [SerializeField] private UnitAI _unitAIPrefab;
         [SerializeField] private float _endTurnDelay = 1f;
+
+        [SerializeField] private GameplayEffect _halfCoverEffect;
+        [SerializeField] private GameplayEffect _fullCoverEffect;
 
         [Header("Dependencies")]
         [SerializeField] private TacticsGrid _tacticsGrid;
@@ -442,7 +446,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
             int moveCost = pathLength <= unit.MoveRange ? -1 : -2;
 
-            AbilityEffect costEffect = new AbilityEffect();
+            GameplayEffect costEffect = new GameplayEffect();
             costEffect.durationData.durationPolicy = EffectDurationPolicy.Instant;
             costEffect.attribute = AttributeId.ActionPoints;
             costEffect.magnitude = moveCost;
@@ -615,7 +619,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             }
         }
 
-        public void ApplyEffectsToTarget(AbilitySystem instigator, AbilitySystem receiver, List<RangedAbilityEffect> effectsToApply)
+        public void ApplyEffectsToTarget(AbilitySystem instigator, AbilitySystem receiver, List<RangedGameplayEffect> effectsToApply)
         {
             if (receiver == null)
                 return;
@@ -623,10 +627,19 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             //bool didHit = UnityEngine.Random.Range(0f, 1f) <= 0.85f;
             bool didHit = true;
 
-            List<AbilityEffect> effectsRealList = new List<AbilityEffect>();
+            GameplayEffect coverEffect = CalculateCoverEffect(instigator, receiver);
+            if(coverEffect.magnitude != 0)
+            {
+                float instigatorAim = instigator.GetAttributeCurrentValue(AttributeId.Aim);
+                float receiverDefense = instigator.GetAttributeCurrentValue(AttributeId.Defense) + coverEffect.magnitude;
+
+                didHit = UnityEngine.Random.Range(0f, 100f) <= instigatorAim - receiverDefense;
+            }
+
+            List<GameplayEffect> effectsRealList = new List<GameplayEffect>();
             for (int i = 0; i < effectsToApply.Count; i++)
             {
-                AbilityEffect effectReal;
+                GameplayEffect effectReal;
                 effectReal.durationData = effectsToApply[i].durationData;
                 effectReal.attribute = effectsToApply[i].attribute;
                 effectReal.magnitude = didHit ? StaticUtilities.MinMaxRandom(effectsToApply[i].magnitudeRange) : 0;
@@ -636,6 +649,50 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             {
                 receiver.ApplyEffect(effectsRealList[i]);
             }
+        }
+
+        private GameplayEffect CalculateCoverEffect(AbilitySystem instigator, AbilitySystem receiver)
+        {
+            if (receiver.OwningUnit)
+            {
+                _tacticsGrid.GetTileDataFromIndex(receiver.OwningUnit.GridIndex, out TileData receiverTile);
+                if (!receiverTile.cover.hasCover)
+                    return default;
+
+                if (!instigator.OwningUnit)
+                    return default;
+
+                _tacticsGrid.GetTileDataFromIndex(instigator.OwningUnit.GridIndex, out TileData instigatorTile);
+
+                GridIndex direction = instigatorTile.index - receiverTile.index;
+                float angle = Mathf.Atan2(direction.z, direction.x);
+                float angleToDegrees = angle * 180 / Mathf.PI;
+
+                GridIndex directionOfAttack = ConvertDegreesToDirection(angleToDegrees);
+
+                for(int i = 0; i < receiverTile.cover.data.Count; i++)
+                {
+                    if (receiverTile.cover.data[i].direction == directionOfAttack)
+                    {
+                        return _fullCoverEffect;
+                    }
+                }
+            }
+            return default;
+        }
+
+        private GridIndex ConvertDegreesToDirection(float degrees)
+        {
+            if (degrees >= 45f && degrees <= 135f)
+                return new GridIndex(0, 1);
+            if (degrees >= 135f && degrees <= 180f || degrees >= -180f && degrees <= -135f)
+                return new GridIndex(-1, 0);
+            if (degrees <= 45f && degrees >= -45f)
+                return new GridIndex(1, 0);
+            if (degrees <= -45f && degrees >= -135f)
+                return new GridIndex(0, -1);
+
+            return GridIndex.Invalid();
         }
 
         public bool IsValidTileForUnit(Unit unit, GridIndex index)
