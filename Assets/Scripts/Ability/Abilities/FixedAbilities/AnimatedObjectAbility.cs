@@ -96,7 +96,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 return;
             }
 
-            CombatManager.Instance.ApplyEffectsToTarget(_owner, receiver, _effects);
+            CombatManager.Instance.ApplyAbilityEffectsToTarget(_owner, receiver, this);
         }
 
         private void AnimateObjectTask_OnInitialAnimationComplete(AnimateObjectTask task, AbilityActivationData activationData)
@@ -112,11 +112,11 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 activationData.tacticsGrid.GetTileDataFromIndex(aoeIndexes[i], out TileData tileData);
                 if (tileData.unitOnTile)
                 {
-                    AbilitySystem receiver = tileData.unitOnTile.GetComponent<IAbilitySystem>().AbilitySystem;
+                    AbilitySystem receiver = tileData.unitOnTile.AbilitySystem;
                     if (!task.HitUnits.Contains(receiver))
                     {
                         Debug.LogWarning($"Unit at {tileData.index} missed by ability collision. Applying late effect");
-                        CombatManager.Instance.ApplyEffectsToTarget(_owner, receiver, _effects);
+                        CombatManager.Instance.ApplyAbilityEffectsToTarget(_owner, receiver, this);
                     }
                 }
             }

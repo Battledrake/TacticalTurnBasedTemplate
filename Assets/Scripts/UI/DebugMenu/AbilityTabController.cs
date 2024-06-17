@@ -10,7 +10,7 @@ using UnityEngine.UI;
 namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 {
     [RequireComponent(typeof(AbilitySystem))]
-    public class AbilityTabController : MonoBehaviour, IAbilitySystem
+    public class AbilityTabController : MonoBehaviour
     {
         [SerializeField] private List<AbilityId> _debugAbilities;
 

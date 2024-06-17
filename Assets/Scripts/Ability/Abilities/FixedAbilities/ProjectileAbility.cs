@@ -71,7 +71,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 return;
             }
 
-            CombatManager.Instance.ApplyEffectsToTarget(_owner, receiver, _effects);
+            CombatManager.Instance.ApplyAbilityEffectsToTarget(_owner, receiver, this);
         }
 
         private void AnimateObjectTask_OnInitialAnimationCompleted(AnimateObjectTask animateObjectTask, AbilityActivationData activateData)
@@ -86,10 +86,10 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 activateData.tacticsGrid.GetTileDataFromIndex(aoeIndexes[i], out TileData tileData);
                 if (tileData.unitOnTile)
                 {
-                    AbilitySystem receiver = tileData.unitOnTile.GetComponent<IAbilitySystem>().AbilitySystem;
+                    AbilitySystem receiver = tileData.unitOnTile.AbilitySystem;
                     if (!animateObjectTask.HitUnits.Contains(receiver))
                     {
-                        CombatManager.Instance.ApplyEffectsToTarget(_owner, receiver, _effects);
+                        CombatManager.Instance.ApplyAbilityEffectsToTarget(_owner, receiver, this);
                     }
                 }
             }

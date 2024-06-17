@@ -85,9 +85,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void OnTriggerEnter(Collider other)
         {
-            if (other.GetComponent<IAbilitySystem>() == null) return;
+            if (other.GetComponent<AbilitySystem>() == null) return;
 
-            AbilitySystem hitUnit = other.GetComponent<IAbilitySystem>().AbilitySystem;
+            AbilitySystem hitUnit = other.GetComponent<AbilitySystem>();
             if (hitUnit != null)
             {
                 if (!_hitUnits.Contains(hitUnit))

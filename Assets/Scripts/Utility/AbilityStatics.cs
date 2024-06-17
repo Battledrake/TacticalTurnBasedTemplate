@@ -36,7 +36,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                     if (offsetDistance > 0)
                     {
                         //Offset distances are scaled from 0 to 1, reflecting percentage from center to edge. We math that here.
-                        float relativeDistance = (abilityUnit.TacticsGrid.TileSize.x / 2) * offsetDistance;
+                        float relativeDistance = (originData.tileMatrix.lossyScale.x / 2) * offsetDistance;
                         Vector2[] offsets = new Vector2[]
                         {
                         new Vector2(-relativeDistance, 0f),

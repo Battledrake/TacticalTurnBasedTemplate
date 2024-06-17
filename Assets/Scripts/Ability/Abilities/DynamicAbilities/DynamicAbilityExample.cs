@@ -63,22 +63,22 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             if (originData.unitOnTile && targetData.unitOnTile)
             {
                 int random = UnityEngine.Random.Range(0, 2);
-                receiver = random == 0 ? originData.unitOnTile.GetComponent<IAbilitySystem>().AbilitySystem : targetData.unitOnTile.GetComponent<IAbilitySystem>().AbilitySystem;
+                receiver = random == 0 ? originData.unitOnTile.AbilitySystem : targetData.unitOnTile.AbilitySystem;
             }
             else if (originData.unitOnTile)
             {
-                receiver = originData.unitOnTile.GetComponent<IAbilitySystem>().AbilitySystem;
+                receiver = originData.unitOnTile.AbilitySystem;
             }
             else if(targetData.unitOnTile)
             {
-                receiver = targetData.unitOnTile.GetComponent<IAbilitySystem>().AbilitySystem;
+                receiver = targetData.unitOnTile.AbilitySystem;
             }
             else
             {
                 receiver = _owner;
             }
 
-            CombatManager.Instance.ApplyEffectsToTarget(_owner, receiver, Effects);
+            CombatManager.Instance.ApplyAbilityEffectsToTarget(_owner, receiver, this);
 
             EndAbility();
         }

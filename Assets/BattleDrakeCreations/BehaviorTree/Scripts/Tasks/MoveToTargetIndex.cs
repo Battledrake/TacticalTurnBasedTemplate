@@ -70,7 +70,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate.BehaviorTree
             }
             else
             {
-                UnityEngine.Debug.Log("Uh... the PathResult failed?");
                 return NodeResult.Failed;
             }
 

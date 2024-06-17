@@ -138,6 +138,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public bool executeImmediately;
     }
 
+    /// <summary>
+    /// A Gameplay Effect with a ranged magnitude. Random value is selected between minmax during application
+    /// </summary>
     [Serializable]
     public struct RangedGameplayEffect
     {
@@ -146,6 +149,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public Vector2Int magnitudeRange;
     }
 
+    /// <summary>
+    /// Standard Gameplay Effect with a single attribute and magnitude. Applied to ability system attributes.
+    /// </summary>
     [Serializable]
     public struct GameplayEffect
     {
@@ -165,20 +171,24 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         [SerializeField] protected Sprite _icon;
 
         [Header("Ability Attributes")]
-        [Tooltip("End unit's turn when ability is used, regardless of remaining action points")]
-        [SerializeField] protected bool _endTurnOnUse = true;
         [Tooltip("Ability effect used to determine cost of using ability")]
         [SerializeField] protected GameplayEffectsContainer _costEffect;
         [Tooltip("Turns before the ability can be used again")]
         [SerializeField] protected int _cooldown;
+        [Tooltip("Determines whether cover defense applies during effect application")]
+        [SerializeField] protected bool _ignoresCover = false;
+        [Tooltip("End unit's turn when ability is used, regardless of remaining action points")]
+        [SerializeField] protected bool _endTurnOnUse = true;
         [Tooltip("Ability only affects same team?")]
         [SerializeField] protected bool _isFriendlyOnly = false;
+
+
         public string Name => _abilityId.ToString();
         public Sprite Icon => _icon;
-
         public AbilityId AbilityId => _abilityId;
         public AbilitySystem AbilityOwner => _owner;
         public int ActiveCooldown => _activeCooldown;
+        public bool IgnoresCover => _ignoresCover;
         public bool EndTurnOnUse => _endTurnOnUse;
         public bool IsFriendlyOnly => _isFriendlyOnly;
         public int ActionPointCost => Mathf.Abs(_costEffect.effects.FirstOrDefault(effect => effect.attribute == AttributeId.ActionPoints).magnitude);

@@ -23,4 +23,4 @@ MonoBehaviour:
     type: 3}
   scriptTemplateDecoratorNode: {fileID: 4900000, guid: be0a8a8d0e600d146b107367c78b7d8b,
     type: 3}
-  newNodeBasePath: Assets/_ThirdParty/BattleDrakeCreations/BehaviorTree/Scripts/
+  newNodeBasePath: Assets/BattleDrakeCreations/BehaviorTree/Scripts/

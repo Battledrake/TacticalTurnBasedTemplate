@@ -16,14 +16,12 @@ namespace BattleDrakeCreations.BehaviorTree
             }
             else
             {
-                Debug.Log("What?");
                 return NodeResult.Failed;
             }
         }
 
         protected override void OnStart()
         {
-            _result = NodeResult.Running;
         }
 
         protected override void OnStop()

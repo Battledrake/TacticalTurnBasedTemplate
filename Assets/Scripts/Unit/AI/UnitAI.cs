@@ -46,7 +46,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _unit = this.GetComponentInParent<Unit>();
             _gridMovement = _unit.GridMovement;
             _tacticsGrid = _unit.TacticsGrid;
-            _abilitySystem = this.GetComponentInParent<IAbilitySystem>().AbilitySystem;
+            _abilitySystem = _unit.AbilitySystem;
 
             _unit.OnTurnEnded += Unit_OnTurnEnded;
             CombatManager.Instance.OnCombatFinishing += CombatManager_OnCombatFinishing;

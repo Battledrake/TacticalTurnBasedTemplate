@@ -315,7 +315,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 OrderUnitsByTeam();
 
                 _isAIControlledTeam = _orderedUnits[0].UnitAI != null;
-                Debug.Log($"Team: {_activeTeamIndex}, IsAI?: {_isAIControlledTeam}");
                 OnActiveTeamChanged?.Invoke();
             }
             //Temporary as starting next turns too fast feels bad.
@@ -451,7 +450,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             costEffect.attribute = AttributeId.ActionPoints;
             costEffect.magnitude = moveCost;
 
-            unit.GetComponent<IAbilitySystem>().AbilitySystem.ApplyEffect(costEffect);
+            unit.AbilitySystem.ApplyEffect(costEffect);
 
             _tacticsGrid.RemoveUnitFromTile(unit.GridIndex);
             _tacticsGrid.AddUnitToTile(path.Last(), unit, false);
@@ -619,36 +618,55 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             }
         }
 
-        public void ApplyEffectsToTarget(AbilitySystem instigator, AbilitySystem receiver, List<RangedGameplayEffect> effectsToApply)
+        public void ApplyAbilityEffectsToTarget(AbilitySystem instigator, AbilitySystem receiver, Ability ability)
         {
             if (receiver == null)
                 return;
 
-            //bool didHit = UnityEngine.Random.Range(0f, 1f) <= 0.85f;
             bool didHit = true;
 
-            GameplayEffect coverEffect = CalculateCoverEffect(instigator, receiver);
-            if(coverEffect.magnitude != 0)
+            if (!ability.IgnoresCover)
             {
-                float instigatorAim = instigator.GetAttributeCurrentValue(AttributeId.Aim);
-                float receiverDefense = instigator.GetAttributeCurrentValue(AttributeId.Defense) + coverEffect.magnitude;
+                GameplayEffect coverEffect = CalculateCoverEffect(instigator, receiver);
+                if (coverEffect.magnitude != 0)
+                {
+                    int instigatorAim = instigator.GetAttributeCurrentValue(AttributeId.Aim);
+                    int receiverDefense = instigator.GetAttributeCurrentValue(AttributeId.Defense) + coverEffect.magnitude;
 
-                didHit = UnityEngine.Random.Range(0f, 100f) <= instigatorAim - receiverDefense;
+                    float random = UnityEngine.Random.Range(0f, 100f);
+                    int hitChance = instigatorAim - receiverDefense;
+                    didHit = random <= hitChance;
+                    Debug.Log($"HitChance: {hitChance}, Rolled: {random}");
+                }
             }
 
-            List<GameplayEffect> effectsRealList = new List<GameplayEffect>();
-            for (int i = 0; i < effectsToApply.Count; i++)
+            if (!didHit)
             {
-                GameplayEffect effectReal;
-                effectReal.durationData = effectsToApply[i].durationData;
-                effectReal.attribute = effectsToApply[i].attribute;
-                effectReal.magnitude = didHit ? StaticUtilities.MinMaxRandom(effectsToApply[i].magnitudeRange) : 0;
-                effectsRealList.Add(effectReal);
+                Debug.Log("Missed!");
+                return;
             }
+
+
+            List<GameplayEffect> effectsRealList = ConvertRangedEffectsToSingleMagnitudes(ability.Effects);
+
             for (int i = 0; i < effectsRealList.Count; i++)
             {
                 receiver.ApplyEffect(effectsRealList[i]);
             }
+        }
+
+        private List<GameplayEffect> ConvertRangedEffectsToSingleMagnitudes(List<RangedGameplayEffect> rangedEffects)
+        {
+            List<GameplayEffect> convertedEffects = new List<GameplayEffect>();
+            for (int i = 0; i < rangedEffects.Count; i++)
+            {
+                GameplayEffect effectReal;
+                effectReal.durationData = rangedEffects[i].durationData;
+                effectReal.attribute = rangedEffects[i].attribute;
+                effectReal.magnitude = StaticUtilities.MinMaxRandom(rangedEffects[i].magnitudeRange);
+                convertedEffects.Add(effectReal);
+            }
+            return convertedEffects;
         }
 
         private GameplayEffect CalculateCoverEffect(AbilitySystem instigator, AbilitySystem receiver)
@@ -674,14 +692,21 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 {
                     if (receiverTile.cover.data[i].direction == directionOfAttack)
                     {
-                        return _fullCoverEffect;
+                        Debug.Log($"CoverDirection: {receiverTile.cover.data[i].direction}, AttackDirection: {directionOfAttack}, CoverType: {receiverTile.cover.data[i].coverType}");
+                        switch (receiverTile.cover.data[i].coverType)
+                        {
+                            case CoverType.HalfCover:
+                                return _halfCoverEffect;
+                            case CoverType.FullCover:
+                                return _fullCoverEffect;
+                        }
                     }
                 }
             }
             return default;
         }
 
-        private GridIndex ConvertDegreesToDirection(float degrees)
+        public static GridIndex ConvertDegreesToDirection(float degrees)
         {
             if (degrees >= 45f && degrees <= 135f)
                 return new GridIndex(0, 1);

@@ -38,7 +38,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             if (unit == null)
                 return;
 
-            _abilitySystem = unit.GetComponent<IAbilitySystem>().AbilitySystem;
+            _abilitySystem = unit.AbilitySystem;
 
             if(_abilitySystem != null)
             {

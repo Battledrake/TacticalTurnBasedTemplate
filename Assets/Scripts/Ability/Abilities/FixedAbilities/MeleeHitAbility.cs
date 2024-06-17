@@ -52,7 +52,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             {
                 activationData.tacticsGrid.GetTileDataFromIndex(activationData.targetIndex, out TileData targetData);
                 if (targetData.unitOnTile)
-                    CombatManager.Instance.ApplyEffectsToTarget(_owner, targetData.unitOnTile.GetComponent<IAbilitySystem>().AbilitySystem, _effects);
+                    CombatManager.Instance.ApplyAbilityEffectsToTarget(_owner, targetData.unitOnTile.AbilitySystem, this);
             }
             _attackedUnit = null;
 
@@ -73,7 +73,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             activationData.tacticsGrid.GetTileDataFromIndex(activationData.targetIndex, out TileData targetData);
             if (targetData.unitOnTile)
             {
-                CombatManager.Instance.ApplyEffectsToTarget(_owner, targetData.unitOnTile.GetComponent<IAbilitySystem>().AbilitySystem, _effects);
+                CombatManager.Instance.ApplyAbilityEffectsToTarget(_owner, targetData.unitOnTile.AbilitySystem, this);
                 _attackedUnit = targetData.unitOnTile;
             }
 

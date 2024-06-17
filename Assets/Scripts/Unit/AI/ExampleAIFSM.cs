@@ -61,7 +61,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _unit = this.GetComponentInParent<Unit>();
             _gridMovement = _unit.GridMovement;
             _tacticsGrid = _unit.TacticsGrid;
-            _abilitySystem = this.GetComponentInParent<IAbilitySystem>().AbilitySystem;
+            _abilitySystem = _unit.AbilitySystem;
 
             for (int i = 0; i < _aiStateVisualLinkers.Count; i++)
             {
@@ -282,7 +282,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             HashSet<Unit> playerUnits = CombatManager.Instance.UnitTeams[0];
             if (playerUnits.Count == 0)
             {
-                Debug.Log("No enemies");
+                Debug.LogWarning("No enemies");
                 MakeDecision(AIState.FindTargetUnit, false);
                 return;
             }

@@ -87,7 +87,7 @@ MonoBehaviour:
   _lookAtTransform: {fileID: 5103970465332394775}
   _hoverColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
   _selectedColor: {r: 0, g: 1, b: 0, a: 1}
-  _isImmortal: 1
+  _isImmortal: 0
 --- !u!136 &4921305674626554649
 CapsuleCollider:
   m_ObjectHideFlags: 0

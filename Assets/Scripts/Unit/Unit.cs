@@ -8,7 +8,7 @@ using BattleDrakeCreations.BehaviorTree;
 namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 {
     [RequireComponent(typeof(GridMovement), typeof(HealthVisual), typeof(AbilitySystem))]
-    public class Unit : MonoBehaviour, IPlayAnimation, IAbilitySystem, IHealthVisual
+    public class Unit : MonoBehaviour, IPlayAnimation, IHealthVisual
     {
         public static event Action<Unit, GridIndex> OnAnyUnitReachedNewTile;
         public static event Action<Unit> OnAnyUnitDied;
@@ -187,6 +187,27 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private void GridMovement_OnReachedDestination()
         {
             OnUnitReachedDestination?.Invoke(this);
+
+
+            if (_tacticsGrid.GetTileDataFromIndex(_gridIndex, out TileData data))
+            {
+                if (data.cover.hasCover)
+                {
+                    LookAtTarget(_gridIndex + data.cover.data[0].direction);
+                    switch (data.cover.data[0].coverType)
+                    {
+                        case CoverType.None:
+                            Debug.LogWarning("Something went wrong");
+                            break;
+                        case CoverType.HalfCover:
+                            PlayAnimationType(AnimationType.HalfCover);
+                            break;
+                        case CoverType.FullCover:
+                            PlayAnimationType(AnimationType.FullCover);
+                            break;
+                    }
+                }
+            }
             _unitAnimator.SetTrigger(AnimationType.Idle.ToString());
         }
 
@@ -326,7 +347,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         public void Die(bool shouldDestroy = false)
         {
-            Debug.Log("I dwied");
             _isAlive = false;
             _gridMovement.Stop();
             _collider.enabled = false;
@@ -344,6 +364,16 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         public void PlayAnimationType(AnimationType animationType)
         {
+            if(animationType == AnimationType.HalfCover || animationType == AnimationType.FullCover)
+            {
+                _unitAnimator.SetBool(animationType.ToString(), true);
+                return;
+            }
+            if(animationType == AnimationType.Run || animationType == AnimationType.Idle)
+            {
+                _unitAnimator.SetBool("HalfCover", false);
+                _unitAnimator.SetBool("FullCover", false);
+            }
             _unitAnimator.SetTrigger(animationType.ToString());
         }
     }

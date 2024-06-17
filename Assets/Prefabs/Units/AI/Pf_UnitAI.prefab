@@ -299,7 +299,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a19b12cb5918cdf4cab03782c350c67f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _aiLogic: 0
+  _aiLogic: 1
 --- !u!114 &6728330543466200128
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -325,7 +325,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _behaviorTree: {fileID: 11400000, guid: 8eb9dbb2c25effe43a8495285e498ee8, type: 2}
-  _delayBetweenEvaluations: 0
+  _delayBetweenEvaluations: 2
 --- !u!114 &-5438962426130934536
 MonoBehaviour:
   m_ObjectHideFlags: 0

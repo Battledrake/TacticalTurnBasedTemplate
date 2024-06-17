@@ -14203,7 +14203,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 676821037}
   m_HandleRect: {fileID: 676821035}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -16833,7 +16833,7 @@ Transform:
   m_GameObject: {fileID: 825704798}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -20, y: 0, z: -20}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

@@ -416,7 +416,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private Cover TraceForCover(Vector3 originPosition)
         {
             GridIndex[] squareDir = new[] { new GridIndex(0, 1), new GridIndex(1, 0), new GridIndex(-1, 0), new GridIndex(0, -1) };
-            Vector3 up = Vector3.up * 0.25f;
+            Vector3 up = Vector3.up * 0.5f;
             LayerMask checkLayer = LayerMask.GetMask("Ground", "Obstacle");
             Cover cover = new();
             cover.hasCover = false;
