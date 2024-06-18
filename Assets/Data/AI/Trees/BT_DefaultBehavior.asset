@@ -27,7 +27,7 @@ MonoBehaviour:
   m_Name: WaitWhileMoving
   m_EditorClassIdentifier: 
   _guid: 17430c5171fdd4d48bd9b03a17c445fd
-  _position: {x: 334.0001, y: 291.00006}
+  _position: {x: 331, y: 290.99997}
 --- !u!114 &-8031563991832058835
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -41,9 +41,11 @@ MonoBehaviour:
   m_Name: Sequencer
   m_EditorClassIdentifier: 
   _guid: d8bc2fb9ba25aee428415ac160e57484
-  _position: {x: 782, y: 586}
-  _children: []
---- !u!114 &-4571786866675485511
+  _position: {x: 797.72455, y: 589.99994}
+  _children:
+  - {fileID: 7575327354453547856}
+  - {fileID: 1374561179146575157}
+--- !u!114 &-6833046816165145691
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -55,12 +57,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc5fa40dd172f964a91d30ab2ed8b3a1, type: 3}
   m_Name: Selector
   m_EditorClassIdentifier: 
-  _guid: b50dbde4eb1e24a498d84d8067b75325
-  _position: {x: 150.00009, y: 438.2001}
+  _guid: 4c87b8c38c0804348bb026cd1bb16ffd
+  _position: {x: 155, y: 435.09753}
   _children:
   - {fileID: 3740672742597052486}
   - {fileID: -2822788610660678761}
-  - {fileID: 7575327354453547856}
+  - {fileID: -8031563991832058835}
 --- !u!114 &-4149828485500814706
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -88,7 +90,7 @@ MonoBehaviour:
   m_Name: SetActiveAbility
   m_EditorClassIdentifier: 
   _guid: 3d10b44ed4fd1db429c550bb399c79ca
-  _position: {x: -63.500225, y: 291.00006}
+  _position: {x: -63, y: 306.74103}
   _abilityId: 0
   _giveAbility: 0
 --- !u!114 &-2822788610660678761
@@ -104,7 +106,7 @@ MonoBehaviour:
   m_Name: Sequencer
   m_EditorClassIdentifier: 
   _guid: 52afc3b837c7d6a4f8ac78729be8fa52
-  _position: {x: 273.3258, y: 590}
+  _position: {x: 305.00003, y: 590}
   _children:
   - {fileID: -1697669155188219188}
   - {fileID: 336857963557412758}
@@ -122,6 +124,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _guid: 48ad9044bbc1fb44bac15133e145d9a0
   _position: {x: 155.32578, y: 752}
+  _coverDirDotTolerance: 0.25
 --- !u!114 &-57695803798444388
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -162,7 +165,6 @@ MonoBehaviour:
   - {fileID: -1697669155188219188}
   - {fileID: 3740672742597052486}
   - {fileID: -9078293943240580945}
-  - {fileID: -4571786866675485511}
   - {fileID: -2822788610660678761}
   - {fileID: 336857963557412758}
   - {fileID: -57695803798444388}
@@ -171,6 +173,7 @@ MonoBehaviour:
   - {fileID: -8734193344510327752}
   - {fileID: 1374561179146575157}
   - {fileID: -8031563991832058835}
+  - {fileID: -6833046816165145691}
 --- !u!114 &336857963557412758
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -198,7 +201,7 @@ MonoBehaviour:
   m_Name: MoveToTargetIndex
   m_EditorClassIdentifier: 
   _guid: 0b443267b1edc8048ab8bff7d95f9a88
-  _position: {x: 818, y: 712}
+  _position: {x: 872.72455, y: 748.9999}
 --- !u!114 &1411388301814986295
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -246,7 +249,7 @@ MonoBehaviour:
   m_Name: IsInAbilityRange
   m_EditorClassIdentifier: 
   _guid: 89fa04fe255b57b4e9542cd7a5d79b79
-  _position: {x: -71.45002, y: 604.0001}
+  _position: {x: -70.999985, y: 590}
   _child: {fileID: -57695803798444388}
   _isSet: 0
 --- !u!114 &5747418977629169879
@@ -263,7 +266,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _guid: 13c6b04938f3bec4797d38610b5b2c14
   _position: {x: 150.00005, y: 291.00006}
-  _child: {fileID: -4571786866675485511}
+  _child: {fileID: -6833046816165145691}
 --- !u!114 &7575327354453547856
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -277,7 +280,7 @@ MonoBehaviour:
   m_Name: FindNearestIndex
   m_EditorClassIdentifier: 
   _guid: 97bb4dd1a2f7ee24fb98586290620b1c
-  _position: {x: 582, y: 712}
+  _position: {x: 621.72455, y: 748.9999}
 --- !u!114 &8053059767221403373
 MonoBehaviour:
   m_ObjectHideFlags: 0

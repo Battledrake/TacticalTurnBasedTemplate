@@ -692,7 +692,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 {
                     if (receiverTile.cover.data[i].direction == directionOfAttack)
                     {
-                        Debug.Log($"CoverDirection: {receiverTile.cover.data[i].direction}, AttackDirection: {directionOfAttack}, CoverType: {receiverTile.cover.data[i].coverType}");
                         switch (receiverTile.cover.data[i].coverType)
                         {
                             case CoverType.HalfCover:

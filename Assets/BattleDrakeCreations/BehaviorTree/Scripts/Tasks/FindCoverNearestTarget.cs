@@ -48,7 +48,6 @@ public class FindCoverNearestTarget : TaskNode
             Vector3 coverPosition = coverTile.tileMatrix.GetPosition();
             float distanceFromAI = PathfindingStatics.GetDiagonalDistance(_agent.Unit.GridIndex, coverPair.Key);
             float distanceFromTarget = PathfindingStatics.GetDiagonalDistance(targetUnit.GridIndex, coverPair.Key);
-            Debug.Log($"DistanceFromAI: {distanceFromAI}, DistanceFromTarget: {distanceFromTarget}");
 
             if (distanceFromAI > maxTravelDistance) 
                 continue;

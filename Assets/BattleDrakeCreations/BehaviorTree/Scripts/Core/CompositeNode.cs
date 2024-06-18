@@ -10,8 +10,7 @@ namespace BattleDrakeCreations.BehaviorTree
 
         public List<BTNode> Children { get => _children; }
 
-        [HideInInspector]
-        [SerializeField] protected List<BTNode> _children = new List<BTNode>();
+        [HideInInspector][SerializeField] protected List<BTNode> _children = new List<BTNode>();
 
         public void AddChild(BTNode childToAdd)
         {

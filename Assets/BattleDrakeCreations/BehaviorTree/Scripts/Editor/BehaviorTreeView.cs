@@ -160,6 +160,8 @@ namespace BattleDrakeCreations.BehaviorTree
                     view.SortChildren();
                 });
             }
+            EditorUtility.SetDirty(_treeAsset);
+            AssetDatabase.SaveAssets();
 
             return graphViewChange;
         }

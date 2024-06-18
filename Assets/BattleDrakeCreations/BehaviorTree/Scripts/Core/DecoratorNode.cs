@@ -16,7 +16,6 @@ namespace BattleDrakeCreations.BehaviorTree
 
         public BTNode Child { get => _child; set => _child = value; }
 
-
         [HideInInspector][SerializeField] protected BTNode _child;
 
         public override BTNode Clone()
