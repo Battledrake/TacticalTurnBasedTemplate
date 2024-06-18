@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting.Antlr3.Runtime.Tree;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
@@ -51,8 +50,6 @@ namespace BattleDrakeCreations.BehaviorTree
             new ScriptTemplate{ templateFile=BehaviorTreeSettings.GetOrCreateSettings().scriptTemplateCompositeNode, defaultFileName="NewCompositeNode.cs", subFolder="Composites" },
             new ScriptTemplate{ templateFile=BehaviorTreeSettings.GetOrCreateSettings().scriptTemplateDecoratorNode, defaultFileName="NewDecoratorNode.cs", subFolder="Decorators" },
         };
-
-
         private void Undo_UndORedoPerformed()
         {
             PopulateView(_treeAsset);
@@ -221,11 +218,12 @@ namespace BattleDrakeCreations.BehaviorTree
             CreateNodeView(node);
         }
 
-        private void CreateNodeView(BTNode node)
+        public BTNodeView CreateNodeView(BTNode node)
         {
             BTNodeView nodeView = new BTNodeView(node, _settings.nodeXml);
             nodeView.OnNodeSelected = OnNodeSelected;
             AddElement(nodeView);
+            return nodeView;
         }
 
         public void UpdateNodeVisuals()

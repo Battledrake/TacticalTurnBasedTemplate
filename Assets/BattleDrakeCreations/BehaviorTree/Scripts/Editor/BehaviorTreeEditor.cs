@@ -4,6 +4,7 @@ using UnityEngine.UIElements;
 using UnityEditor.Callbacks;
 using UnityEditor.UIElements;
 using System.Collections.Generic;
+using UnityEditor.Experimental.GraphView;
 
 namespace BattleDrakeCreations.BehaviorTree
 {
@@ -21,6 +22,9 @@ namespace BattleDrakeCreations.BehaviorTree
         private Button _createNewTreeButton;
         private Button _cancelNewTreeButton;
         private VisualElement _newTreeOverlay;
+
+        private HashSet<ISelectable> _clipboardNodes = new();
+        private Vector2 _localMousePosition = new();
 
         [MenuItem("BattleDrakeCreations/Behavior Tree Editor")]
         public static void OpenWindow()
@@ -85,6 +89,9 @@ namespace BattleDrakeCreations.BehaviorTree
             // Each editor window contains a root VisualElement object
             VisualElement root = rootVisualElement;
 
+            root.RegisterCallback<KeyDownEvent>(evt => HandleCopyPasteKeyPresses(evt));
+            root.RegisterCallback<MouseMoveEvent>(evt => _localMousePosition = evt.localMousePosition);
+
             m_VisualTreeAsset.CloneTree(root);
 
             root.styleSheets.Add(m_styleSheet);
@@ -124,6 +131,84 @@ namespace BattleDrakeCreations.BehaviorTree
             else
             {
                 SelectTree(_treeAsset);
+            }
+        }
+
+        private void HandleCopyPasteKeyPresses(KeyDownEvent evt)
+        {
+            if (evt.keyCode == KeyCode.C && evt.modifiers == EventModifiers.Control)
+            {
+                StoreSelectedNodeViews();
+            }
+            if (evt.keyCode == KeyCode.V && evt.modifiers == EventModifiers.Control)
+            {
+                DuplicateNodes(true);
+            }
+            if (evt.keyCode == KeyCode.D && evt.modifiers == EventModifiers.Control)
+            {
+                StoreSelectedNodeViews();
+                DuplicateNodes();
+            }
+        }
+
+        private void StoreSelectedNodeViews()
+        {
+            _clipboardNodes.Clear();
+            List<ISelectable> selectedNodes = _treeView.selection;
+            for (int i = 0; i < selectedNodes.Count; i++)
+            {
+                BTNodeView btView = selectedNodes[i] as BTNodeView;
+                if (btView != null)
+                {
+                    _clipboardNodes.Add(btView);
+                }
+            }
+        }
+
+        private void DuplicateNodes(bool useMouse = false)
+        {
+            HashSet<BTNodeView> newViews = new();
+            Vector2 groupCenter = Vector2.zero;
+
+            //Duplicate all the selected nodes, excluding the root.
+            foreach (ISelectable selecteds in _clipboardNodes)
+            {
+                BTNodeView node = selecteds as BTNodeView;
+                if (node != null && node.Node.GetType() != typeof(RootNode))
+                {
+                    groupCenter += node.Node.Position;
+
+                    if (!useMouse)
+                    {
+                        BTNode btNode = _treeAsset.CreateNode(node.Node.GetType(), node.Node.Position + new Vector2(node.GetPosition().width / 2, node.GetPosition().height / 2));
+                        BTNodeView btNodeView = _treeView.CreateNodeView(btNode);
+                        newViews.Add(btNodeView);
+                    }
+                }
+            }
+            if (useMouse)
+            {
+                groupCenter /= _clipboardNodes.Count;
+                foreach (ISelectable nodeView in _clipboardNodes)
+                {
+                    BTNodeView node = nodeView as BTNodeView;
+                    if (node != null && node.Node.GetType() != typeof(RootNode))
+                    {
+                        Vector2 mousePosition = _treeView.ChangeCoordinatesTo(_treeView.contentViewContainer, _localMousePosition);
+                        mousePosition -= new Vector2(node.GetPosition().width / 2, node.GetPosition().height);
+                        mousePosition -= groupCenter;
+
+                        BTNode btNode = _treeAsset.CreateNode(node.Node.GetType(), node.Node.Position + mousePosition);
+                        BTNodeView btNodeView = _treeView.CreateNodeView(btNode);
+                        newViews.Add(btNodeView);
+                    }
+                }
+            }
+
+            _treeView.ClearSelection();
+            foreach (BTNodeView nodeView in newViews)
+            {
+                _treeView.AddToSelection(nodeView);
             }
         }
 
