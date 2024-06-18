@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 5263529057468531714}
   - component: {fileID: 8804619082795064447}
   m_Layer: 0
-  m_Name: Pf_DebugTextVisual
+  m_Name: Pf_DebugText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

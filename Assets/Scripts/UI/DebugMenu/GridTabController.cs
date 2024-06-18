@@ -25,10 +25,16 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         [SerializeField] private SliderWidget _groundOffsetSlider;
         [SerializeField] private Toggle _useEnvToggle;
 
-        [Header("Debug")]
+        [Header("Debug Tile Toggles")]
         [SerializeField] private Toggle _showGridToggle;
         [SerializeField] private Toggle _tacticalMeshGridToggle;
         [SerializeField] private Toggle _hideGridModifiersToggle;
+        [SerializeField] private Toggle _showIndexesToggle;
+        [SerializeField] private Toggle _showUnitOnTileToggle;
+        [SerializeField] private Toggle _showClimbLinksToggle;
+        [SerializeField] private Toggle _showCoversToggle;
+
+        [Header("Gizmo Toggles")]
         [SerializeField] private Toggle _boundsToggle;
         [SerializeField] private Toggle _centerToggle;
         [SerializeField] private TextMeshProUGUI _centerPositionText;
@@ -68,6 +74,56 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             }
             _sceneCombo.AddOptions(buildScenes);
 
+            _sceneCombo.onValueChanged.AddListener(OnSceneChanged);
+            _gridShapeCombo.onValueChanged.AddListener(OnGridShapeChanged);
+            _positionSlider.OnSliderValueChanged += OnGridPositionChanged;
+            _tileCountSlider.OnSliderValueChanged += OnTileCountChanged;
+            _tileSizeSlider.OnSliderValueChanged += OnTileSizeChanged;
+            _groundOffsetSlider.OnSliderValueChanged += OnGroundOffsetChanged;
+            _useEnvToggle.onValueChanged.AddListener(OnUseEnvironmentToggled);
+
+            _showGridToggle.onValueChanged.AddListener(OnShowGridToggled);
+            _tacticalMeshGridToggle.onValueChanged.AddListener(OnTacticalMeshGridToggled);
+            _hideGridModifiersToggle.onValueChanged.AddListener(OnHideGridModifiersToggled);
+
+            _showIndexesToggle.onValueChanged.AddListener(OnShowIndexesToggled);
+            _showUnitOnTileToggle.onValueChanged.AddListener(OnShowUnitOnTileToggled);
+            _showClimbLinksToggle.onValueChanged.AddListener(OnShowClimbLinksToggled);
+            _showCoversToggle.onValueChanged.AddListener(OnShowCoversToggled);
+
+            _boundsToggle.onValueChanged.AddListener(OnBoundsToggled);
+            _centerToggle.onValueChanged.AddListener(OnCenterToggled);
+            _bottomLeftToggle.onValueChanged.AddListener(OnBottomLeftToggled);
+            _mousePositionToggle.onValueChanged.AddListener(OnMousePositionToggled);
+            _hoveredTileToggle.onValueChanged.AddListener(OnHoveredTileToggled);
+        }
+
+        private void OnShowCoversToggled(bool isOn)
+        {
+            DebugTextOnTiles.Instance.ShowCover = isOn;
+            DebugTextOnTiles.Instance.UpdateDebugText();
+        }
+
+        private void OnShowClimbLinksToggled(bool isOn)
+        {
+            DebugTextOnTiles.Instance.ShowClimbLinks = isOn;
+            DebugTextOnTiles.Instance.UpdateDebugText();
+        }
+
+        private void OnShowUnitOnTileToggled(bool isOn)
+        {
+            DebugTextOnTiles.Instance.ShowUnitOnTile = isOn;
+            DebugTextOnTiles.Instance.UpdateDebugText();
+        }
+
+        private void OnShowIndexesToggled(bool isOn)
+        {
+            DebugTextOnTiles.Instance.ShowTileIndexes = isOn;
+            DebugTextOnTiles.Instance.UpdateDebugText();
+        }
+
+        private void Start()
+        {
             _gridShapeCombo.value = (int)_tacticsGrid.GridShape;
             _positionSlider.SetSliderValueWithoutNotify(_tacticsGrid.transform.position);
             _tileCountSlider.SetSliderValueWithoutNotify(_tacticsGrid.GridTileCount);
@@ -76,23 +132,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _useEnvToggle.SetIsOnWithoutNotify(_tacticsGrid.UseEnvironment);
             _showGridToggle.SetIsOnWithoutNotify(_tacticsGrid.GridVisual.GridMeshInstancer.ShowBaseGrid);
             _tacticalMeshGridToggle.SetIsOnWithoutNotify(false);
-
-            _sceneCombo.onValueChanged.AddListener(OnSceneChanged);
-            _gridShapeCombo.onValueChanged.AddListener(OnGridShapeChanged);
-            _positionSlider.OnSliderValueChanged += OnGridPositionChanged;
-            _tileCountSlider.OnSliderValueChanged += OnTileCountChanged;
-            _tileSizeSlider.OnSliderValueChanged += OnTileSizeChanged;
-            _groundOffsetSlider.OnSliderValueChanged += OnGroundOffsetChanged;
-            _useEnvToggle.onValueChanged.AddListener(OnUseEnvironmentToggled);
-            _showGridToggle.onValueChanged.AddListener(OnShowGridToggled);
-            _tacticalMeshGridToggle.onValueChanged.AddListener(OnTacticalMeshGridToggled);
-            _hideGridModifiersToggle.onValueChanged.AddListener(OnHideGridModifiersToggled);
-
-            _boundsToggle.onValueChanged.AddListener(OnBoundsToggled);
-            _centerToggle.onValueChanged.AddListener(OnCenterToggled);
-            _bottomLeftToggle.onValueChanged.AddListener(OnBottomLeftToggled);
-            _mousePositionToggle.onValueChanged.AddListener(OnMousePositionToggled);
-            _hoveredTileToggle.onValueChanged.AddListener(OnHoveredTileToggled);
         }
 
         private void OnEnable()

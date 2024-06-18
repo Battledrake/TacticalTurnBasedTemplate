@@ -30,7 +30,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         [SerializeField] private Toggle _includeStartNodeToggle;
 
         [Header("Dependencies")]
-        [SerializeField] private DebugTextOnTiles _debugTextOnTiles;
         [SerializeField] private GridPathfinding _gridPathfinder;
 
         private void Awake()
@@ -66,43 +65,43 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         private void OnShowClimbLinksToggled(bool isOn)
         {
-            _debugTextOnTiles.ShowClimbLinks = isOn;
-            _debugTextOnTiles.UpdateDebugText();
+            DebugTextOnTiles.Instance.ShowClimbLinks = isOn;
+            DebugTextOnTiles.Instance.UpdateDebugText();
         }
 
         private void OnShowIndexesToggled(bool isOn)
         {
-            _debugTextOnTiles.ShowTileIndexes = isOn;
-            _debugTextOnTiles.UpdateDebugText();
+            DebugTextOnTiles.Instance.ShowTileIndexes = isOn;
+            DebugTextOnTiles.Instance.UpdateDebugText();
         }
 
         private void OnShowUnitToggled(bool isOn)
         {
-            _debugTextOnTiles.ShowUnitOnTile = isOn;
-            _debugTextOnTiles.UpdateDebugText();
+            DebugTextOnTiles.Instance.ShowUnitOnTile = isOn;
+            DebugTextOnTiles.Instance.UpdateDebugText();
         }
         private void OnShowTerrainCostToggled(bool isOn)
         {
-            _debugTextOnTiles.ShowTerrainCost = isOn;
-            _debugTextOnTiles.UpdateDebugText();
+            DebugTextOnTiles.Instance.ShowTerrainCost = isOn;
+            DebugTextOnTiles.Instance.UpdateDebugText();
         }
 
         private void OnShowTraversalCostToggled(bool isOn)
         {
-            _debugTextOnTiles.ShowTraversalCost = isOn;
-            _debugTextOnTiles.UpdateDebugText();
+            DebugTextOnTiles.Instance.ShowTraversalCost = isOn;
+            DebugTextOnTiles.Instance.UpdateDebugText();
         }
 
         private void OnShowHeuristicToggled(bool isOn)
         {
-            _debugTextOnTiles.ShowHeuristicCost = isOn;
-            _debugTextOnTiles.UpdateDebugText();
+            DebugTextOnTiles.Instance.ShowHeuristicCost = isOn;
+            DebugTextOnTiles.Instance.UpdateDebugText();
         }
 
         private void OnShowTotalCostToggled(bool isOn)
         {
-            _debugTextOnTiles.ShowTotalCost = isOn;
-            _debugTextOnTiles.UpdateDebugText();
+            DebugTextOnTiles.Instance.ShowTotalCost = isOn;
+            DebugTextOnTiles.Instance.UpdateDebugText();
         }
 
         private void OnHeightAllowanceChanged(int sliderIndex, float value)

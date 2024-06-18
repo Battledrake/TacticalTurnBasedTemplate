@@ -8,7 +8,11 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 {
     public class DebugTextOnTiles : MonoBehaviour
     {
-        [SerializeField] private TextMeshPro _textObjectPrefab;
+        public static DebugTextOnTiles Instance;
+
+        [SerializeField] private TextMeshPro _debugTextPrefab;
+        [SerializeField] private Transform _instanceContainer;
+        [SerializeField] private int _initialPoolCount = 1000;
 
         [Header("Dependencies")]
         [SerializeField] private TacticsGrid _tacticsGrid;
@@ -22,7 +26,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public bool ShowClimbLinks { get => _showClimbLinks; set => _showClimbLinks = value; }
         public bool ShowCover { get => _showCover; set => _showCover = value; }
 
-        private Dictionary<GridIndex, GameObject> _spawnedTexts = new Dictionary<GridIndex, GameObject>();
+        private Dictionary<GridIndex, TextMeshPro> _activeDebugTexts = new Dictionary<GridIndex, TextMeshPro>();
+        private List<TextMeshPro> _pooledTextInstances = new();
 
         private bool _showTileIndexes = false;
         private bool _showUnitOnTile = false;
@@ -33,31 +38,84 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private bool _showClimbLinks = false;
         private bool _showCover = false;
 
+        private void Awake()
+        {
+            if (Instance != null && Instance != this)
+            {
+                Destroy(this);
+            }
+            else
+            {
+                Instance = this;
+            }
+            DontDestroyOnLoad(this.gameObject);
+
+            for (int i = 0; i < _initialPoolCount; i++)
+            {
+                TextMeshPro newTextInstance = Instantiate(_debugTextPrefab, _instanceContainer);
+                _pooledTextInstances.Add(newTextInstance);
+                newTextInstance.gameObject.SetActive(false);
+            }
+        }
+
         private void OnEnable()
         {
-            _tacticsGrid.OnGridGenerated += UpdateTextOnAllTiles;
+            _tacticsGrid.OnGridGenerated += TacticsGrid_OnGridGenerated;
             _tacticsGrid.OnTileDataUpdated += (i => UpdateTextOnTile(i));
-            _tacticsGrid.OnGridDestroyed += ClearAllTextGameObjects;
+            _tacticsGrid.OnGridDestroyed += TacticsGrid_OnGridDestroyed;
             _tacticsGrid.Pathfinder.OnPathfindingCompleted += UpdateTextOnAllTiles;
             _tacticsGrid.Pathfinder.OnPathfindingDataCleared += UpdateTextOnAllTiles;
             _tacticsGrid.Pathfinder.OnPathfindingDataUpdated += UpdateTextOnAllTiles;
+        }
+
+        private void TacticsGrid_OnGridGenerated()
+        {
+            if (_tacticsGrid.GridTiles.Count > _pooledTextInstances.Count)
+            {
+                int gridCount = _tacticsGrid.GridTiles.Count;
+                int pooledCount = _pooledTextInstances.Count;
+                int difference = gridCount - pooledCount;
+                for (int i = 0; i < difference; i++)
+                {
+                    TextMeshPro newObject = Instantiate(_debugTextPrefab, _instanceContainer);
+                    _pooledTextInstances.Add(newObject);
+                }
+            }
+
+            for (int i = 0; i < _pooledTextInstances.Count; i++)
+            {
+                _pooledTextInstances[i].gameObject.SetActive(false);
+            }
+
+            _activeDebugTexts.Clear();
+
+            int itemCount = 0;
+            foreach (KeyValuePair<GridIndex, TileData> gridTilePair in _tacticsGrid.GridTiles)
+            {
+                _activeDebugTexts.TryAdd(gridTilePair.Key, _pooledTextInstances[itemCount]);
+                itemCount++;
+            }
+            UpdateTextOnAllTiles();
+        }
+
+        private void TacticsGrid_OnGridDestroyed()
+        {
+            for (int i = 0; i < _pooledTextInstances.Count; i++)
+            {
+                _pooledTextInstances[i].gameObject.SetActive(false);
+            }
+
+            _activeDebugTexts.Clear();
         }
 
         private void OnDisable()
         {
             _tacticsGrid.OnGridGenerated -= UpdateTextOnAllTiles;
             _tacticsGrid.OnTileDataUpdated -= (i => UpdateTextOnTile(i));
-            _tacticsGrid.OnGridDestroyed -= ClearAllTextGameObjects;
+            _tacticsGrid.OnGridDestroyed -= HideAllDebugTiles;
             _tacticsGrid.Pathfinder.OnPathfindingCompleted -= UpdateTextOnAllTiles;
             _tacticsGrid.Pathfinder.OnPathfindingDataCleared -= UpdateTextOnAllTiles;
             _tacticsGrid.Pathfinder.OnPathfindingDataUpdated -= UpdateTextOnAllTiles;
-        }
-
-        [ContextMenu("ShowCover")]
-        public void ContextShowCover()
-        {
-            _showCover = true;
-            UpdateDebugText();
         }
 
         private bool ShowAnyDebug()
@@ -87,16 +145,14 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             {
                 string debugText = "";
 
-                GameObject textObject = GetTextGameObject(index);
-                if (textObject == null)
+                TextMeshPro debugTile = GetDebugTile(index);
+                if (debugTile == null)
                     return;
 
-                TextMeshPro textMeshComp = textObject.GetComponent<TextMeshPro>();
-
                 if (_tacticsGrid.GridShape == GridShape.Triangle)
-                    textMeshComp.fontSize = 0.75f;
+                    debugTile.fontSize = 0.75f;
                 if (_tacticsGrid.GridShape == GridShape.Hexagon)
-                    textMeshComp.fontSize = 1f;
+                    debugTile.fontSize = 1f;
 
                 if (_showTileIndexes)
                     debugText += $"index: {index}\n";
@@ -152,46 +208,44 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
                 if (string.IsNullOrEmpty(debugText))
                 {
-                    DestroyTextGameObject(index);
+                    //DestroyTextGameObject(index);
                     return;
                 }
 
-                textMeshComp.text = debugText;
+                debugTile.text = debugText;
 
                 Vector3 tilePosition = tileData.tileMatrix.GetPosition();
                 tilePosition.y += 0.1f;
-                textMeshComp.transform.position = tilePosition;
-                textMeshComp.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
-                textMeshComp.transform.localScale = tileData.tileMatrix.lossyScale;
+                debugTile.transform.position = tilePosition;
+                debugTile.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
+                debugTile.transform.localScale = tileData.tileMatrix.lossyScale;
+
+                debugTile.gameObject.SetActive(true);
             }
             else
             {
-                DestroyTextGameObject(index);
+
+                if (_activeDebugTexts.TryGetValue(index, out TextMeshPro tile))
+                {
+                    tile.gameObject.SetActive(false);
+                }
             }
         }
 
-        public GameObject GetTextGameObject(GridIndex index)
+        public TextMeshPro GetDebugTile(GridIndex index)
         {
-            if (_spawnedTexts.ContainsKey(index))
+            if (_activeDebugTexts.ContainsKey(index))
             {
-                return _spawnedTexts[index];
+                return _activeDebugTexts[index];
             }
-            else
-            {
-                if (this == null)
-                    return null;
-
-                GameObject newTextObject = Instantiate(_textObjectPrefab, Vector3.zero, Quaternion.identity).gameObject;
-                _spawnedTexts.Add(index, newTextObject);
-                return newTextObject;
-            }
+            return null;
         }
 
         public void UpdateDebugText()
         {
             if (!ShowAnyDebug())
             {
-                ClearAllTextGameObjects();
+                HideAllDebugTiles();
             }
             else
             {
@@ -202,22 +256,12 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             }
         }
 
-        public void DestroyTextGameObject(GridIndex index)
+        public void HideAllDebugTiles()
         {
-            if (_spawnedTexts.TryGetValue(index, out GameObject textObject))
+            foreach (KeyValuePair<GridIndex, TextMeshPro> debugTilePair in _activeDebugTexts)
             {
-                Destroy(textObject.gameObject);
-                _spawnedTexts.Remove(index);
+                debugTilePair.Value.gameObject.SetActive(false);
             }
-        }
-
-        public void ClearAllTextGameObjects()
-        {
-            foreach (KeyValuePair<GridIndex, GameObject> spawnedTextsPair in _spawnedTexts)
-            {
-                Destroy(spawnedTextsPair.Value);
-            }
-            _spawnedTexts.Clear();
         }
     }
 }

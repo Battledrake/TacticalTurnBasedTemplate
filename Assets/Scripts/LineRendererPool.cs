@@ -7,8 +7,8 @@ public class LineRendererPool : MonoBehaviour
     public static LineRendererPool Instance;
 
     [SerializeField] private LineRenderer _lineRendererPrefab;
-    [SerializeField] private int _baseInstanceCount;
     [SerializeField] private Transform _instanceContainer;
+    [SerializeField] private int _initialPoolCount;
 
     private Dictionary<int, LineRenderer> _pooledLineRenderers = new Dictionary<int, LineRenderer>();
 
@@ -24,7 +24,7 @@ public class LineRendererPool : MonoBehaviour
         }
         DontDestroyOnLoad(this.gameObject);
 
-        for (int i = 0; i < _baseInstanceCount; i++)
+        for (int i = 0; i < _initialPoolCount; i++)
         {
             LineRenderer lineRenderer = Instantiate(_lineRendererPrefab, _instanceContainer);
             lineRenderer.gameObject.SetActive(false);

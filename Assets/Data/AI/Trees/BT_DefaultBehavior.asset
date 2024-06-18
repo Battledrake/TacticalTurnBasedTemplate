@@ -41,7 +41,7 @@ MonoBehaviour:
   m_Name: Sequencer
   m_EditorClassIdentifier: 
   _guid: d8bc2fb9ba25aee428415ac160e57484
-  _position: {x: 797.72455, y: 589.99994}
+  _position: {x: 780.4469, y: 589.9998}
   _children:
   - {fileID: 7575327354453547856}
   - {fileID: 1374561179146575157}
@@ -58,7 +58,7 @@ MonoBehaviour:
   m_Name: Selector
   m_EditorClassIdentifier: 
   _guid: 4c87b8c38c0804348bb026cd1bb16ffd
-  _position: {x: 155, y: 435.09753}
+  _position: {x: 150, y: 427.065}
   _children:
   - {fileID: 3740672742597052486}
   - {fileID: -2822788610660678761}
@@ -90,7 +90,7 @@ MonoBehaviour:
   m_Name: SetActiveAbility
   m_EditorClassIdentifier: 
   _guid: 3d10b44ed4fd1db429c550bb399c79ca
-  _position: {x: -63, y: 306.74103}
+  _position: {x: -62.999992, y: 291}
   _abilityId: 0
   _giveAbility: 0
 --- !u!114 &-2822788610660678761
@@ -106,7 +106,7 @@ MonoBehaviour:
   m_Name: Sequencer
   m_EditorClassIdentifier: 
   _guid: 52afc3b837c7d6a4f8ac78729be8fa52
-  _position: {x: 305.00003, y: 590}
+  _position: {x: 318.47787, y: 579.80975}
   _children:
   - {fileID: -1697669155188219188}
   - {fileID: 336857963557412758}
@@ -201,7 +201,7 @@ MonoBehaviour:
   m_Name: MoveToTargetIndex
   m_EditorClassIdentifier: 
   _guid: 0b443267b1edc8048ab8bff7d95f9a88
-  _position: {x: 872.72455, y: 748.9999}
+  _position: {x: 866.4469, y: 751.9998}
 --- !u!114 &1411388301814986295
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -280,7 +280,7 @@ MonoBehaviour:
   m_Name: FindNearestIndex
   m_EditorClassIdentifier: 
   _guid: 97bb4dd1a2f7ee24fb98586290620b1c
-  _position: {x: 621.72455, y: 748.9999}
+  _position: {x: 619.44684, y: 748.9998}
 --- !u!114 &8053059767221403373
 MonoBehaviour:
   m_ObjectHideFlags: 0
