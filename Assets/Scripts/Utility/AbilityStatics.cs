@@ -18,7 +18,9 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
             Vector3 direction = targetPosition - startPosition;
 
-            if (Physics.Raycast(startPosition, direction, out RaycastHit hitInfo, direction.magnitude))
+            LayerMask checkLayers = LayerMask.GetMask("Ground", "Obstacles", "Unit");
+
+            if (Physics.Raycast(startPosition, direction, out RaycastHit hitInfo, direction.magnitude, checkLayers))
             {
 
                 Unit abilityUnit = originData.unitOnTile;
@@ -55,7 +57,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                                 abilityUnit.gameObject.layer = LayerMask.GetMask("Ignore Raycast");
                             }
 
-                            if (!Physics.Raycast(startOffset, direction, out hitInfo, direction.magnitude))
+                            if (!Physics.Raycast(startOffset, direction, out hitInfo, direction.magnitude, checkLayers))
                             {
                                 if (abilityUnit)
                                     abilityUnit.gameObject.layer = unitLayer;

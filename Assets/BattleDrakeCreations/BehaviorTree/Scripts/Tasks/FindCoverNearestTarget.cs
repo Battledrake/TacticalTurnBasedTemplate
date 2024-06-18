@@ -6,16 +6,17 @@ using BattleDrakeCreations.TacticalTurnBasedTemplate;
 
 public class FindCoverNearestTarget : TaskNode
 {
-    [SerializeField] private float _searchRadius;
-
-    public override string title { get => "Find Cover Nearest"; }
+    [SerializeField] private float _coverDirDotTolerance = 0.25f;
+    public override string title { get => "Find Cover Nearest Target"; }
 
     private BlackboardKey _targetIndexKey;
     private BlackboardKey _targetUnitKey;
+    private BlackboardKey _activeAbilityKey;
     protected override void OnStart()
     {
         _targetIndexKey = _blackboard.GetOrRegisterKey("TargetIndex");
         _targetUnitKey = _blackboard.GetOrRegisterKey("TargetUnit");
+        _activeAbilityKey = _blackboard.GetOrRegisterKey("ActiveAbility");
     }
 
     protected override void OnStop()
@@ -28,19 +29,34 @@ public class FindCoverNearestTarget : TaskNode
         if (!_blackboard.TryGetValue(_targetUnitKey, out Unit targetUnit))
             return NodeResult.Failed;
 
+        if (!_blackboard.TryGetValue(_activeAbilityKey, out Ability ability))
+            return NodeResult.Failed;
+
+        _agent.TacticsGrid.GetTileDataFromIndex(targetUnit.GridIndex, out TileData targetTile);
+
         GridIndex closestIndex = GridIndex.Invalid();
         float closestDistance = Mathf.Infinity;
         Vector3 targetUnitPosition = targetUnit.transform.position;
 
+        int actionPoints = _agent.AbilitySystem.GetAttributeCurrentValue(AttributeId.ActionPoints);
+        int maxTravelDistance = actionPoints > 1 ? _agent.Unit.MoveRange * 2 : _agent.Unit.MoveRange;
+
         foreach (KeyValuePair<GridIndex, Cover> coverPair in _agent.TacticsGrid.Covers)
         {
-            Vector3 coverPosition = _agent.TacticsGrid.GetTilePositionFromIndex(coverPair.Key);
-            float distanceFromAI = Vector3.Distance(_agent.Unit.transform.position, coverPosition);
-            float distanceFromTarget = Vector3.Distance(targetUnitPosition, coverPosition);
+            _agent.TacticsGrid.GetTileDataFromIndex(coverPair.Key, out TileData coverTile);
 
-            int actionPoints = _agent.AbilitySystem.GetAttributeCurrentValue(AttributeId.ActionPoints);
+            Vector3 coverPosition = coverTile.tileMatrix.GetPosition();
+            float distanceFromAI = PathfindingStatics.GetDiagonalDistance(_agent.Unit.GridIndex, coverPair.Key);
+            float distanceFromTarget = PathfindingStatics.GetDiagonalDistance(targetUnit.GridIndex, coverPair.Key);
+            Debug.Log($"DistanceFromAI: {distanceFromAI}, DistanceFromTarget: {distanceFromTarget}");
 
-            if (distanceFromAI > (actionPoints > 1 ? _agent.Unit.MoveRange * 2 : _agent.Unit.MoveRange)) 
+            if (distanceFromAI > maxTravelDistance) 
+                continue;
+
+            if (!CombatManager.Instance.GetAbilityRange(coverPair.Key, ability.RangeData).Contains(targetUnit.GridIndex))
+                continue;
+
+            if (!AbilityStatics.HasLineOfSight(coverTile, targetTile, ability.RangeData.lineOfSightData.height, ability.RangeData.lineOfSightData.offsetDistance))
                 continue;
 
             if (distanceFromTarget < closestDistance)
@@ -49,10 +65,12 @@ public class FindCoverNearestTarget : TaskNode
                 {
                     GridIndex direction = coverPair.Value.data[i].direction;
                     Vector3 difference = targetUnit.transform.position - coverPosition;
+                    difference.Normalize();
                     float dotProduct = direction.x * difference.x + direction.z * difference.z;
-                    if(dotProduct > 0.25f)
+                    if(dotProduct > _coverDirDotTolerance)
                     {
-                        closestDistance = distanceFromAI;
+                        Debug.Log(dotProduct);
+                        closestDistance = distanceFromTarget;
                         closestIndex = coverPair.Key;
                         break;
                     }

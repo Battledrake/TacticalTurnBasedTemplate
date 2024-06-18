@@ -29,10 +29,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate.BehaviorTree
                 return NodeResult.Running;
 
             if (_isAbilityCompleted)
-            {
-                _isAbilityCompleted = false;
                 return NodeResult.Succeeded;
-            }
 
             _blackboard.TryGetValue(_activeAbilityKey, out Ability activeAbility);
             _blackboard.TryGetValue(_targetUnitKey, out Unit targetUnit);
@@ -40,8 +37,10 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate.BehaviorTree
             if (activeAbility == null || targetUnit == null)
                 return NodeResult.Failed;
 
+
             if (activeAbility.ActionPointCost > _agent.AbilitySystem.GetAttributeCurrentValue(AttributeId.ActionPoints))
                 return NodeResult.Failed;
+
 
 
             activeAbility.OnAbilityEnded += Ability_OnAbilityEnded;

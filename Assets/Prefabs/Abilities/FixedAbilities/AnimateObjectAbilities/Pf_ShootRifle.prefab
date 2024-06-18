@@ -54,7 +54,7 @@ MonoBehaviour:
   _usesPerCombat: -1
   _rangeData:
     rangePattern: 5
-    rangeMinMax: {x: 3, y: 20}
+    rangeMinMax: {x: 3, y: 15}
     lineOfSightData:
       requireLineOfSight: 1
       height: 2
