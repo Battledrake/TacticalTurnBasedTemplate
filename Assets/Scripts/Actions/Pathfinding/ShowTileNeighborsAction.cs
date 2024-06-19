@@ -27,7 +27,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                     {
                         if (_playerActions.TacticsGrid.IsIndexValid(_neighborList[i]))
                         {
-                            if (GridStatics.IsTileTypeWalkable(tileData.tileType))
+                            if (GridStatics.IsTileTypeTraversable(tileData.tileType))
                             {
                                 float heightDifference = Mathf.Abs(tileData.tileMatrix.GetPosition().y - selectedData.tileMatrix.GetPosition().y);
                                 if (heightDifference <= _playerActions.TacticsGrid.Pathfinder.HeightAllowance)

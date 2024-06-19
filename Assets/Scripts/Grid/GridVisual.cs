@@ -79,7 +79,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             }
             _tacticalMeshInstancer.AddInstance(tileData);
 
-            if (!GridStatics.IsTileTypeWalkable(tileData.tileType))
+            if (!GridStatics.IsTileTypeTraversable(tileData.tileType))
                 _gridMeshInstancer.RemoveInstance(tileData);
             else
             {

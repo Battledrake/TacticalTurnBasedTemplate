@@ -376,18 +376,24 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                             TileType tileType = TraceForGroundAndObstacles(instancePosition, out Vector3 hitPosition, out Vector3 hitNormal);
                             if (tileType != TileType.None)
                             {
-                                List<GridIndex> climbLinks = TraceForClimbLinks(tileData.index, hitPosition);
-                                if (climbLinks.Count > 0)
+                                if (GridStatics.IsTileTypeTraversable(tileType))
                                 {
-                                    tileData.climbData.hasClimbLink = true;
-                                    tileData.climbData.climbLinks = climbLinks;
-                                }
+                                    List<GridIndex> climbLinks = TraceForClimbLinks(tileData.index, hitPosition);
+                                    if (climbLinks.Count > 0)
+                                    {
+                                        tileData.climbData.hasClimbLink = true;
+                                        tileData.climbData.climbLinks = climbLinks;
+                                    }
 
-                                Cover cover = TraceForCover(hitPosition);
-                                if (cover.hasCover)
-                                {
-                                    tileData.cover = cover;
-                                    _covers.TryAdd(tileData.index, cover);
+                                    if (_gridShape == GridShape.Square)
+                                    {
+                                        Cover cover = TraceForCover(hitPosition);
+                                        if (cover.hasCover)
+                                        {
+                                            tileData.cover = cover;
+                                            _covers.TryAdd(tileData.index, cover);
+                                        }
+                                    }
                                 }
 
                                 tileData.tileType = tileType;
@@ -482,7 +488,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public bool IsTileWalkable(GridIndex index)
         {
             if (_gridTiles.ContainsKey(index))
-                return (GridStatics.IsTileTypeWalkable(_gridTiles[index].tileType));
+                return (GridStatics.IsTileTypeTraversable(_gridTiles[index].tileType));
             else
                 return false;
         }

@@ -518,8 +518,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 {
                     if (!isValidOne || !isValidTwo) return false;
 
-                    if ((!GridStatics.IsTileTypeWalkable(adjacentTileOne.tileType))
-                     || (!GridStatics.IsTileTypeWalkable(adjacentTileTwo.tileType)))
+                    if ((!GridStatics.IsTileTypeTraversable(adjacentTileOne.tileType))
+                     || (!GridStatics.IsTileTypeTraversable(adjacentTileTwo.tileType)))
                     {
                         return false;
                     }
@@ -528,8 +528,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 {
                     if (!isValidOne && !isValidTwo) return false;
 
-                    if ((isValidOne && !GridStatics.IsTileTypeWalkable(adjacentTileOne.tileType))
-                     && (isValidTwo && !GridStatics.IsTileTypeWalkable(adjacentTileTwo.tileType)))
+                    if ((isValidOne && !GridStatics.IsTileTypeTraversable(adjacentTileOne.tileType))
+                     && (isValidTwo && !GridStatics.IsTileTypeTraversable(adjacentTileTwo.tileType)))
                     {
                         return false;
                     }

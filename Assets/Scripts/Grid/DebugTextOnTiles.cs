@@ -128,7 +128,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             return _showTraversalCost || _showHeuristicCost || _showTotalCost;
         }
 
-        public void UpdateTextOnAllTiles()
+        private void UpdateTextOnAllTiles()
         {
             if (!ShowAnyDebug())
                 return;
@@ -139,9 +139,10 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             }
         }
 
-        public void UpdateTextOnTile(GridIndex index)
+        private void UpdateTextOnTile(GridIndex index)
         {
-            if (ShowAnyDebug() && _tacticsGrid.GridTiles.TryGetValue(index, out TileData tileData) && GridStatics.IsTileTypeWalkable(tileData.tileType))
+            bool isValidTile = _tacticsGrid.GridTiles.TryGetValue(index, out TileData tileData);
+            if (ShowAnyDebug() && isValidTile && GridStatics.IsTileTypeTraversable(tileData.tileType))
             {
                 string debugText = "";
 
@@ -202,7 +203,15 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
                 {
                     if (tileData.cover.hasCover)
                     {
-                        debugText += "Cover";
+                        debugText += "covers: \n";
+                        for(int i = 0; i < tileData.cover.data.Count; i++)
+                        {
+                            CoverType coverType = tileData.cover.data[i].coverType;
+                            string directionCharacter = CharacterFromDirection(tileData.cover.data[i].direction);
+                            //character = coverType == CoverType.HalfCover ? character.ToLower() : character.ToUpper();
+                            debugText += $"({directionCharacter + CharacterFromCoverType(tileData.cover.data[i].coverType)})";
+                            //debugText += $"({character}: ¦)"; //¦ alt + 0166
+                        }
                     }
                 }
 
@@ -232,7 +241,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             }
         }
 
-        public TextMeshPro GetDebugTile(GridIndex index)
+        private TextMeshPro GetDebugTile(GridIndex index)
         {
             if (_activeDebugTexts.ContainsKey(index))
             {
@@ -256,12 +265,39 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             }
         }
 
-        public void HideAllDebugTiles()
+        private void HideAllDebugTiles()
         {
             foreach (KeyValuePair<GridIndex, TextMeshPro> debugTilePair in _activeDebugTexts)
             {
                 debugTilePair.Value.gameObject.SetActive(false);
             }
+        }
+
+        private string CharacterFromDirection(GridIndex direction)
+        {
+            if (direction == new GridIndex(0, 1))
+                return "n";
+            if (direction == new GridIndex(1, 0))
+                return "e";
+            if (direction == new GridIndex(0, -1))
+                return "s";
+            if (direction == new GridIndex(-1, 0))
+                return "w";
+            return "";
+        }
+
+        private string CharacterFromCoverType(CoverType coverType)
+        {
+            switch (coverType)
+            {
+                case CoverType.None:
+                    break;
+                case CoverType.HalfCover:
+                    return "-"; //alt + 0189 for ½ 
+                case CoverType.FullCover:
+                    return "=";
+            }
+            return "";
         }
     }
 }

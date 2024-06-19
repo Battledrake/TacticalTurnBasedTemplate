@@ -140,7 +140,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             return (gridIndex.x + gridIndex.z) % 2 == 0;
         }
 
-        public static bool IsTileTypeWalkable(TileType tileType)
+        public static bool IsTileTypeTraversable(TileType tileType)
         {
             return tileType != TileType.None && tileType != TileType.Obstacle;
         }
