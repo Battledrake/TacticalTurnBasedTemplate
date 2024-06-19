@@ -48,7 +48,7 @@ MonoBehaviour:
   _icon: {fileID: 21300000, guid: e5045c4be6e250441ae670dbd004d624, type: 3}
   _costEffect: {fileID: 11400000, guid: 6a24367ecd336df4b9a19351c380cb63, type: 2}
   _cooldown: 2
-  _ignoresCover: 0
+  _ignoresCover: 1
   _endTurnOnUse: 0
   _isFriendlyOnly: 1
   _usesPerCombat: -1

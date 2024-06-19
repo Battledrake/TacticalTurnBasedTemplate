@@ -17,6 +17,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         [SerializeField] private Toggle _showHeuristicToggle;
         [SerializeField] private Toggle _showTotalCostToggle;
         [SerializeField] private Toggle _showClimbLinksToggle;
+        [SerializeField] private Toggle _showCoversToggle;
 
         [Header("Configuration")]
         [SerializeField] private SliderWidget _heightAllowanceSlider;
@@ -41,6 +42,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _showHeuristicToggle.onValueChanged.AddListener(OnShowHeuristicToggled);
             _showTotalCostToggle.onValueChanged.AddListener(OnShowTotalCostToggled);
             _showClimbLinksToggle.onValueChanged.AddListener(OnShowClimbLinksToggled);
+            _showCoversToggle.onValueChanged.AddListener(OnShowCoversToggled);
 
             _heightAllowanceSlider.SetSliderValueWithoutNotify(_gridPathfinder.HeightAllowance);
             _traversalCostCombo.SetValueWithoutNotify((int)_gridPathfinder.TraversalCost);
@@ -101,6 +103,12 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private void OnShowTotalCostToggled(bool isOn)
         {
             DebugTextOnTiles.Instance.ShowTotalCost = isOn;
+            DebugTextOnTiles.Instance.UpdateDebugText();
+        }
+
+        private void OnShowCoversToggled(bool isOn)
+        {
+            DebugTextOnTiles.Instance.ShowCover = isOn;
             DebugTextOnTiles.Instance.UpdateDebugText();
         }
 

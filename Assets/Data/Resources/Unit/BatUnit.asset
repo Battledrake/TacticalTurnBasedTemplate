@@ -32,4 +32,8 @@ MonoBehaviour:
       baseValue: 8
     - attribute: 4
       baseValue: 6
+    - attribute: 5
+      baseValue: 75
+    - attribute: 6
+      baseValue: 0
     abilities: 00000000010000000500000003000000

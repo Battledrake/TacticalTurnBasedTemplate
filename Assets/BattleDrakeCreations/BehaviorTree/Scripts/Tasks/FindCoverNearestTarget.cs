@@ -68,7 +68,6 @@ public class FindCoverNearestTarget : TaskNode
                     float dotProduct = direction.x * difference.x + direction.z * difference.z;
                     if(dotProduct > _coverDirDotTolerance)
                     {
-                        Debug.Log(dotProduct);
                         closestDistance = distanceFromTarget;
                         closestIndex = coverPair.Key;
                         break;
