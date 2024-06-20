@@ -298,9 +298,12 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             if (!_abilities.ContainsKey(id))
             {
                 Ability abilityInstance = AbilityFactory.Instance.GetNewAbilityInstance(id);
-                abilityInstance.transform.SetParent(_abilityInstanceContainer);
-                abilityInstance.InitAbility(this);
-                _abilities.Add(id, abilityInstance);
+                if(abilityInstance != null)
+                {
+                    abilityInstance.transform.SetParent(_abilityInstanceContainer);
+                    abilityInstance.InitAbility(this);
+                    _abilities.Add(id, abilityInstance);
+                }
             }
             else
             {

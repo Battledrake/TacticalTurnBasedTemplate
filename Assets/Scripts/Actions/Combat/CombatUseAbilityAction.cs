@@ -22,7 +22,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
             CombatManager.Instance.OnActionEnded += CombatManager_OnActionEnded;
 
-            if (!CombatManager.Instance.UseAbility(_currentAbility, _playerActions.SelectedTile, index))
+            if (!CombatManager.Instance.TryUseAbility(_currentAbility, _playerActions.SelectedTile, index))
             {
                 CombatManager.Instance.OnActionEnded -= CombatManager_OnActionEnded;
                 _abilityInUse = false;

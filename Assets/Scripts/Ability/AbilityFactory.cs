@@ -37,6 +37,10 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate {
             {
                 return SpawnAbility(ability);
             }
+            else
+            {
+                Debug.LogWarning($"Ability Factory does not contain ability: {abilityId}. Unable to give instance of ability.");
+            }
             return null;
         }
 

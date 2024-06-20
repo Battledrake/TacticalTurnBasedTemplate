@@ -378,7 +378,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             if (CombatManager.Instance.GetAbilityRange(_unit.GridIndex, _activeAbility.RangeData).Contains(_targetUnit.GridIndex))
             {
                 _activeAbility.OnAbilityEnded += Ability_OnAbilityEnded;
-                if (!CombatManager.Instance.UseAbility(_activeAbility, _unit.GridIndex, _targetUnit.GridIndex))
+                if (!CombatManager.Instance.TryUseAbility(_activeAbility, _unit.GridIndex, _targetUnit.GridIndex))
                 {
                     _activeAbility.OnAbilityEnded -= Ability_OnAbilityEnded;
                     MakeDecision(AIState.UseAbility, false);

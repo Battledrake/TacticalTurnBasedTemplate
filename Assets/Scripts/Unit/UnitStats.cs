@@ -21,7 +21,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public AttributeId attribute;
         public int baseValue;
         /// <summary>
-        /// We keep the currentValue private as its value is always set based on the base value + effect magnitudes.
+        /// We keep the currentValue private as its value is always set based on the baseValue + GameplayEffects.
         /// </summary>
         private int _currentValue;
 
@@ -37,5 +37,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public List<TileType> validTileTypes = new List<TileType> { TileType.Normal, TileType.DoubleCost, TileType.TripleCost };
         public List<AttributeData> attributes;
         public List<AbilityId> abilities;
+        public List<Weapon> weapons;
+        public Armor armor;
     }
 }

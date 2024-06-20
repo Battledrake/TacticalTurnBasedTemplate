@@ -36,4 +36,8 @@ MonoBehaviour:
       baseValue: 75
     - attribute: 6
       baseValue: 0
-    abilities: 00000000010000000c0000000400000006000000080000000d00000011000000
+    abilities: 120000000c00000004000000060000000800000011000000
+    weapons:
+    - {fileID: -5426709737134692068, guid: d5b30be4c6610ed4db0df63b21ee136c, type: 3}
+    - {fileID: -7948611860491200599, guid: 0aacfa183da9451439573f2fb09755d9, type: 3}
+    armor: {fileID: 0}

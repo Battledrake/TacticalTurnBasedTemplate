@@ -24,7 +24,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         RainbowWave,
         RainbowSpin,
         RainbowBlast,
-        KillUnit
+        KillUnit,
+        Weapon
     }
     public enum AbilityRangePattern
     {
@@ -184,7 +185,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
 
         public string Name => _abilityId.ToString();
-        public Sprite Icon => _icon;
+        public virtual Sprite Icon => _icon;
         public AbilityId AbilityId => _abilityId;
         public AbilitySystem AbilityOwner => _owner;
         public int ActiveCooldown => _activeCooldown;

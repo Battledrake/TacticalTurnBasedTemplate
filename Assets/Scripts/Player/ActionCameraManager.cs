@@ -8,12 +8,10 @@ public class ActionCameraManager : MonoBehaviour
 {
     public static ActionCameraManager Instance;
 
-    public event Action OnActionCameraInPosition;
+    public event Action OnActionCameraStopped;
 
-        [SerializeField] private CinemachineVirtualCamera _thirdPersonCamera;
-        [SerializeField] private CinemachineVirtualCamera _framingTransposerCamera;
-        //private Cinemachine3rdPersonFollow _virtualCameraFollowBody;
-        //private CinemachineFramingTransposer _framingTransposer;
+    [SerializeField] private CinemachineVirtualCamera _thirdPersonCamera;
+    [SerializeField] private CinemachineVirtualCamera _framingTransposerCamera;
 
     private CinemachineVirtualCamera _activeCamera;
 
@@ -35,7 +33,7 @@ public class ActionCameraManager : MonoBehaviour
         {
             if (Vector3.Distance(Camera.main.transform.position, _activeCamera.transform.position) < 1f)
             {
-                OnActionCameraInPosition?.Invoke();
+                OnActionCameraStopped?.Invoke();
             }
         }
     }

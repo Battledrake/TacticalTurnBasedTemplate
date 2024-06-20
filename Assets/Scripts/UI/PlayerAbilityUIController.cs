@@ -20,7 +20,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         [SerializeField] private Transform _actionPointContainer;
         [SerializeField] private List<Image> _actionPointDisplays;
 
-        [Header("Dependencies")]
+        [Header("References")]
         [SerializeField] private PlayerActions _playerActions;
 
         private Dictionary<int, AbilityButton> _abilityButtons = new Dictionary<int, AbilityButton>();

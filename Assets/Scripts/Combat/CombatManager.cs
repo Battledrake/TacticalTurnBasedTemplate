@@ -587,24 +587,22 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             }
         }
 
-        public bool UseAbility(Ability ability, GridIndex origin, GridIndex target)
+        public bool TryUseAbility(Ability ability, GridIndex origin, GridIndex target)
         {
             AbilityActivationData activationData;
             activationData.tacticsGrid = _tacticsGrid;
             activationData.originIndex = origin;
             activationData.targetIndex = target;
 
-            ability.OnAbilityEnded += Ability_OnAbilityEnded;
-
-            OnActionStarted?.Invoke();
-
-            if (!ability.TryActivateAbility(activationData))
+            if (ability.CanActivateAbility(activationData))
             {
-                ability.OnAbilityEnded -= Ability_OnAbilityEnded;
-                OnActionEnded?.Invoke();
-                return false;
+                ability.OnAbilityEnded += Ability_OnAbilityEnded;
+                OnActionStarted?.Invoke();
+
+                ability.ActivateAbility(activationData);
+                return true;
             }
-            return true;
+            return false;
         }
 
         private void Ability_OnAbilityEnded(Ability ability)

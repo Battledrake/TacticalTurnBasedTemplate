@@ -44,7 +44,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate.BehaviorTree
 
 
             activeAbility.OnAbilityEnded += Ability_OnAbilityEnded;
-            if (!CombatManager.Instance.UseAbility(activeAbility, _agent.Unit.GridIndex, targetUnit.GridIndex))
+            if (!CombatManager.Instance.TryUseAbility(activeAbility, _agent.Unit.GridIndex, targetUnit.GridIndex))
             {
                 activeAbility.OnAbilityEnded -= Ability_OnAbilityEnded;
                 return NodeResult.Failed;

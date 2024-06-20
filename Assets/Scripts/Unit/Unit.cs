@@ -31,7 +31,8 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
 
         public Transform LookAtTransform => _lookAtTransform;
         public GridIndex GridIndex => _gridIndex;
-        public UnitData UnitData  => _unitData; 
+        public UnitData UnitData  => _unitData;
+        public GameObject UnitVisual => _unitVisual;
         public bool IsAlive  => _isAlive; 
         public int TeamIndex => _teamIndex;
         public int PreviousTeamIndex => _prevTeamIndex;
@@ -43,6 +44,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         public int Agility => _abilitySystem.GetAttributeCurrentValue(AttributeId.Agility);
         public AnimationEventHandler AnimationEventHandler => _animEventHandler;
         public AbilitySystem AbilitySystem => _abilitySystem;
+        public EquipmentSystem Equipment => _equipment;
         public UnitAI UnitAI => _unitAI;
 
         //private fields
@@ -56,12 +58,15 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         //Components
         private Animator _unitAnimator;
         private AnimationEventHandler _animEventHandler;
-        private TacticsGrid _tacticsGrid;
         private Collider _collider;
         private GridMovement _gridMovement;
         private HealthVisual _healthVisual;
         private AbilitySystem _abilitySystem;
+        private EquipmentSystem _equipment;
         private UnitAI _unitAI;
+
+        //References
+        private TacticsGrid _tacticsGrid;
 
         //Outline Stuff
         private Outline _unitOutline;
@@ -76,6 +81,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _gridMovement = this.GetComponent<GridMovement>();
             _healthVisual = this.GetComponent<HealthVisual>();
             _abilitySystem = this.GetComponent<AbilitySystem>();
+            _equipment = this.GetComponent<EquipmentSystem>();
         }
 
         private void OnEnable()
@@ -94,6 +100,45 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _gridMovement.OnReachedDestination -= GridMovement_OnReachedDestination;
         }
 
+        public void InitUnit(UnitId dataId)
+        {
+            _unitDataId = dataId;
+            _unitData = DataManager.GetUnitDataFromId(_unitDataId);
+
+            if (_unitVisual == null)
+                _unitVisual = Instantiate(_unitData.assetData.unitVisual, this.transform);
+
+            _isAlive = true;
+
+            InitComponents();
+        }
+
+        private void InitComponents()
+        {
+            _healthVisual.InitHealthVisual(this);
+            _abilitySystem.OnAttributeBaseChanged += AbilitySystem_OnAttributeBaseChanged;
+            _abilitySystem.OnAttributeCurrentChanged += AbilitySystem_OnAttributeCurrentChanged;
+            _abilitySystem.InitAbilitySystem(this, _unitData.unitStats.attributes, _unitData.unitStats.abilities);
+
+            //Initialize equipment after ability system as effects may be applied.
+            _equipment.InitWithStartingEquipment(_unitData.unitStats.weapons, _unitData.unitStats.armor);
+
+            _unitAnimator = _unitVisual.GetComponent<Animator>();
+            _unitOutline = _unitVisual.AddComponent<Outline>();
+            _animEventHandler = _unitVisual.AddComponent<AnimationEventHandler>();
+
+            Transform headTransform = StaticUtilities.FindTransform(_unitVisual, "Head");
+            if (headTransform)
+            {
+                _healthVisual.HealthBar.position = headTransform.position + Vector3.up;
+            }
+            else
+            {
+                Renderer renderer = _unitVisual.GetComponentInChildren<Renderer>();
+                _healthVisual.transform.position = renderer.bounds.center + Vector3.up * renderer.bounds.extents.magnitude;
+            }
+        }
+
         public void SetGridIndex(GridIndex value) { _gridIndex = value; }
 
         public void SetUnitAI(UnitAI unitAI)
@@ -107,7 +152,7 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             {
                 _unitAI = Instantiate(unitAI, this.transform);
 
-                Transform headTransform = FindTransform(_unitVisual, "Head");
+                Transform headTransform = StaticUtilities.FindTransform(_unitVisual, "Head");
                 if (headTransform)
                 {
                     _unitAI.transform.position = headTransform.position + Vector3.up;
@@ -216,42 +261,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             _gridMovement.SetPathingGrid(grid);
         }
 
-        public void InitUnit(UnitId dataId)
-        {
-            _unitDataId = dataId;
-            _unitData = DataManager.GetUnitDataFromId(_unitDataId);
-
-            if (_unitVisual == null)
-                _unitVisual = Instantiate(_unitData.assetData.unitVisual, this.transform);
-
-            _isAlive = true;
-
-            InitComponents();
-        }
-
-        private void InitComponents()
-        {
-            _healthVisual.InitHealthVisual(this);
-            _abilitySystem.OnAttributeBaseChanged += AbilitySystem_OnAttributeBaseChanged;
-            _abilitySystem.OnAttributeCurrentChanged += AbilitySystem_OnAttributeCurrentChanged;
-            _abilitySystem.InitAbilitySystem(this, _unitData.unitStats.attributes, _unitData.unitStats.abilities);
-
-            _unitAnimator = _unitVisual.GetComponent<Animator>();
-            _unitOutline = _unitVisual.AddComponent<Outline>();
-            _animEventHandler = _unitVisual.AddComponent<AnimationEventHandler>();
-
-            Transform headTransform = FindTransform(_unitVisual, "Head");
-            if (headTransform)
-            {
-                _healthVisual.HealthBar.position = headTransform.position + Vector3.up;
-            }
-            else
-            {
-                Renderer renderer = _unitVisual.GetComponentInChildren<Renderer>();
-                _healthVisual.transform.position = renderer.bounds.center + Vector3.up * renderer.bounds.extents.magnitude;
-            }
-        }
-
         private void AbilitySystem_OnAttributeCurrentChanged(AttributeId id, int oldValue, int newValue)
         {
            
@@ -285,11 +294,6 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
         private void AbilitySystem_OnAttributeBaseChanged(AttributeId id, int oldValue, int newValue)
         {
             //Debug.Log($"Unit : {this.transform.name} Attribute Base Changed: {id}, Old: {oldValue}, New: {newValue}");
-        }
-
-        private Transform FindTransform(GameObject parentObject, string transformName)
-        {
-            return parentObject.GetComponentsInChildren<Transform>().FirstOrDefault(t => t.name == transformName);
         }
 
         [ContextMenu("ChangeUnit")]

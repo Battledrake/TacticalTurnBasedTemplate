@@ -227,6 +227,11 @@ namespace BattleDrakeCreations.TacticalTurnBasedTemplate
             {
                 _isRightClickDown = false;
             }
+            if (Input.GetKeyDown(KeyCode.LeftShift))
+            {
+                _selectedUnit.Equipment.SwapWeapons();
+                _playerAbilityUIController.SetSelectedAbilityFromIndex(-1);
+            }
 
 
             if (Input.GetKeyDown(KeyCode.Tab))
